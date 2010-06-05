@@ -82,5 +82,67 @@ namespace Urasandesu.NAnonymousExtensions
         {
             return func;
         }
+
+
+
+        public static S IfNotNull<T, S>(this T obj, Func<T, S> f)
+            where T : class
+            where S : class
+        {
+            if (f == null) throw new ArgumentNullException("f");
+
+            return obj == null ? null : f(obj);
+        }
+
+
+        public static IEnumerable<T> Enumerate<T>(this T obj, Func<T, T> next) where T : class
+        {
+            if (next == null) throw new ArgumentNullException("next");
+            if (obj == null) yield break;
+
+            for (T _obj = next(obj); _obj != null; _obj = next(_obj))
+                yield return _obj;
+        }
+
+        public static IEnumerable<T> Recursion<T>(this T obj, Func<T, IEnumerable<T>> nextChildren) where T : class
+        {
+            if (nextChildren == null) throw new ArgumentNullException("nextChildren");
+            if (obj == null) yield break;
+
+            foreach (var child in nextChildren(obj))
+            {
+                yield return child;
+
+                foreach (var childchild in Recursion(child, nextChildren))
+                {
+                    yield return childchild;
+                }
+            }
+        }
+
+        // ん？順番的に逆かも？
+        public static IEnumerable<TChild> Recursion<T, TChild>(
+            this T obj, Func<T, IEnumerable<TChild>> nextChildren, Func<T, IEnumerable<T>> nextSibling)
+            where T : class
+            where TChild : class
+        {
+            if (nextChildren == null) throw new ArgumentNullException("nextChildren");
+            if (nextSibling == null) throw new ArgumentNullException("nextSibling");
+            if (obj == null) yield break;
+
+            foreach (var sibling in nextSibling(obj))
+            {
+                foreach (var child in nextChildren(sibling))
+                {
+                    yield return child;
+
+                    foreach (var childchild in Recursion(sibling, nextChildren, nextSibling))
+                    {
+                        yield return childchild;
+                    }
+                }
+            }
+        }
+
     }
 }

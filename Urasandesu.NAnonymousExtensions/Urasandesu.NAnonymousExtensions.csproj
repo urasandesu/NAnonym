@@ -46,9 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
+    <Compile Include="Linq\DelegateComparer.cs" />
     <Compile Include="Linq\DelegateEqualityComparer.cs" />
     <Compile Include="Linq\Iterable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

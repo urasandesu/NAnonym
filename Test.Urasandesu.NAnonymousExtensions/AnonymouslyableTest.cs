@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Urasandesu.NAnonymousExtensions;
@@ -89,6 +91,121 @@ namespace Test.Urasandesu.NAnonymousExtensions
             var result = func(item1, item2);
             Assert.AreEqual(3, result.Key);
             Assert.AreEqual("ab", result.Value);
+        }
+
+
+        #region Test classes for IfNotNull
+        class A
+        {
+            public B B { get; set; }
+        }
+
+        class B
+        {
+            public C C { get; set; }
+        }
+
+        class C
+        {
+            public D D { get; set; }
+        }
+
+        class D
+        {
+            public string Value { get; set; }
+        }
+        #endregion
+
+        [Test]
+        public void IfNotNullTest01()
+        {
+            var a = new A() { B = new B() { C = new C() { D = new D() { Value = "      a " } } } };
+            var runner = Anonymouslyable.CreateFunc(a, default(string), 
+                _a => _a.IfNotNull(_ => _
+                        .B).IfNotNull(_ => _
+                            .C).IfNotNull(_ => _
+                                .D).IfNotNull(_ => _
+                                    .Value).IfNotNull(_ => _
+                                        .Trim()));
+
+            Assert.AreEqual("a", runner(a));
+        }
+
+
+
+        [Test]
+        public void IfNotNullTest02()
+        {
+            var a = default(A);
+            var runner = Anonymouslyable.CreateFunc(a, default(string),
+                _a => _a.IfNotNull(_ => _
+                        .B).IfNotNull(_ => _
+                            .C).IfNotNull(_ => _
+                                .D).IfNotNull(_ => _
+                                    .Value).IfNotNull(_ => _
+                                        .Trim()));
+
+            Assert.AreEqual(null, runner(a));
+        }
+
+
+
+        [Test]
+        public void IfNotNullTest03()
+        {
+            var a = new A() { B = new B() { C = new C() { D = null } } };
+            var runner = Anonymouslyable.CreateFunc(a, default(string),
+                _a => _a.IfNotNull(_ => _
+                        .B).IfNotNull(_ => _
+                            .C).IfNotNull(_ => _
+                                .D).IfNotNull(_ => _
+                                    .Value).IfNotNull(_ => _
+                                        .Trim()));
+
+            Assert.AreEqual(null, runner(a));
+        }
+
+
+
+        [Test]
+        public void RecursionTest01()
+        {
+            var directoryOutput = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var directoryBin = Path.GetDirectoryName(directoryOutput);
+            var directoryTUNAE = Path.GetDirectoryName(directoryBin);
+            var directoryNAnonymousExtensions = Path.GetDirectoryName(directoryTUNAE);
+
+            var directoryInfoNAnonymousExtensions = new DirectoryInfo(directoryNAnonymousExtensions);
+            Func<DirectoryInfo, IEnumerable<DirectoryInfo>> nextDirectoryInfo = directoryInfo => directoryInfo.GetDirectories();
+
+            var directoryInfos = directoryInfoNAnonymousExtensions.Recursion(nextDirectoryInfo).ToArray();
+            Assert.IsTrue(0 < directoryInfos.Length);
+            foreach (var directoryInfo in directoryInfos)
+            {
+                Console.WriteLine(directoryInfo.Name);
+            }
+        }
+
+
+
+        [Test]
+        public void RecursionTest02()
+        {
+            var directoryOutput = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var directoryBin = Path.GetDirectoryName(directoryOutput);
+            var directoryTUNAE = Path.GetDirectoryName(directoryBin);
+            var directoryNAnonymousExtensions = Path.GetDirectoryName(directoryTUNAE);
+
+            var directoryInfoNAnonymousExtensions = new DirectoryInfo(directoryNAnonymousExtensions);
+            Func<DirectoryInfo, IEnumerable<FileInfo>> nextFileInfo = directoryInfo => directoryInfo.GetFiles();
+            Func<DirectoryInfo, IEnumerable<DirectoryInfo>> nextDirectoryInfo = directoryInfo => directoryInfo.GetDirectories();
+
+            var fileInfos = directoryInfoNAnonymousExtensions.Recursion(nextFileInfo, nextDirectoryInfo).ToArray();
+            Assert.IsTrue(0 < fileInfos.Length);
+            foreach (var fileInfo in fileInfos)
+            {
+                Console.WriteLine(fileInfo.Name);
+            }
         }
     }
 }

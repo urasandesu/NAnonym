@@ -7,11 +7,20 @@ namespace Urasandesu.NAnonymousExtensions.Linq
 {
     public static class Iterable
     {
-        public static void Foreach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (var item in source)
             {
                 action(item);
+            }
+        }
+
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> proc)
+        {
+            foreach (var item in source)
+            {
+                if (!proc(item)) 
+                    break;
             }
         }
 
@@ -22,11 +31,20 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
         /// <param name="source">入力シーケンス。</param>
         /// <param name="action">適用する処理。</param>
-        public static void Foreach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
         {
             foreach (var item in source.Select((item, index) => new { Item = item, Index = index }))
             {
                 action(item.Item, item.Index);
+            }
+        }
+
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> proc)
+        {
+            foreach (var item in source.Select((item, index) => new { Item = item, Index = index }))
+            {
+                if (!proc(item.Item, item.Index)) 
+                    break;
             }
         }
 
@@ -41,7 +59,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> Negate<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Negate(first, second, CreateEqualityComparer(default(TSource)));
+            return Negate(first, second, EqualityComparer<TSource>.Default);
         }
 
 
@@ -82,7 +100,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> Replenish<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Replenish(first, second, CreateEqualityComparer(default(TSource)));
+            return Replenish(first, second, EqualityComparer<TSource>.Default);
         }
 
 
@@ -125,7 +143,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> Cross<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, Func<TSource, TSource, TSource> merger)
         {
-            return Cross(first, second, merger, CreateEqualityComparer(default(TSource)));
+            return Cross(first, second, EqualityComparer<TSource>.Default, merger);
         }
 
 
@@ -140,8 +158,8 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
         /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> Cross<TSource>(
-            this IEnumerable<TSource> first, IEnumerable<TSource> second, Func<TSource, TSource, TSource> merger, 
-            IEqualityComparer<TSource> comparer)
+            this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer, 
+            Func<TSource, TSource, TSource> merger)
         {
             var secondDictionary = new Dictionary<TSource, TSource>(comparer);
             foreach (var secondItem in second)
@@ -170,7 +188,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> CrossLeft<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return CrossLeft(first, second, CreateEqualityComparer(default(TSource)));
+            return CrossLeft(first, second, EqualityComparer<TSource>.Default);
         }
 
 
@@ -187,7 +205,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> CrossLeft<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            return Cross(first, second, (firstItem, secondItem) => firstItem, comparer);
+            return Cross(first, second, comparer, (firstItem, secondItem) => firstItem);
         }
 
 
@@ -203,7 +221,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> CrossRight<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return CrossRight(first, second, CreateEqualityComparer(default(TSource)));
+            return CrossRight(first, second, EqualityComparer<TSource>.Default);
         }
 
 
@@ -220,7 +238,7 @@ namespace Urasandesu.NAnonymousExtensions.Linq
         public static IEnumerable<TSource> CrossRight<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            return Cross(first, second, (firstItem, secondItem) => secondItem, comparer);
+            return Cross(first, second, comparer, (firstItem, secondItem) => secondItem);
         }
 
 
@@ -248,6 +266,65 @@ namespace Urasandesu.NAnonymousExtensions.Linq
             return new DelegateEqualityComparer<T>(getHashCode, equals);
         }
 
+        public static IEqualityComparer<T> CreateEqualityComparerNullable<T>(T obj)
+        {
+            return new DelegateEqualityComparer<T>(
+                DelegateEqualityComparer<T>.NullableGetHashCode, DelegateEqualityComparer<T>.NullableEquals);
+        }
+
+        public static IEqualityComparer<T> CreateEqualityComparerNullable<T>(T obj, Func<T, int> getHashCode)
+        {
+            return new DelegateEqualityComparer<T>(
+                DelegateEqualityComparer<T>.ToNullableGetHashCode(getHashCode), DelegateEqualityComparer<T>.NullableEquals);
+        }
+
+        public static IEqualityComparer<T> CreateEqualityComparerNullable<T>(T obj, Func<T, T, bool> equals)
+        {
+            return new DelegateEqualityComparer<T>(
+                DelegateEqualityComparer<T>.NullableGetHashCode, DelegateEqualityComparer<T>.ToNullableEquals(equals));
+        }
+
+        public static IEqualityComparer<T> CreateEqualityComparerNullable<T>(T obj, Func<T, int> getHashCode, Func<T, T, bool> equals)
+        {
+            return new DelegateEqualityComparer<T>(
+                DelegateEqualityComparer<T>.ToNullableGetHashCode(getHashCode), DelegateEqualityComparer<T>.ToNullableEquals(equals));
+        }
+
+
+        public static IComparer<T> CreateComparer<T>(T obj)
+        {
+            return new DelegateComparer<T>();
+        }
+
+        public static IComparer<T> CreateComparer<T>(T obj, Func<T, T, int> comparer)
+        {
+            return new DelegateComparer<T>(comparer);
+        }
+
+        public static IComparer<T> CreateComparerNullableAsc<T>(T obj)
+        {
+            return new DelegateComparer<T>(DelegateComparer<T>.NullableComparerAsc);
+        }
+
+        public static IComparer<T> CreateComparerNullableAsc<T>(T obj, Func<T, T, int> comparer)
+        {
+            return new DelegateComparer<T>(DelegateComparer<T>.ToNullableComparerAsc(comparer));
+        }
+
+        public static IComparer<T> CreateComparerNullableDsc<T>(T obj)
+        {
+            return new DelegateComparer<T>(DelegateComparer<T>.NullableComparerDsc);
+        }
+
+        public static IComparer<T> CreateComparerNullableDsc<T>(T obj, Func<T, T, int> comparer)
+        {
+            return new DelegateComparer<T>(DelegateComparer<T>.ToNullableComparerDsc(comparer));
+        }
+
+
+        
+        
+        
         public static List<T> CreateList<T>(T obj)
         {
             return new List<T>();

@@ -16,7 +16,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
         public void ForeachTest01()
         {
             int[] items1 = new int[] { 0, 1, 0 };
-            items1.Foreach((item1, index) =>
+            items1.ForEach((item1, index) =>
             {
                 switch (index)
                 {
@@ -45,7 +45,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -72,7 +72,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -102,7 +102,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -128,7 +128,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2, comparer).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -159,7 +159,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2, comparer).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -194,7 +194,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Negate(items2, comparer).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -219,7 +219,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -249,7 +249,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2).ToArray();
             Assert.AreEqual(4, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -282,7 +282,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -314,7 +314,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2, comparer).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -349,7 +349,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2, comparer).ToArray();
             Assert.AreEqual(4, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -388,7 +388,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Replenish(items2, comparer).ToArray();
             Assert.AreEqual(3, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -422,7 +422,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Cross(items2, merger).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -460,7 +460,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.Cross(items2, merger).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -489,9 +489,9 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);
 
-            var results = items1.Cross(items2, merger, comparer).ToArray();
+            var results = items1.Cross(items2, comparer, merger).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -518,7 +518,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);
 
-            var results = items1.Cross(items2, merger, comparer).ToArray();
+            var results = items1.Cross(items2, comparer, merger).ToArray();
             Assert.AreEqual(0, results.Length);
         }
 
@@ -534,9 +534,9 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);
 
-            var results = items1.Cross(items2, merger, comparer).ToArray();
+            var results = items1.Cross(items2, comparer, merger).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -565,7 +565,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossLeft(items2).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -602,7 +602,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossLeft(items2).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -633,7 +633,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossLeft(items2, comparer).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -674,7 +674,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossLeft(items2, comparer).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -703,7 +703,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossRight(items2).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -740,7 +740,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossRight(items2).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -771,7 +771,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossRight(items2, comparer).ToArray();
             Assert.AreEqual(1, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
@@ -812,7 +812,7 @@ namespace Test.Urasandesu.NAnonymousExtensions.Linq
 
             var results = items1.CrossRight(items2, comparer).ToArray();
             Assert.AreEqual(2, results.Length);
-            results.Foreach((item, index) =>
+            results.ForEach((item, index) =>
             {
                 switch (index)
                 {
