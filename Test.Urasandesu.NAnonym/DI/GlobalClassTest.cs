@@ -28,23 +28,23 @@ namespace Test.Urasandesu.NAnonym.DI
         [Test]
         public void PrintTest01()
         {
-            var class1 = new Class1();
-            var class2 = new Class2();
-            string value = "aiueo";
+            //var class1 = new Class1();
+            //var class2 = new Class2();
+            //string value = "aiueo";
 
-            Assert.AreEqual(
-                "Modified prefix at Class1.Print" +
-                "Modified prefix at Class2.Print" +
-                value +
-                "Modified suffix at Class2.Print" +
-                "Modified suffix at Class1.Print",
-                class1.Print(value));
+            //Assert.AreEqual(
+            //    "Modified prefix at Class1.Print" +
+            //    "Modified prefix at Class2.Print" +
+            //    value +
+            //    "Modified suffix at Class2.Print" +
+            //    "Modified suffix at Class1.Print",
+            //    class1.Print(value));
 
-            Assert.AreEqual(
-                "Modified prefix at Class2.Print" +
-                value +
-                "Modified suffix at Class2.Print",
-                class2.Print(value));
+            //Assert.AreEqual(
+            //    "Modified prefix at Class2.Print" +
+            //    value +
+            //    "Modified suffix at Class2.Print",
+            //    class2.Print(value));
         }
     }
 }

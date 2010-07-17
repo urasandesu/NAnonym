@@ -24,6 +24,7 @@ namespace Urasandesu.NAnonym.DI
             tbaseType = tbaseModule.GetType(typeof(TBase).FullName);
         }
 
+        // MEMO: テスト中。
         public GlobalClass<TBase> Override(Action<GlobalClass<TBase>> overrider)
         {
             if (overrider == null) throw new ArgumentNullException("overrider");
@@ -31,23 +32,26 @@ namespace Urasandesu.NAnonym.DI
             return this;
         }
 
+        // TODO: 最終的にはこちらの I/F にする。
         public GlobalClass<TBase> SetUp(Action<GlobalClass<TBase>> overrider)
         {
-            throw new NotImplementedException();
+            if (overrider == null) throw new ArgumentNullException("overrider");
+            overrider(this);
+            return this;
         }
 
-        //public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
-        //{
-        //    var method = (MethodInfo)((ConstantExpression)(
-        //        (MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
-        //    var targetMethod = tbaseType.Methods.FirstOrDefault(_method => _method.Equivalent(method));
-        //    return new GlobalMethod<TBase, T, TResult>(targetMethod);
-        //}
-
-        public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> expression)
+        public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
         {
-            throw new NotImplementedException();
+            var method = (MethodInfo)((ConstantExpression)(
+                (MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
+            var targetMethod = tbaseType.Methods.FirstOrDefault(_method => _method.Equivalent(method));
+            return new GlobalMethod<TBase, T, TResult>(targetMethod);
         }
+
+        //public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> expression)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         protected override GlobalClassBase SetUp()
         {

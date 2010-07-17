@@ -59,14 +59,5 @@ namespace Urasandesu.NAnonym.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///    に類似しているローカライズされた文字列を検索します。
-        /// </summary>
-        internal static string MemberInitExpressionHelper {
-            get {
-                return ResourceManager.GetString("MemberInitExpressionHelper", resourceCulture);
-            }
-        }
     }
 }

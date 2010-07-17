@@ -14,6 +14,11 @@ namespace Urasandesu.NAnonym.CREUtilities
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
+        public static MethodInfo GetMethodInfo<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
         public static MethodInfo GetMethodInfo<TResult>(Expression<Func<Func<TResult>>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);

@@ -416,5 +416,9 @@ namespace Urasandesu.NAnonym.CREUtilities
             return destination;
         }
 
+        public static bool IsStatic(this PropertyInfo source)
+        {
+            return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
+        }
     }
 }
