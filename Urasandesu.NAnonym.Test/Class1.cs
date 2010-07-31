@@ -9,11 +9,11 @@ using System.Threading;
 
 namespace Urasandesu.NAnonym.Test
 {
-    public delegate NewAppDomainTesterParam MarshalByRefTesterUsingAction(AppDomain newDomain);
+    public delegate NewAppDomainTesterParameter NewAppDomainTesterUsingAction(AppDomain newDomain);
 
     public abstract class NewAppDomainTester : MarshalByRefObject
     {
-        public static void Using(MarshalByRefTesterUsingAction action)
+        public static void Using(NewAppDomainTesterUsingAction action)
         {
             var info = new AppDomainSetup();
             var appDomain = Thread.GetDomain();
@@ -43,11 +43,12 @@ namespace Urasandesu.NAnonym.Test
             }
         }
 
-        protected readonly NewAppDomainTesterParam param;
-        public NewAppDomainTester(NewAppDomainTesterParam param)
+        public NewAppDomainTester(NewAppDomainTesterParameter parameter)
         {
-            this.param = param;
+            Parameter = parameter;
         }
+
+        protected NewAppDomainTesterParameter Parameter { get; private set; }
 
         Assembly assembly;
         protected Assembly Assembly
@@ -56,7 +57,7 @@ namespace Urasandesu.NAnonym.Test
             {
                 if (assembly == null)
                 {
-                    assembly = Assembly.LoadFile(param.FileName);
+                    assembly = Assembly.LoadFile(Parameter.FileName);
                 }
                 return assembly;
             }
@@ -69,7 +70,7 @@ namespace Urasandesu.NAnonym.Test
             {
                 if (instance == null)
                 {
-                    instance = Assembly.CreateInstance(param.TypeName);
+                    instance = Assembly.CreateInstance(Parameter.TypeName);
                 }
                 return instance;
             }
@@ -83,7 +84,7 @@ namespace Urasandesu.NAnonym.Test
                 if (method == null)
                 {
                     var type = Instance.GetType();
-                    method = type.GetMethod(param.MethodName);
+                    method = type.GetMethod(Parameter.MethodName);
                 }
                 return method;
             }
@@ -93,9 +94,9 @@ namespace Urasandesu.NAnonym.Test
     }
 
     [Serializable]
-    public sealed class NewAppDomainTesterParam
+    public class NewAppDomainTesterParameter
     {
-        public NewAppDomainTesterParam(string fileName, string typeName, string methodName, Type tester)
+        public NewAppDomainTesterParameter(string fileName, string typeName, string methodName, Type tester)
         {
             FileName = fileName;
             TypeName = typeName;
@@ -107,6 +108,18 @@ namespace Urasandesu.NAnonym.Test
         public string TypeName { get; private set; }
         public string MethodName { get; private set; }
         public Type Tester { get; private set; }
+    }
+
+    [Serializable]
+    public class NewAppDomainTesterParameter1 : NewAppDomainTesterParameter
+    {
+        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, params object[] arguments)
+            : base(fileName, typeName, methodName, tester)
+        {
+            Arguments = arguments;
+        }
+
+        public object[] Arguments { get; private set; }
     }
 
     public class Assert : NUnit.Framework.Assert

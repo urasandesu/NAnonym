@@ -52,46 +52,46 @@ namespace Urasandesu.NAnonym.DI
 
             var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
 
-            //var egen = new ExpressiveILProcessor(newMethod);
-            //var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
-            //egen.Emit(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(TResult), new Type[] { typeof(T) }, true)));
-            //var ctor3 = default(ConstructorInfo);
-            //egen.Emit(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
-            //                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-            //                                    null, 
-            //                                    new Type[] 
-            //                                    { 
-            //                                        typeof(Object), 
-            //                                        typeof(IntPtr) 
-            //                                    }, null)));
-            //var method4 = default(MethodInfo);
-            //egen.Emit(_ => _.Addloc(method4, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetMethod(
-            //                                    "Invoke", 
-            //                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-            //                                    null, 
-            //                                    new Type[] 
-            //                                    { 
-            //                                        typeof(String) 
-            //                                    }, null)));
-            //var gen = default(ILGenerator);
-            //egen.Emit(_ => _.Addloc(gen, _.Ldloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method).GetILGenerator()));
-            //var label27 = default(Label);
-            //egen.Emit(_ => _.Addloc(label27, _.Ldloc(gen).DefineLabel()));
-            //// TODO: そのままを Emit するための I/F も定義してないな…。
-            //// TODO: ん？ストアは式ツリーの制限上必要だけど、ロードは必要ないんじゃね？
-            //// TODO: できそうだけど、辿るのが大変 + オーバーヘッドがでかい（GetField を継承元に遡って見る必要がある）？
+            var egen = new ExpressiveILProcessor(newMethod);
+            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
+            egen.Emit(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(TResult), new Type[] { typeof(T) }, true)));
+            var ctor3 = default(ConstructorInfo);
+            egen.Emit(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                null,
+                                                new Type[] 
+                                                { 
+                                                    typeof(Object), 
+                                                    typeof(IntPtr) 
+                                                }, null)));
+            var method4 = default(MethodInfo);
+            egen.Emit(_ => _.Addloc(method4, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetMethod(
+                                                "Invoke",
+                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                null,
+                                                new Type[] 
+                                                { 
+                                                    typeof(String) 
+                                                }, null)));
+            var gen = default(ILGenerator);
+            egen.Emit(_ => _.Addloc(gen, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
+            var label27 = default(Label);
+            egen.Emit(_ => _.Addloc(label27, gen.DefineLabel()));
+            // TODO: そのままを Emit するための I/F も定義してないな…。
+            // TODO: ん？ストアは式ツリーの制限上必要だけど、ロードは必要ないんじゃね？
+            // TODO: できそうだけど、辿るのが大変 + オーバーヘッドがでかい（GetField を継承元に遡って見る必要がある）？
 
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Brtrue_S, _.Ldloc(label27)));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ldnull));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ldftn, method.Method));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Newobj, _.Ldloc(ctor3)));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Stsfld, cacheField));
-            //egen.Emit(_ => _.Ldloc(gen).MarkLabel(label27));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ldarg_0));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Callvirt, _.Ldloc(method4)));
-            //egen.Emit(_ => _.Ldloc(gen).Emit(SR.Emit.OpCodes.Ret));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Brtrue_S, label27));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldnull));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldftn, method.Method));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Newobj, ctor3));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Stsfld, cacheField));
+            egen.Emit(_ => gen.MarkLabel(label27));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldarg_0));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Callvirt, method4));
+            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ret));
             //// TODO: フィールドへの代入用 I/F って定義してないな…。
             //egen.Direct.Emit(MC.Cil.OpCodes.Ldnull);
             //egen.Direct.Emit(MC.Cil.OpCodes.Ret);

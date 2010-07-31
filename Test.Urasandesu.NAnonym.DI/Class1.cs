@@ -11,7 +11,7 @@ namespace Test.Urasandesu.NAnonym.DI
 {
     public class Action12Tester : NewAppDomainTester
     {
-        public Action12Tester(NewAppDomainTesterParam param)
+        public Action12Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -32,7 +32,7 @@ namespace Test.Urasandesu.NAnonym.DI
 
     public class Action2LocalVariable2Tester : NewAppDomainTester
     {
-        public Action2LocalVariable2Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable2Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -53,7 +53,7 @@ namespace Test.Urasandesu.NAnonym.DI
 
     public class Action2LocalVariable3Tester : NewAppDomainTester
     {
-        public Action2LocalVariable3Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable3Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -74,7 +74,7 @@ namespace Test.Urasandesu.NAnonym.DI
 
     public class Action2LocalVariable4Tester : NewAppDomainTester
     {
-        public Action2LocalVariable4Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable4Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -95,7 +95,7 @@ namespace Test.Urasandesu.NAnonym.DI
 
     public class Action2LocalVariable5Tester : NewAppDomainTester
     {
-        public Action2LocalVariable5Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable5Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -116,7 +116,7 @@ namespace Test.Urasandesu.NAnonym.DI
 
     public class Action2LocalVariable6Tester : NewAppDomainTester
     {
-        public Action2LocalVariable6Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable6Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -142,7 +142,7 @@ i++ = 1
 
     public class Action2LocalVariable7Tester : NewAppDomainTester
     {
-        public Action2LocalVariable7Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable7Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -168,7 +168,7 @@ Parameter[0] Type = Int32
 
     public class Func1Parameters2Tester : NewAppDomainTester
     {
-        public Func1Parameters2Tester(NewAppDomainTesterParam param)
+        public Func1Parameters2Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -182,7 +182,7 @@ Parameter[0] Type = Int32
 
     public class Func1Parameters3Tester : NewAppDomainTester
     {
-        public Func1Parameters3Tester(NewAppDomainTesterParam param)
+        public Func1Parameters3Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -196,7 +196,7 @@ Parameter[0] Type = Int32
 
     public class Action2LocalVariable8Tester : NewAppDomainTester
     {
-        public Action2LocalVariable8Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable8Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -217,7 +217,7 @@ Parameter[0] Type = Int32
 
     public class Action2LocalVariable9Tester : NewAppDomainTester
     {
-        public Action2LocalVariable9Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable9Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -244,7 +244,7 @@ Parameter[1] = IntPtr method
 
     public class Action2LocalVariable10Tester : NewAppDomainTester
     {
-        public Action2LocalVariable10Tester(NewAppDomainTesterParam param)
+        public Action2LocalVariable10Tester(NewAppDomainTesterParameter param)
             : base(param)
         {
         }
@@ -259,6 +259,31 @@ Parameter[1] = IntPtr method
             catch (Exception e)
             {
                 Assert.AreEqual("200", e.InnerException.Message);
+            }
+        }
+    }
+
+    public class Action2LocalVariable11Tester : NewAppDomainTester
+    {
+        public Action2LocalVariable11Tester(NewAppDomainTesterParameter param)
+            : base(param)
+        {
+        }
+
+        public override void Verify()
+        {
+            try
+            {
+                var arguments = ((NewAppDomainTesterParameter1)Parameter).Arguments;
+                // だめだ、これじゃ変数名が引き当てられない！
+                // TODO: Invoke 時じゃなくて、Instance に入れ込むのがミソ。
+                //ScopeAccessor.Set(Instance, arguments);   // みたいなイメージで。
+                Method.Invoke(Instance, null);
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual("{ Key = 1, Value = aiueo }", e.InnerException.Message);
             }
         }
     }

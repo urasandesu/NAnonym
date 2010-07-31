@@ -16,52 +16,52 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    public sealed class ExpressiveEvaluable
-    {
-        readonly MethodInfo AddlocInfo;
-        readonly MethodInfo StlocInfo;
+    //public sealed class ExpressiveEvaluable
+    //{
+    //    readonly MethodInfo AddlocInfo;
+    //    readonly MethodInfo StlocInfo;
 
-        public ExpressiveEvaluable()
-        {
-            AddlocInfo = ExpressiveType.GetMethodInfo<object>(() => Addloc).GetGenericMethodDefinition();
-            StlocInfo = ExpressiveType.GetMethodInfo<object, object>(() => Stloc).GetGenericMethodDefinition();
-        }
+    //    public ExpressiveEvaluable()
+    //    {
+    //        AddlocInfo = ExpressiveType.GetMethodInfo<object>(() => Addloc).GetGenericMethodDefinition();
+    //        StlocInfo = ExpressiveType.GetMethodInfo<object, object>(() => Stloc).GetGenericMethodDefinition();
+    //    }
 
-        public bool IsAddloc(MethodInfo target)
-        {
-            if (target.Name == AddlocInfo.Name && target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+    //    public bool IsAddloc(MethodInfo target)
+    //    {
+    //        if (target.Name == AddlocInfo.Name && target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+    //        {
+    //            return true;
+    //        }
+    //        else
+    //        {
+    //            return false;
+    //        }
+    //    }
 
-        public bool IsStloc(MethodInfo target)
-        {
-            if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+    //    public bool IsStloc(MethodInfo target)
+    //    {
+    //        if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+    //        {
+    //            return true;
+    //        }
+    //        else
+    //        {
+    //            return false;
+    //        }
+    //    }
 
-        public void Addloc<T>(T variable)
-        {
-        }
+    //    public void Addloc<T>(T variable)
+    //    {
+    //    }
 
-        public T Stloc<T>(T variable)
-        {
-            return default(T);
-        }
-    }
+    //    public T Stloc<T>(T variable)
+    //    {
+    //        return default(T);
+    //    }
+    //}
 
-    public sealed class ExpressiveEmittable
+    public sealed class Expressible
     {
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
@@ -70,7 +70,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         readonly MethodInfo SubOneDupInfo;
         readonly MethodInfo ReturnInfo;
 
-        public ExpressiveEmittable()
+        public Expressible()
         {
             AddlocInfo = ExpressiveType.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = ExpressiveType.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
@@ -181,14 +181,91 @@ namespace Urasandesu.NAnonym.CREUtilities
         }
     }
 
+
+
+    public sealed class SharedScope
+    {
+        readonly Dictionary<FieldInfo, object> variables;
+
+        public SharedScope()
+        {
+            variables = new Dictionary<FieldInfo, object>();
+        }
+
+
+        public void Add<T>(Expression<Func<T>> exp, T value)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
+            if (!variables.ContainsKey(fieldInfo))
+            {
+                variables.Add(fieldInfo, value);
+            }
+        }
+    }
+
+    public sealed class SharedScope__
+    {
+        readonly MethodBase method;
+        readonly Dictionary<FieldInfo, object> variables;
+
+        public SharedScope__(MethodBase method)
+        {
+            // TODO: MethodBase だと型作り直した場合に引き当てられなくなる。文字列とかの値系キーに変換したほうがいい。
+            this.method = method;
+            variables = new Dictionary<FieldInfo, object>();
+        }
+
+
+        public void Add<T>(Expression<Func<T>> exp, T value)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
+            if (!variables.ContainsKey(fieldInfo))
+            {
+                variables.Add(fieldInfo, value);
+            }
+        }
+    }
+
+    public sealed class SharedScope_
+    {
+        // 最初の Add の時に型が合えばそれでいいのか。
+        //public class Hoge<T>
+        //{
+        //    public Dictionary<Expression<Func<T>>, T> Variables;
+        //    public Dictionary<MethodBase, Dictionary<Expression<Func<T>>, T>> MethodVariables;
+        //}
+
+        Dictionary<MethodBase, Dictionary<FieldInfo, object>> variables = new Dictionary<MethodBase, Dictionary<FieldInfo, object>>();
+
+        public void Add<T>(MethodBase method, Expression<Func<T>> exp, T value) 
+        {
+            if (!variables.ContainsKey(method))
+            {
+                variables.Add(method, new Dictionary<FieldInfo, object>());
+            }
+
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
+            if (!variables[method].ContainsKey(fieldInfo))
+            {
+                variables[method].Add(fieldInfo, value);
+            }
+        }
+
+        public void Add<T>(Expression<Func<T>> exp, T value)
+        {
+
+            throw new NotImplementedException();
+        }
+    }
+
     // TODO: IDisposable にして、using 内で利用するようにしたほうがそれっぽい。
     public sealed class ExpressiveILProcessor
     {
         readonly MethodDefinition methodDef;
         readonly ILProcessor ilProcessor;
 
-        readonly ExpressiveEvaluable evaluable;
-        readonly ExpressiveEmittable emittable;
+        //readonly ExpressiveEvaluable evaluable;
+        readonly Expressible expressible;
 
         readonly MethodInfo GetTypeFromHandle;
 
@@ -198,8 +275,14 @@ namespace Urasandesu.NAnonym.CREUtilities
             this.methodDef.Body.InitLocals = true;
             this.ilProcessor = methodDef.Body.GetILProcessor();
 
-            evaluable = new ExpressiveEvaluable();
-            emittable = new ExpressiveEmittable();
+            // TODO: var variableDictionary = new Dictionary<MethodBase, SharedScope>(); みたいな Field を Inject する！
+            // TODO: デフォルトの動作としては、同一メモリ上のモデル（LambdaExpression.Compile() と同じイメージ）
+            //       ↑こちらをやりたい場合は Mono.Cecil を使うんじゃなくて、System.Reflection を使ったほうがいい（AppDomain にロード*しない*ことが Mono.Cecil の利点だからね）。
+            //       ↑Expression Visitor の中身は Mono.Cecil と System.Reflection を簡単に入れ替えられる仕組みを入れておいたほうが良いね。
+
+
+            //evaluable = new ExpressiveEvaluable();
+            expressible = new Expressible();
 
             GetTypeFromHandle = 
                 typeof(System.Type).GetMethod(
@@ -213,27 +296,36 @@ namespace Urasandesu.NAnonym.CREUtilities
                     null);
         }
 
-        // MEMO: このパターンが出てきたら、value に変えちゃうよ、って感じで。
-        public void Eval(Expression<Action<ExpressiveEvaluable>> exp, object value)
-        {
-            // TODO: 別の MethodDefinition に Instruction 作成していって、比較に使えば良い。
-            // TODO: Seek するためのポインタが必要。
-        }
+        // いらね。
+        //// MEMO: このパターンが出てきたら、value に変えちゃうよ、って感じで。
+        //public void Eval<T>(Expression<Func<Expressible, T>> exp, T value)
+        //{
+        //    throw new NotImplementedException();
+        //    // TODO: 別の MethodDefinition に Instruction 作成していって、比較に使えば良い。
+        //    // TODO: Seek するためのポインタが必要。
+        //}
 
-        void Eval(ReadOnlyCollection<Expression> exps)
-        {
-            foreach (var exp in exps)
-            {
-                Eval(exp);
-            }
-        }
+        //public void Eval(Expression<Action<Expressible>> exp, object value)
+        //{
+        //    throw new NotImplementedException();
+        //    // TODO: 別の MethodDefinition に Instruction 作成していって、比較に使えば良い。
+        //    // TODO: Seek するためのポインタが必要。
+        //}
 
-        void Eval(Expression exp)
-        {
-            throw new NotImplementedException();
-        }
+        //void Eval(ReadOnlyCollection<Expression> exps)
+        //{
+        //    foreach (var exp in exps)
+        //    {
+        //        Eval(exp);
+        //    }
+        //}
 
-        public void Emit(Expression<Action<ExpressiveEmittable>> exp)
+        //void Eval(Expression exp)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void Emit(Expression<Action<Expressible>> exp)
         {
             Emit(exp.Body);
             if (exp.Body.Type != typeof(void))
@@ -424,9 +516,9 @@ namespace Urasandesu.NAnonym.CREUtilities
             }
             else
             {
-                if (exp.Object.Type == typeof(ExpressiveEmittable))
+                if (exp.Object.Type == typeof(Expressible))
                 {
-                    if (emittable.IsAddloc(exp.Method))
+                    if (expressible.IsAddloc(exp.Method))
                     {
                         Emit(exp.Arguments[1]);
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
@@ -434,7 +526,7 @@ namespace Urasandesu.NAnonym.CREUtilities
                         methodDef.Body.Variables.Add(variable);
                         Direct.Emit(MC.Cil.OpCodes.Stloc, variable);
                     }
-                    else if (emittable.IsDupAddOne(exp.Method))
+                    else if (expressible.IsDupAddOne(exp.Method))
                     {
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                         var variable = methodDef.Body.Variables.First(_variable => _variable.Name == fieldInfo.Name);
@@ -444,7 +536,7 @@ namespace Urasandesu.NAnonym.CREUtilities
                         Direct.Emit(MC.Cil.OpCodes.Add);
                         Direct.Emit(MC.Cil.OpCodes.Stloc, variable);
                     }
-                    else if (emittable.IsAddOneDup(exp.Method))
+                    else if (expressible.IsAddOneDup(exp.Method))
                     {
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                         var variable = methodDef.Body.Variables.First(_variable => _variable.Name == fieldInfo.Name);
@@ -454,7 +546,7 @@ namespace Urasandesu.NAnonym.CREUtilities
                         Direct.Emit(MC.Cil.OpCodes.Dup);
                         Direct.Emit(MC.Cil.OpCodes.Stloc, variable);
                     }
-                    else if (emittable.IsSubOneDup(exp.Method))
+                    else if (expressible.IsSubOneDup(exp.Method))
                     {
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                         var variable = methodDef.Body.Variables.First(_variable => _variable.Name == fieldInfo.Name);
@@ -464,7 +556,7 @@ namespace Urasandesu.NAnonym.CREUtilities
                         Direct.Emit(MC.Cil.OpCodes.Dup);
                         Direct.Emit(MC.Cil.OpCodes.Stloc, variable);
                     }
-                    else if (emittable.IsReturn(exp.Method))
+                    else if (expressible.IsReturn(exp.Method))
                     {
                         Emit(exp.Arguments[0]);
                         Direct.Emit(MC.Cil.OpCodes.Ret);
@@ -543,6 +635,7 @@ namespace Urasandesu.NAnonym.CREUtilities
             }
             else
             {
+                // TODO: exp.Value がオブジェクト型の場合はどうするのだ？
                 throw new NotImplementedException();
             }
         }
@@ -581,8 +674,15 @@ namespace Urasandesu.NAnonym.CREUtilities
             var propertyInfo = default(PropertyInfo);
             if ((fieldInfo = exp.Member as FieldInfo) != null)
             {
+                // 評価の優先順は、
+                // 1. Addloc でローカル変数として追加したの（名前引き）
+                // 2. メソッドの引数（名前引き）
+                // 3. 定義時に使った変数そのもの
+                // 4. その他
                 var variable = default(VariableDefinition);
                 var parameter = default(ParameterDefinition);
+                var constantExpression = default(ConstantExpression);
+                var constantField = default(FieldInfo);
                 if ((variable = methodDef.Body.Variables.FirstOrDefault(_variable => _variable.Name == fieldInfo.Name)) != null)
                 {
                     Direct.Emit(MC.Cil.OpCodes.Ldloc, variable);
@@ -591,8 +691,19 @@ namespace Urasandesu.NAnonym.CREUtilities
                 {
                     Direct.Emit(MC.Cil.OpCodes.Ldarg, parameter);
                 }
+                else if ((constantExpression = exp.Expression as ConstantExpression) != null)
+                {
+                    // MEMO: Field にアクセスすれば取れそうなんだけど？？？
+                    Direct.Emit(MC.Cil.OpCodes.Ldfld, methodDef.Module.Import(fieldInfo));
+                }
+                //else if ((constantExpression = exp.Expression as ConstantExpression) != null &&
+                //    (constantField = constantExpression.Value.GetType().GetField(fieldInfo.Name)) != null)
+                //{
+                //    //Direct.Emit(MC.Cil.OpCodes.Ldfld, methodDef.Module.Import(constantField));
+                //    Emit(Expression.Constant(constantField.GetValue(constantExpression.Value)));
+                //}
                 else
-	            {
+                {
                     Emit(exp.Expression);
 
                     if (fieldInfo.IsStatic)
@@ -684,159 +795,159 @@ namespace Urasandesu.NAnonym.CREUtilities
             }
         }
 
-        object Evaluate(Expression exp)
-        {
-            if (exp == null) return null;
+        //object Evaluate(Expression exp)
+        //{
+        //    if (exp == null) return null;
 
-            switch (exp.NodeType)
-            {
-                case ExpressionType.Add:
-                    return Evaluate((BinaryExpression)exp);
-                case ExpressionType.AddChecked:
-                    break;
-                case ExpressionType.And:
-                    break;
-                case ExpressionType.AndAlso:
-                    break;
-                case ExpressionType.ArrayIndex:
-                    break;
-                case ExpressionType.ArrayLength:
-                    break;
-                case ExpressionType.Call:
-                    break;
-                case ExpressionType.Coalesce:
-                    break;
-                case ExpressionType.Conditional:
-                    break;
-                case ExpressionType.Constant:
-                    break;
-                case ExpressionType.Convert:
-                    break;
-                case ExpressionType.ConvertChecked:
-                    break;
-                case ExpressionType.Divide:
-                    break;
-                case ExpressionType.Equal:
-                    break;
-                case ExpressionType.ExclusiveOr:
-                    break;
-                case ExpressionType.GreaterThan:
-                    break;
-                case ExpressionType.GreaterThanOrEqual:
-                    break;
-                case ExpressionType.Invoke:
-                    break;
-                case ExpressionType.Lambda:
-                    break;
-                case ExpressionType.LeftShift:
-                    break;
-                case ExpressionType.LessThan:
-                    break;
-                case ExpressionType.LessThanOrEqual:
-                    break;
-                case ExpressionType.ListInit:
-                    break;
-                case ExpressionType.MemberAccess:
-                    return Evaluate((MemberExpression)exp);
-                case ExpressionType.MemberInit:
-                    break;
-                case ExpressionType.Modulo:
-                    break;
-                case ExpressionType.Multiply:
-                    break;
-                case ExpressionType.MultiplyChecked:
-                    break;
-                case ExpressionType.Negate:
-                    break;
-                case ExpressionType.NegateChecked:
-                    break;
-                case ExpressionType.New:
-                    break;
-                case ExpressionType.NewArrayBounds:
-                    break;
-                case ExpressionType.NewArrayInit:
-                    break;
-                case ExpressionType.Not:
-                    break;
-                case ExpressionType.NotEqual:
-                    break;
-                case ExpressionType.Or:
-                    break;
-                case ExpressionType.OrElse:
-                    break;
-                case ExpressionType.Parameter:
-                    break;
-                case ExpressionType.Power:
-                    break;
-                case ExpressionType.Quote:
-                    break;
-                case ExpressionType.RightShift:
-                    break;
-                case ExpressionType.Subtract:
-                    break;
-                case ExpressionType.SubtractChecked:
-                    break;
-                case ExpressionType.TypeAs:
-                    break;
-                case ExpressionType.TypeIs:
-                    break;
-                case ExpressionType.UnaryPlus:
-                    break;
-                default:
-                    break;
-            }
-            throw new NotImplementedException();
-        }
+        //    switch (exp.NodeType)
+        //    {
+        //        case ExpressionType.Add:
+        //            return Evaluate((BinaryExpression)exp);
+        //        case ExpressionType.AddChecked:
+        //            break;
+        //        case ExpressionType.And:
+        //            break;
+        //        case ExpressionType.AndAlso:
+        //            break;
+        //        case ExpressionType.ArrayIndex:
+        //            break;
+        //        case ExpressionType.ArrayLength:
+        //            break;
+        //        case ExpressionType.Call:
+        //            break;
+        //        case ExpressionType.Coalesce:
+        //            break;
+        //        case ExpressionType.Conditional:
+        //            break;
+        //        case ExpressionType.Constant:
+        //            break;
+        //        case ExpressionType.Convert:
+        //            break;
+        //        case ExpressionType.ConvertChecked:
+        //            break;
+        //        case ExpressionType.Divide:
+        //            break;
+        //        case ExpressionType.Equal:
+        //            break;
+        //        case ExpressionType.ExclusiveOr:
+        //            break;
+        //        case ExpressionType.GreaterThan:
+        //            break;
+        //        case ExpressionType.GreaterThanOrEqual:
+        //            break;
+        //        case ExpressionType.Invoke:
+        //            break;
+        //        case ExpressionType.Lambda:
+        //            break;
+        //        case ExpressionType.LeftShift:
+        //            break;
+        //        case ExpressionType.LessThan:
+        //            break;
+        //        case ExpressionType.LessThanOrEqual:
+        //            break;
+        //        case ExpressionType.ListInit:
+        //            break;
+        //        case ExpressionType.MemberAccess:
+        //            return Evaluate((MemberExpression)exp);
+        //        case ExpressionType.MemberInit:
+        //            break;
+        //        case ExpressionType.Modulo:
+        //            break;
+        //        case ExpressionType.Multiply:
+        //            break;
+        //        case ExpressionType.MultiplyChecked:
+        //            break;
+        //        case ExpressionType.Negate:
+        //            break;
+        //        case ExpressionType.NegateChecked:
+        //            break;
+        //        case ExpressionType.New:
+        //            break;
+        //        case ExpressionType.NewArrayBounds:
+        //            break;
+        //        case ExpressionType.NewArrayInit:
+        //            break;
+        //        case ExpressionType.Not:
+        //            break;
+        //        case ExpressionType.NotEqual:
+        //            break;
+        //        case ExpressionType.Or:
+        //            break;
+        //        case ExpressionType.OrElse:
+        //            break;
+        //        case ExpressionType.Parameter:
+        //            break;
+        //        case ExpressionType.Power:
+        //            break;
+        //        case ExpressionType.Quote:
+        //            break;
+        //        case ExpressionType.RightShift:
+        //            break;
+        //        case ExpressionType.Subtract:
+        //            break;
+        //        case ExpressionType.SubtractChecked:
+        //            break;
+        //        case ExpressionType.TypeAs:
+        //            break;
+        //        case ExpressionType.TypeIs:
+        //            break;
+        //        case ExpressionType.UnaryPlus:
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //    throw new NotImplementedException();
+        //}
 
-        object Evaluate(BinaryExpression exp)
-        {
-            object left = Evaluate(exp.Left);
-            object right = Evaluate(exp.Right);
+        //object Evaluate(BinaryExpression exp)
+        //{
+        //    object left = Evaluate(exp.Left);
+        //    object right = Evaluate(exp.Right);
 
-            // TODO: ?? 演算子とか演算子のオーバーロードとか。
-            if (exp.Conversion != null) throw new NotImplementedException();
-            if (exp.Method != null) throw new NotImplementedException();
+        //    // TODO: ?? 演算子とか演算子のオーバーロードとか。
+        //    if (exp.Conversion != null) throw new NotImplementedException();
+        //    if (exp.Method != null) throw new NotImplementedException();
 
-            if (exp.NodeType == ExpressionType.Coalesce)
-            {
-                throw new NotImplementedException();
-            }
-            else if (exp.NodeType == ExpressionType.Add)
-            {
-                int? niLeft = default(int?);
-                int? niRight = default(int?);
-                if ((niLeft = left as int?) != null && (niRight = right as int?) != null)
-                {
-                    return (int)niLeft + (int)niRight;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //    if (exp.NodeType == ExpressionType.Coalesce)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //    else if (exp.NodeType == ExpressionType.Add)
+        //    {
+        //        int? niLeft = default(int?);
+        //        int? niRight = default(int?);
+        //        if ((niLeft = left as int?) != null && (niRight = right as int?) != null)
+        //        {
+        //            return (int)niLeft + (int)niRight;
+        //        }
+        //        else
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
-        object Evaluate(MemberExpression exp)
-        {
-            var fieldInfo = default(FieldInfo);
-            var propertyInfo = default(PropertyInfo);
-            if ((fieldInfo = exp.Member as FieldInfo) != null)
-            {
-                throw new NotImplementedException();
-            }
-            else if ((propertyInfo = exp.Member as PropertyInfo) != null)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //object Evaluate(MemberExpression exp)
+        //{
+        //    var fieldInfo = default(FieldInfo);
+        //    var propertyInfo = default(PropertyInfo);
+        //    if ((fieldInfo = exp.Member as FieldInfo) != null)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //    else if ((propertyInfo = exp.Member as PropertyInfo) != null)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //    else
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
 
         public ILProcessor Direct
