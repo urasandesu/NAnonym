@@ -253,6 +253,8 @@ Parameter[1] = IntPtr method
         {
             try
             {
+                var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
+                scope.Bind(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
@@ -274,16 +276,14 @@ Parameter[1] = IntPtr method
         {
             try
             {
-                var arguments = ((NewAppDomainTesterParameter1)Parameter).Arguments;
-                // だめだ、これじゃ変数名が引き当てられない！
-                // TODO: Invoke 時じゃなくて、Instance に入れ込むのがミソ。
-                //ScopeAccessor.Set(Instance, arguments);   // みたいなイメージで。
+                var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
+                scope.Bind(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
             catch (Exception e)
             {
-                Assert.AreEqual("{ Key = 1, Value = aiueo }", e.InnerException.Message);
+                Assert.AreEqual("[1, aiueo]", e.InnerException.Message);
             }
         }
     }

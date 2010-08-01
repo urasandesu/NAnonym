@@ -27,7 +27,7 @@ namespace Test.Urasandesu.NAnonym.DI
             return class1;
         }
 
-        private string NewPrint(string value)
+        string NewPrint(string value)
         {
             return "Modified prefix at Class1.Print" + new Class2().Print(value) + "Modified suffix at Class1.Print";
         }

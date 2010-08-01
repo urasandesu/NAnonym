@@ -52,8 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymouslyableTest.cs" />
+    <Compile Include="CREUtilities\ExpressiveILManipulatorTest.cs" />
     <Compile Include="CREUtilities\ExpressiveILProcessorTest.cs" />
     <Compile Include="CREUtilities\MixinTest.cs" />
+    <Compile Include="CREUtilities\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtilTest.cs" />
     <Compile Include="DI\GlobalClassTest.cs" />

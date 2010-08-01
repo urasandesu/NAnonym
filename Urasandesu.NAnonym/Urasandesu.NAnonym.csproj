@@ -50,11 +50,74 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
+    <Compile Include="CREUtilities\ExpressiveMethodBodyGenerator.cs" />
+    <Compile Include="CREUtilities\IAssemblyDeclaration.cs" />
+    <Compile Include="CREUtilities\IAssemblyGenerator.cs" />
+    <Compile Include="CREUtilities\IConstructorDeclaration.cs" />
+    <Compile Include="CREUtilities\IConstructorGenerator.cs" />
+    <Compile Include="CREUtilities\IDirectiveDeclaration.cs" />
+    <Compile Include="CREUtilities\IDirectiveGenerator.cs" />
+    <Compile Include="CREUtilities\IEventDeclaration.cs" />
+    <Compile Include="CREUtilities\IEventGenerator.cs" />
+    <Compile Include="CREUtilities\IFieldDeclaration.cs" />
+    <Compile Include="CREUtilities\IFieldGenerator.cs" />
+    <Compile Include="CREUtilities\IILOperator.cs" />
+    <Compile Include="CREUtilities\ILabelDeclaration.cs" />
+    <Compile Include="CREUtilities\ILabelGenerator.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRILOperatorImpl.cs" />
+    <Compile Include="CREUtilities\Expressible.cs" />
+    <Compile Include="CREUtilities\ExpressiveILManipulator.cs" />
     <Compile Include="CREUtilities\ExpressiveType.cs" />
     <Compile Include="CREUtilities\ExpressiveILProcessor.cs" />
+    <Compile Include="CREUtilities\ILocalDeclaration.cs" />
+    <Compile Include="CREUtilities\ILocalGenerator.cs" />
+    <Compile Include="CREUtilities\ILOperator.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCILOperatorImpl.cs" />
+    <Compile Include="CREUtilities\IMemberDeclaration.cs" />
+    <Compile Include="CREUtilities\IMemberGenerator.cs" />
+    <Compile Include="CREUtilities\IMethodBaseDeclaration.cs" />
+    <Compile Include="CREUtilities\IMethodBaseGenerator.cs" />
+    <Compile Include="CREUtilities\IMethodBodyDeclaration.cs" />
+    <Compile Include="CREUtilities\IMethodBodyGenerator.cs" />
+    <Compile Include="CREUtilities\IMethodDeclaration.cs" />
+    <Compile Include="CREUtilities\IMethodGenerator.cs" />
+    <Compile Include="CREUtilities\IModuleDeclaration.cs" />
+    <Compile Include="CREUtilities\IModuleGenerator.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCFieldGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCLocalGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMethodBaseDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMethodBodyDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMethodBodyGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMethodDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMethodGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRConstructorGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRConstructorDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRMemberDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCMemberDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCParameterGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCParameterDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCTypeGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCTypeDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRMethodBodyDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRMethodBodyGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRTypeDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRTypeGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\IParameterDeclaration.cs" />
+    <Compile Include="CREUtilities\IParameterGenerator.cs" />
+    <Compile Include="CREUtilities\ITypeDeclaration.cs" />
+    <Compile Include="CREUtilities\ITypeGenerator.cs" />
     <Compile Include="CREUtilities\Mixin.cs" />
+    <Compile Include="CREUtilities\ImplicitConversions\OpCode\Mono\Cecil\Cil\OpCode.cs" />
+    <Compile Include="CREUtilities\Mixin\Mixin.cs" />
+    <Compile Include="CREUtilities\Mixin\Mono\Cecil\TypeDefinition\Mixin.cs" />
+    <Compile Include="CREUtilities\Mixin\System\Type\Mixin.cs" />
+    <Compile Include="CREUtilities\OpCodes.cs" />
+    <Compile Include="CREUtilities\ImplicitConversions\OpCode\System\Reflection\Emit\OpCode.cs" />
+    <Compile Include="CREUtilities\TotableScope.cs" />
     <Compile Include="CREUtilities\TypeDefinitionMixin.cs" />
     <Compile Include="CREUtilities\TypeMixin.cs" />
+    <Compile Include="CREUtilities\TypeSaveable.cs" />
     <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtil.cs" />
     <Compile Include="DI\GlobalClassBase.cs" />
@@ -74,6 +137,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Required.cs" />
     <Compile Include="StringUtility.cs" />
   </ItemGroup>
   <ItemGroup>

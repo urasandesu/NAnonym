@@ -97,7 +97,7 @@ namespace Test.Urasandesu.NAnonym.DI
             {
             }
 
-            private A<T>[] field1 = null;
+            A<T>[] field1 = null;
         }
     }
 }

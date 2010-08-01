@@ -9,9 +9,9 @@ namespace Urasandesu.NAnonym.DI
 {
     public sealed class LocalClass<TBase> where TBase : class
     {
-        private readonly Type tbaseType = typeof(TBase);
-        private readonly HashSet<MethodInfo> propertySet;
-        private readonly HashSet<MethodInfo> methodSet;
+        readonly Type tbaseType = typeof(TBase);
+        readonly HashSet<MethodInfo> propertySet;
+        readonly HashSet<MethodInfo> methodSet;
 
         public void Load()
         {
@@ -26,7 +26,7 @@ namespace Urasandesu.NAnonym.DI
             // どちらにしろ、最初にモック作るべきっぽい。
         }
 
-        private static IEnumerable<MethodInfo> GetVirtualProperties(Type type)
+        static IEnumerable<MethodInfo> GetVirtualProperties(Type type)
         {
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var property in properties)
@@ -45,7 +45,7 @@ namespace Urasandesu.NAnonym.DI
             }
         }
 
-        private static IEnumerable<MethodInfo> GetVirtualMethods(Type type)
+        static IEnumerable<MethodInfo> GetVirtualMethods(Type type)
         {
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var method in methods)

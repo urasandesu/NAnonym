@@ -67,8 +67,8 @@ namespace Test.Urasandesu.NAnonym.Threading
 
         sealed class MonitorCounter
         {
-            private object syncObject = new object();
-            private int value;
+            object syncObject = new object();
+            int value;
             public int Value { get { return value; } }
 
             public void Increace()
@@ -86,8 +86,8 @@ namespace Test.Urasandesu.NAnonym.Threading
 
         sealed class SpinlockCounter
         {
-            private SpinLock spinLock;
-            private int value;
+            SpinLock spinLock;
+            int value;
             public int Value { get { return value; } }
 
             public void Increace()
@@ -114,7 +114,7 @@ namespace Test.Urasandesu.NAnonym.Threading
 
         sealed class CASCounter
         {
-            private int value;
+            int value;
             public int Value { get { return value; } }
 
             public void Increace()
@@ -247,8 +247,8 @@ namespace Test.Urasandesu.NAnonym.Threading
 
         public class SetTester<T>
         {
-            private SetTestable<T> target;
-            private static readonly Stopwatch stopwatch = new Stopwatch();
+            SetTestable<T> target;
+            static readonly Stopwatch stopwatch = new Stopwatch();
             public SetTester(SetTestable<T> target)
             {
                 this.target = target;
@@ -293,7 +293,7 @@ namespace Test.Urasandesu.NAnonym.Threading
 
     class TASLock : Lock
     {
-        private int state;
+        int state;
 
         #region Lock Member
 
@@ -312,7 +312,7 @@ namespace Test.Urasandesu.NAnonym.Threading
 
     class TTASLock : Lock
     {
-        private int state;
+        int state;
 
         #region Lock Member
 
@@ -359,9 +359,9 @@ namespace Test.Urasandesu.NAnonym.Threading
             }
         }
 
-        private int state;
-        private const int MinDelay = 2;
-        private const int MaxDelay = 10;
+        int state;
+        const int MinDelay = 2;
+        const int MaxDelay = 10;
 
         #region Lock Member
 
@@ -423,7 +423,7 @@ namespace Test.Urasandesu.NAnonym.Threading
 
     public class CoarseList<T>
     {
-        private class Node
+        class Node
         {
             public Node(int key)
             {
@@ -435,8 +435,8 @@ namespace Test.Urasandesu.NAnonym.Threading
             public Node next;
         }
 
-        private Node head;
-        private object @lock = new object();
+        Node head;
+        object @lock = new object();
 
         public CoarseList()
         {

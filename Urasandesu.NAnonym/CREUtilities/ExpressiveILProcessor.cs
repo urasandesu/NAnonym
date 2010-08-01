@@ -16,249 +16,8 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    //public sealed class ExpressiveEvaluable
-    //{
-    //    readonly MethodInfo AddlocInfo;
-    //    readonly MethodInfo StlocInfo;
-
-    //    public ExpressiveEvaluable()
-    //    {
-    //        AddlocInfo = ExpressiveType.GetMethodInfo<object>(() => Addloc).GetGenericMethodDefinition();
-    //        StlocInfo = ExpressiveType.GetMethodInfo<object, object>(() => Stloc).GetGenericMethodDefinition();
-    //    }
-
-    //    public bool IsAddloc(MethodInfo target)
-    //    {
-    //        if (target.Name == AddlocInfo.Name && target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-    //        {
-    //            return true;
-    //        }
-    //        else
-    //        {
-    //            return false;
-    //        }
-    //    }
-
-    //    public bool IsStloc(MethodInfo target)
-    //    {
-    //        if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-    //        {
-    //            return true;
-    //        }
-    //        else
-    //        {
-    //            return false;
-    //        }
-    //    }
-
-    //    public void Addloc<T>(T variable)
-    //    {
-    //    }
-
-    //    public T Stloc<T>(T variable)
-    //    {
-    //        return default(T);
-    //    }
-    //}
-
-    public sealed class Expressible
-    {
-        readonly MethodInfo AddlocInfo;
-        readonly MethodInfo StlocInfo;
-        readonly MethodInfo DupAddOneInfo;
-        readonly MethodInfo AddOneDupInfo;
-        readonly MethodInfo SubOneDupInfo;
-        readonly MethodInfo ReturnInfo;
-
-        public Expressible()
-        {
-            AddlocInfo = ExpressiveType.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
-            StlocInfo = ExpressiveType.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
-            DupAddOneInfo = ExpressiveType.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
-            AddOneDupInfo = ExpressiveType.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
-            SubOneDupInfo = ExpressiveType.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
-            ReturnInfo = ExpressiveType.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
-        }
-
-        public bool IsAddloc(MethodInfo target)
-        {
-            if (target.Name == AddlocInfo.Name && target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsStloc(MethodInfo target)
-        {
-            if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsDupAddOne(MethodInfo target)
-        {
-            if (target.Name == DupAddOneInfo.Name && target == DupAddOneInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsAddOneDup(MethodInfo target)
-        {
-            if (target.Name == AddOneDupInfo.Name && target == AddOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsSubOneDup(MethodInfo target)
-        {
-            if (target.Name == SubOneDupInfo.Name && target == SubOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsReturn(MethodInfo target)
-        {
-            if (target.Name == ReturnInfo.Name && target == ReturnInfo.MakeGenericMethod(target.GetGenericArguments()))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public void Addloc<T>(T variable, T value)
-        {
-        }
-
-        public T Stloc<T>(T variable, T value)
-        {
-            return default(T);
-        }
-
-        public T DupAddOne<T>(T variable)
-        {
-            return default(T);
-        }
-
-        public T AddOneDup<T>(T variable)
-        {
-            return default(T);
-        }
-
-        public T SubOneDup<T>(T variable)
-        {
-            return default(T);
-        }
-
-        public void Return<T>(T variable)
-        {
-        }
-    }
-
-
-
-    public sealed class SharedScope
-    {
-        readonly Dictionary<FieldInfo, object> variables;
-
-        public SharedScope()
-        {
-            variables = new Dictionary<FieldInfo, object>();
-        }
-
-
-        public void Add<T>(Expression<Func<T>> exp, T value)
-        {
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
-            if (!variables.ContainsKey(fieldInfo))
-            {
-                variables.Add(fieldInfo, value);
-            }
-        }
-    }
-
-    public sealed class SharedScope__
-    {
-        readonly MethodBase method;
-        readonly Dictionary<FieldInfo, object> variables;
-
-        public SharedScope__(MethodBase method)
-        {
-            // TODO: MethodBase だと型作り直した場合に引き当てられなくなる。文字列とかの値系キーに変換したほうがいい。
-            this.method = method;
-            variables = new Dictionary<FieldInfo, object>();
-        }
-
-
-        public void Add<T>(Expression<Func<T>> exp, T value)
-        {
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
-            if (!variables.ContainsKey(fieldInfo))
-            {
-                variables.Add(fieldInfo, value);
-            }
-        }
-    }
-
-    public sealed class SharedScope_
-    {
-        // 最初の Add の時に型が合えばそれでいいのか。
-        //public class Hoge<T>
-        //{
-        //    public Dictionary<Expression<Func<T>>, T> Variables;
-        //    public Dictionary<MethodBase, Dictionary<Expression<Func<T>>, T>> MethodVariables;
-        //}
-
-        Dictionary<MethodBase, Dictionary<FieldInfo, object>> variables = new Dictionary<MethodBase, Dictionary<FieldInfo, object>>();
-
-        public void Add<T>(MethodBase method, Expression<Func<T>> exp, T value) 
-        {
-            if (!variables.ContainsKey(method))
-            {
-                variables.Add(method, new Dictionary<FieldInfo, object>());
-            }
-
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Body).Member;
-            if (!variables[method].ContainsKey(fieldInfo))
-            {
-                variables[method].Add(fieldInfo, value);
-            }
-        }
-
-        public void Add<T>(Expression<Func<T>> exp, T value)
-        {
-
-            throw new NotImplementedException();
-        }
-    }
-
     // TODO: IDisposable にして、using 内で利用するようにしたほうがそれっぽい。
+    [Obsolete]
     public sealed class ExpressiveILProcessor
     {
         readonly MethodDefinition methodDef;
@@ -295,35 +54,6 @@ namespace Urasandesu.NAnonym.CREUtilities
                     },
                     null);
         }
-
-        // いらね。
-        //// MEMO: このパターンが出てきたら、value に変えちゃうよ、って感じで。
-        //public void Eval<T>(Expression<Func<Expressible, T>> exp, T value)
-        //{
-        //    throw new NotImplementedException();
-        //    // TODO: 別の MethodDefinition に Instruction 作成していって、比較に使えば良い。
-        //    // TODO: Seek するためのポインタが必要。
-        //}
-
-        //public void Eval(Expression<Action<Expressible>> exp, object value)
-        //{
-        //    throw new NotImplementedException();
-        //    // TODO: 別の MethodDefinition に Instruction 作成していって、比較に使えば良い。
-        //    // TODO: Seek するためのポインタが必要。
-        //}
-
-        //void Eval(ReadOnlyCollection<Expression> exps)
-        //{
-        //    foreach (var exp in exps)
-        //    {
-        //        Eval(exp);
-        //    }
-        //}
-
-        //void Eval(Expression exp)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public void Emit(Expression<Action<Expressible>> exp)
         {
@@ -693,15 +423,22 @@ namespace Urasandesu.NAnonym.CREUtilities
                 }
                 else if ((constantExpression = exp.Expression as ConstantExpression) != null)
                 {
-                    // MEMO: Field にアクセスすれば取れそうなんだけど？？？
-                    Direct.Emit(MC.Cil.OpCodes.Ldfld, methodDef.Module.Import(fieldInfo));
+                    //string fieldName = TotableScope.MakeFieldName(methodDef, fieldInfo.Name);
+                    //var fieldDef = new FieldDefinition(fieldName, MC.FieldAttributes.Public | MC.FieldAttributes.SpecialName, methodDef.Module.Import(fieldInfo.FieldType));
+                    //methodDef.DeclaringType.Fields.Add(fieldDef);
+                    //Direct.Emit(MC.Cil.OpCodes.Ldarg_0);
+                    //Direct.Emit(MC.Cil.OpCodes.Ldfld, fieldDef);
+
+                    //if (constantExpression.Type.IsValueType)
+                    //{
+                    //    constantField = constantExpression.Value.GetType().GetField(fieldInfo.Name);
+                    //    Emit(Expression.Constant(constantField.GetValue(constantExpression.Value)));
+                    //}
+                    //else
+                    //{
+
+                    //}
                 }
-                //else if ((constantExpression = exp.Expression as ConstantExpression) != null &&
-                //    (constantField = constantExpression.Value.GetType().GetField(fieldInfo.Name)) != null)
-                //{
-                //    //Direct.Emit(MC.Cil.OpCodes.Ldfld, methodDef.Module.Import(constantField));
-                //    Emit(Expression.Constant(constantField.GetValue(constantExpression.Value)));
-                //}
                 else
                 {
                     Emit(exp.Expression);

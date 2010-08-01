@@ -12,8 +12,8 @@ namespace Urasandesu.NAnonym.Linq
         public static readonly Func<T, int> NullableGetHashCode = ToNullableGetHashCode(DefaultGetHashCode);
         public static readonly Func<T, T, bool> NullableEquals = ToNullableEquals(DefaultEquals);
 
-        private Func<T, int> getHashCode;
-        private Func<T, T, bool> equals;
+        Func<T, int> getHashCode;
+        Func<T, T, bool> equals;
 
 
         public DelegateEqualityComparer()
@@ -65,7 +65,7 @@ namespace Urasandesu.NAnonym.Linq
     public abstract class EqualityComparer<T1, T2> : IEqualityComparer<T1, T2>
     {
         // boxing 回避したいお（´・ω・｀）
-        private class DefaultEqualityComparer : EqualityComparer<T1, T2>
+        class DefaultEqualityComparer : EqualityComparer<T1, T2>
         {
             public override bool Equals(T1 x, T2 y)
             {
@@ -97,8 +97,8 @@ namespace Urasandesu.NAnonym.Linq
         public static readonly Func<T1, T2, int> DefaultGetHashCode = (x, y) => EqualityComparer<T1, T2>.Default.GetHashCode(x, y);
         public static readonly Func<T1, T2, bool> DefaultEquals = (x, y) => EqualityComparer<T1, T2>.Default.Equals(x, y);
 
-        private Func<T1, T2, int> getHashCode;
-        private Func<T1, T2, bool> equals;
+        Func<T1, T2, int> getHashCode;
+        Func<T1, T2, bool> equals;
 
 
         public DelegateEqualityComparer()

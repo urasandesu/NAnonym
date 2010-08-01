@@ -23,6 +23,7 @@ using Test.Urasandesu.NAnonym.DI;
 
 namespace Test.Urasandesu.NAnonym.CREUtilities
 {
+    [Obsolete]
     [TestFixture]
     public class ExpressiveILProcessorTest
     {
@@ -42,9 +43,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action1Def2.Name = "Action12";
                 methodTestClassDef.Methods.Add(action1Def2);
                 {
-                    var egen = new ExpressiveILProcessor(action1Def2);
-                    egen.Emit(_ => ThrowException("Hello, World!!"));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret); // TODO: 後で移動。
+                    var ilb = new ExpressiveILManipulator(action1Def2);
+                    ilb.Eval(_ => ThrowException("Hello, World!!"));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret); // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -78,11 +79,11 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef2.Name = "Action2LocalVariable2";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef2);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef2);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef2);
                     int i = default(int);
-                    egen.Emit(_ => _.Addloc(i, 100));
-                    egen.Emit(_ => ThrowException("i.ToString() = {0}", i.ToString()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(i, 100));
+                    ilb.Eval(_ => ThrowException("i.ToString() = {0}", i.ToString()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -116,11 +117,11 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef3.Name = "Action2LocalVariable3";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef3);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef3);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef3);
                     string s = default(string);
-                    egen.Emit(_ => _.Addloc(s, new string('a', 10)));
-                    egen.Emit(_ => ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(s, new string('a', 10)));
+                    ilb.Eval(_ => ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -154,11 +155,11 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef4.Name = "Action2LocalVariable4";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef4);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef4);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef4);
                     string s = new string('a', 10);
-                    egen.Emit(_ => _.Addloc(s, new string('a', 10)));
-                    egen.Emit(_ => ThrowException("s.ToString() = {0}", s.ToUpper()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(s, new string('a', 10)));
+                    ilb.Eval(_ => ThrowException("s.ToString() = {0}", s.ToUpper()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -192,9 +193,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef5.Name = "Action2LocalVariable5";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef5);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef5);
-                    egen.Emit(_ => ThrowException(SR.Emit.OpCodes.Brtrue));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef5);
+                    ilb.Eval(_ => ThrowException(SR.Emit.OpCodes.Brtrue));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -228,19 +229,19 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef6.Name = "Action2LocalVariable6";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef6);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef6);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef6);
                     var stringBuilder = default(StringBuilder);
                     int one = default(int);
-                    egen.Emit(_ => _.Addloc(one, 1));
-                    egen.Emit(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("1 + 1 = {0}", one + 1)));
+                    ilb.Eval(_ => _.Addloc(one, 1));
+                    ilb.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("1 + 1 = {0}", one + 1)));
                     int i = default(int);
-                    egen.Emit(_ => _.Addloc(i, default(int)));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", _.AddOneDup(i))));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", _.DupAddOne(i))));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", _.SubOneDup(i))));
-                    egen.Emit(_ => ThrowException(stringBuilder.ToString()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(i, default(int)));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", _.AddOneDup(i))));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", _.DupAddOne(i))));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", _.SubOneDup(i))));
+                    ilb.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -274,17 +275,17 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef7.Name = "Action2LocalVariable7";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef7);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef7);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef7);
                     var dynamicMethod = default(DynamicMethod);
-                    egen.Emit(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
+                    ilb.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
                     var stringBuilder = default(StringBuilder);
-                    egen.Emit(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Name = {0}", dynamicMethod.Name)));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
-                    egen.Emit(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter[0] Type = {0}", dynamicMethod.GetParameters()[0])));
-                    egen.Emit(_ => ThrowException(stringBuilder.ToString()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Name = {0}", dynamicMethod.Name)));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter[0] Type = {0}", dynamicMethod.GetParameters()[0])));
+                    ilb.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -318,9 +319,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 func1Parameters2.Name = "Func1Parameters2";
                 methodTestClassDef.Methods.Add(func1Parameters2);
                 {
-                    var egen = new ExpressiveILProcessor(func1Parameters2);
+                    var ilb = new ExpressiveILManipulator(func1Parameters2);
                     int value = default(int);
-                    egen.Emit(_ => _.Return(value + value * value));
+                    ilb.Eval(_ => _.Return(value + value * value));
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -354,11 +355,11 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 func1Parameters3.Name = "Func1Parameters3";
                 methodTestClassDef.Methods.Add(func1Parameters3);
                 {
-                    var egen = new ExpressiveILProcessor(func1Parameters3);
+                    var ilb = new ExpressiveILManipulator(func1Parameters3);
                     int value = default(int);
                     double d = default(double);
-                    egen.Emit(_ => _.Addloc(d, 0d));
-                    egen.Emit(_ => _.Return(value + value * (int)d));
+                    ilb.Eval(_ => _.Addloc(d, 0d));
+                    ilb.Eval(_ => _.Return(value + value * (int)d));
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -392,9 +393,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef8.Name = "Action2LocalVariable8";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef8);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef8);
-                    egen.Emit(_ => ThrowException("GetValue(10) = {0}", GetValue(10).ToString()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef8);
+                    ilb.Eval(_ => ThrowException("GetValue(10) = {0}", GetValue(10).ToString()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -428,9 +429,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef9.Name = "Action2LocalVariable9";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef9);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef9);
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef9);
                     var ctor3 = default(ConstructorInfo);
-                    egen.Emit(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                    ilb.Eval(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
                                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                         null,
                                                         new Type[] 
@@ -439,16 +440,16 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                                                             typeof(IntPtr) 
                                                         }, null)));
                     var stringBuilder = default(StringBuilder);
-                    egen.Emit(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    egen.Emit(_ => stringBuilder.AppendFormat("Name = {0}\r\n", ctor3.Name));
-                    egen.Emit(_ => stringBuilder.AppendFormat("IsPublic = {0}\r\n", ctor3.IsPublic));
+                    ilb.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("Name = {0}\r\n", ctor3.Name));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("IsPublic = {0}\r\n", ctor3.IsPublic));
                     var parameterInfos = default(ParameterInfo[]);
-                    egen.Emit(_ => _.Addloc(parameterInfos, ctor3.GetParameters()));
-                    egen.Emit(_ => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
-                    egen.Emit(_ => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
-                    egen.Emit(_ => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
-                    egen.Emit(_ => ThrowException(stringBuilder.ToString()));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    ilb.Eval(_ => _.Addloc(parameterInfos, ctor3.GetParameters()));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
+                    ilb.Eval(_ => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
+                    ilb.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -480,22 +481,26 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
                 action2LocalVariableDef10.Name = "Action2LocalVariable10";
+                int i = 100;
+                double d = 100d;
                 methodTestClassDef.Methods.Add(action2LocalVariableDef10);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef10);
-                    int i = 100;
-                    double d = 100d;
-                    egen.Emit(_ => ThrowException(i + (int)d));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef10);
+                    ilb.Eval(_ => ThrowException(i + (int)d));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
+                var scope = action2LocalVariableDef10.CreateTotableScope();
+                scope.Define(() => i, i);
+                scope.Define(() => d, d);
+                return new NewAppDomainTesterParameter1(
                             Path.Combine(newDomain.BaseDirectory, tempFileName),
                             methodTestClassDef.FullName,
                             action2LocalVariableDef10.Name,
-                            typeof(Action2LocalVariable10Tester)
+                            typeof(Action2LocalVariable10Tester),
+                            scope
                        );
             }));
         }
@@ -518,230 +523,107 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
                 action2LocalVariableDef11.Name = "Action2LocalVariable11";
+                var a = new KeyValuePair<int, string>(1, "aiueo");
                 methodTestClassDef.Methods.Add(action2LocalVariableDef11);
                 {
-                    var egen = new ExpressiveILProcessor(action2LocalVariableDef11);
-                    var a = new { Key = 1, Value = "aiueo" };
-                    egen.Emit(_ => ThrowException(a));
-                    egen.Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
-
-                    var scope = new SharedScope();
-                    scope.Add(() => a, a);
-                    // egen.Scope.Add(() => a, a);  // みたいなほうがいいのか？
-                    // でも、このあと ExpressiveILProcessor って IDisposable になるんだよね・・・。
-                    // using してる class のプロパティから取得した値を持ち運ぶって違和感あるよなー。
-                    /*
-                     * var scope = defalt(SharedScope);
-                     * using (var egen = new ExpressiveILProcessor(action2LocalVariableDef11))
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };     
-                     *      egen.Emit(_ => ThrowException(a));
-                     *      scope = egen.Scope;
-                     *      scope.Add(() => a, a);
-                     * }
-                     * 
-                     * methodTestClassDef.Module.Assembly.Write(tempFileName);
-                     * 
-                     * return new NewAppDomainTesterParameter(
-                     *             Path.Combine(newDomain.BaseDirectory, tempFileName),
-                     *             methodTestClassDef.FullName,
-                     *             action2LocalVariableDef11.Name,
-                     *             typeof(Action2LocalVariable11Tester), 
-                     *             scope                                        // ObjectDisposedException 起きそうじゃね？？
-                     *        );
-                     * 
-                     */
-
-
-
-
-                    // そうすると、SharedScope にもコンストラクタに MethodDefinition 渡すべきか。
-                    // 完全に分離しちゃった（汗） Mono.Cecil 版と System.Reflection 版はクラス名から変更したほうが良さげ。
-                    // → ExpressiveILProcessor と ExpressiveILGenerator 、みたいな。
-                    // SharedScope は ExpressiveILProcessor としかペアで使われないよ、ってのをどう表現するか・・・。
-                    // 普通なら ExpressiveILProcessor から生成するってのがありそうだが。
-                    // IDisposable 実装クラスでそういうのあるのかな？？
-                    // → ないね！
-                    // 
-
-                    /*
-                     * var scope = new SharedScope(action2LocalVariableDef11);
-                     * using (var egen = new ExpressiveILProcessor(action2LocalVariableDef11))
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };     
-                     *      egen.Emit(_ => ThrowException(a));
-                     *      scope.Add(() => a, a);
-                     * }
-                     * 
-                     * methodTestClassDef.Module.Assembly.Write(tempFileName);
-                     * 
-                     * return new NewAppDomainTesterParameter(
-                     *             Path.Combine(newDomain.BaseDirectory, tempFileName),
-                     *             methodTestClassDef.FullName,
-                     *             action2LocalVariableDef11.Name,
-                     *             typeof(Action2LocalVariable11Tester), 
-                     *             scope
-                     *        );
-                     */
-
-
-
-
-                    // ExpressiveILProcessor 自身が明示的に開放する必要があるリソースやアンマネージリソース使ってるわけじゃないから、
-                    // IDisposable 実装すること自体がおかしいって言えばおかしいのか・・・。
-                    // 行き詰った
-
-                    // そもそも using したいなー、って思ったのは void なメソッドの場合、
-                    //      egen.Direct.Emit(MC.Cil.OpCodes.Ret); 
-                    // が最後に必ず必要になるから、それを省略したかっただけ。
-                    // 
-                    // じゃあ、ここも独自構文で攻めるべき？
-                    /*
-                     * action2LocalVariableDef11.SetupExpressive(egen =>
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };  
-                     *      egen.Emit(_ => ThrowException(a));
-                     * });
-                     */
-
-                    // 結局 Scope はどう取り出すのだ？ out 引数で渡す？
-                    /*
-                     * var scope = default(SharedScope);
-                     * action2LocalVariableDef11
-                     *      .SetupExpressive(egen =>
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };  
-                     *      egen.Emit(_ => ThrowException(a));
-                     * }, 
-                     * out scope);
-                     */
-
-                    // 戻り値？
-                    /*
-                     * // Mono.Cecil の場合
-                     * var scope = action2LocalVariableDef11
-                     *      .UsingILProcessor(egen =>
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };  
-                     *      egen.Emit(_ => ThrowException(a));
-                     * });
-                     * 
-                     * // System.Reflection の場合
-                     * var scope = action2LocalVariableDef11
-                     *      .UsingILGenerator(egen =>
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };  
-                     *      egen.Emit(_ => ThrowException(a));
-                     * });
-                     * 
-                     * 
-                     */
-
-                    // 戻り値いいな。
-                    // 後は命名だけか。
-
-                    // これだと、SharedScope 生成するのはやっぱり ExpressiveILProcessor 自身になるね。
-                    /*
-                     * var egen = new ExpressiveILProcessor(action2LocalVariableDef11);
-                     * var a = new { Key = 1, Value = "aiueo" };
-                     * egen.Emit(_ => ThrowException(a));
-                     * egen.Direct.Emit(MC.Cil.OpCodes.Ret);
-                     * 
-                     * var scope = egen.Scope;  // 同じ AppDomain ならこれで O.K.
-                     * 
-                     * // 動的 Assembly の保存
-                     * …
-                     * 
-                     * // 動的 Assembly, Type の Load
-                     * …
-                     * 
-                     * // Load した Type からインスタンス生成
-                     * var instance = …
-                     * 
-                     * // Scope の設定
-                     * ScopeAccessor.Set(instance, scope);
-                     * 
-                     * // 呼び出し
-                     * var method = …
-                     * method.Invoke(instance, Arguments);
-                     * 
-                     */
-
-                    /*
-                     * // 同じ AppDomain なら Emit 中身の記述 Scope の取得を一気に可能。
-                     * // Method Body の構築
-                     * var scope = action2LocalVariableDef11
-                     *      .UsingILProcessor(egen =>
-                     * {
-                     *      var a = new { Key = 1, Value = "aiueo" };  
-                     *      egen.Emit(_ => ThrowException(a));
-                     * });
-                     * 
-                     * // 動的 Assembly の保存
-                     * …
-                     * 
-                     * // 動的 Assembly, Type の Load
-                     * …
-                     * 
-                     * // Load した Type からインスタンス生成
-                     * var instance = …
-                     * 
-                     * // Scope の設定
-                     * ScopeAccessor.Set(instance, scope);
-                     * 
-                     * // 呼び出し
-                     * var method = …
-                     * method.Invoke(instance, Arguments);
-                     * 
-                     */
-
-                    // 別の AppDomain というか、実行時に設定したい場合は？
-                    /*
-                     * var egen = new ExpressiveILProcessor(action2LocalVariableDef11);
-                     * var a = new { Key = 1, Value = "aiueo" };
-                     * egen.Emit(_ => ThrowException(a));
-                     * egen.Direct.Emit(MC.Cil.OpCodes.Ret);
-                     * 
-                     * 
-                     * // ↑と↓は別 AppDomain という想定！
-                     * 
-                     * 
-                     * 
-                     * // egen はもうないから…
-                     * // 動的 Assembly, Type の Load
-                     * …
-                     * 
-                     * // Load した Type からインスタンス生成
-                     * var instance = …
-                     * 
-                     * // MethodInfo の取得
-                     * var method = …
-                     * 
-                     * // Scope の再設定
-                     * var scope = new SharedScope(method); // ローカル変数のチェックができるようになる。
-                     * scope.Set(() => a, new { Key = 2, Value = "kakikukeko" });
-                     * // scope.Set(() => b, new { Hoge = 1024M, Piyo = new Uri("http://www.google.com") });    // 変なのを入れたらここで Exception スローできるし
-                     * 
-                     * ScopeAccessor.Set(instance, scope);  // SharedScope の static メソッドでいいんじゃね？
-                     * 
-                     * // 呼び出し
-                     * method.Invoke(instance, Arguments);
-                     * 
-                     */
-
-                    // よし、いけそう♪
-
+                    var ilb = new ExpressiveILManipulator(action2LocalVariableDef11);
+                    ilb.Eval(_ => ThrowException(a));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);    // TODO: 後で移動。
                 }
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
+                // 書き込んだ時点で参照が変わってない？
+                // 同期は取られてるはず…か。
+                var scope = action2LocalVariableDef11.CreateTotableScope();
+                scope.Define(() => a, a);
+                return new NewAppDomainTesterParameter1(
                             Path.Combine(newDomain.BaseDirectory, tempFileName),
                             methodTestClassDef.FullName,
                             action2LocalVariableDef11.Name,
-                            typeof(Action2LocalVariable11Tester)
+                            typeof(Action2LocalVariable11Tester), 
+                            scope
                        );
             }));
+        }
+
+
+
+
+        [Test]
+        public void EmitTest14()
+        {
+            // TODO: 同一 AppDomain の場合は SharedScope の明示的な作成は必要ないはず。
+            //       AssemblyBuilder からは難しいが、DynamicMethod からならがっつり短くできそう。
+            UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyNameDef =
+                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef =
+                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var emitTest14Def =
+                    new TypeDefinition(
+                        tempAssemblyNameDef.Name,
+                        "EmitTest14",
+                        MC.TypeAttributes.AutoClass |
+                        MC.TypeAttributes.AnsiClass |
+                        MC.TypeAttributes.BeforeFieldInit |
+                        MC.TypeAttributes.Public,
+                        tempAssemblyDef.MainModule.Import(typeof(object)));
+                tempAssemblyDef.MainModule.Types.Add(emitTest14Def);
+
+                var ctorDef =
+                    new MethodDefinition(
+                        ".ctor",
+                        MC.MethodAttributes.Public |
+                        MC.MethodAttributes.HideBySig |
+                        MC.MethodAttributes.SpecialName |
+                        MC.MethodAttributes.RTSpecialName,
+                        tempAssemblyDef.MainModule.Import(typeof(void)));
+                emitTest14Def.Methods.Add(ctorDef);
+                {
+                    var ilb = new ExpressiveILManipulator(ctorDef);
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ldarg_0);
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Call, tempAssemblyDef.MainModule.Import(typeof(object).GetConstructor(new Type[] { })));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);
+                }
+
+                var action2SameDomain1Def =
+                    new MethodDefinition(
+                        "Action2SameDomain1",
+                        MC.MethodAttributes.Public |
+                        MC.MethodAttributes.HideBySig,
+                        tempAssemblyDef.MainModule.Import(typeof(void)));
+                emitTest14Def.Methods.Add(action2SameDomain1Def);
+                int i = 10;
+                double d = 10.0d;
+                {
+                    var ilb = new ExpressiveILManipulator(action2SameDomain1Def);
+                    ilb.Eval(_ => ThrowException(i * (int)d));
+                    ilb._Direct.Emit(MC.Cil.OpCodes.Ret);
+                }
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+                var emitTest14 = assembly.GetType(emitTest14Def.FullName);
+                var instance = Activator.CreateInstance(emitTest14);
+                var action2SameDomain1 = emitTest14.GetMethod(action2SameDomain1Def.Name);
+                var scope = action2SameDomain1Def.CreateTotableScope();
+                scope.Define(() => i, i);
+                scope.Define(() => d, d);
+                scope.Bind(instance);
+                try
+                {
+                    action2SameDomain1.Invoke(instance, null);
+                    Assert.Fail();
+                }
+                catch (Exception e)
+                {
+                    Assert.AreEqual("100", e.InnerException.Message);
+                }
+            });
         }
 
 

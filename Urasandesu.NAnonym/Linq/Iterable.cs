@@ -18,11 +18,11 @@ namespace Urasandesu.NAnonym.Linq
             }
         }
 
-        public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> proc)
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Predicate<TSource> predicate)
         {
             foreach (var item in source)
             {
-                if (!proc(item)) 
+                if (!predicate(item)) 
                     break;
             }
         }
@@ -434,6 +434,18 @@ namespace Urasandesu.NAnonym.Linq
         }
 
 
+        public static IList<TDestination> TransformEnumerateOnly<TSource, TDestination>(
+            this IList<TSource> source, Func<TSource, TDestination> selector)
+        {
+            return new TransformerEnumerateOnly<TSource, TDestination>(source, selector);
+        }
+
+        public static IList<TDestination> Transform<TSource, TDestination>(
+            this IList<TSource> source, Func<TSource, TDestination> selector, Func<TDestination, TSource> reSelector)
+        {
+            return new Transformer<TSource, TDestination>(source, selector, reSelector);
+        }
+
         public static IEqualityComparer<T> CreateEqualityComparer<T>(T obj)
         {
             return new DelegateEqualityComparer<T>();
@@ -535,6 +547,7 @@ namespace Urasandesu.NAnonym.Linq
         }
 
 
+        
 
     }
 
@@ -545,63 +558,177 @@ namespace Urasandesu.NAnonym.Linq
         int GetHashCode(T1 x, T2 y);
     }
 
-    public static class Required
+
+    public class TransformerEnumerateOnly<TSource, TDestination> : IList<TDestination>
     {
-        public static T NotDefault<T>(T value, Expression<Func<T>> paramNameProvider)
+        protected readonly IList<TSource> source;
+        protected readonly Func<TSource, TDestination> selector;
+        public TransformerEnumerateOnly(IList<TSource> source, Func<TSource, TDestination> selector)
         {
-            if (EqualityComparer<T>.Default.Equals(value, default(T)))
-            {
-                throw new ArgumentException("Value cannot be default.", GetParamName(paramNameProvider));
-            }
-            return value;
+            Required.NotDefault(source, () => source);
+            Required.NotDefault(selector, () => selector);
+
+            this.source = source;
+            this.selector = selector;
         }
 
-        public static T Default<T>(T value, Expression<Func<T>> paramNameProvider)
+        #region IList<TDestination> メンバ
+
+        public virtual int IndexOf(TDestination item)
         {
-            if (!EqualityComparer<T>.Default.Equals(value, default(T)))
-            {
-                throw new ArgumentException("Value must be default.", GetParamName(paramNameProvider));
-            }
-            return value;
+            throw new NotSupportedException();
         }
 
-        public static T JustOnce<T>(T value, ref T destination, Expression<Func<T>> paramNameProvider)
+        public virtual void Insert(int index, TDestination item)
         {
-            if (EqualityComparer<T>.Default.Equals(value, default(T)))
-            {
-                throw new ArgumentException(
-                    "Value must be meaningful because destination can set just once.", GetParamName(paramNameProvider));
-            }
-            else if (!EqualityComparer<T>.Default.Equals(destination, default(T)))
-            {
-                throw new ArgumentException("Destination has already set.", GetParamName(paramNameProvider));
-            }
-            destination = value;
-            return destination;
+            throw new NotSupportedException();
         }
 
-        public static int Identical<T>(
-            int value, IEnumerable<T> source, Func<IEnumerable<T>, int> identifier, Expression<Func<int>> paramNameProvider)
+        public virtual void RemoveAt(int index)
         {
-            if (value != identifier(source))
-            {
-                throw new ArgumentException("Value must be identical.", GetParamName(paramNameProvider));
-            }
-            return value;
+            throw new NotSupportedException();
         }
 
-        public static T Assert<T>(T value, Predicate<T> predicate, Expression<Func<T>> paramNameProvider)
+        public virtual TDestination this[int index]
         {
-            if (!predicate(value))
+            get
             {
-                throw new ArgumentException("Value is different from predicate.", GetParamName(paramNameProvider));
+                return selector(source[index]);
             }
-            return value;
+            set
+            {
+                throw new NotSupportedException();
+            }
         }
 
-        private static string GetParamName(LambdaExpression paramNameProvider)
+        #endregion
+
+        #region ICollection<TDestination> メンバ
+
+        public virtual void Add(TDestination item)
         {
-            return ((MemberExpression)paramNameProvider.Body).Member.Name;
+            throw new NotSupportedException();
+        }
+
+        public virtual void Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual bool Contains(TDestination item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void CopyTo(TDestination[] array, int arrayIndex)
+        {
+            throw new NotSupportedException();
+        }
+
+        public int Count
+        {
+            get { return source.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return source.IsReadOnly; }
+        }
+
+        public virtual bool Remove(TDestination item)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+
+        #region IEnumerable<TDestination> メンバ
+
+        public IEnumerator<TDestination> GetEnumerator()
+        {
+            return source.Select(selector).GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable メンバ
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        #endregion
+    }
+
+    // NOTE: 使いどころが難しい。
+    // NOTE: selector は必ず指定すること。基本的に列挙のみが可能な、ListTransformer オブジェクトが生成される。
+    // NOTE: invertor を指定した場合は完全版。
+    // NOTE: やっぱりクラスわけよう。
+    public sealed class Transformer<TSource, TDestination> : TransformerEnumerateOnly<TSource, TDestination>
+    {
+        readonly Func<TDestination, TSource> invertor;
+        public Transformer(IList<TSource> source, Func<TSource, TDestination> selector, Func<TDestination, TSource> invertor)
+            : base(source, selector)
+        {
+            Required.NotDefault(invertor, () => invertor);
+
+            this.invertor = invertor;
+        }
+
+        public override int IndexOf(TDestination item)
+        {
+            return source.IndexOf(invertor(item));
+        }
+
+        public override void Insert(int index, TDestination item)
+        {
+            source.Insert(index, invertor(item));
+        }
+
+        public override void RemoveAt(int index)
+        {
+            source.RemoveAt(index);
+        }
+
+        public override TDestination this[int index]
+        {
+            get
+            {
+                return selector(source[index]);
+            }
+            set
+            {
+                source[index] = invertor(value);
+            }
+        }
+
+        public override void Add(TDestination item)
+        {
+            source.Add(invertor(item));
+        }
+
+        public override void Clear()
+        {
+            source.Clear();
+        }
+
+        public override bool Contains(TDestination item)
+        {
+            return source.Contains(invertor(item));
+        }
+
+        public override void CopyTo(TDestination[] array, int arrayIndex)
+        {
+            for (int i = arrayIndex; i < source.Count; i++)
+            {
+                array[i] = selector(source[i]);
+            }
+        }
+
+        public override bool Remove(TDestination item)
+        {
+            return source.Remove(invertor(item));
         }
     }
 

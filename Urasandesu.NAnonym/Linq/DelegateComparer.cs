@@ -11,7 +11,7 @@ namespace Urasandesu.NAnonym.Linq
         public static readonly Func<T, T, int> NullableComparerAsc = ToNullableComparerAsc(DefaultComparer);
         public static readonly Func<T, T, int> NullableComparerDsc = ToNullableComparerDsc(DefaultComparer);
 
-        private Func<T, T, int> comparer;
+        Func<T, T, int> comparer;
 
         public DelegateComparer()
             : this(null)
