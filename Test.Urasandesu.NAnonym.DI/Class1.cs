@@ -253,6 +253,8 @@ Parameter[1] = IntPtr method
         {
             try
             {
+                var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
+                scope.Bind(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
@@ -274,16 +276,38 @@ Parameter[1] = IntPtr method
         {
             try
             {
-                var arguments = ((NewAppDomainTesterParameter1)Parameter).Arguments;
-                // だめだ、これじゃ変数名が引き当てられない！
-                // TODO: Invoke 時じゃなくて、Instance に入れ込むのがミソ。
-                //ScopeAccessor.Set(Instance, arguments);   // みたいなイメージで。
+                var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
+                scope.Bind(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
             catch (Exception e)
             {
-                Assert.AreEqual("{ Key = 1, Value = aiueo }", e.InnerException.Message);
+                Assert.AreEqual("[1, aiueo]", e.InnerException.Message);
+            }
+        }
+    }
+
+    public class Action2LocalVariable12Tester : NewAppDomainTester
+    {
+        public Action2LocalVariable12Tester(NewAppDomainTesterParameter param)
+            : base(param)
+        {
+        }
+
+        public override void Verify()
+        {
+            try
+            {
+                Method.Invoke(Instance, null);
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(
+@"Cached Field Name: CS$<>9__CachedAnonymousMethodDelegate8b
+Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
+", e.InnerException.Message);
             }
         }
     }

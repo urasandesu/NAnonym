@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    public static class ExpressiveType
+    public static class TypeSaveable
     {
         public static MethodInfo GetMethodInfo<T, TResult>(Expression<Func<Func<T, TResult>>> methodProvider)
         {
@@ -20,6 +20,11 @@ namespace Urasandesu.NAnonym.CREUtilities
         }
 
         public static MethodInfo GetMethodInfo<TResult>(Expression<Func<Func<TResult>>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetMethodInfo(Expression<Func<Action>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }

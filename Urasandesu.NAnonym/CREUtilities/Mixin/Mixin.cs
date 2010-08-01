@@ -5,7 +5,9 @@ using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System.Reflection;
+using System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
@@ -17,46 +19,46 @@ namespace Urasandesu.NAnonym.CREUtilities
     public static partial class Mixin
     {
 
-        public static bool Equivalent(this TypeReference x, Type y)
-        {
-            // HACK: 暫定。x が配列の場合（例えば Type[]）、配列ではない型に解決されてしまう。本来であれば、ArrayType で Resolve が override されているべきにも思うが・・・？
-            switch (x.Scope.MetadataScopeType)
-            {
-                case MetadataScopeType.AssemblyNameReference:
-                    var assemblyNameReference = x.Scope as AssemblyNameReference;
-                    return assemblyNameReference.FullName == y.Assembly.FullName && x.FullName == y.FullName;
-                case MetadataScopeType.ModuleDefinition:
-                    var moduleDefinition = x.Scope as ModuleDefinition;
-                    return moduleDefinition.Assembly.Name.FullName == y.Assembly.FullName && x.FullName == y.FullName;
-                case MetadataScopeType.ModuleReference:
-                default:
-                    var resolvedX = x.Resolve();
-                    return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName == y.FullName;
-            }
-        }
+        //public static bool Equivalent(this TypeReference x, Type y)
+        //{
+        //    // HACK: 暫定。x が配列の場合（例えば Type[]）、配列ではない型に解決されてしまう。本来であれば、ArrayType で Resolve が override されているべきにも思うが・・・？
+        //    switch (x.Scope.MetadataScopeType)
+        //    {
+        //        case MetadataScopeType.AssemblyNameReference:
+        //            var assemblyNameReference = x.Scope as AssemblyNameReference;
+        //            return assemblyNameReference.FullName == y.Assembly.FullName && x.FullName == y.FullName;
+        //        case MetadataScopeType.ModuleDefinition:
+        //            var moduleDefinition = x.Scope as ModuleDefinition;
+        //            return moduleDefinition.Assembly.Name.FullName == y.Assembly.FullName && x.FullName == y.FullName;
+        //        case MetadataScopeType.ModuleReference:
+        //        default:
+        //            var resolvedX = x.Resolve();
+        //            return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName == y.FullName;
+        //    }
+        //}
 
-        public static bool Equivalent(this TypeReference x, TypeReference y)
-        {
-            return x.Module.Assembly.Name.FullName == y.Module.Assembly.Name.FullName && x.FullName == y.FullName;
-        }
+        //public static bool Equivalent(this TypeReference x, TypeReference y)
+        //{
+        //    return x.Module.Assembly.Name.FullName == y.Module.Assembly.Name.FullName && x.FullName == y.FullName;
+        //}
 
-        public static IEnumerable<MethodDefinition> GetMethodDefs(this TypeReference typeRef)
-        {
-            var typeDef = default(TypeDefinition);
-            var typeSpec = default(TypeSpecification);
-            if ((typeDef = typeRef as TypeDefinition) != null)
-            {
-                return typeDef.Methods;
-            }
-            else if ((typeSpec = typeRef as TypeSpecification) != null)
-            {
-                return typeSpec.GetMethodDefs();
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
+        //public static IEnumerable<MethodDefinition> GetMethodDefs(this TypeReference typeRef)
+        //{
+        //    var typeDef = default(TypeDefinition);
+        //    var typeSpec = default(TypeSpecification);
+        //    if ((typeDef = typeRef as TypeDefinition) != null)
+        //    {
+        //        return typeDef.Methods;
+        //    }
+        //    else if ((typeSpec = typeRef as TypeSpecification) != null)
+        //    {
+        //        return typeSpec.GetMethodDefs();
+        //    }
+        //    else
+        //    {
+        //        throw new NotSupportedException();
+        //    }
+        //}
 
         // だめだ。このまま Write すると更新されてしまう。やっぱり Copy メソッドいるし。
         private static IEnumerable<MethodDefinition> GetMethodDefs(this TypeSpecification typeSpec)
@@ -125,12 +127,18 @@ namespace Urasandesu.NAnonym.CREUtilities
         //        (MethodReference)typeRef.GetMethodDef(method);
         //}
 
-        public static bool Equivalent(this MethodDefinition x, MethodInfo y)
+        public static bool Equivalent(this MethodReference x, MethodBase y)
         {
             bool equals = x.DeclaringType.Equivalent(y.DeclaringType);
             equals = equals && x.Name == y.Name;
-            equals = equals && x.Attributes.Equivalent(y.Attributes);
             equals = equals && x.Parameters.Equivalent(y.GetParameters());
+            return equals;
+        }
+
+        public static bool Equivalent(this MethodDefinition x, MethodInfo y)
+        {
+            bool equals = Equivalent((MethodReference)x, (MethodBase)y);
+            equals = equals && x.Attributes.Equivalent(y.Attributes);
             return equals;
         }
 
@@ -419,6 +427,32 @@ namespace Urasandesu.NAnonym.CREUtilities
         public static bool IsStatic(this PropertyInfo source)
         {
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
+        }
+
+        public static TotableScope CreateTotableScope(this MethodDefinition methodDef)
+        {
+            return new TotableScope((MCMethodGeneratorImpl)methodDef);
+        }
+
+        public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
+        {
+            var gen = new ExpressiveMethodBodyGenerator(methodDef);
+            expression(gen);
+            gen.Eval(_ => _.End());
+        }
+
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
+        {
+            var gen = new ExpressiveMethodBodyGenerator(constructorBuilder);
+            expression(gen);
+            gen.Eval(_ => _.End());
+        }
+
+        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
+        {
+            var gen = new ExpressiveMethodBodyGenerator(dynamicMethod);
+            expression(gen);
+            gen.Eval(_ => _.End());
         }
     }
 }

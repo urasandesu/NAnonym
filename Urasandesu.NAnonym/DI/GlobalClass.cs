@@ -12,8 +12,8 @@ namespace Urasandesu.NAnonym.DI
 {
     public class GlobalClass<TBase> : GlobalClassBase where TBase : class
     {
-        private readonly ModuleDefinition tbaseModule;
-        private readonly TypeDefinition tbaseType;
+        readonly ModuleDefinition tbaseModule;
+        readonly TypeDefinition tbaseType;
 
         // TODO: メソッド名とかを LocalClass 第2版に合わせたほうが良い。
         // TODO: SetUp じゃなくて Define にしよう。

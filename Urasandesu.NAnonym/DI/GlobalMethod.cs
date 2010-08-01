@@ -20,9 +20,9 @@ namespace Urasandesu.NAnonym.DI
     // HACK: あれ？ where とかいらなくね？もはやなんでも良い気がしてきた。
     public class GlobalMethod<TBase, T, TResult> where TBase : class
     {
-        private readonly ModuleDefinition tbaseModule;
-        private readonly TypeDefinition tbaseType;
-        private readonly MethodDefinition method;
+        readonly ModuleDefinition tbaseModule;
+        readonly TypeDefinition tbaseType;
+        readonly MethodDefinition method;
 
         public GlobalMethod(MethodDefinition method)
         {
@@ -51,89 +51,49 @@ namespace Urasandesu.NAnonym.DI
             tbaseType.Methods.Add(newMethod);
 
             var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
-
-            var egen = new ExpressiveILProcessor(newMethod);
-            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
-            egen.Emit(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(TResult), new Type[] { typeof(T) }, true)));
-            var ctor3 = default(ConstructorInfo);
-            egen.Emit(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
-                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                null,
-                                                new Type[] 
-                                                { 
-                                                    typeof(Object), 
-                                                    typeof(IntPtr) 
-                                                }, null)));
-            var method4 = default(MethodInfo);
-            egen.Emit(_ => _.Addloc(method4, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetMethod(
-                                                "Invoke",
-                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                null,
-                                                new Type[] 
-                                                { 
-                                                    typeof(String) 
-                                                }, null)));
-            var gen = default(ILGenerator);
-            egen.Emit(_ => _.Addloc(gen, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
-            var label27 = default(Label);
-            egen.Emit(_ => _.Addloc(label27, gen.DefineLabel()));
-            // TODO: そのままを Emit するための I/F も定義してないな…。
-            // TODO: ん？ストアは式ツリーの制限上必要だけど、ロードは必要ないんじゃね？
-            // TODO: できそうだけど、辿るのが大変 + オーバーヘッドがでかい（GetField を継承元に遡って見る必要がある）？
-
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Brtrue_S, label27));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldnull));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldftn, method.Method));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Newobj, ctor3));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Stsfld, cacheField));
-            egen.Emit(_ => gen.MarkLabel(label27));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ldarg_0));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Callvirt, method4));
-            egen.Emit(_ => gen.Emit(SR.Emit.OpCodes.Ret));
-            //// TODO: フィールドへの代入用 I/F って定義してないな…。
-            //egen.Direct.Emit(MC.Cil.OpCodes.Ldnull);
-            //egen.Direct.Emit(MC.Cil.OpCodes.Ret);
-
-            // MEMO: やっぱり 1 処理ずつやってくのがいいね・・・。
-            // Preparing Reflection instances
-            //var methods = new ParameterMethods(tbaseModule);
-            //var builder = new MethodBuilder<T, TResult>(tbaseModule);
-            //var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
-
-            //newMethod.Body.InitLocals = true;
-            //var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = 
-            //    new VariableDefinition("CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method", tbaseModule.Import(typeof(DynamicMethod)));
-            //newMethod.Body.Variables.Add(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method);
-            //var CS_0_0000 = new VariableDefinition("CS$0$0000", tbaseModule.Import(typeof(Type[])));
-            //newMethod.Body.Variables.Add(CS_0_0000);
-            //var CS_0_0001 = new VariableDefinition("CS$0$0001", tbaseModule.Import(typeof(Type[])));
-            //newMethod.Body.Variables.Add(CS_0_0001);
-            //var CS_0_0002 = new VariableDefinition("CS$0$0002", tbaseModule.Import(typeof(Type[])));
-            //newMethod.Body.Variables.Add(CS_0_0002);
-            //var CS_0_0003 = new VariableDefinition("CS$0$0003", tbaseModule.Import(typeof(Type[])));
-            //newMethod.Body.Variables.Add(CS_0_0003);
-            //var CS_0_0004 = new VariableDefinition("CS$0$0004", tbaseModule.Import(typeof(Type[])));
-            //newMethod.Body.Variables.Add(CS_0_0004);
-
-            //var gen = newMethod.Body.GetILProcessor();
-
-            //builder.PushNewDynamicMethod(gen, "CS_<>9__CachedAnonymousMethodDelegate1Method", CS_0_0000);
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method);
-
-            //builder.PushFuncGetConstructor(gen, CS_0_0001, CS_0_0002);
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Pop);
-
-            //builder.PushFuncInvoke(gen, CS_0_0003, CS_0_0004);
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Pop);
-
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method);
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.DynamicMethod.GetILGenerator));
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Pop);
-
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
-            //gen.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+            newMethod.ExpressBody(
+            gen =>
+            {
+                var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
+                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(TResult), new Type[] { typeof(T) }, true)));
+                var ctor3 = default(ConstructorInfo);
+                gen.Eval(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                    null,
+                                                    new Type[] 
+                                                    { 
+                                                        typeof(Object), 
+                                                        typeof(IntPtr) 
+                                                    }, null)));
+                var method4 = default(MethodInfo);
+                gen.Eval(_ => _.Addloc(method4, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetMethod(
+                                                    "Invoke",
+                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                    null,
+                                                    new Type[] 
+                                                    { 
+                                                        typeof(String) 
+                                                    }, null)));
+                // TODO: その場で評価しちゃえる処理が欲しい。ただし、最終的な情報が CIL レベルで埋め込めるものであるという制限は必要！
+                // TODO: 
+                //var cacheField = default(FieldInfo);
+                //gen.Eval(_=>_.Addloc(
+                var il = default(ILGenerator);
+                gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
+                var label27 = default(Label);
+                gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldsfld, cacheField)); // TODO: 変数のスコープが違いすぎる。。。TotableScope で Bind しようにも、できるタイミングではすでに情報が見えないところに。。。
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Brtrue_S, label27));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldnull));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldftn, method.Method));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Newobj, ctor3));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Stsfld, cacheField));
+                gen.Eval(_ => il.MarkLabel(label27));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldarg_0));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Callvirt, method4));
+                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ret));
+            });
 
             return null;
         }
@@ -155,295 +115,221 @@ namespace Urasandesu.NAnonym.DI
 
     }
 
-    // HACK: このクラスもどちらかというと CRUtilities 系。
-    public static class TypeAnalyzer
-    {
-        public static bool IsAnonymous(MethodInfo methodInfo)
-        {
-            return methodInfo.GetCustomAttributes(false).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null &&
-                methodInfo.Name.IndexOf("<") == 0;
-        }
-
-        public static bool IsCandidateAnonymousMethodCache(FieldInfo field)
-        {
-            return -1 < field.Name.IndexOf("__CachedAnonymousMethodDelegate") &&
-                field.GetCustomAttributes(false).FirstOrDefault(customAttribute => customAttribute is CompilerGeneratedAttribute) != null;
-        }
-
-        public static FieldInfo GetCacheFieldIfAnonymous(MethodInfo methodInfo)
-        {
-            if (!IsAnonymous(methodInfo)) return null;
 
 
-            var cacheField = default(FieldInfo);
-            var declaringType = methodInfo.DeclaringType;
-            var declaringTypeDef = declaringType.ToTypeDef();
+    // NOTE: ExpressiveMethodBodyGenerator で完全代替可能。廃止。
+    //// HACK: このクラスもどちらかというと CRUtilities 系。
+    //// HACK: もう少し一般化が必要？I/F を同じにするとか、意識して作成するローカル変数以外（現状 tmp で指定してるやつとか）を隠蔽するとか。
+    //public class MethodBuilder<T, TResult>
+    //{
+    //    readonly ModuleDefinition tbaseModule;
 
-            var candidateNameCacheFieldDictionary = new Dictionary<string, FieldInfo>();
-            foreach (var candidateCacheField in declaringType.GetFields(BindingFlags.NonPublic | BindingFlags.Static)
-                                                             .Where(field => IsCandidateAnonymousMethodCache(field)))
-            {
-                candidateNameCacheFieldDictionary.Add(candidateCacheField.Name, candidateCacheField);
-            }
+    //    public MethodBuilder(ModuleDefinition tbaseModule)
+    //    {
+    //        this.tbaseModule = tbaseModule;
+    //    }
 
+    //    public void PushNewDynamicMethod(ILProcessor gen, string name, VariableDefinition tmp)
+    //    {
+    //        Required.Assert(tmp, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp);
 
-            string declaringMethodName = methodInfo.Name.Substring(methodInfo.Name.IndexOf("<") + 1, methodInfo.Name.IndexOf(">") - 1);
-            foreach (var candidateMethod in declaringTypeDef.Methods.Where(method => -1 < method.Name.IndexOf(declaringMethodName)))
-            {
-                int candidatePoint = 0; // HACK: enum 化
-                var candidateCacheField = default(FieldDefinition);
-                foreach (var instruction in candidateMethod.Body.Instructions)
-                {
-                    if (candidatePoint == 0 &&
-                        instruction.OpCode == Mono.Cecil.Cil.OpCodes.Ldsfld &&
-                        candidateNameCacheFieldDictionary.ContainsKey((candidateCacheField = (FieldDefinition)instruction.Operand).Name))
-                    {
-                        candidatePoint = 1;
-                    }
-                    else if (candidatePoint == 1 &&
-                        instruction.OpCode == Mono.Cecil.Cil.OpCodes.Brtrue_S)
-                    {
-                        candidatePoint = 2;
-                    }
-                    else if (candidatePoint == 2 &&
-                        instruction.OpCode == Mono.Cecil.Cil.OpCodes.Ldnull)
-                    {
-                        candidatePoint = 3;
-                    }
-                    else if (candidatePoint == 3 &&
-                        instruction.OpCode == Mono.Cecil.Cil.OpCodes.Ldftn &&
-                        ((MethodDefinition)instruction.Operand).Equivalent(methodInfo))
-                    {
-                        candidatePoint = 4;
-                        break;
-                    }
-                    else if (candidatePoint == 3 || candidatePoint == 2 || candidatePoint == 1)
-                    {
-                        candidatePoint = 0;
-                    }
-                }
-                if (candidatePoint == 4)
-                {
-                    cacheField = candidateNameCacheFieldDictionary[candidateCacheField.Name];
-                    break;
-                }
-            }
-            return cacheField;
-        }
-    }
+    //        // HACK: TResult や T を使う以外の部分は一般化できるはず（他の Func<TResult>, Action<T>, とかへの対策）
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, name);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newobj, tbaseModule.Import(References.DynamicMethod.DynamicMethodConstructor));
+    //    }
 
+    //    // HACK: 型指定 + GetConstructor で分けられそう。
+    //    public void PushFuncGetConstructor(ILProcessor gen, VariableDefinition tmp1, VariableDefinition tmp2)
+    //    {
+    //        Required.Assert(tmp1, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp1);
+    //        Required.Assert(tmp2, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp2);
 
-    // HACK: このクラスもどちらかというと CRUtilities 系。
-    // HACK: もう少し一般化が必要？I/F を同じにするとか、意識して作成するローカル変数以外（現状 tmp で指定してるやつとか）を隠蔽するとか。
-    public class MethodBuilder<T, TResult>
-    {
-        readonly ModuleDefinition tbaseModule;
+    //        // HACK: TResult や T を使う以外の部分は一般化できるはず（他の Func<TResult>, Action<T>, とかへの対策）
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Func<,>)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.MakeGenericType));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (sbyte)(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Object)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(IntPtr)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.GetConstructor));
+    //    }
 
-        public MethodBuilder(ModuleDefinition tbaseModule)
-        {
-            this.tbaseModule = tbaseModule;
-        }
-
-        public void PushNewDynamicMethod(ILProcessor gen, string name, VariableDefinition tmp)
-        {
-            Required.Assert(tmp, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp);
-
-            // HACK: TResult や T を使う以外の部分は一般化できるはず（他の Func<TResult>, Action<T>, とかへの対策）
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, name);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newobj, tbaseModule.Import(References.DynamicMethod.DynamicMethodConstructor));
-        }
-
-        // HACK: 型指定 + GetConstructor で分けられそう。
-        public void PushFuncGetConstructor(ILProcessor gen, VariableDefinition tmp1, VariableDefinition tmp2)
-        {
-            Required.Assert(tmp1, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp1);
-            Required.Assert(tmp2, _ => _.VariableType.Equivalent(typeof(Type[])), () => tmp2);
-
-            // HACK: TResult や T を使う以外の部分は一般化できるはず（他の Func<TResult>, Action<T>, とかへの対策）
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Func<,>)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.MakeGenericType));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (sbyte)(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Object)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(IntPtr)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.GetConstructor));
-        }
-
-        // HACK: 型指定 + GetMethod で分けられそう。
-        public void PushFuncInvoke(ILProcessor gen, VariableDefinition tmp1, VariableDefinition tmp2)
-        {
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Func<,>)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.MakeGenericType));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, "Invoke");
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (sbyte)(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(String)));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
-            gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.GetMethod));
-        }
-    }
+    //    // HACK: 型指定 + GetMethod で分けられそう。
+    //    public void PushFuncInvoke(ILProcessor gen, VariableDefinition tmp1, VariableDefinition tmp2)
+    //    {
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(Func<,>)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(T)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(TResult)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.MakeGenericType));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldstr, "Invoke");
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_S, (sbyte)(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Newarr, tbaseModule.Import(typeof(Type)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldtoken, tbaseModule.Import(typeof(String)));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Call, tbaseModule.Import(References.Type.GetTypeFromHandle));
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Stelem_Ref);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, tmp2);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Ldnull);
+    //        gen.Emit(Mono.Cecil.Cil.OpCodes.Callvirt, tbaseModule.Import(References.Type.GetMethod));
+    //    }
+    //}
 
 
-    // HACK: このクラスもどちらかというと CRUtilities 系。
-    public static class References
-    {
-        public static class Type
-        {
-            public static readonly MethodInfo GetTypeFromHandle = 
-                typeof(System.Type).GetMethod(
-                    "GetTypeFromHandle",
-                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                    null,
-                    new System.Type[] 
-                    {
-                        typeof(RuntimeTypeHandle) 
-                    },
-                    null);
+    // NOTE: ExpressiveMethodBodyGenerator で完全代替可能。廃止。
+    //// HACK: このクラスもどちらかというと CRUtilities 系。
+    //public static class References
+    //{
+    //    public static class Type
+    //    {
+    //        public static readonly MethodInfo GetTypeFromHandle = 
+    //            typeof(System.Type).GetMethod(
+    //                "GetTypeFromHandle",
+    //                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+    //                null,
+    //                new System.Type[] 
+    //                {
+    //                    typeof(RuntimeTypeHandle) 
+    //                },
+    //                null);
 
-            public static readonly MethodInfo MakeGenericType = 
-                typeof(System.Type).GetMethod(
-                    "MakeGenericType",
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                    null,
-                    new System.Type[] 
-                    { 
-                        typeof(System.Type[]) 
-                    },
-                    null);
+    //        public static readonly MethodInfo MakeGenericType = 
+    //            typeof(System.Type).GetMethod(
+    //                "MakeGenericType",
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+    //                null,
+    //                new System.Type[] 
+    //                { 
+    //                    typeof(System.Type[]) 
+    //                },
+    //                null);
 
-            public static readonly MethodInfo GetConstructor =
-                typeof(System.Type).GetMethod(
-                    "GetConstructor",
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                    null,
-                    new System.Type[] 
-                    { 
-                        typeof(BindingFlags), 
-                        typeof(Binder), 
-                        typeof(System.Type[]), 
-                        typeof(ParameterModifier[]) 
-                    },
-                    null);
+    //        public static readonly MethodInfo GetConstructor =
+    //            typeof(System.Type).GetMethod(
+    //                "GetConstructor",
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+    //                null,
+    //                new System.Type[] 
+    //                { 
+    //                    typeof(BindingFlags), 
+    //                    typeof(Binder), 
+    //                    typeof(System.Type[]), 
+    //                    typeof(ParameterModifier[]) 
+    //                },
+    //                null);
 
-            public static readonly MethodInfo GetMethod =
-                typeof(System.Type).GetMethod(
-                    "GetMethod",
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                    null,
-                    new System.Type[] 
-                    { 
-                        typeof(String), 
-                        typeof(BindingFlags), 
-                        typeof(Binder), 
-                        typeof(System.Type[]), 
-                        typeof(ParameterModifier[]) 
-                    },
-                    null);
-        }
+    //        public static readonly MethodInfo GetMethod =
+    //            typeof(System.Type).GetMethod(
+    //                "GetMethod",
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+    //                null,
+    //                new System.Type[] 
+    //                { 
+    //                    typeof(String), 
+    //                    typeof(BindingFlags), 
+    //                    typeof(Binder), 
+    //                    typeof(System.Type[]), 
+    //                    typeof(ParameterModifier[]) 
+    //                },
+    //                null);
+    //    }
 
-        public static class DynamicMethod
-        {
-            public static readonly ConstructorInfo DynamicMethodConstructor = 
-                typeof(System.Reflection.Emit.DynamicMethod).GetConstructor(
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                    null,
-                    new System.Type[] 
-                    { 
-                        typeof(String), 
-                        typeof(System.Type), 
-                        typeof(System.Type[]), 
-                        typeof(Boolean) 
-                    },
-                    null);
+    //    public static class DynamicMethod
+    //    {
+    //        public static readonly ConstructorInfo DynamicMethodConstructor = 
+    //            typeof(System.Reflection.Emit.DynamicMethod).GetConstructor(
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+    //                null,
+    //                new System.Type[] 
+    //                { 
+    //                    typeof(String), 
+    //                    typeof(System.Type), 
+    //                    typeof(System.Type[]), 
+    //                    typeof(Boolean) 
+    //                },
+    //                null);
 
-            public static readonly MethodInfo GetILGenerator =
-                typeof(System.Reflection.Emit.DynamicMethod).GetMethod(
-                    "GetILGenerator", 
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-                    null, 
-                    new System.Type[] { }, 
-                    null);
-        }
+    //        public static readonly MethodInfo GetILGenerator =
+    //            typeof(System.Reflection.Emit.DynamicMethod).GetMethod(
+    //                "GetILGenerator", 
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
+    //                null, 
+    //                new System.Type[] { }, 
+    //                null);
+    //    }
 
-        public static class ILGenerator
-        {
-            public static readonly MethodInfo DefineLabel = 
-                typeof(System.Reflection.Emit.ILGenerator).GetMethod(
-                    "DefineLabel", 
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-                    null, 
-                    new System.Type[] { }, 
-                    null);
-        }
+    //    public static class ILGenerator
+    //    {
+    //        public static readonly MethodInfo DefineLabel = 
+    //            typeof(System.Reflection.Emit.ILGenerator).GetMethod(
+    //                "DefineLabel", 
+    //                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
+    //                null, 
+    //                new System.Type[] { }, 
+    //                null);
+    //    }
 
-        public static class OpCodes
-        {
+    //    public static class OpCodes
+    //    {
 
-        }
-    }
+    //    }
+    //}
 
 
 

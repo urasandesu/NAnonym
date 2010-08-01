@@ -113,13 +113,13 @@ namespace Urasandesu.NAnonym.Test
     [Serializable]
     public class NewAppDomainTesterParameter1 : NewAppDomainTesterParameter
     {
-        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, params object[] arguments)
+        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, TotableScope scope)
             : base(fileName, typeName, methodName, tester)
         {
-            Arguments = arguments;
+            Scope = scope;
         }
 
-        public object[] Arguments { get; private set; }
+        public TotableScope Scope { get; private set; }
     }
 
     public class Assert : NUnit.Framework.Assert
@@ -154,7 +154,7 @@ namespace Urasandesu.NAnonym.Test
 
     public class Is : NUnit.Framework.Is
     {
-        private Is()
+        protected Is()
         {
         }
 
@@ -166,8 +166,8 @@ namespace Urasandesu.NAnonym.Test
 
     public class EqualConstraint<T1, T2> : NUnit.Framework.Constraints.EqualConstraint
     {
-        private readonly T1 expected;
-        private readonly Func<T1, T2, bool> equalityComparer;
+        readonly T1 expected;
+        readonly Func<T1, T2, bool> equalityComparer;
 
         public EqualConstraint(T1 expected, Func<T1, T2, bool> equalityComparer)
             : base(expected)
