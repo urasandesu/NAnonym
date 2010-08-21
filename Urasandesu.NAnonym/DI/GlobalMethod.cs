@@ -82,17 +82,17 @@ namespace Urasandesu.NAnonym.DI
                 gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
                 var label27 = default(Label);
                 gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldsfld, cacheField)); // TODO: 変数のスコープが違いすぎる。。。TotableScope で Bind しようにも、できるタイミングではすでに情報が見えないところに。。。
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Brtrue_S, label27));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldnull));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldftn, method.Method));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Newobj, ctor3));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Stsfld, cacheField));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField)); // TODO: 変数のスコープが違いすぎる。。。TotableScope で Bind しようにも、できるタイミングではすでに情報が見えないところに。。。
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Brtrue_S, label27));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldnull));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldftn, method.Method));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Newobj, ctor3));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Stsfld, cacheField));
                 gen.Eval(_ => il.MarkLabel(label27));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldsfld, cacheField));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ldarg_0));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Callvirt, method4));
-                gen.Eval(_ => il.Emit(SR.Emit.OpCodes.Ret));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
             });
 
             return null;

@@ -116,7 +116,7 @@
     <Compile Include="CREUtilities\Mixin\System\Type\Mixin.cs" />
     <Compile Include="CREUtilities\OpCodes.cs" />
     <Compile Include="CREUtilities\ImplicitConversions\OpCode\System\Reflection\Emit\OpCode.cs" />
-    <Compile Include="CREUtilities\TotableScope.cs" />
+    <Compile Include="CREUtilities\PortableScope.cs" />
     <Compile Include="CREUtilities\TypeAnalyzer.cs" />
     <Compile Include="CREUtilities\TypeSaveable.cs" />
     <Compile Include="DI\Class1.cs" />

@@ -429,10 +429,15 @@ namespace Urasandesu.NAnonym.CREUtilities
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
         }
 
-        public static TotableScope CreateTotableScope(this MethodDefinition methodDef)
+        public static PortableScope CreateScope(this MethodDefinition methodDef)
         {
-            return new TotableScope((MCMethodGeneratorImpl)methodDef);
+            return new PortableScope((MCMethodGeneratorImpl)methodDef);
         }
+
+        //public static PortableScope CreatePortableScope(this MethodDefinition methodDef, object instance)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
         {

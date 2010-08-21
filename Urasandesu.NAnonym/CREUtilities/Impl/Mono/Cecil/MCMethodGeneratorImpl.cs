@@ -8,6 +8,7 @@ using MC = Mono.Cecil;
 using System.Collections.ObjectModel;
 using System.Collections;
 using Urasandesu.NAnonym.Linq;
+using System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
@@ -65,6 +66,11 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
         public new ReadOnlyCollection<IParameterGenerator> Parameters
         {
             get { return parameters; }
+        }
+
+        public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -113,13 +113,25 @@ namespace Urasandesu.NAnonym.Test
     [Serializable]
     public class NewAppDomainTesterParameter1 : NewAppDomainTesterParameter
     {
-        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, TotableScope scope)
+        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, PortableScope scope)
             : base(fileName, typeName, methodName, tester)
         {
             Scope = scope;
         }
 
-        public TotableScope Scope { get; private set; }
+        public PortableScope Scope { get; private set; }
+    }
+
+    [Serializable]
+    public class NewAppDomainTesterParameter2 : NewAppDomainTesterParameter
+    {
+        public NewAppDomainTesterParameter2(string fileName, string typeName, string methodName, Type tester, PortableScope2 scope)
+            : base(fileName, typeName, methodName, tester)
+        {
+            Scope = scope;
+        }
+
+        public PortableScope2 Scope { get; private set; }
     }
 
     public class Assert : NUnit.Framework.Assert

@@ -6,6 +6,7 @@ using Urasandesu.NAnonym.Test;
 using System.Reflection;
 using NUnit.Framework;
 using Assert = Urasandesu.NAnonym.Test.Assert;
+using Urasandesu.NAnonym.Linq;
 
 namespace Test.Urasandesu.NAnonym.DI
 {
@@ -254,7 +255,7 @@ Parameter[1] = IntPtr method
             try
             {
                 var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
-                scope.Bind(Instance);
+                scope.Reinitialize(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
@@ -277,7 +278,7 @@ Parameter[1] = IntPtr method
             try
             {
                 var scope = ((NewAppDomainTesterParameter1)Parameter).Scope;
-                scope.Bind(Instance);
+                scope.Reinitialize(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
             }
@@ -308,6 +309,58 @@ Parameter[1] = IntPtr method
 @"Cached Field Name: CS$<>9__CachedAnonymousMethodDelegate8b
 Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
 ", e.InnerException.Message);
+            }
+        }
+    }
+
+    public class Action2LocalVariable19Tester : NewAppDomainTester
+    {
+        public Action2LocalVariable19Tester(NewAppDomainTesterParameter param)
+            : base(param)
+        {
+        }
+
+        public override void Verify()
+        {
+            var scope = ((NewAppDomainTesterParameter2)Parameter).Scope;
+            try
+            {
+                var b = new DateTime(2010, 8, 31);
+                scope.Set(() => b, b);
+                scope.DockWith(Instance);
+                Method.Invoke(Instance, null);
+                Assert.Fail();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual("[1, aiueo], 2010/08/31", e.InnerException.Message);
+            }
+
+            // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
+            scope.ForEach(
+            (scopeField, index) =>
+            {
+                switch (index)
+                {
+                    case 0:
+                        Assert.AreEqual("a", scopeField.Local.Name);
+                        Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), scopeField.Value);
+                        break;
+                    case 1:
+                        Assert.AreEqual("b", scopeField.Local.Name);
+                        Assert.AreEqual(new DateTime(2010, 8, 31), scopeField.Value);
+                        break;
+                    default:
+                        Assert.Fail();
+                        break;
+                }
+            });
+
+            // TODO: 定義してあるかのどうかのチェックと、設定済みの値をこんな感じで見たい。
+            {
+                var a = default(KeyValuePair<int, string>);
+                Assert.IsTrue(scope.Contains(() => a));
+                Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), scope.Get(() => a));
             }
         }
     }

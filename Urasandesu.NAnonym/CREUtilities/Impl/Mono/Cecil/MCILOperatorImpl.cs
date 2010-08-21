@@ -21,7 +21,7 @@ namespace Urasandesu.NAnonym.CREUtilities
     sealed class MCILOperatorImpl : IILOperator
     {
         readonly MethodDefinition methodDef;
-        readonly MC.Cil.MethodBody bodyDef;
+        readonly MC::Cil.MethodBody bodyDef;
         readonly ILProcessor il;
         readonly ModuleDefinition moduleDef;
 

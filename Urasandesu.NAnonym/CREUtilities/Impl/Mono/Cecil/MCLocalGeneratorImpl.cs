@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
+    // 安全のために関連付いているかどうかのフラグが必要かも？
     sealed class MCLocalGeneratorImpl : ILocalGenerator
     {
         readonly VariableDefinition variableDef;

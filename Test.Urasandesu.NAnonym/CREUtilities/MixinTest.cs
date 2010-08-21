@@ -92,8 +92,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void GetFieldTest()
         {
-            var opCodesC = typeof(SR.Emit.OpCodes).ToTypeDef();
-            var opCodesR = typeof(SR.Emit.OpCodes);
+            var opCodesC = typeof(SR::Emit.OpCodes).ToTypeDef();
+            var opCodesR = typeof(SR::Emit.OpCodes);
             var Ldarg_0C = opCodesC.GetField("Ldarg_0", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var Ldarg_0R = opCodesR.GetField("Ldarg_0", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             Assert.AreEquivalent(Ldarg_0C, Ldarg_0R, Mixin.Equivalent);

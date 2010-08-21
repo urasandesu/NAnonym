@@ -48,23 +48,23 @@ namespace Urasandesu.NAnonym.CREUtilities
                 foreach (var instruction in candidateMethod.Body.Instructions)
                 {
                     if (candidatePoint == 0 &&
-                        instruction.OpCode == MC.Cil.OpCodes.Ldsfld &&
+                        instruction.OpCode == MC::Cil.OpCodes.Ldsfld &&
                         candidateNameCacheFieldDictionary.ContainsKey((candidateCacheField = (FieldDefinition)instruction.Operand).Name))
                     {
                         candidatePoint = 1;
                     }
                     else if (candidatePoint == 1 &&
-                        instruction.OpCode == MC.Cil.OpCodes.Brtrue_S)
+                        instruction.OpCode == MC::Cil.OpCodes.Brtrue_S)
                     {
                         candidatePoint = 2;
                     }
                     else if (candidatePoint == 2 &&
-                        instruction.OpCode == MC.Cil.OpCodes.Ldnull)
+                        instruction.OpCode == MC::Cil.OpCodes.Ldnull)
                     {
                         candidatePoint = 3;
                     }
                     else if (candidatePoint == 3 &&
-                        instruction.OpCode == MC.Cil.OpCodes.Ldftn &&
+                        instruction.OpCode == MC::Cil.OpCodes.Ldftn &&
                         ((MethodReference)instruction.Operand).Equivalent(methodBase))
                     {
                         candidatePoint = 4;

@@ -18,12 +18,12 @@ namespace Urasandesu.NAnonym.CREUtilities
 {
     //public sealed partial class Directive
     //{
-    //    public static implicit operator MC.Cil.Instruction(Directive directive)
+    //    public static implicit operator MC::Cil.Instruction(Directive directive)
     //    {
     //        throw new NotImplementedException();
     //    }
 
-    //    public static implicit operator Directive(MC.Cil.Instruction instruction)
+    //    public static implicit operator Directive(MC::Cil.Instruction instruction)
     //    {
     //        throw new NotImplementedException();
     //    }

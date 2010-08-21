@@ -11,21 +11,21 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
     sealed class MCMethodBodyGeneratorImpl : MCMethodBodyDeclarationImpl, IMethodBodyGenerator
     {
-        readonly MC.Cil.MethodBody bodyDef;
+        readonly MC::Cil.MethodBody bodyDef;
         readonly ReadOnlyCollection<ILocalGenerator> locals;
-        public MCMethodBodyGeneratorImpl(MC.Cil.MethodBody bodyDef)
+        public MCMethodBodyGeneratorImpl(MC::Cil.MethodBody bodyDef)
         {
             this.bodyDef = bodyDef;
             locals = new ReadOnlyCollection<ILocalGenerator>(
                 bodyDef.Variables.TransformEnumerateOnly(variableDef => (ILocalGenerator)(MCLocalGeneratorImpl)variableDef));
         }
 
-        public static explicit operator MCMethodBodyGeneratorImpl(MC.Cil.MethodBody bodyDef)
+        public static explicit operator MCMethodBodyGeneratorImpl(MC::Cil.MethodBody bodyDef)
         {
             return new MCMethodBodyGeneratorImpl(bodyDef);
         }
 
-        public static explicit operator MC.Cil.MethodBody(MCMethodBodyGeneratorImpl bodyGen)
+        public static explicit operator MC::Cil.MethodBody(MCMethodBodyGeneratorImpl bodyGen)
         {
             return bodyGen.bodyDef;
         }

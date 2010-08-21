@@ -6,7 +6,7 @@ namespace Urasandesu.NAnonym.CREUtilities
 {
     public interface ITypeGenerator : ITypeDeclaration, IMemberGenerator
     {
-        IFieldDeclaration AddField(string fieldName, Type type, SR.FieldAttributes attributes);
+        IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes);
     }
 
 }

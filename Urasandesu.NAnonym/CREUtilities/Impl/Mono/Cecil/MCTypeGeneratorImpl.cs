@@ -30,9 +30,9 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
             return typeGen.typeDef;
         }
 
-        public IFieldDeclaration AddField(string fieldName, Type type, SR.FieldAttributes attributes)
+        public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
         {
-            var fieldDef = new FieldDefinition(fieldName, (MC.FieldAttributes)attributes, moduleDef.Import(type));
+            var fieldDef = new FieldDefinition(fieldName, (MC::FieldAttributes)attributes, moduleDef.Import(type));
             typeDef.Fields.Add(fieldDef);
             return (MCFieldGeneratorImpl)fieldDef;
         }

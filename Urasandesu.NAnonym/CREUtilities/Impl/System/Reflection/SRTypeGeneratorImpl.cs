@@ -28,7 +28,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
 
         #region ITypeGenerator メンバ
 
-        public IFieldDeclaration AddField(string fieldName, Type type, SR.FieldAttributes attributes)
+        public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
         {
             throw new NotImplementedException();
         }

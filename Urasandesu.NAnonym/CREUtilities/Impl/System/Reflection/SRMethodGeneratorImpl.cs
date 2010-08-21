@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection.Emit;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
 {
@@ -63,6 +64,11 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
         public new ReadOnlyCollection<IParameterGenerator> Parameters
         {
             get { throw new NotImplementedException(); }
+        }
+
+        public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

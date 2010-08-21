@@ -46,6 +46,11 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
+        public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region IMethodBaseGenerator メンバ

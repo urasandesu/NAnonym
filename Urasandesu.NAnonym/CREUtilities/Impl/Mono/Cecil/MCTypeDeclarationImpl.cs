@@ -61,7 +61,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
             }
             else
             {
-                return (MCConstructorDeclarationImpl)typeDef.GetConstructor(SR.BindingFlags.Default, types);
+                return (MCConstructorDeclarationImpl)typeDef.GetConstructor(SR::BindingFlags.Default, types);
             }
         }
     }

@@ -439,10 +439,11 @@ namespace Urasandesu.NAnonym.CREUtilities
                 }
                 else if ((constantExpression = exp.Expression as ConstantExpression) != null)
                 {
-                    string fieldName = TotableScope.MakeFieldName(methodGen, fieldInfo.Name);
-                    var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR.FieldAttributes.Public | SR.FieldAttributes.SpecialName);
+                    //string fieldName = PortableScope.MakeFieldName(methodGen, fieldInfo.Name);
+                    //var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR::FieldAttributes.Public | SR::FieldAttributes.SpecialName);
+                    var portableScopeItem = methodGen.AddPortableScopeItem(fieldInfo);
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldfld, fieldDecl);
+                    il.Emit(OpCodes.Ldfld, portableScopeItem.Field);
                 }
                 else
                 {
@@ -486,10 +487,10 @@ namespace Urasandesu.NAnonym.CREUtilities
                 //// 使わなくても構築は問題なくできそう？
                 //// → 匿名型の初期化では見た目と異なり、コンストラクタの引数で設定するよう変更されている。
                 //var variable = new VariableDefinition(methodDef.Module.Import(exp.Constructor.DeclaringType));
-                //Direct.Emit(MC.Cil.OpCodes.Stloc, variable);
+                //Direct.Emit(MC::Cil.OpCodes.Stloc, variable);
                 //foreach (var member in exp.Members)
                 //{
-                //    Direct.Emit(MC.Cil.OpCodes.Ldloc, variable);
+                //    Direct.Emit(MC::Cil.OpCodes.Ldloc, variable);
                 //}
             }
         }

@@ -151,7 +151,7 @@
 //            var mainDef = typeof(Class1).ToTypeDef();
 
 //            var testDef = new MethodDefinition("Test", 
-//                MC.MethodAttributes.Private | MC.MethodAttributes.Static, mainDef.Module.Import(typeof(void)));
+//                MC::MethodAttributes.Private | MC::MethodAttributes.Static, mainDef.Module.Import(typeof(void)));
 //            mainDef.Methods.Add(testDef);
 
 //            // 式木で直接 Emit。
@@ -172,11 +172,11 @@
 //                new DynamicMethod("cachedAnonymousMethod", typeof(string), new Type[] { typeof(string) }, true)));
 //            egen.Emit(_ => _.Addloc(() => gen, _.Ldloc(() => cachedAnonymousMethod).GetILGenerator()));
 //            egen.Emit(_ => _.Addloc(() => label27, _.Ldloc(() => gen).DefineLabel()));
-//            egen.Emit(_ => _.Ldloc(() => gen).Emit(SR.Emit.OpCodes.Brtrue_S, _.Ldloc(() => label27)));
+//            egen.Emit(_ => _.Ldloc(() => gen).Emit(SR::Emit.OpCodes.Brtrue_S, _.Ldloc(() => label27)));
 
 //            // 通常の Emit 処理混合。
-//            egen.Emit(_ => _.Direct.Emit(MC.Cil.OpCodes.Ldc_I4_S, (sbyte)100));
-//            egen.Emit(_ => _.Direct.Emit(MC.Cil.OpCodes.Stloc, _.Locals(() => a)));
+//            egen.Emit(_ => _.Direct.Emit(MC::Cil.OpCodes.Ldc_I4_S, (sbyte)100));
+//            egen.Emit(_ => _.Direct.Emit(MC::Cil.OpCodes.Stloc, _.Locals(() => a)));
 //        }
 //    }
 //}

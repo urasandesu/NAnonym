@@ -207,7 +207,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2LocalVariableDef5.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(SR.Emit.OpCodes.Brtrue));
+                    gen.Eval(_ => ThrowException(SR::Emit.OpCodes.Brtrue));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -506,9 +506,9 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var scope = action2LocalVariableDef10.CreateTotableScope();
-                scope.Define(() => i, i);
-                scope.Define(() => d, d);
+                var scope = action2LocalVariableDef10.CreateScope();
+                scope.Bind(() => i, i);
+                scope.Bind(() => d, d);
                 return new NewAppDomainTesterParameter1(
                             Path.Combine(newDomain.BaseDirectory, tempFileName),
                             methodTestClassDef.FullName,
@@ -549,8 +549,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 // 書き込んだ時点で参照が変わってない？
                 // 同期は取られてるはず…か。
-                var scope = action2LocalVariableDef11.CreateTotableScope();
-                scope.Define(() => a, a);
+                var scope = action2LocalVariableDef11.CreateScope();
+                scope.Bind(() => a, a);
                 return new NewAppDomainTesterParameter1(
                             Path.Combine(newDomain.BaseDirectory, tempFileName),
                             methodTestClassDef.FullName,
@@ -580,20 +580,20 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                     new TypeDefinition(
                         tempAssemblyNameDef.Name,
                         "EmitTest14",
-                        MC.TypeAttributes.AutoClass |
-                        MC.TypeAttributes.AnsiClass |
-                        MC.TypeAttributes.BeforeFieldInit |
-                        MC.TypeAttributes.Public,
+                        MC::TypeAttributes.AutoClass |
+                        MC::TypeAttributes.AnsiClass |
+                        MC::TypeAttributes.BeforeFieldInit |
+                        MC::TypeAttributes.Public,
                         tempAssemblyDef.MainModule.Import(typeof(object)));
                 tempAssemblyDef.MainModule.Types.Add(emitTest14Def);
 
                 var ctorDef =
                     new MethodDefinition(
                         ".ctor",
-                        MC.MethodAttributes.Public |
-                        MC.MethodAttributes.HideBySig |
-                        MC.MethodAttributes.SpecialName |
-                        MC.MethodAttributes.RTSpecialName,
+                        MC::MethodAttributes.Public |
+                        MC::MethodAttributes.HideBySig |
+                        MC::MethodAttributes.SpecialName |
+                        MC::MethodAttributes.RTSpecialName,
                         tempAssemblyDef.MainModule.Import(typeof(void)));
                 emitTest14Def.Methods.Add(ctorDef);
                 ctorDef.ExpressBody(
@@ -607,8 +607,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 var action2SameDomain1Def =
                     new MethodDefinition(
                         "Action2SameDomain1",
-                        MC.MethodAttributes.Public |
-                        MC.MethodAttributes.HideBySig,
+                        MC::MethodAttributes.Public |
+                        MC::MethodAttributes.HideBySig,
                         tempAssemblyDef.MainModule.Import(typeof(void)));
                 emitTest14Def.Methods.Add(action2SameDomain1Def);
                 int i = 10;
@@ -625,10 +625,10 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 var emitTest14 = assembly.GetType(emitTest14Def.FullName);
                 var instance = Activator.CreateInstance(emitTest14);
                 var action2SameDomain1 = emitTest14.GetMethod(action2SameDomain1Def.Name);
-                var scope = action2SameDomain1Def.CreateTotableScope();
-                scope.Define(() => i, i);
-                scope.Define(() => d, d);
-                scope.Bind(instance);
+                var scope = action2SameDomain1Def.CreateScope();
+                scope.Bind(() => i, i);
+                scope.Bind(() => d, d);
+                scope.Reinitialize(instance);
                 try
                 {
                     action2SameDomain1.Invoke(instance, null);
@@ -657,10 +657,10 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 var ctorBuilder =
                     emitTest15Builder.DefineConstructor(
-                        SR.MethodAttributes.Public |
-                        SR.MethodAttributes.HideBySig |
-                        SR.MethodAttributes.SpecialName |
-                        SR.MethodAttributes.RTSpecialName,
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.SpecialName |
+                        SR::MethodAttributes.RTSpecialName,
                         CallingConventions.Standard,
                         new Type[] { });
                 ctorBuilder.ExpressBody(
@@ -693,20 +693,20 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                     new TypeDefinition(
                         tempAssemblyNameDef.Name,
                         "EmitTest16",
-                        MC.TypeAttributes.AutoClass |
-                        MC.TypeAttributes.AnsiClass |
-                        MC.TypeAttributes.BeforeFieldInit |
-                        MC.TypeAttributes.Public,
+                        MC::TypeAttributes.AutoClass |
+                        MC::TypeAttributes.AnsiClass |
+                        MC::TypeAttributes.BeforeFieldInit |
+                        MC::TypeAttributes.Public,
                         tempAssemblyDef.MainModule.Import(typeof(object)));
                 tempAssemblyDef.MainModule.Types.Add(emitTest16Def);
 
                 var ctorDef =
                     new MethodDefinition(
                         ".ctor",
-                        MC.MethodAttributes.Public |
-                        MC.MethodAttributes.HideBySig |
-                        MC.MethodAttributes.SpecialName |
-                        MC.MethodAttributes.RTSpecialName,
+                        MC::MethodAttributes.Public |
+                        MC::MethodAttributes.HideBySig |
+                        MC::MethodAttributes.SpecialName |
+                        MC::MethodAttributes.RTSpecialName,
                         tempAssemblyDef.MainModule.Import(typeof(void)));
                 emitTest16Def.Methods.Add(ctorDef);
                 ctorDef.ExpressBody(
@@ -718,8 +718,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 var action2SameDomain2Def =
                     new MethodDefinition(
                         "Action2SameDomain2",
-                        MC.MethodAttributes.Public |
-                        MC.MethodAttributes.HideBySig,
+                        MC::MethodAttributes.Public |
+                        MC::MethodAttributes.HideBySig,
                         tempAssemblyDef.MainModule.Import(typeof(void)));
                 emitTest16Def.Methods.Add(action2SameDomain2Def);
                 string s = "Hello, Dynamic Assmbly!!";
@@ -821,6 +821,47 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                             methodTestClassDef.FullName,
                             action2LocalVariableDef12.Name,
                             typeof(Action2LocalVariable12Tester)
+                       );
+            }));
+        }
+
+
+
+
+        [Test]
+        public void EmitTest19()
+        {
+            UsingTempFile(tempFileName =>
+            NewAppDomainTester.Using(newDomain =>
+            {
+                // modify ...
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+
+                var action2LocalVariableDef19 =
+                    methodTestClassDef.GetMethod(
+                        "Action2LocalVariable",
+                        BindingFlags.Instance | BindingFlags.Public,
+                        new Type[] { }).DuplicateWithoutBody();
+                action2LocalVariableDef19.Name = "Action2LocalVariable19";
+                var a = new KeyValuePair<int, string>(1, "aiueo");
+                var b = default(DateTime);                                  // 別の AppDomain で値を作成してみる。
+                methodTestClassDef.Methods.Add(action2LocalVariableDef19);
+                action2LocalVariableDef19.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
+                });
+
+                methodTestClassDef.Module.Assembly.Write(tempFileName);
+
+                var scope = PortableScope2.CarryOut(action2LocalVariableDef19);
+                scope.Set(() => a, a);
+                return new NewAppDomainTesterParameter2(
+                            Path.Combine(newDomain.BaseDirectory, tempFileName),
+                            methodTestClassDef.FullName,
+                            action2LocalVariableDef19.Name,
+                            typeof(Action2LocalVariable19Tester),
+                            scope
                        );
             }));
         }
