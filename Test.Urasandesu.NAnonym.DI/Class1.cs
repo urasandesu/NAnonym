@@ -326,7 +326,7 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
             try
             {
                 var b = new DateTime(2010, 8, 31);
-                scope.Set(() => b, b);
+                scope.SetValue(() => b, b);
                 scope.DockWith(Instance);
                 Method.Invoke(Instance, null);
                 Assert.Fail();
@@ -337,18 +337,18 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
             }
 
             // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
-            scope.ForEach(
-            (scopeField, index) =>
+            scope.Items.ForEach(
+            (item, index) =>
             {
                 switch (index)
                 {
                     case 0:
-                        Assert.AreEqual("a", scopeField.Local.Name);
-                        Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), scopeField.Value);
+                        Assert.AreEqual("a", item.Name);
+                        Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), item.Value);
                         break;
                     case 1:
-                        Assert.AreEqual("b", scopeField.Local.Name);
-                        Assert.AreEqual(new DateTime(2010, 8, 31), scopeField.Value);
+                        Assert.AreEqual("b", item.Name);
+                        Assert.AreEqual(new DateTime(2010, 8, 31), item.Value);
                         break;
                     default:
                         Assert.Fail();
@@ -360,7 +360,7 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
             {
                 var a = default(KeyValuePair<int, string>);
                 Assert.IsTrue(scope.Contains(() => a));
-                Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), scope.Get(() => a));
+                Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), scope.GetValue(() => a));
             }
         }
     }

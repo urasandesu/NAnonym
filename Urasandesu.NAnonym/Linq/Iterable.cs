@@ -446,6 +446,17 @@ namespace Urasandesu.NAnonym.Linq
             return new Transformer<TSource, TDestination>(source, selector, reSelector);
         }
 
+        public static int GetHashCode<T>(this IEnumerable<T> source)
+        {
+            return source.Aggregate(0, (accumelate, next) => accumelate ^ next.GetHashCode());
+        }
+
+        public static int GetHashCodeNullable<T>(this IEnumerable<T> source)
+        {
+            return source.Aggregate(0, (accumelate, next) => accumelate ^ next.GetHashCodeNullable());
+        }
+
+
         public static IEqualityComparer<T> CreateEqualityComparer<T>(T obj)
         {
             return new DelegateEqualityComparer<T>();

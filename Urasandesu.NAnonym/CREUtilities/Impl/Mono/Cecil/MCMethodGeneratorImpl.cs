@@ -70,6 +70,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 
         public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
         {
+            var rawData = new PortableScope2ItemRawData(this, fieldInfo.Name);
             throw new NotImplementedException();
         }
 

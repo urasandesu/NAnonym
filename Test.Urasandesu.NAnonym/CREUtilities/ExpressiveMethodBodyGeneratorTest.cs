@@ -854,8 +854,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var scope = PortableScope2.CarryOut(action2LocalVariableDef19);
-                scope.Set(() => a, a);
+                var scope = PortableScope2.CarryFrom(action2LocalVariableDef19);
+                scope.SetValue(() => a, a);
                 return new NewAppDomainTesterParameter2(
                             Path.Combine(newDomain.BaseDirectory, tempFileName),
                             methodTestClassDef.FullName,

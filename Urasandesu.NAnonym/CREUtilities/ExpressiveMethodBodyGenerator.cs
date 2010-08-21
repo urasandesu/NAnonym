@@ -261,6 +261,7 @@ namespace Urasandesu.NAnonym.CREUtilities
                     }
                     else if (expressible.IsAddloc(exp.Method))
                     {
+                        // TODO: 同じ名前の変数は、同じ Scope 内であれば隠せる or 弾く工夫が必要
                         Eval(exp.Arguments[1]);
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                         var local = il.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
@@ -441,9 +442,12 @@ namespace Urasandesu.NAnonym.CREUtilities
                 {
                     //string fieldName = PortableScope.MakeFieldName(methodGen, fieldInfo.Name);
                     //var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR::FieldAttributes.Public | SR::FieldAttributes.SpecialName);
-                    var portableScopeItem = methodGen.AddPortableScopeItem(fieldInfo);
+                    //il.Emit(OpCodes.Ldarg_0);
+                    //il.Emit(OpCodes.Ldfld, fieldDecl);
+                    // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
+                    var item = methodGen.AddPortableScopeItem(fieldInfo);
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldfld, portableScopeItem.Field);
+                    il.Emit(OpCodes.Ldfld, item);
                 }
                 else
                 {
