@@ -63,15 +63,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action1Def2.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -115,15 +115,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef2.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -166,15 +166,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef3.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -217,15 +217,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef4.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -266,15 +266,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef5.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -325,15 +325,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef6.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -388,15 +388,15 @@ i++ = 1
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef7.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -444,13 +444,13 @@ Parameter[0] Type = Int32
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = func1Parameters2.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
-                        object result = @delegate.Invoke(new object[] { 10 });
+                        object result = target.Method.Invoke(target.Instance, new object[] { 10 });
                         Assert.AreEqual(110, result);
                     };
 
@@ -489,13 +489,13 @@ Parameter[0] Type = Int32
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
                 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = func1Parameters3.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
-                        object result = @delegate.Invoke(new object[] { 10 });
+                        object result = target.Method.Invoke(target.Instance, new object[] { 10 });
                         Assert.AreEqual(10, result);
                     };
 
@@ -531,15 +531,15 @@ Parameter[0] Type = Int32
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef8.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -598,15 +598,15 @@ Parameter[0] Type = Int32
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef9.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -660,17 +660,17 @@ Parameter[1] = IntPtr method
                 scope.Bind(() => d, d);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef10.Name;
                 testInfo.Scope = scope;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.TestInfo.Scope.Reinitialize(@delegate.Instance);
-                            @delegate.Invoke();
+                            target.TestInfo.Scope.Reinitialize(target.Instance);
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -717,17 +717,17 @@ Parameter[1] = IntPtr method
                 scope.Bind(() => a, a);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef11.Name;
                 testInfo.Scope = scope;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.TestInfo.Scope.Reinitialize(@delegate.Instance);
-                            @delegate.Invoke();
+                            target.TestInfo.Scope.Reinitialize(target.Instance);
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -996,15 +996,15 @@ Parameter[1] = IntPtr method
 
                 // 展開してしまうので、別 AppDomain でも問題なし。
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef12.Name;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
-                            @delegate.Invoke();
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -1055,19 +1055,19 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
-                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef19.Name;
                 testInfo.Scope2 = scope;
                 testInfo.TestVerifier =
-                    @delegate =>
+                    target =>
                     {
                         try
                         {
                             var b = new DateTime(2010, 8, 31);
-                            @delegate.TestInfo.Scope2.SetValue(() => b, b);
-                            @delegate.TestInfo.Scope2.DockWith(@delegate.Instance);
-                            @delegate.Invoke();
+                            target.TestInfo.Scope2.SetValue(() => b, b);
+                            target.TestInfo.Scope2.DockWith(target.Instance);
+                            target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
                         catch (Exception e)
@@ -1076,7 +1076,7 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                         }
 
                         // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
-                        @delegate.TestInfo.Scope2.Items.ForEach(
+                        target.TestInfo.Scope2.Items.ForEach(
                         (item, index) =>
                         {
                             switch (index)
@@ -1098,8 +1098,8 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                         // TODO: 定義してあるかのどうかのチェックと、設定済みの値をこんな感じで見たい。
                         {
                             var a = default(KeyValuePair<int, string>);
-                            Assert.IsTrue(@delegate.TestInfo.Scope2.Contains(() => a));
-                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), @delegate.TestInfo.Scope2.GetValue(() => a));
+                            Assert.IsTrue(target.TestInfo.Scope2.Contains(() => a));
+                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), target.TestInfo.Scope2.GetValue(() => a));
                         }
                     };
 

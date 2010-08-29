@@ -45,31 +45,13 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         {
             TestHelper.UsingTempFile(tempFileName =>
             {
-                var tempAssemblyNameDef =
-                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
-                var tempAssemblyDef =
-                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var tempAssemblyNameDef = CreateTempAssemblyNameDef(tempFileName);
+                var tempAssemblyDef = CreateTempAssemblyDef(tempAssemblyNameDef);
 
-                var carryPortableScope2Test01Def =
-                    new TypeDefinition(
-                        tempAssemblyNameDef.Name,
-                        "CarryPortableScope2Test01",
-                        MC::TypeAttributes.AutoClass |
-                        MC::TypeAttributes.AnsiClass |
-                        MC::TypeAttributes.BeforeFieldInit |
-                        MC::TypeAttributes.Public,
-                        tempAssemblyDef.MainModule.Import(typeof(object)));
-                tempAssemblyDef.MainModule.Types.Add(carryPortableScope2Test01Def);
+                var carryPortableScope2Test01Def = 
+                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScope2Test01", typeof(object), tempAssemblyDef);
 
-                var carryPortableScope2Test01CtorDef =
-                    new MethodDefinition(
-                        ".ctor",
-                        MC::MethodAttributes.Public |
-                        MC::MethodAttributes.HideBySig |
-                        MC::MethodAttributes.SpecialName |
-                        MC::MethodAttributes.RTSpecialName,
-                        tempAssemblyDef.MainModule.Import(typeof(void)));
-                carryPortableScope2Test01Def.Methods.Add(carryPortableScope2Test01CtorDef);
+                var carryPortableScope2Test01CtorDef = CreateTempCtor(carryPortableScope2Test01Def);
                 carryPortableScope2Test01CtorDef.ExpressBody(
                 gen =>
                 {
@@ -77,42 +59,21 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 });
 
                 var portableScope2A = 
-                    new FieldDefinition(
+                    CreateTempField(
                         carryPortableScope2Test01CtorDef.Name + PortableScope2.NameDelimiter + PortableScope2.NameDelimiter + "a", 
-                        MC::FieldAttributes.Private | 
-                        MC::FieldAttributes.SpecialName | 
-                        MC::FieldAttributes.RTSpecialName, 
-                        tempAssemblyDef.MainModule.Import(typeof(int)));
-                carryPortableScope2Test01Def.Fields.Add(portableScope2A);
+                        typeof(int), carryPortableScope2Test01Def);
 
                 var portableScope2AAttributeDef =
-                    new TypeDefinition(
-                        tempAssemblyNameDef.Name,
-                        "PortableScope2AAttribute",
-                        MC::TypeAttributes.AutoClass |
-                        MC::TypeAttributes.AnsiClass |
-                        MC::TypeAttributes.BeforeFieldInit |
-                        MC::TypeAttributes.Public,
-                        tempAssemblyDef.MainModule.Import(typeof(Attribute)));
-                tempAssemblyDef.MainModule.Types.Add(portableScope2AAttributeDef);
+                    CreateTempType(tempAssemblyNameDef.Name, "PortableScope2AAttribute", typeof(Attribute), tempAssemblyDef);
 
-                var portableScope2AAttributeCtorDef =
-                    new MethodDefinition(
-                        ".ctor",
-                        MC::MethodAttributes.Public |
-                        MC::MethodAttributes.HideBySig |
-                        MC::MethodAttributes.SpecialName |
-                        MC::MethodAttributes.RTSpecialName,
-                        tempAssemblyDef.MainModule.Import(typeof(void)));
-                portableScope2AAttributeDef.Methods.Add(portableScope2AAttributeCtorDef);
+                var portableScope2AAttributeCtorDef = CreateTempCtor(portableScope2AAttributeDef);
                 portableScope2AAttributeCtorDef.ExpressBody(
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
                 });
-                
-                var portableScope2AAttribute = new CustomAttribute(portableScope2AAttributeCtorDef);
-                portableScope2A.CustomAttributes.Add(portableScope2AAttribute);
+
+                var portableScope2AAttribute = CreateTempAttribute(portableScope2AAttributeCtorDef, portableScope2A);
 
                 tempAssemblyDef.Write(tempFileName);
 
@@ -122,12 +83,142 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 Assert.IsTrue(scope.Contains(() => a));
                 Assert.AreEqual(10, scope.GetValue(() => a));
 
-                object carryPortableScope2Test01Instance = 
-                    Activator.CreateInstanceFrom(
-                        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName), carryPortableScope2Test01Def.FullName).Unwrap();
+                object carryPortableScope2Test01Instance = CreateTempInstance(Path.GetFullPath(tempFileName), carryPortableScope2Test01Def); 
                 scope.DockWith(carryPortableScope2Test01Instance);
                 Assert.AreEqual(10, scope.FetchValue(() => a, carryPortableScope2Test01Instance));
+                Assert.NotNull(scope.methodDecl);
             });
+        }
+
+        [Test]
+        public void CarryPortableScope2Test02()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
+            {
+                var tempAssemblyNameDef = CreateTempAssemblyNameDef(tempFileName);
+                var tempAssemblyDef = CreateTempAssemblyDef(tempAssemblyNameDef);
+
+                var carryPortableScope2Test02Def =
+                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScope2Test02", typeof(object), tempAssemblyDef);
+
+                var carryPortableScope2Test02CtorDef = CreateTempCtor(carryPortableScope2Test02Def);
+                carryPortableScope2Test02CtorDef.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+                var portableScope2A =
+                    CreateTempField(
+                        carryPortableScope2Test02CtorDef.Name + PortableScope2.NameDelimiter + PortableScope2.NameDelimiter + "a",
+                        typeof(int), carryPortableScope2Test02Def);
+
+                var portableScope2AAttributeDef =
+                    CreateTempType(tempAssemblyNameDef.Name, "PortableScope2AAttribute", typeof(Attribute), tempAssemblyDef);
+
+                var portableScope2AAttributeCtorDef = CreateTempCtor(portableScope2AAttributeDef);
+                portableScope2AAttributeCtorDef.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+                var portableScope2AAttribute = CreateTempAttribute(portableScope2AAttributeCtorDef, portableScope2A);
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var scope = carryPortableScope2Test02CtorDef.CarryPortableScope2();
+                {
+                    int a = 10;
+                    scope.SetValue(() => a, a);
+                    Assert.IsTrue(scope.Contains(() => a));
+                    Assert.AreEqual(10, scope.GetValue(() => a));
+                }
+
+                var testInfo = new NewDomainTestInfo();
+                testInfo.AssemblyFileName = Path.GetFullPath(tempFileName);
+                testInfo.TypeFullName = carryPortableScope2Test02Def.FullName;
+                testInfo.Scope2 = scope;
+                testInfo.TestVerifier =
+                    target =>
+                    {
+                        target.TestInfo.Scope2.DockWith(target.Instance);
+                        int a = 0;
+                        Assert.AreEqual(10, target.TestInfo.Scope2.FetchValue(() => a, target.Instance));
+                        Assert.NotNull(target.TestInfo.Scope2.methodDecl);
+                    };
+
+                return testInfo;
+            }));
+        }
+
+
+
+
+
+
+
+        AssemblyNameDefinition CreateTempAssemblyNameDef(string tempFileName)
+        {
+            return new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+        }
+
+        AssemblyDefinition CreateTempAssemblyDef(AssemblyNameDefinition tempAssemblyNameDef)
+        {
+            return AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+        }
+
+        TypeDefinition CreateTempType(string @namespace, string name, Type baseType, AssemblyDefinition declaringAssembly)
+        {
+            var typeDef = 
+                new TypeDefinition(
+                    @namespace, 
+                    name, 
+                    MC::TypeAttributes.AutoClass | MC::TypeAttributes.AnsiClass | 
+                    MC::TypeAttributes.BeforeFieldInit | MC::TypeAttributes.Public,
+                    declaringAssembly.MainModule.Import(baseType));
+            declaringAssembly.MainModule.Types.Add(typeDef);
+            return typeDef;
+        }
+
+        MethodDefinition CreateTempCtor(TypeDefinition declaringType)
+        {
+            var methodDef =
+                new MethodDefinition(
+                    ".ctor",
+                    MC::MethodAttributes.Public |
+                    MC::MethodAttributes.HideBySig |
+                    MC::MethodAttributes.SpecialName |
+                    MC::MethodAttributes.RTSpecialName,
+                    declaringType.Module.Import(typeof(void)));
+            declaringType.Methods.Add(methodDef);
+            return methodDef;
+        }
+
+        FieldDefinition CreateTempField(string name, Type fieldType, TypeDefinition declaringType)
+        {
+            var fieldDef = 
+                new FieldDefinition(
+                    name,
+                    MC::FieldAttributes.Private |
+                    MC::FieldAttributes.SpecialName |
+                    MC::FieldAttributes.RTSpecialName,
+                    declaringType.Module.Import(fieldType));
+            declaringType.Fields.Add(fieldDef);
+            return fieldDef;
+        }
+
+        CustomAttribute CreateTempAttribute(MethodReference ctorRef, FieldDefinition targetFieldDef)
+        {
+            var customAttribute = new CustomAttribute(ctorRef);
+            targetFieldDef.CustomAttributes.Add(customAttribute);
+            return customAttribute;
+        }
+
+        object CreateTempInstance(string assemblyFile, TypeDefinition targetTypeDef)
+        {
+            return Activator.CreateInstanceFrom(assemblyFile, targetTypeDef.FullName).Unwrap();
         }
     }
 }

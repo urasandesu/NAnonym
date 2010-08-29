@@ -16,6 +16,24 @@ using System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
+    class AssemblyRawData
+    {
+    }
+
+    class ModuleRawData
+    {
+    }
+
+    class TypeRawData
+    {
+    }
+
+    class MethodRawData
+    {
+    }
+
+    // TODO: やっぱり各 **Declaration/Generator に対応する RawData がないと自然に Serialize/Deserialize できない。
+
     [Serializable]
     public sealed class PortableScope2
     {
@@ -29,7 +47,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         PortableScope2RawData rawData;
 
         [NonSerialized]
-        IMethodBaseDeclaration methodDecl;
+        internal IMethodBaseDeclaration methodDecl;
 
 
         // MEMO: items を復元するための情報
@@ -37,7 +55,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         string itemAssemblyQualifiedName;
 
         [NonSerialized]
-        List<PortableScope2Item> items;
+        internal List<PortableScope2Item> items;
 
         
         PortableScope2()
@@ -181,7 +199,7 @@ namespace Urasandesu.NAnonym.CREUtilities
             //       ん？ PortableScope2 <-> IMethodBaseDeclaration って 1 対 1 じゃね？
             //       PortableScope2ItemRawData も、実際の値ではなく、参照で持たせたほうが良さげ。
             //       PortableScope2RawData を導入。わかりやすさのため、methodDecl を Deserialize するための AssemblyQualifiedName も追加。
-
+            throw new NotImplementedException();
         }
 
     }
