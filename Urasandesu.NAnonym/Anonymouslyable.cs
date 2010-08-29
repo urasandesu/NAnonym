@@ -218,7 +218,7 @@ namespace Urasandesu.NAnonym
             return new TypeRef<T>();
         }*/
 
-        public static int GetHashCodeNullable<T>(this T obj)
+        public static int GetHashCodeOrDefault<T>(this T obj)
         {
             return EqualityComparer<T>.Default.Equals(obj, default(T)) ? 0 : EqualityComparer<T>.Default.GetHashCode(obj);
         }

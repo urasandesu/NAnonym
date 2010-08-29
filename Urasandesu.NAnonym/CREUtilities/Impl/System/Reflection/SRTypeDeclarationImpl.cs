@@ -33,10 +33,14 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
+        public string AssemblyQualifiedName { get { throw new NotImplementedException(); } }
+
         public ITypeDeclaration BaseType
         {
             get { return baseTypeDecl; }
         }
+
+        public IModuleDeclaration Module { get { throw new NotImplementedException(); } }
 
         public IConstructorDeclaration GetConstructor(Type[] types)
         {

@@ -30,20 +30,20 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            Directory.GetFiles(".", "*.tmp").ForEach(file => TryDelete(file));
+            TestHelper.TryDeleteFiles(".", "*.tmp");
         }
 
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {
-            Directory.GetFiles(".", "*.tmp").ForEach(file => TryDelete(file));
+            TestHelper.TryDeleteFiles(".", "*.tmp");
         }
 
         [Test]
         public void EmitTest01()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -62,12 +62,25 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action1Def2.Name,
-                            typeof(Action12Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action1Def2.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("Hello, World!!", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -77,8 +90,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest02()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -100,12 +113,26 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef2.Name,
-                            typeof(Action2LocalVariable2Tester)
-                       );
+
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef2.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("i.ToString() = 100", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -115,8 +142,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest03()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -138,12 +165,25 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef3.Name,
-                            typeof(Action2LocalVariable3Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef3.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("s.ToString() = aaaaa", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -153,8 +193,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest04()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -176,12 +216,25 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef4.Name,
-                            typeof(Action2LocalVariable4Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef4.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("s.ToString() = AAAAAAAAAA", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -191,8 +244,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest05()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -212,12 +265,25 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef5.Name,
-                            typeof(Action2LocalVariable5Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef5.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("brtrue", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -227,8 +293,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest06()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -258,12 +324,31 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef6.Name,
-                            typeof(Action2LocalVariable6Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef6.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual(
+@"1 + 1 = 2
+++i = 1
+i++ = 1
+--i = 1
+"
+                                , e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -273,8 +358,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest07()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -302,12 +387,31 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef7.Name,
-                            typeof(Action2LocalVariable7Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef7.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual(
+@"Name = dynamicMethod
+Return Type = System.String
+Parameter Length = 1
+Parameter[0] Type = Int32 
+"
+                                , e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -317,8 +421,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest08()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -339,12 +443,18 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            func1Parameters2.Name,
-                            typeof(Func1Parameters2Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = func1Parameters2.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        object result = @delegate.Invoke(new object[] { 10 });
+                        Assert.AreEqual(110, result);
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -354,8 +464,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest09()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -377,13 +487,19 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
+                
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = func1Parameters3.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        object result = @delegate.Invoke(new object[] { 10 });
+                        Assert.AreEqual(10, result);
+                    };
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            func1Parameters3.Name,
-                            typeof(Func1Parameters3Tester)
-                       );
+                return testInfo;
             }));
         }
 
@@ -393,8 +509,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest10()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -414,12 +530,25 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef8.Name,
-                            typeof(Action2LocalVariable8Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef8.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("GetValue(10) = 10", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -429,8 +558,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest11()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -468,12 +597,32 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef9.Name,
-                            typeof(Action2LocalVariable9Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef9.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual(
+@"Name = .ctor
+IsPublic = True
+Parameter Count = 2
+Parameter[0] = System.Object object
+Parameter[1] = IntPtr method
+"
+                                , e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -483,8 +632,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest12()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -509,13 +658,28 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 var scope = action2LocalVariableDef10.CreateScope();
                 scope.Bind(() => i, i);
                 scope.Bind(() => d, d);
-                return new NewAppDomainTesterParameter1(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef10.Name,
-                            typeof(Action2LocalVariable10Tester),
-                            scope
-                       );
+
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef10.Name;
+                testInfo.Scope = scope;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.TestInfo.Scope.Reinitialize(@delegate.Instance);
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("200", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -525,8 +689,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest13()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -551,13 +715,28 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 // 同期は取られてるはず…か。
                 var scope = action2LocalVariableDef11.CreateScope();
                 scope.Bind(() => a, a);
-                return new NewAppDomainTesterParameter1(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef11.Name,
-                            typeof(Action2LocalVariable11Tester),
-                            scope
-                       );
+
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef11.Name;
+                testInfo.Scope = scope;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.TestInfo.Scope.Reinitialize(@delegate.Instance);
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("[1, aiueo]", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -569,7 +748,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         {
             // TODO: 同一 AppDomain の場合は SharedScope の明示的な作成は必要ないはず。
             //       AssemblyBuilder からは難しいが、DynamicMethod からならがっつり短くできそう。
-            UsingTempFile(tempFileName =>
+            TestHelper.UsingTempFile(tempFileName =>
             {
                 var tempAssemblyNameDef =
                     new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
@@ -647,7 +826,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest15()
         {
-            UsingTempFile(tempFileName =>
+            TestHelper.UsingTempFile(tempFileName =>
             {
                 var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
                 var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
@@ -682,7 +861,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest16()
         {
-            UsingTempFile(tempFileName =>
+            TestHelper.UsingTempFile(tempFileName =>
             {
                 var tempAssemblyNameDef =
                     new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
@@ -726,8 +905,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 action2SameDomain2Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(_.Expand(s)));   // NOTE: Expand により、この場で式ツリーが展開される。
-                    //gen.Eval(_ => ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // NOTE: オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
+                    gen.Eval(_ => ThrowException(_.Expand(s)));   // Expand により、この場で式ツリーが展開される。
+                    //gen.Eval(_ => ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -754,7 +933,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest17()
         {
-            UsingTempFile(tempFileName =>
+            TestHelper.UsingTempFile(tempFileName =>
             {
                 var tempDynamicMethod = new DynamicMethod("Temp", null, null);
                 tempDynamicMethod.ExpressBody(
@@ -782,12 +961,12 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest18()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // MEMO: 偶然見つけた。Anonymous メソッド内に外側のクラスのメンバ紛れ込ますと cache されなくなってしまうあ。
                 // MEMO: なるほど。cache されない代わりに完全に中身が展開されるらしい。
-                // NOTE: GlobalClass セットアップクラスでインスタンスメンバ参照させることはまずないと思うけど・・・。一応その場合のパスも考えるべし。
+                // TODO: GlobalClass セットアップクラスでインスタンスメンバ参照させることはまずないと思うけど・・・。一応その場合のパスも考えるべし。
 
                 var candidateCallingCurrentMethods = typeof(ExpressiveMethodBodyGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
@@ -816,12 +995,29 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 // 展開してしまうので、別 AppDomain でも問題なし。
-                return new NewAppDomainTesterParameter(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef12.Name,
-                            typeof(Action2LocalVariable12Tester)
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef12.Name;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual(
+@"Cached Field Name: CS$<>9__CachedAnonymousMethodDelegatea2
+Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
+"
+                                , e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -831,8 +1027,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [Test]
         public void EmitTest19()
         {
-            UsingTempFile(tempFileName =>
-            NewAppDomainTester.Using(newDomain =>
+            TestHelper.UsingTempFile(tempFileName =>
+            NewDomainTest.Transfer(() =>
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
@@ -843,26 +1039,71 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
                 action2LocalVariableDef19.Name = "Action2LocalVariable19";
-                var a = new KeyValuePair<int, string>(1, "aiueo");
-                var b = default(DateTime);                                  // 別の AppDomain で値を作成してみる。
                 methodTestClassDef.Methods.Add(action2LocalVariableDef19);
+                var scope = action2LocalVariableDef19.CarryPortableScope2();
                 action2LocalVariableDef19.ExpressBody(
                 gen =>
                 {
+                    var a = new KeyValuePair<int, string>(1, "aiueo");
+                    var b = default(DateTime);                                  // 別の AppDomain で値を作成してみる。
+
                     gen.Eval(_ => ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
+
+                    scope.SetValue(() => a, a);
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var scope = PortableScope2.CarryFrom(action2LocalVariableDef19);
-                scope.SetValue(() => a, a);
-                return new NewAppDomainTesterParameter2(
-                            Path.Combine(newDomain.BaseDirectory, tempFileName),
-                            methodTestClassDef.FullName,
-                            action2LocalVariableDef19.Name,
-                            typeof(Action2LocalVariable19Tester),
-                            scope
-                       );
+                var testInfo = new NewDomainTestInfo();
+                testInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef19.Name;
+                testInfo.Scope2 = scope;
+                testInfo.TestVerifier =
+                    @delegate =>
+                    {
+                        try
+                        {
+                            var b = new DateTime(2010, 8, 31);
+                            @delegate.TestInfo.Scope2.SetValue(() => b, b);
+                            @delegate.TestInfo.Scope2.DockWith(@delegate.Instance);
+                            @delegate.Invoke();
+                            Assert.Fail();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.AreEqual("[1, aiueo], 2010/08/31", e.InnerException.Message);
+                        }
+
+                        // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
+                        @delegate.TestInfo.Scope2.Items.ForEach(
+                        (item, index) =>
+                        {
+                            switch (index)
+                            {
+                                case 0:
+                                    Assert.AreEqual("a", item.Name);
+                                    Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), item.Value);
+                                    break;
+                                case 1:
+                                    Assert.AreEqual("b", item.Name);
+                                    Assert.AreEqual(new DateTime(2010, 8, 31), item.Value);
+                                    break;
+                                default:
+                                    Assert.Fail();
+                                    break;
+                            }
+                        });
+
+                        // TODO: 定義してあるかのどうかのチェックと、設定済みの値をこんな感じで見たい。
+                        {
+                            var a = default(KeyValuePair<int, string>);
+                            Assert.IsTrue(@delegate.TestInfo.Scope2.Contains(() => a));
+                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), @delegate.TestInfo.Scope2.GetValue(() => a));
+                        }
+                    };
+
+                return testInfo;
             }));
         }
 
@@ -888,33 +1129,6 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         public static int GetValue(int value)
         {
             return value;
-        }
-
-        static void UsingTempFile(Action<string> action)
-        {
-            string tempFileName = Path.GetFileName(FileSystem.GetTempFileName());
-            try
-            {
-                action(tempFileName);
-            }
-            finally
-            {
-                TryDelete(tempFileName);
-            }
-        }
-
-        static bool TryDelete(string filePath)
-        {
-            try
-            {
-                File.Delete(filePath);
-                return true;
-            }
-            catch
-            {
-                // 無視。
-                return false;
-            }
         }
     }
 }

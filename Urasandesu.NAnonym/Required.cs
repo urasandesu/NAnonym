@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace Urasandesu.NAnonym
 {
+    [DebuggerStepThrough]
     public static class Required
     {
         public static T NotDefault<T>(T value, Expression<Func<T>> paramNameProvider)
         {
+            return NotDefault(value, paramNameProvider, "Value cannot be default.");
+        }
+
+        public static T NotDefault<T>(T value, Expression<Func<T>> paramNameProvider, string message)
+        {
             if (EqualityComparer<T>.Default.Equals(value, default(T)))
             {
-                throw new ArgumentException("Value cannot be default.", GetParamName(paramNameProvider));
+                throw new ArgumentException(message, GetParamName(paramNameProvider));
             }
             return value;
         }
@@ -56,6 +63,15 @@ namespace Urasandesu.NAnonym
             if (!predicate(value))
             {
                 throw new ArgumentException("Value is different from predicate.", GetParamName(paramNameProvider));
+            }
+            return value;
+        }
+
+        public static T MustBeSet<T>(T value, T requiredValue, Expression<Func<T>> paramNameProvider)
+        {
+            if (!EqualityComparer<T>.Default.Equals(value, requiredValue))
+            {
+                throw new ArgumentException(string.Format("Value must be set {0}", requiredValue), GetParamName(paramNameProvider));
             }
             return value;
         }

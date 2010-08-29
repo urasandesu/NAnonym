@@ -65,6 +65,7 @@
     <Compile Include="CREUtilities\ILabelDeclaration.cs" />
     <Compile Include="CREUtilities\ILabelGenerator.cs" />
     <Compile Include="CREUtilities\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
+    <Compile Include="CREUtilities\Impl\Mono\Cecil\MCPortableScope2ItemImpl.cs" />
     <Compile Include="CREUtilities\Impl\System\Reflection\SRILOperatorImpl.cs" />
     <Compile Include="CREUtilities\Expressible.cs" />
     <Compile Include="CREUtilities\ILocalDeclaration.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="CREUtilities\Impl\System\Reflection\SRMethodBodyGeneratorImpl.cs" />
     <Compile Include="CREUtilities\Impl\System\Reflection\SRMethodDeclarationImpl.cs" />
     <Compile Include="CREUtilities\Impl\System\Reflection\SRMethodGeneratorImpl.cs" />
+    <Compile Include="CREUtilities\Impl\System\Reflection\SRPortableScope2ItemImpl.cs" />
     <Compile Include="CREUtilities\Impl\System\Reflection\SRTypeDeclarationImpl.cs" />
     <Compile Include="CREUtilities\Impl\System\Reflection\SRTypeGeneratorImpl.cs" />
     <Compile Include="CREUtilities\IParameterDeclaration.cs" />
@@ -117,8 +119,11 @@
     <Compile Include="CREUtilities\OpCodes.cs" />
     <Compile Include="CREUtilities\ImplicitConversions\OpCode\System\Reflection\Emit\OpCode.cs" />
     <Compile Include="CREUtilities\PortableScope.cs" />
+    <Compile Include="CREUtilities\PortableScope2Item.cs" />
+    <Compile Include="CREUtilities\PortableScope2ItemRawData.cs" />
+    <Compile Include="CREUtilities\PortableScopeAttribute.cs" />
     <Compile Include="CREUtilities\TypeAnalyzer.cs" />
-    <Compile Include="CREUtilities\TypeSaveable.cs" />
+    <Compile Include="CREUtilities\TypeSavable.cs" />
     <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtil.cs" />
     <Compile Include="DI\GlobalClassBase.cs" />

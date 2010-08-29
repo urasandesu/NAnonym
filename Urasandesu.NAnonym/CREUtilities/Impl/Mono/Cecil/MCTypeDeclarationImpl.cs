@@ -20,6 +20,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
         {
             this.typeRef = typeRef;
             typeDef = typeRef as TypeDefinition;
+            // MEMO: typeRef.Resolve() で TypeDefinition に変換するって想定だったっぽい。なるほど。
             if (typeDef == null)
             {
                 type = Type.GetType(typeRef.FullName);
@@ -48,16 +49,24 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
             get { return typeRef.FullName; }
         }
 
+        public string AssemblyQualifiedName
+        {
+            get { return typeRef.FullName + ", " + typeRef.Module.Assembly.FullName; }
+        }
+
         public ITypeDeclaration BaseType
         {
             get { return baseTypeDecl; }
         }
 
+        public IModuleDeclaration Module { get { throw new NotImplementedException(); } }
+
         public IConstructorDeclaration GetConstructor(Type[] types)
         {
             if (typeDef == null)
             {
-                return (MCConstructorDeclarationImpl)typeRef.Module.Import(type.GetConstructor(types));
+                return (MCConstructorDeclarationImpl)typeRef.Module.Import(
+                    type.GetConstructor(SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, null, types, null));
             }
             else
             {

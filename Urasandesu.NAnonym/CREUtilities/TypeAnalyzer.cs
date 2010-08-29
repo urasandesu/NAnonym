@@ -9,6 +9,11 @@ using MC = Mono.Cecil;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
+    // MEMO: これは Cecil 無いとどうにも解析できない？
+    // NOTE: Global クラス側だけにあれば良い機能（SN 付いてない Assembly 書き換えるって機能がそもそも Cecil にしかない）。
+    // NOTE: つまり Global クラスは Cecil 側になる。
+    // TODO: 名前空間をもっと上の段階で区切ったほうがいい。
+    // TODO: Urasandesu.NAnonym.CREUtilities.MC, Urasandesu.NAnonym.CREUtilities.SR みたいな。
     public static class TypeAnalyzer
     {
         public static bool IsAnonymous(MethodBase methodBase)

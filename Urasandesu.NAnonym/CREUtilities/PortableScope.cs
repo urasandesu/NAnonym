@@ -12,194 +12,131 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using Urasandesu.NAnonym.Linq;
 using SR = System.Reflection;
+using System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    // TODO: 名前空間のエイリアス使うときは::使ったほうが見やすいな。
-    // TODO: PortableScope で扱うフィールド用の属性が欲しい。
-    [AttributeUsage(AttributeTargets.Field)]
-    public sealed class PortableScopeAttribute : Attribute
-    {
-    }
-
-
-    // NOTE: インターフェースのメンバは Serialize できんとです。
-    // NOTE: internal なクラスのメンバも Serialize できんとです。
-    // NOTE: つまりこれ自身は Serialize の対象とはしない。上の階層の PortableScope2 で制御する。
-    // NOTE: LocalDeclaration, FieldDeclaration の両方の属性を持つクラスということで落ち着いた。
-    public abstract class PortableScope2Item : ILocalDeclaration, IFieldDeclaration
-    {
-        #region ILocalDeclaration メンバ
-
-        public abstract string Name { get; }
-
-        #endregion
-
-        #region IMemberDeclaration メンバ
-
-        string IMemberDeclaration.Name
-        {
-            get { return IMemberDeclaration_Name; }
-        }
-
-        protected abstract string IMemberDeclaration_Name { get; }
-
-        #endregion
-    }
-
-    class MCPortableScope2ItemImpl : PortableScope2Item
-    {
-        // NOTE: 構築中はこちら。まだ実体化してないので、GlobalAssemblyResolver.Resolve できない。
-        public MCPortableScope2ItemImpl(FieldDefinition fieldDef, MC::Cil.VariableDefinition variableDef)
-        {
-            throw new NotImplementedException();
-        }
-
-        // NOTE: 構築後はこちら。Deserialize 時などに利用することを想定。RawData に含まれる情報を利用し、GlobalAssemblyResolver.Resolve で一気取りする。
-        public MCPortableScope2ItemImpl(PortableScope2ItemRawData rawData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        protected override string IMemberDeclaration_Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-    }
-
-    class SRPortableScope2ItemImpl : PortableScope2Item
-    {
-        // NOTE: 構築中はこちら。まだ実体化してないので、Assembly.Load できない。
-        public SRPortableScope2ItemImpl(SR::Emit.FieldBuilder fieldBuilder, SR::Emit.LocalBuilder localBuilder)
-        {
-            throw new NotImplementedException();
-        }
-
-        // NOTE: 構築後はこちら。Deserialize 時などに利用することを想定。RawData に含まれる情報を利用し、Assembly.Load で一気取りする。
-        public SRPortableScope2ItemImpl(PortableScope2ItemRawData rawData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        protected override string IMemberDeclaration_Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-    }
-
     [Serializable]
-    public sealed class PortableScope2ItemRawData
+    public sealed class PortableScope2
     {
         public const string NameDelimiter = "<>";
         public const string MemberAccessOperator = ".";
         public const string AltMemberAccessOperator = "$";
 
-        public PortableScope2ItemRawData(IMethodBaseDeclaration methodDecl, string localName)
-        {
-            // TODO: AssemblyFullName, ModuleName への設定が必要！！
-            throw new NotImplementedException();
-            TypeFullName = methodDecl.DeclaringType.FullName;
-            MethodName = methodDecl.Name;
-            ParameterTypeFullNames = methodDecl.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
-            LocalName = localName;
-
-            var fieldName = new StringBuilder();
-            fieldName.Append(TypeFullName.Replace(MemberAccessOperator, AltMemberAccessOperator));
-            fieldName.Append(NameDelimiter);
-            fieldName.Append(methodDecl.Name);
-            fieldName.Append(NameDelimiter);
-            fieldName.Append(string.Join(
-                NameDelimiter, 
-                ParameterTypeFullNames.Select(
-                    ParameterTypeFullName => ParameterTypeFullName.Replace(MemberAccessOperator, AltMemberAccessOperator)).ToArray()));
-            fieldName.Append(NameDelimiter);
-            this.fieldName = fieldName.ToString();
-        }
-
-        public string AssemblyFullName { get; private set; }
-        public string ModuleName { get; private set; }
-        public string TypeFullName { get; private set; }
-        public string MethodName { get; private set; }
-        public string[] ParameterTypeFullNames { get; private set; }
-        public string LocalName { get; private set; }
+        // MEMO: methodDecl を復元するための情報
+        // methodDecl は items 復元後に辿ることができるが、わかりやすさのためにここから行うこととする。
+        string methodDeclAssemblyQualifiedName;
+        PortableScope2RawData rawData;
 
         [NonSerialized]
-        string fieldName;
+        IMethodBaseDeclaration methodDecl;
 
-        public string FieldName { get { return fieldName; } }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            if (object.ReferenceEquals(this, obj)) return true;
-
-            var that = default(PortableScope2ItemRawData);
-            if ((that = obj as PortableScope2ItemRawData) == null) return false;
-
-            bool equals = TypeFullName == that.TypeFullName;
-            equals = equals && MethodName == that.MethodName;
-            equals = equals && ParameterTypeFullNames.Equivalent(that.ParameterTypeFullNames);
-            equals = equals && LocalName == that.LocalName;
-
-            return equals;
-        }
-
-        public override int GetHashCode()
-        {
-            // HACK: このクラスは Immutable なので HashCode はキャッシュ可能。
-            int typeFullNameHashCode = TypeFullName.GetHashCodeNullable();
-            int methodNameHashCode = MethodName.GetHashCodeNullable();
-            int parameterTypeFullNamesHashCode = ParameterTypeFullNames.GetHashCodeNullable();
-            int localNameHashCode = LocalName.GetHashCodeNullable();
-
-            return typeFullNameHashCode ^ methodNameHashCode ^ parameterTypeFullNamesHashCode ^ localNameHashCode;
-        }
-    }
-
-    [Serializable]
-    public class PortableScope2
-    {
-        Dictionary<PortableScope2ItemRawData, object> fieldNameValueDictionary;
+        // MEMO: items を復元するための情報
+        Dictionary<PortableScope2ItemRawData, object> itemRawDataValueDictionary;
+        string itemAssemblyQualifiedName;
 
         [NonSerialized]
-        List<PortableScope2Item> portableScope2Items;
+        List<PortableScope2Item> items;
 
-        public static PortableScope2 CarryFrom(MethodDefinition methodDef)
+        
+        PortableScope2()
         {
-            // NOTE: 構築順序。
-            //       1. portableScope2Fields
-            //       2. fieldNameValueDictionary
+            itemRawDataValueDictionary = new Dictionary<PortableScope2ItemRawData, object>();
+            items = new List<PortableScope2Item>();
+        }
+
+        internal PortableScope2(IMethodBaseDeclaration methodDecl)
+            : this()
+        {
+            this.methodDecl = methodDecl;
+            rawData = new PortableScope2RawData(methodDecl);
+        }
+
+        public static PortableScope2 CarryFrom(IMethodBaseDeclaration methodDecl)
+        {
+            // TODO: ここでは定義されている PortableScope 向けのフィールドチェックを行わないこと。
             throw new NotImplementedException();
         }
 
-        public void DockWith(object target)
+        public static PortableScope2 CarryFrom(object instance, string methodName, params Type[] parameterTypes)
         {
+            // TODO: SR で構築（デフォルトの動作）
+            // HACK: ん？デフォルトの動作全部 SR 側に振っておいて、Cecil 使う場合は Cecil 用の Assembly 参照設定すればいいだけ、にすれば良くない？
+            // HACK: そうすると、static な所謂 Builder メソッドは基本的に extension method として定義するのが良さそう。
+            throw new NotImplementedException();
+        }
+
+        public object DockWith(object target)
+        {
+            Required.NotDefault(target, () => target);
+
+            var targetType = target.GetType();
+            foreach (var itemRawDataValuePair in itemRawDataValueDictionary)
+            {
+                var itemRawData = itemRawDataValuePair.Key;
+                var value = itemRawDataValuePair.Value;
+
+                var fieldInfo = targetType.GetField(itemRawData.FieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+                Required.NotDefault(fieldInfo, () => target, "The field \"" + itemRawData.FieldName + "\" is not found.");
+
+                fieldInfo.SetValue(target, value);
+            }
+
+            return target;
+            // HACK: 気軽に何度も設定し直せるよう、DynamicMethod 化するといい。
+        }
+
+        public bool TryDockWith(object target)
+        {
+            // HACK: こちらが無視版。デバッグ難しそう(笑)
+            // MEMO: それを言うなら、DynamicMethod のデバッグ自体難しいので無問題。
+            // MEMO: IL のデバッガも存在するらしい。メモメモ。
             throw new NotImplementedException();
         }
 
         public bool Contains<T>(Expression<Func<T>> variableRef)
         {
-            throw new NotImplementedException();
+            // HACK: Contains 等の比較にあらかじめ methodDecl まで計算した状態を保持しておく方法が必要。
+            // HACK: 頻繁に new されるようであれば、struct 化も検討。
+            return itemRawDataValueDictionary.ContainsKey(new PortableScope2ItemRawData(rawData, TypeSavable.GetParamName(variableRef)));
         }
 
         public T GetValue<T>(Expression<Func<T>> variableRef)
         {
+            return (T)itemRawDataValueDictionary[new PortableScope2ItemRawData(rawData, TypeSavable.GetParamName(variableRef))];
+        }
+
+        public T FetchValue<T>(Expression<Func<T>> variableRef, object target)
+        {
+            Required.NotDefault(target, () => target);
+
+            var targetType = target.GetType();
+            var itemRawData = new PortableScope2ItemRawData(rawData, TypeSavable.GetParamName(variableRef));
+            var fieldInfo = targetType.GetField(itemRawData.FieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            Required.NotDefault(fieldInfo, () => target, "The field \"" + itemRawData.FieldName + "\" is not found.");
+
+            return (T)fieldInfo.GetValue(target);
+            // HACK: 気軽に何度も取得し直せるよう、DynamicMethod 化するといい。
+        }
+
+        public T PullValue<T>(Expression<Func<T>> variableRef, object target)
+        {
+            // MEMO: itemRawDataValueDictionary を更新しつつ取得、的な。
             throw new NotImplementedException();
         }
 
-        public void SetValue<T>(Expression<Func<T>> variableRef, T value)
+        public T PushValue<T>(Expression<Func<T>> variableRef, T value, object target)
         {
+            // MEMO: itemRawDataValueDictionary を更新しつつ設定、的な。
+            // 設定側は FetchValue にあたる処理は作らない。DockWith 時に整合性が取れなくなるため。
             throw new NotImplementedException();
+        }
+
+        public PortableScope2 SetValue<T>(Expression<Func<T>> variableRef, T value)
+        {
+            itemRawDataValueDictionary[new PortableScope2ItemRawData(rawData, TypeSavable.GetParamName(variableRef))] = value;
+            return this;
         }
 
         public ReadOnlyCollection<PortableScope2Item> Items
@@ -233,6 +170,18 @@ namespace Urasandesu.NAnonym.CREUtilities
             // TODO: さらに、fieldNameValueDictionary の型を Dictionary<string, object> → Dictionary<PortableScope2FieldRawData, object> にすればいい。
             // TODO: PortableScope2FieldRawData に static な Parse メソッド付ければいい。
 
+
+            // TODO: これだと MCPortableScope2ItemImpl を生成すればいいのか、SRPortableScope2ItemImpl を生成すればいいのかわからない？
+
+            // TODO: Deserialize の順は以下の通り。
+            //       1. rawDataValueDictionary はシステムに任せる。
+            //       2. itemAssemblyQualifiedName はシステムに任せる。
+            //       3. 1. と 2. から items を復元する。
+            //       4. methodDecl は items が知ってる。
+            //       ん？ PortableScope2 <-> IMethodBaseDeclaration って 1 対 1 じゃね？
+            //       PortableScope2ItemRawData も、実際の値ではなく、参照で持たせたほうが良さげ。
+            //       PortableScope2RawData を導入。わかりやすさのため、methodDecl を Deserialize するための AssemblyQualifiedName も追加。
+
         }
 
     }
@@ -247,6 +196,7 @@ namespace Urasandesu.NAnonym.CREUtilities
     //       ・情報を紐付ける、設定する、…
     //       ・インスタンスを再初期化する、再構築する、結びつける、くっつける、…
     //       ことができそうな的確な名前を。
+    [Obsolete]
     [Serializable]
     public sealed class PortableScope
     {

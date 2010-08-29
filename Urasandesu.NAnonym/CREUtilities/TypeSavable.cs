@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    public static class TypeSaveable
+    public static class TypeSavable
     {
         public static MethodInfo GetMethodInfo<T, TResult>(Expression<Func<Func<T, TResult>>> methodProvider)
         {

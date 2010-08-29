@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil;
+using Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
@@ -439,23 +440,29 @@ namespace Urasandesu.NAnonym.CREUtilities
         //    throw new NotImplementedException();
         //}
 
+        public static PortableScope2 CarryPortableScope2(this MethodDefinition methodDef)
+        {
+            var scope = new PortableScope2((MCMethodGeneratorImpl)methodDef);
+            return scope;
+        }
+
         public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
-            var gen = new ExpressiveMethodBodyGenerator(methodDef);
+            var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
             expression(gen);
             gen.Eval(_ => _.End());
         }
 
         public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(constructorBuilder);
+            var gen = new ExpressiveMethodBodyGenerator((SRConstructorGeneratorImpl)constructorBuilder);
             expression(gen);
             gen.Eval(_ => _.End());
         }
 
         public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(dynamicMethod);
+            var gen = new ExpressiveMethodBodyGenerator((SRMethodGeneratorImpl)dynamicMethod);
             expression(gen);
             gen.Eval(_ => _.End());
         }

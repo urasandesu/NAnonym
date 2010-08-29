@@ -6,32 +6,112 @@ using Urasandesu.NAnonym.CREUtilities;
 using Urasandesu.NAnonym.Linq;
 using System.Reflection;
 using System.Threading;
+using System.IO;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Urasandesu.NAnonym.Test
 {
-    public delegate NewAppDomainTesterParameter NewAppDomainTesterUsingAction(AppDomain newDomain);
+    public delegate NewDomainTestInfo NewDomainTestInfoProvider();
 
-    public abstract class NewAppDomainTester : MarshalByRefObject
+    public delegate void NewDomainTestVerifier(NewDomainVerificationDelegate @delegate);
+
+    [Serializable]
+    public class NewDomainTestInfo
     {
-        public static void Using(NewAppDomainTesterUsingAction action)
+        public string FileName { get; set; }
+        public string TypeFullName { get; set; }
+        public string MethodName { get; set; }
+        public NewDomainTestVerifier TestVerifier { get; set; }
+        public PortableScope Scope { get; set; }
+        public PortableScope2 Scope2 { get; set; }
+        public virtual void Verify()
+        {
+            TestVerifier(new NewDomainVerificationDelegate(this));
+        }
+    }
+
+    public class NewDomainVerificationDelegate
+    {
+        readonly NewDomainTestInfo testInfo;
+        public NewDomainVerificationDelegate(NewDomainTestInfo testInfo)
+        {
+            this.testInfo = testInfo; 
+        }
+
+        public NewDomainTestInfo TestInfo
+        {
+            get { return testInfo; }
+        }
+
+        Assembly assembly;
+        public virtual Assembly Assembly
+        {
+            get
+            {
+                if (assembly == null)
+                {
+                    assembly = Assembly.LoadFile(testInfo.FileName);
+                }
+                return assembly;
+            }
+        }
+
+        object instance;
+        public virtual object Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = Assembly.CreateInstance(testInfo.TypeFullName);
+                }
+                return instance;
+            }
+        }
+
+
+        MethodInfo method;
+        public virtual MethodInfo Method
+        {
+            get
+            {
+                if (method == null)
+                {
+                    var type = Instance.GetType();
+                    method = type.GetMethod(testInfo.MethodName);
+                }
+                return method;
+            }
+        }
+
+
+        public virtual object Invoke(params object[] parameters)
+        {
+            return Method.Invoke(Instance, parameters);
+        }
+    }
+
+    public static class NewDomainTest
+    {
+        public static void Transfer(NewDomainTestInfoProvider provider)
         {
             var info = new AppDomainSetup();
-            var appDomain = Thread.GetDomain();
-            info.ApplicationBase = appDomain.BaseDirectory;
+            info.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
             info.ShadowCopyFiles = "true";
-            var newDomain = AppDomain.CreateDomain("NewDomain", null, info);
+            var newDomain = default(AppDomain);
             try
             {
-                var param = action(newDomain);
+                newDomain = AppDomain.CreateDomain("NewDomain", null, info);
+                var testInfo = provider();
 
                 var marshalByRefTester =
-                    (NewAppDomainTester)newDomain.CreateInstanceAndUnwrap(
-                        param.Tester.Assembly.FullName,
-                        param.Tester.FullName,
+                    (NewDomainTester)newDomain.CreateInstanceAndUnwrap(
+                        typeof(NewDomainTester).Assembly.FullName,
+                        typeof(NewDomainTester).FullName,
                         true,
                         BindingFlags.Default,
                         null,
-                        new object[] { param },
+                        new object[] { testInfo },
                         null,
                         null,
                         null);
@@ -42,97 +122,145 @@ namespace Urasandesu.NAnonym.Test
                 AppDomain.Unload(newDomain);
             }
         }
-
-        public NewAppDomainTester(NewAppDomainTesterParameter parameter)
-        {
-            Parameter = parameter;
-        }
-
-        protected NewAppDomainTesterParameter Parameter { get; private set; }
-
-        Assembly assembly;
-        protected Assembly Assembly
-        {
-            get
-            {
-                if (assembly == null)
-                {
-                    assembly = Assembly.LoadFile(Parameter.FileName);
-                }
-                return assembly;
-            }
-        }
-
-        object instance;
-        protected object Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = Assembly.CreateInstance(Parameter.TypeName);
-                }
-                return instance;
-            }
-        }
-
-        MethodInfo method;
-        protected MethodInfo Method
-        {
-            get
-            {
-                if (method == null)
-                {
-                    var type = Instance.GetType();
-                    method = type.GetMethod(Parameter.MethodName);
-                }
-                return method;
-            }
-        }
-
-        public abstract void Verify();
     }
 
-    [Serializable]
-    public class NewAppDomainTesterParameter
+    public sealed class NewDomainTester : MarshalByRefObject
     {
-        public NewAppDomainTesterParameter(string fileName, string typeName, string methodName, Type tester)
+        NewDomainTestInfo testInfo;
+        public NewDomainTester(NewDomainTestInfo testInfo)
         {
-            FileName = fileName;
-            TypeName = typeName;
-            MethodName = methodName;
-            Tester = tester;
+            this.testInfo = testInfo;
         }
 
-        public string FileName { get; private set; }
-        public string TypeName { get; private set; }
-        public string MethodName { get; private set; }
-        public Type Tester { get; private set; }
-    }
-
-    [Serializable]
-    public class NewAppDomainTesterParameter1 : NewAppDomainTesterParameter
-    {
-        public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, PortableScope scope)
-            : base(fileName, typeName, methodName, tester)
+        public void Verify()
         {
-            Scope = scope;
+            testInfo.Verify();
         }
-
-        public PortableScope Scope { get; private set; }
     }
 
-    [Serializable]
-    public class NewAppDomainTesterParameter2 : NewAppDomainTesterParameter
-    {
-        public NewAppDomainTesterParameter2(string fileName, string typeName, string methodName, Type tester, PortableScope2 scope)
-            : base(fileName, typeName, methodName, tester)
-        {
-            Scope = scope;
-        }
+    //public abstract class NewAppDomainTester : MarshalByRefObject
+    //{
+    //    public static void Using(NewAppDomainTesterUsingAction action)
+    //    {
+    //        var info = new AppDomainSetup();
+    //        var appDomain = Thread.GetDomain();
+    //        info.ApplicationBase = appDomain.BaseDirectory;
+    //        info.ShadowCopyFiles = "true";
+    //        var newDomain = default(AppDomain);
+    //        try
+    //        {
+    //            newDomain = AppDomain.CreateDomain("NewDomain", null, info);
+    //            var param = action(newDomain);
 
-        public PortableScope2 Scope { get; private set; }
-    }
+    //            var marshalByRefTester =
+    //                (NewAppDomainTester)newDomain.CreateInstanceAndUnwrap(
+    //                    param.Tester.Assembly.FullName,
+    //                    param.Tester.FullName,
+    //                    true,
+    //                    BindingFlags.Default,
+    //                    null,
+    //                    new object[] { param },
+    //                    null,
+    //                    null,
+    //                    null);
+    //            newDomain.DoCallBack(new CrossAppDomainDelegate(marshalByRefTester.Verify));
+    //        }
+    //        finally
+    //        {
+    //            AppDomain.Unload(newDomain);
+    //        }
+    //    }
+
+    //    public NewAppDomainTester(NewAppDomainTesterParameter parameter)
+    //    {
+    //        Parameter = parameter;
+    //    }
+
+    //    protected NewAppDomainTesterParameter Parameter { get; private set; }
+
+    //    Assembly assembly;
+    //    protected virtual Assembly Assembly
+    //    {
+    //        get
+    //        {
+    //            if (assembly == null)
+    //            {
+    //                assembly = Assembly.LoadFile(Parameter.AssemblyIdentifier);
+    //            }
+    //            return assembly;
+    //        }
+    //    }
+
+    //    object instance;
+    //    protected virtual object Instance
+    //    {
+    //        get
+    //        {
+    //            if (instance == null)
+    //            {
+    //                instance = Assembly.CreateInstance(Parameter.TypeIdentifier);
+    //            }
+    //            return instance;
+    //        }
+    //    }
+
+    //    MethodInfo method;
+    //    protected virtual MethodInfo Method
+    //    {
+    //        get
+    //        {
+    //            if (method == null)
+    //            {
+    //                var type = Instance.GetType();
+    //                method = type.GetMethod(Parameter.MethodName);
+    //            }
+    //            return method;
+    //        }
+    //    }
+
+    //    public abstract void Verify();
+    //}
+
+    //[Serializable]
+    //public class NewAppDomainTesterParameter
+    //{
+    //    public NewAppDomainTesterParameter(string assemblyIdentifier, string typeIdentifier, string methodName, Type tester)
+    //    {
+    //        AssemblyIdentifier = assemblyIdentifier;
+    //        TypeIdentifier = typeIdentifier;
+    //        MethodName = methodName;
+    //        Tester = tester;
+    //    }
+
+    //    public string AssemblyIdentifier { get; private set; }
+    //    public string TypeIdentifier { get; private set; }
+    //    public string MethodName { get; private set; }
+    //    public Type Tester { get; private set; }
+    //}
+
+    //[Serializable]
+    //public class NewAppDomainTesterParameter1 : NewAppDomainTesterParameter
+    //{
+    //    public NewAppDomainTesterParameter1(string fileName, string typeName, string methodName, Type tester, PortableScope scope)
+    //        : base(fileName, typeName, methodName, tester)
+    //    {
+    //        Scope = scope;
+    //    }
+
+    //    public PortableScope Scope { get; private set; }
+    //}
+
+    //[Serializable]
+    //public class NewAppDomainTesterParameter2 : NewAppDomainTesterParameter
+    //{
+    //    public NewAppDomainTesterParameter2(string fileName, string typeName, string methodName, Type tester, PortableScope2 scope)
+    //        : base(fileName, typeName, methodName, tester)
+    //    {
+    //        Scope = scope;
+    //    }
+
+    //    public PortableScope2 Scope { get; private set; }
+    //}
 
     public class Assert : NUnit.Framework.Assert
     {
@@ -192,6 +320,41 @@ namespace Urasandesu.NAnonym.Test
         {
             this.actual = actual;
             return equalityComparer(expected, (T2)actual);
+        }
+    }
+
+    public static class TestHelper
+    {
+        public static void UsingTempFile(Action<string> action)
+        {
+            string tempFileName = Path.GetFileName(FileSystem.GetTempFileName());
+            try
+            {
+                action(tempFileName);
+            }
+            finally
+            {
+                TryDelete(tempFileName);
+            }
+        }
+
+        public static bool TryDelete(string filePath)
+        {
+            try
+            {
+                File.Delete(filePath);
+                return true;
+            }
+            catch
+            {
+                // 無視。
+                return false;
+            }
+        }
+
+        public static bool TryDeleteFiles(string path, string searchPattern)
+        {
+            return Directory.GetFiles(path, searchPattern).All(file => TryDelete(file));
         }
     }
 }

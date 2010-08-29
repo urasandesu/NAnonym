@@ -14,6 +14,8 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
+    // TODO: PortableScope の対応が一通り終わったところで Assembly 分割を行う。
+    //       Urasandesu.NAnonym.
     public class ExpressiveMethodBodyGenerator : IMethodBodyGenerator
     {
         readonly ITypeDeclaration declaringTypeDecl;
@@ -24,7 +26,7 @@ namespace Urasandesu.NAnonym.CREUtilities
 
         readonly MethodInfo GetTypeFromHandle;
 
-        ExpressiveMethodBodyGenerator(IMethodBaseGenerator methodGen)
+        internal ExpressiveMethodBodyGenerator(IMethodBaseGenerator methodGen)
         {
             this.methodGen = methodGen;
             declaringTypeDecl = methodGen.DeclaringType; // NOTE: Generator から来てないとまずいってことだね。
@@ -45,20 +47,20 @@ namespace Urasandesu.NAnonym.CREUtilities
                     null);
         }
 
-        public ExpressiveMethodBodyGenerator(ConstructorBuilder constructorBuilder)
-            : this((SRConstructorGeneratorImpl)constructorBuilder)
-        {
-        }
+        //public ExpressiveMethodBodyGenerator(ConstructorBuilder constructorBuilder)
+        //    : this((SRConstructorGeneratorImpl)constructorBuilder)
+        //{
+        //}
 
-        public ExpressiveMethodBodyGenerator(DynamicMethod dynamicMethod)
-            : this((SRMethodGeneratorImpl)dynamicMethod)
-        {
-        }
+        //public ExpressiveMethodBodyGenerator(DynamicMethod dynamicMethod)
+        //    : this((SRMethodGeneratorImpl)dynamicMethod)
+        //{
+        //}
 
-        public ExpressiveMethodBodyGenerator(MethodDefinition methodDef)
-            : this((MCMethodGeneratorImpl)methodDef)
-        {
-        }
+        //public ExpressiveMethodBodyGenerator(MethodDefinition methodDef)
+        //    : this((MCMethodGeneratorImpl)methodDef)
+        //{
+        //}
 
         public void Eval(Expression<Action<Expressible>> exp)
         {
@@ -440,14 +442,14 @@ namespace Urasandesu.NAnonym.CREUtilities
                 }
                 else if ((constantExpression = exp.Expression as ConstantExpression) != null)
                 {
-                    //string fieldName = PortableScope.MakeFieldName(methodGen, fieldInfo.Name);
-                    //var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR::FieldAttributes.Public | SR::FieldAttributes.SpecialName);
-                    //il.Emit(OpCodes.Ldarg_0);
-                    //il.Emit(OpCodes.Ldfld, fieldDecl);
-                    // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
-                    var item = methodGen.AddPortableScopeItem(fieldInfo);
+                    string fieldName = PortableScope.MakeFieldName(methodGen, fieldInfo.Name);
+                    var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR::FieldAttributes.Public | SR::FieldAttributes.SpecialName);
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldfld, item);
+                    il.Emit(OpCodes.Ldfld, fieldDecl);
+                    // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
+                    //var item = methodGen.AddPortableScopeItem(fieldInfo);
+                    //il.Emit(OpCodes.Ldarg_0);
+                    //il.Emit(OpCodes.Ldfld, item);
                 }
                 else
                 {

@@ -19,15 +19,15 @@ namespace Urasandesu.NAnonym.CREUtilities
 
         public Expressible()
         {
-            BaseInfo = TypeSaveable.GetMethodInfo(() => Base);
-            AddlocInfo = TypeSaveable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
-            StlocInfo = TypeSaveable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
-            DupAddOneInfo = TypeSaveable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
-            AddOneDupInfo = TypeSaveable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
-            SubOneDupInfo = TypeSaveable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
-            ExpandInfo = TypeSaveable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
-            EndInfo = TypeSaveable.GetMethodInfo(() => End);
-            ReturnInfo = TypeSaveable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
+            BaseInfo = TypeSavable.GetMethodInfo(() => Base);
+            AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
+            StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
+            DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
+            AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
+            SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
+            ExpandInfo = TypeSavable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
+            EndInfo = TypeSavable.GetMethodInfo(() => End);
+            ReturnInfo = TypeSavable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
         }
 
         public bool IsBase(MethodInfo target)
