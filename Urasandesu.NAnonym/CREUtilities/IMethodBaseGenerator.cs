@@ -8,7 +8,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         new IMethodBodyGenerator Body { get; }
         new ITypeGenerator DeclaringType { get; }
         new ReadOnlyCollection<IParameterGenerator> Parameters { get; }
-        PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo);
+        IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
     }
 
 }

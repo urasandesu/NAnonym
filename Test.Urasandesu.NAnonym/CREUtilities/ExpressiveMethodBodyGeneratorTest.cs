@@ -30,13 +30,13 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            TestHelper.TryDeleteFiles(".", "*.tmp");
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {
-            TestHelper.TryDeleteFiles(".", "*.tmp");
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
         [Test]
@@ -47,6 +47,8 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+
                 var action1Def2 =
                     methodTestClassDef.GetMethod(
                         "Action1",
@@ -95,6 +97,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef2 =
                     methodTestClassDef.GetMethod(
@@ -147,6 +150,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef3 =
                     methodTestClassDef.GetMethod(
@@ -198,6 +202,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef4 =
                     methodTestClassDef.GetMethod(
@@ -249,6 +254,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef5 =
                     methodTestClassDef.GetMethod(
@@ -298,6 +304,7 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef6 =
                     methodTestClassDef.GetMethod(
@@ -363,6 +370,7 @@ i++ = 1
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef7 =
                     methodTestClassDef.GetMethod(
@@ -426,6 +434,7 @@ Parameter[0] Type = Int32
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var func1Parameters2 =
                     methodTestClassDef.GetMethod(
@@ -469,6 +478,7 @@ Parameter[0] Type = Int32
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var func1Parameters3 =
                     methodTestClassDef.GetMethod(
@@ -514,6 +524,7 @@ Parameter[0] Type = Int32
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef8 =
                     methodTestClassDef.GetMethod(
@@ -563,6 +574,7 @@ Parameter[0] Type = Int32
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef9 =
                     methodTestClassDef.GetMethod(
@@ -637,6 +649,7 @@ Parameter[1] = IntPtr method
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef10 =
                     methodTestClassDef.GetMethod(
@@ -655,9 +668,11 @@ Parameter[1] = IntPtr method
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var scope = action2LocalVariableDef10.CreateScope();
-                scope.Bind(() => i, i);
-                scope.Bind(() => d, d);
+                var scope = action2LocalVariableDef10.CarryPortableScope();
+                scope.SetValue(() => i, i);
+                scope.SetValue(() => d, d);
+                //scope.Bind(() => i, i);
+                //scope.Bind(() => d, d);
 
                 var testInfo = new NewDomainTestInfo();
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
@@ -669,11 +684,11 @@ Parameter[1] = IntPtr method
                     {
                         try
                         {
-                            target.TestInfo.Scope.Reinitialize(target.Instance);
+                            target.TestInfo.Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
                             Assert.AreEqual("200", e.InnerException.Message);
                         }
@@ -694,6 +709,7 @@ Parameter[1] = IntPtr method
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef11 =
                     methodTestClassDef.GetMethod(
@@ -713,8 +729,10 @@ Parameter[1] = IntPtr method
 
                 // 書き込んだ時点で参照が変わってない？
                 // 同期は取られてるはず…か。
-                var scope = action2LocalVariableDef11.CreateScope();
-                scope.Bind(() => a, a);
+                //var scope = action2LocalVariableDef11.CreateScope();
+                var scope = action2LocalVariableDef11.CarryPortableScope();
+                scope.SetValue(() => a, a);
+                //scope.Bind(() => a, a);
 
                 var testInfo = new NewDomainTestInfo();
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
@@ -726,11 +744,11 @@ Parameter[1] = IntPtr method
                     {
                         try
                         {
-                            target.TestInfo.Scope.Reinitialize(target.Instance);
+                            target.TestInfo.Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
                             Assert.AreEqual("[1, aiueo]", e.InnerException.Message);
                         }
@@ -804,10 +822,13 @@ Parameter[1] = IntPtr method
                 var emitTest14 = assembly.GetType(emitTest14Def.FullName);
                 var instance = Activator.CreateInstance(emitTest14);
                 var action2SameDomain1 = emitTest14.GetMethod(action2SameDomain1Def.Name);
-                var scope = action2SameDomain1Def.CreateScope();
-                scope.Bind(() => i, i);
-                scope.Bind(() => d, d);
-                scope.Reinitialize(instance);
+                var scope = action2SameDomain1Def.CarryPortableScope();
+                scope.SetValue(() => i, i);
+                scope.SetValue(() => d, d);
+                scope.DockWith(instance);
+                //scope.Bind(() => i, i);
+                //scope.Bind(() => d, d);
+                //scope.Reinitialize(instance);
                 try
                 {
                     action2SameDomain1.Invoke(instance, null);
@@ -974,6 +995,7 @@ Parameter[1] = IntPtr method
 
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef12 =
                     methodTestClassDef.GetMethod(
@@ -1032,6 +1054,7 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
             {
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
                 var action2LocalVariableDef19 =
                     methodTestClassDef.GetMethod(
@@ -1040,7 +1063,7 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                         new Type[] { }).DuplicateWithoutBody();
                 action2LocalVariableDef19.Name = "Action2LocalVariable19";
                 methodTestClassDef.Methods.Add(action2LocalVariableDef19);
-                var scope = action2LocalVariableDef19.CarryPortableScope2();
+                var scope = action2LocalVariableDef19.CarryPortableScope();
                 action2LocalVariableDef19.ExpressBody(
                 gen =>
                 {
@@ -1052,31 +1075,33 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                     scope.SetValue(() => a, a);
                 });
 
+                // あー、ここは TEMP ファイルじゃだめなのか・・・
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfo();
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef19.Name;
-                testInfo.Scope2 = scope;
+                testInfo.Scope = scope;
                 testInfo.TestVerifier =
                     target =>
                     {
                         try
                         {
                             var b = new DateTime(2010, 8, 31);
-                            target.TestInfo.Scope2.SetValue(() => b, b);
-                            target.TestInfo.Scope2.DockWith(target.Instance);
+                            target.TestInfo.Scope.SetValue(() => b, b);
+                            target.TestInfo.Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
                             Assert.AreEqual("[1, aiueo], 2010/08/31", e.InnerException.Message);
                         }
 
                         // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
-                        target.TestInfo.Scope2.Items.ForEach(
+                        Assert.AreEqual(2, target.TestInfo.Scope.Items.Count);
+                        target.TestInfo.Scope.Items.ForEach(
                         (item, index) =>
                         {
                             switch (index)
@@ -1098,8 +1123,8 @@ Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Cu
                         // TODO: 定義してあるかのどうかのチェックと、設定済みの値をこんな感じで見たい。
                         {
                             var a = default(KeyValuePair<int, string>);
-                            Assert.IsTrue(target.TestInfo.Scope2.Contains(() => a));
-                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), target.TestInfo.Scope2.GetValue(() => a));
+                            Assert.IsTrue(target.TestInfo.Scope.Contains(() => a));
+                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), target.TestInfo.Scope.GetValue(() => a));
                         }
                     };
 

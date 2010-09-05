@@ -6,15 +6,18 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
 {
-    class SRMemberDeclarationImpl : IMemberDeclaration
+    class SRMemberDeclarationImpl : DeserializableManually, IMemberDeclaration
     {
         readonly MemberInfo memberInfo;
         public SRMemberDeclarationImpl(MemberInfo memberInfo)
+            : base(true)
         {
             this.memberInfo = memberInfo;
         }
 
         #region IMemberDeclaration メンバ
+
+        public object Source { get { throw new NotImplementedException(); } }
 
         public string Name
         {
@@ -22,5 +25,10 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
         }
 
         #endregion
+
+        protected override void OnDeserializedManually(global::System.Runtime.Serialization.StreamingContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

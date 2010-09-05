@@ -6,18 +6,19 @@ using Mono.Cecil;
 using SR = System.Reflection;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
+    [Serializable]
     sealed class MCTypeGeneratorImpl : MCTypeDeclarationImpl, ITypeGenerator
     {
-        readonly TypeDefinition typeDef;
-        readonly ModuleDefinition moduleDef;
+        //[NonSerialized]
+        //bool deserialized;
+
         public MCTypeGeneratorImpl(TypeDefinition typeDef)
             : base(typeDef)
         {
-            this.typeDef = typeDef;
-            moduleDef = typeDef.Module;
         }
 
         public static implicit operator MCTypeGeneratorImpl(TypeDefinition typeDef)
@@ -27,14 +28,31 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 
         public static implicit operator TypeDefinition(MCTypeGeneratorImpl typeGen)
         {
-            return typeGen.typeDef;
+            return typeGen.TypeDef;
         }
 
         public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
         {
-            var fieldDef = new FieldDefinition(fieldName, (MC::FieldAttributes)attributes, moduleDef.Import(type));
-            typeDef.Fields.Add(fieldDef);
+            var fieldDef = new FieldDefinition(fieldName, (MC::FieldAttributes)attributes, TypeDef.Module.Import(type));
+            TypeDef.Fields.Add(fieldDef);
             return (MCFieldGeneratorImpl)fieldDef;
         }
+
+        //[OnDeserialized]
+        //internal new void OnDeserialized(StreamingContext context)
+        //{
+        //    if (!deserialized)
+        //    {
+        //        deserialized = true;
+        //        base.OnDeserialized(context);
+        //    }
+        //}
+
+        //public override void OnDeserialization(object sender)
+        //{
+        //    base.OnDeserialization(sender);
+        //}
+
+
     }
 }

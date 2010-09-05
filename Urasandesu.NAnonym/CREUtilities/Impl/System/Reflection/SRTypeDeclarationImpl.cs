@@ -28,6 +28,8 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
             return typeDecl.type;
         }
 
+        public object Source { get { throw new NotImplementedException(); } }
+
         public string FullName
         {
             get { throw new NotImplementedException(); }
@@ -46,6 +48,16 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
         {
             return (SRConstructorDeclarationImpl)type.GetConstructor(types);
         }
+
+        #region ITypeDeclaration メンバ
+
+
+        public IFieldDeclaration[] GetFields(global::System.Reflection.BindingFlags attr)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 
 }

@@ -112,7 +112,7 @@ namespace Urasandesu.NAnonym.CREUtilities
             throw new NotImplementedException();
         }
 
-        public void Emit(OpCode opcode, ILocalGenerator local)
+        public void Emit(OpCode opcode, ILocalDeclaration local)
         {
             il.Emit(opcode, (VariableDefinition)(MCLocalGeneratorImpl)local);
         }
@@ -160,6 +160,11 @@ namespace Urasandesu.NAnonym.CREUtilities
         public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)
         {
             il.Emit(opcode, (FieldReference)(MCFieldDeclarationImpl)fieldDecl);
+        }
+
+        public void Emit(OpCode opcode, IPortableScopeItem scopeItem)
+        {
+            il.Emit(opcode, (FieldReference)(MCPortableScopeItemImpl)scopeItem);
         }
 
         public void SetLabel(ILabelDeclaration loc)

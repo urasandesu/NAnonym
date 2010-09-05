@@ -26,72 +26,74 @@ using OpCodes = Urasandesu.NAnonym.CREUtilities.OpCodes;
 namespace Test.Urasandesu.NAnonym.CREUtilities
 {
     [TestFixture]
-    public class PortableScope2Test
+    public class PortableScopeTest
     {
         [TestFixtureSetUp]
         public void FixtureSetUp()
         {
-            TestHelper.TryDeleteFiles(".", "*.tmp");
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {
-            TestHelper.TryDeleteFiles(".", "*.tmp");
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
         [Test]
-        public void CarryPortableScope2Test01()
+        public void CarryPortableScopeTest01()
         {
             TestHelper.UsingTempFile(tempFileName =>
             {
                 var tempAssemblyNameDef = CreateTempAssemblyNameDef(tempFileName);
                 var tempAssemblyDef = CreateTempAssemblyDef(tempAssemblyNameDef);
 
-                var carryPortableScope2Test01Def = 
-                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScope2Test01", typeof(object), tempAssemblyDef);
+                var carryPortableScopeTest01Def = 
+                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScopeTest01", typeof(object), tempAssemblyDef);
 
-                var carryPortableScope2Test01CtorDef = CreateTempCtor(carryPortableScope2Test01Def);
-                carryPortableScope2Test01CtorDef.ExpressBody(
+                var carryPortableScopeTest01CtorDef = CreateTempCtor(carryPortableScopeTest01Def);
+                carryPortableScopeTest01CtorDef.ExpressBody(
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
                 });
 
-                var portableScope2A = 
+                var portableScopeALocal = CreateTempVariable("a", typeof(int), carryPortableScopeTest01CtorDef);
+
+                var portableScopeA = 
                     CreateTempField(
-                        carryPortableScope2Test01CtorDef.Name + PortableScope2.NameDelimiter + PortableScope2.NameDelimiter + "a", 
-                        typeof(int), carryPortableScope2Test01Def);
+                        carryPortableScopeTest01CtorDef.Name + PortableScope.NameDelimiter + PortableScope.NameDelimiter + "a" + PortableScope.NameDelimiter + "0", 
+                        typeof(int), carryPortableScopeTest01Def);
 
-                var portableScope2AAttributeDef =
-                    CreateTempType(tempAssemblyNameDef.Name, "PortableScope2AAttribute", typeof(Attribute), tempAssemblyDef);
+                var portableScopeAAttributeDef =
+                    CreateTempType(tempAssemblyNameDef.Name, "PortableScopeAAttribute", typeof(Attribute), tempAssemblyDef);
 
-                var portableScope2AAttributeCtorDef = CreateTempCtor(portableScope2AAttributeDef);
-                portableScope2AAttributeCtorDef.ExpressBody(
+                var portableScopeAAttributeCtorDef = CreateTempCtor(portableScopeAAttributeDef);
+                portableScopeAAttributeCtorDef.ExpressBody(
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
                 });
 
-                var portableScope2AAttribute = CreateTempAttribute(portableScope2AAttributeCtorDef, portableScope2A);
+                var portableScopeAAttribute = CreateTempAttribute(portableScopeAAttributeCtorDef, portableScopeA);
 
                 tempAssemblyDef.Write(tempFileName);
 
-                var scope = carryPortableScope2Test01CtorDef.CarryPortableScope2();
+                var scope = carryPortableScopeTest01CtorDef.CarryPortableScope();
                 int a = 10;
                 scope.SetValue(() => a, a);
                 Assert.IsTrue(scope.Contains(() => a));
                 Assert.AreEqual(10, scope.GetValue(() => a));
 
-                object carryPortableScope2Test01Instance = CreateTempInstance(Path.GetFullPath(tempFileName), carryPortableScope2Test01Def); 
-                scope.DockWith(carryPortableScope2Test01Instance);
-                Assert.AreEqual(10, scope.FetchValue(() => a, carryPortableScope2Test01Instance));
+                object carryPortableScopeTest01Instance = CreateTempInstance(Path.GetFullPath(tempFileName), carryPortableScopeTest01Def); 
+                scope.DockWith(carryPortableScopeTest01Instance);
+                Assert.AreEqual(10, scope.FetchValue(() => a, carryPortableScopeTest01Instance));
                 Assert.NotNull(scope.methodDecl);
             });
         }
 
         [Test]
-        public void CarryPortableScope2Test02()
+        public void CarryPortableScopeTest02()
         {
             TestHelper.UsingTempFile(tempFileName =>
             NewDomainTest.Transfer(() =>
@@ -99,36 +101,38 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                 var tempAssemblyNameDef = CreateTempAssemblyNameDef(tempFileName);
                 var tempAssemblyDef = CreateTempAssemblyDef(tempAssemblyNameDef);
 
-                var carryPortableScope2Test02Def =
-                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScope2Test02", typeof(object), tempAssemblyDef);
+                var carryPortableScopeTest02Def =
+                    CreateTempType(tempAssemblyNameDef.Name, "CarryPortableScopeTest02", typeof(object), tempAssemblyDef);
 
-                var carryPortableScope2Test02CtorDef = CreateTempCtor(carryPortableScope2Test02Def);
-                carryPortableScope2Test02CtorDef.ExpressBody(
+                var carryPortableScopeTest02CtorDef = CreateTempCtor(carryPortableScopeTest02Def);
+                carryPortableScopeTest02CtorDef.ExpressBody(
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
                 });
 
-                var portableScope2A =
+                var portableScopeALocal = CreateTempVariable("a", typeof(int), carryPortableScopeTest02CtorDef);
+
+                var portableScopeA =
                     CreateTempField(
-                        carryPortableScope2Test02CtorDef.Name + PortableScope2.NameDelimiter + PortableScope2.NameDelimiter + "a",
-                        typeof(int), carryPortableScope2Test02Def);
+                        carryPortableScopeTest02CtorDef.Name + PortableScope.NameDelimiter + PortableScope.NameDelimiter + "a" + PortableScope.NameDelimiter + "0",
+                        typeof(int), carryPortableScopeTest02Def);
 
-                var portableScope2AAttributeDef =
-                    CreateTempType(tempAssemblyNameDef.Name, "PortableScope2AAttribute", typeof(Attribute), tempAssemblyDef);
+                var portableScopeAAttributeDef =
+                    CreateTempType(tempAssemblyNameDef.Name, "PortableScopeAAttribute", typeof(Attribute), tempAssemblyDef);
 
-                var portableScope2AAttributeCtorDef = CreateTempCtor(portableScope2AAttributeDef);
-                portableScope2AAttributeCtorDef.ExpressBody(
+                var portableScopeAAttributeCtorDef = CreateTempCtor(portableScopeAAttributeDef);
+                portableScopeAAttributeCtorDef.ExpressBody(
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
                 });
 
-                var portableScope2AAttribute = CreateTempAttribute(portableScope2AAttributeCtorDef, portableScope2A);
+                var portableScopeAAttribute = CreateTempAttribute(portableScopeAAttributeCtorDef, portableScopeA);
 
                 tempAssemblyDef.Write(tempFileName);
 
-                var scope = carryPortableScope2Test02CtorDef.CarryPortableScope2();
+                var scope = carryPortableScopeTest02CtorDef.CarryPortableScope();
                 {
                     int a = 10;
                     scope.SetValue(() => a, a);
@@ -138,15 +142,15 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
 
                 var testInfo = new NewDomainTestInfo();
                 testInfo.AssemblyFileName = Path.GetFullPath(tempFileName);
-                testInfo.TypeFullName = carryPortableScope2Test02Def.FullName;
-                testInfo.Scope2 = scope;
+                testInfo.TypeFullName = carryPortableScopeTest02Def.FullName;
+                testInfo.Scope = scope;
                 testInfo.TestVerifier =
                     target =>
                     {
-                        target.TestInfo.Scope2.DockWith(target.Instance);
+                        target.TestInfo.Scope.DockWith(target.Instance);
                         int a = 0;
-                        Assert.AreEqual(10, target.TestInfo.Scope2.FetchValue(() => a, target.Instance));
-                        Assert.NotNull(target.TestInfo.Scope2.methodDecl);
+                        Assert.AreEqual(10, target.TestInfo.Scope.FetchValue(() => a, target.Instance));
+                        Assert.NotNull(target.TestInfo.Scope.methodDecl);
                     };
 
                 return testInfo;
@@ -207,6 +211,13 @@ namespace Test.Urasandesu.NAnonym.CREUtilities
                     declaringType.Module.Import(fieldType));
             declaringType.Fields.Add(fieldDef);
             return fieldDef;
+        }
+
+        VariableDefinition CreateTempVariable(string name, Type variableType, MethodDefinition methodDef)
+        {
+            var variableDef = new VariableDefinition(name, methodDef.Module.Import(variableType));
+            methodDef.Body.Variables.Add(variableDef);
+            return variableDef;
         }
 
         CustomAttribute CreateTempAttribute(MethodReference ctorRef, FieldDefinition targetFieldDef)

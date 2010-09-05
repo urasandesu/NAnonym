@@ -3,33 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using MCO = Mono.Collections;
 using MC = Mono.Cecil;
 using System.Collections.ObjectModel;
 using System.Collections;
 using Urasandesu.NAnonym.Linq;
 using System.Reflection;
+using SR = System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
+    [Serializable]
     sealed class MCMethodGeneratorImpl : MCMethodDeclarationImpl, IMethodGenerator
     {
-        readonly MethodDefinition methodDef;
+        [NonSerialized]
+        ITypeGenerator returnTypeGen;
+        [NonSerialized]
+        ReadOnlyCollection<IParameterGenerator> parameters;
 
-        readonly IMethodBodyGenerator bodyGen;
-        readonly ITypeGenerator returnTypeGen;
-        readonly ITypeGenerator declaringTypeGen;
-        readonly ReadOnlyCollection<IParameterGenerator> parameters;
         public MCMethodGeneratorImpl(MethodDefinition methodDef)
             : base(methodDef)
         {
-            this.methodDef = methodDef;
-            bodyGen = (MCMethodBodyGeneratorImpl)methodDef.Body;
-            var typeDef = methodDef.ReturnType as TypeDefinition;
-            returnTypeGen = typeDef == null ? null : (MCTypeGeneratorImpl)typeDef;
-            declaringTypeGen = (MCTypeGeneratorImpl)methodDef.DeclaringType;
+            Initialize(methodDef);
+        }
+
+        void Initialize(MethodDefinition methodDef)
+        {
+            var returnTypeDef = methodDef.ReturnType.Resolve();
+            returnTypeGen = (MCTypeGeneratorImpl)returnTypeDef;
+            // TODO: 反変がサポートされるようになったら修正する。
             parameters = new ReadOnlyCollection<IParameterGenerator>(
-                methodDef.Parameters.TransformEnumerateOnly(parameter => (IParameterGenerator)(MCParameterGeneratorImpl)parameter));
+                base.Parameters.TransformEnumerateOnly(paramter => (IParameterGenerator)paramter));
         }
 
         public static explicit operator MCMethodGeneratorImpl(MethodDefinition methodDef)
@@ -39,7 +45,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 
         public static explicit operator MethodDefinition(MCMethodGeneratorImpl methodGen)
         {
-            return methodGen.methodDef;
+            return methodGen.MethodDef;
         }
 
         #region IMethodGenerator メンバ
@@ -55,12 +61,12 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 
         public new IMethodBodyGenerator Body
         {
-            get { return bodyGen; }
+            get { return (IMethodBodyGenerator)BodyDecl; }
         }
 
         public new ITypeGenerator DeclaringType
         {
-            get { return declaringTypeGen; }
+            get { return (ITypeGenerator)DeclaringTypeDecl; }
         }
 
         public new ReadOnlyCollection<IParameterGenerator> Parameters
@@ -68,12 +74,33 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
             get { return parameters; }
         }
 
-        public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
+        public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
         {
-            var rawData = new PortableScope2ItemRawData(this, fieldInfo.Name);
-            throw new NotImplementedException();
+            var variableDef = new VariableDefinition(fieldInfo.Name, MethodDef.Module.Import(fieldInfo.FieldType));
+            MethodDef.Body.Variables.Add(variableDef);
+            var itemRawData = new PortableScopeItemRawData(this, variableDef.Name, variableDef.Index);
+            var fieldDef = new FieldDefinition(itemRawData.FieldName, MC::FieldAttributes.Private | MC::FieldAttributes.SpecialName, MethodDef.Module.Import(fieldInfo.FieldType));
+            MethodDef.DeclaringType.Fields.Add(fieldDef);
+            return new MCPortableScopeItemImpl(itemRawData, fieldDef, variableDef);
         }
 
         #endregion
+
+        //[OnDeserialized]
+        //internal new void OnDeserialized(StreamingContext context)
+        //{
+        //    if (!deserialized)
+        //    {
+        //        deserialized = true;
+        //        base.OnDeserialized(context);
+        //        Initialize(MethodDef);
+        //    }
+        //}
+
+        protected override void OnDeserializedManually(StreamingContext context)
+        {
+            base.OnDeserializedManually(context);
+            Initialize(MethodDef);
+        }
     }
 }

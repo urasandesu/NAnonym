@@ -5,33 +5,43 @@ using System.Text;
 using Mono.Cecil;
 using Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil;
 using SR = System.Reflection;
+using System.Runtime.Serialization;
+using System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 {
+    [Serializable]
     class MCTypeDeclarationImpl : MCMemberDeclarationImpl, ITypeDeclaration
     {
-        readonly TypeReference typeRef;
+        [NonSerialized]
+        TypeReference typeRef;
 
-        readonly TypeDefinition typeDef;
-        readonly Type type;
-        readonly ITypeDeclaration baseTypeDecl;
+        [NonSerialized]
+        TypeDefinition typeDef;
+
+        [NonSerialized]
+        ITypeDeclaration baseTypeDecl;
+
+        string typeFullName;
+
+        IModuleDeclaration moduleDecl;
+
+        //[NonSerialized]
+        //bool deserialized;
+        
         public MCTypeDeclarationImpl(TypeReference typeRef)
             : base(typeRef)
         {
+            Initialize(typeRef);
+        }
+
+        void Initialize(TypeReference typeRef)
+        {
             this.typeRef = typeRef;
-            typeDef = typeRef as TypeDefinition;
-            // MEMO: typeRef.Resolve() で TypeDefinition に変換するって想定だったっぽい。なるほど。
-            if (typeDef == null)
-            {
-                type = Type.GetType(typeRef.FullName);
-                baseTypeDecl = typeRef.Equivalent(typeof(object)) ?
-                    null : (MCTypeDeclarationImpl)typeRef.Module.Import(type.BaseType);
-            }
-            else
-            {
-                type = null;
-                baseTypeDecl = (MCTypeDeclarationImpl)typeDef.BaseType;
-            }
+            typeDef = typeRef.Resolve();
+            typeFullName = typeDef.FullName;
+            moduleDecl = (MCModuleDeclarationImpl)typeRef.Module;
+            baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : (MCTypeDeclarationImpl)typeDef.BaseType;
         }
 
         public static explicit operator MCTypeDeclarationImpl(TypeReference typeRef)
@@ -63,16 +73,64 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
 
         public IConstructorDeclaration GetConstructor(Type[] types)
         {
-            if (typeDef == null)
+            // TODO: 本当は SR::BindingFlags.Default が正しい。修正。
+            // MEMO: System.Object..ctor をそのまま参照させると、自身のコンストラクタ呼び出しに変換されてしまう？？
+            if (typeRef.Equivalent(typeof(object)))
             {
                 return (MCConstructorDeclarationImpl)typeRef.Module.Import(
-                    type.GetConstructor(SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, null, types, null));
+                    typeof(object).GetConstructor(SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, null, types, null));
             }
             else
             {
-                return (MCConstructorDeclarationImpl)typeDef.GetConstructor(SR::BindingFlags.Default, types);
+                return (MCConstructorDeclarationImpl)typeDef.GetConstructor(
+                    SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, types);
             }
         }
+
+        protected TypeDefinition TypeDef { get { return typeDef; } }
+
+        //[OnDeserialized]
+        //internal void OnDeserialized(StreamingContext context)
+        //{
+        //    if (!deserialized)
+        //    {
+        //        deserialized = true;
+        //        var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
+        //        moduleDecl.OnDeserialized(context);
+        //        var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
+        //        Initialize(moduleDef.Types.First(type => type.FullName == typeFullName));
+        //    }
+        //}
+
+        //public override void OnDeserialization(object sender)
+        //{
+        //    //var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
+        //    //moduleDecl.OnDeserialized(context);
+        //    var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
+        //    var typeDef = moduleDef.Types.First(type => type.FullName == typeFullName);
+        //    Initialize(typeDef);
+        //    base.OnDeserialization(typeDef);
+        //}
+
+        protected override void OnDeserializedManually(StreamingContext context)
+        {
+            var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
+            moduleDecl.OnDeserialized(context);
+            var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
+            var typeDef = moduleDef.Types.First(type => type.FullName == typeFullName);
+            Initialize(typeDef);
+            base.OnDeserializedManually(context);
+        }
+
+        #region ITypeDeclaration メンバ
+
+
+        public IFieldDeclaration[] GetFields(BindingFlags attr)
+        {
+            return typeDef.GetFields(attr).Select(fieldDef => (IFieldDeclaration)(MCFieldGeneratorImpl)fieldDef).ToArray();
+        }
+
+        #endregion
     }
 
 }

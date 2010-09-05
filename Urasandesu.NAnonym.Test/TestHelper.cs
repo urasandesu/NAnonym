@@ -11,7 +11,7 @@ namespace Urasandesu.NAnonym.Test
     {
         public static void UsingTempFile(Action<string> action)
         {
-            string tempFileName = Path.GetFileName(FileSystem.GetTempFileName());
+            string tempFileName = Path.GetFileNameWithoutExtension(FileSystem.GetTempFileName()) + ".dll";
             try
             {
                 action(tempFileName);

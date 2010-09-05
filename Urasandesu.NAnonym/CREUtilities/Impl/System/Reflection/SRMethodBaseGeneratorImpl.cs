@@ -33,7 +33,7 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        public PortableScope2Item AddPortableScopeItem(FieldInfo fieldInfo)
+        public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
         {
             throw new NotImplementedException();
         }

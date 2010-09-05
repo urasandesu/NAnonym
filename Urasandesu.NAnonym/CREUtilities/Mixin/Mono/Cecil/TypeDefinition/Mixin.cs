@@ -21,6 +21,12 @@ namespace Urasandesu.NAnonym.CREUtilities
             return type.Fields.First(field => binder.BindToField(field));
         }
 
+        public static FieldDefinition[] GetFields(this TypeDefinition type, BindingFlags bindingAttr)
+        {
+            var binder = new Binder(type, bindingAttr);
+            return type.Fields.Where(field => binder.BindToField(field)).ToArray();
+        }
+
         public static PropertyDefinition GetProperty(this TypeDefinition type, string name, BindingFlags bindingAttr)
         {
             var binder = new Binder(type, name, bindingAttr);
@@ -44,6 +50,11 @@ namespace Urasandesu.NAnonym.CREUtilities
 
             public Binder(TypeDefinition type, string name, BindingFlags bindingAttr)
                 : this(type, name, bindingAttr, new Type[] { })
+            {
+            }
+
+            public Binder(TypeDefinition type, BindingFlags bindingAttr)
+                : this(type, bindingAttr, new Type[] { })
             {
             }
 
@@ -267,6 +278,7 @@ namespace Urasandesu.NAnonym.CREUtilities
             public bool BindToField(FieldDefinition method)
             {
                 bool success =
+                    this.name == string.Empty ||
                     this.name ==
                     ((bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.IgnoreCase ?
                         method.Name.ToLower() :

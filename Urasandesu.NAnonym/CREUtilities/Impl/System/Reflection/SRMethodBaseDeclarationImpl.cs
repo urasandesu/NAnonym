@@ -33,6 +33,11 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.System.Reflection
             get { return new ReadOnlyCollection<IParameterDeclaration>(new IParameterDeclaration[] { }); }
         }
 
+        public IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

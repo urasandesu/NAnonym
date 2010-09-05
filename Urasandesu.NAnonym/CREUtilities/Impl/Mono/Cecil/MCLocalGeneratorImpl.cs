@@ -29,5 +29,20 @@ namespace Urasandesu.NAnonym.CREUtilities.Impl.Mono.Cecil
         {
             get { return variableDef.Name; }
         }
+
+        #region ILocalDeclaration メンバ
+
+
+        public ITypeDeclaration Type
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int Index
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }

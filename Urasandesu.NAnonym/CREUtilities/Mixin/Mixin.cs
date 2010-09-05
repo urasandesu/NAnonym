@@ -430,19 +430,9 @@ namespace Urasandesu.NAnonym.CREUtilities
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
         }
 
-        public static PortableScope CreateScope(this MethodDefinition methodDef)
+        public static PortableScope CarryPortableScope(this MethodDefinition methodDef)
         {
-            return new PortableScope((MCMethodGeneratorImpl)methodDef);
-        }
-
-        //public static PortableScope CreatePortableScope(this MethodDefinition methodDef, object instance)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public static PortableScope2 CarryPortableScope2(this MethodDefinition methodDef)
-        {
-            var scope = new PortableScope2((MCMethodGeneratorImpl)methodDef);
+            var scope = new PortableScope((MCMethodGeneratorImpl)methodDef);
             return scope;
         }
 

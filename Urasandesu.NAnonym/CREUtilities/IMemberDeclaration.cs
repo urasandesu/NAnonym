@@ -4,11 +4,8 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    public interface IMemberDeclaration
+    public interface IMemberDeclaration : IDeserializableManually
     {
         string Name { get; }
     }
-
-
-
 }

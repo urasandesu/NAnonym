@@ -19,7 +19,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         void Emit(OpCode opcode, int arg);
         void Emit(OpCode opcode, ILabelDeclaration label);
         void Emit(OpCode opcode, ILabelDeclaration[] labels);
-        void Emit(OpCode opcode, ILocalGenerator local);
+        void Emit(OpCode opcode, ILocalDeclaration local);
         void Emit(OpCode opcode, long arg);
         void Emit(OpCode opcode, MethodInfo meth);
         void Emit(OpCode opcode, sbyte arg);
@@ -29,6 +29,7 @@ namespace Urasandesu.NAnonym.CREUtilities
         void Emit(OpCode opcode, IConstructorDeclaration constructorDecl);
         void Emit(OpCode opcode, IParameterDeclaration parameterDecl);
         void Emit(OpCode opcode, IFieldDeclaration fieldDecl);
+        void Emit(OpCode opcode, IPortableScopeItem scopeItem);
         void SetLabel(ILabelDeclaration loc);
     }
 

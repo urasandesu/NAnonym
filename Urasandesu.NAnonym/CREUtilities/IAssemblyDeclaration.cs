@@ -1,8 +1,7 @@
 namespace Urasandesu.NAnonym.CREUtilities
 {
-    public interface IAssemblyDeclaration
+    public interface IAssemblyDeclaration : IDeserializableManually
     {
-
     }
 
 }

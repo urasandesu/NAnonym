@@ -107,7 +107,7 @@ namespace Urasandesu.NAnonym.CREUtilities
             throw new NotImplementedException();
         }
 
-        public void Emit(OpCode opcode, ILocalGenerator local)
+        public void Emit(OpCode opcode, ILocalDeclaration local)
         {
             throw new NotImplementedException();
         }
@@ -153,6 +153,11 @@ namespace Urasandesu.NAnonym.CREUtilities
         }
 
         public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Emit(OpCode opcode, IPortableScopeItem scopeItem)
         {
             throw new NotImplementedException();
         }
