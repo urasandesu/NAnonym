@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Urasandesu.NAnonym.CREUtilities;
+using Urasandesu.NAnonym.ILTools;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;

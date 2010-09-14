@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using Assert = Urasandesu.NAnonym.Test.Assert;
 using Urasandesu.NAnonym.DI;
-using Urasandesu.NAnonym.CREUtilities;
+using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 using Mono.Cecil;
 using System.Reflection;

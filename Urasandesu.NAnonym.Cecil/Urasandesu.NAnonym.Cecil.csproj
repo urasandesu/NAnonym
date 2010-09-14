@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{885BCF21-BAA1-4179-B679-27C4DC7F14A3}</ProjectGuid>
+    <ProjectGuid>{2D460EE3-61D7-4726-8AF5-135352408DCB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test.Urasandesu.NAnonym</RootNamespace>
-    <AssemblyName>Test.Urasandesu.NAnonym</AssemblyName>
+    <RootNamespace>Urasandesu.NAnonym</RootNamespace>
+    <AssemblyName>Urasandesu.NAnonym.Cecil</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,12 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\bin\Release\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.5.2.9222, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -51,37 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnonymouslyableTest.cs" />
-    <Compile Include="ILTools\MixinTest.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
-    <Compile Include="ILTools\PortableScopeTest.cs" />
-    <Compile Include="DI\Class1.cs" />
-    <Compile Include="DI\DependencyUtilTest.cs" />
-    <Compile Include="DI\GlobalClassTest.cs" />
-    <Compile Include="Linq\DelegateComparerTest.cs" />
-    <Compile Include="Linq\DelegateEqualityComparerTest.cs" />
-    <Compile Include="Linq\IterableTest.cs" />
-    <Compile Include="DI\LocalClassTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringUtilityTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Test.Urasandesu.NAnonym.DI\Test.Urasandesu.NAnonym.DI.csproj">
-      <Project>{90F44336-2079-44AD-9470-397730316906}</Project>
-      <Name>Test.Urasandesu.NAnonym.DI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Test.Urasandesu.NAnonym.Etc\Test.Urasandesu.NAnonym.Etc.csproj">
-      <Project>{E5F91EA1-A3AE-4D1D-A9F9-00AEA41CCA1A}</Project>
-      <Name>Test.Urasandesu.NAnonym.Etc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Urasandesu.NAnonym.Test\Urasandesu.NAnonym.Test.csproj">
-      <Project>{D4CD63AA-80F7-4F2E-BBDA-267B26FF6483}</Project>
-      <Name>Urasandesu.NAnonym.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
-      <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
-      <Name>Urasandesu.NAnonym</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
