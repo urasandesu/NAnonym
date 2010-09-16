@@ -40,5 +40,26 @@ namespace Urasandesu.NAnonym.Test
         {
             return Directory.GetFiles(path, searchPattern).All(file => TryDelete(file));
         }
+
+
+        public static void ThrowException(string value)
+        {
+            throw new Exception(value);
+        }
+
+        public static void ThrowException(string value, object param)
+        {
+            throw new Exception(string.Format(value, param));
+        }
+
+        public static void ThrowException(object o)
+        {
+            throw new Exception(string.Format("{0}", o));
+        }
+
+        public static int GetValue(int value)
+        {
+            return value;
+        }
     }
 }

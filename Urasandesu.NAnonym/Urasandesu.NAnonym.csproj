@@ -95,7 +95,6 @@
     <Compile Include="ILTools\Mixin\Mixin.cs" />
     <Compile Include="ILTools\OpCode.cs" />
     <Compile Include="ILTools\OpCodes.cs" />
-    <Compile Include="ILTools\ImplicitConversions\OpCode\System\Reflection\Emit\OpCode.cs" />
     <Compile Include="ILTools\PortableScope.cs" />
     <Compile Include="ILTools\IPortableScopeItem.cs" />
     <Compile Include="ILTools\PortableScopeItemRawData.cs" />

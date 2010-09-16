@@ -1,28 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Assert = Urasandesu.NAnonym.Test.Assert;
-using Urasandesu.NAnonym.DI;
-using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using SR = System.Reflection;
-using Urasandesu.NAnonym;
-using Test.Urasandesu.NAnonym.Etc;
-using System.IO;
-using Microsoft.VisualBasic.FileIO;
-using Urasandesu.NAnonym.Test;
-using System.Threading;
-using Test.Urasandesu.NAnonym.DI;
-using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
-using Mono;
+using System.Text;
+using System.Text.RegularExpressions;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
-using MC = Mono.Cecil;
+using NUnit.Framework;
+using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym.Cecil.ILTools;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.Test;
+using Assert = Urasandesu.NAnonym.Test.Assert;
+using MC = Mono.Cecil;
+using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
+using SR = System.Reflection;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -845,42 +839,6 @@ Parameter[1] = IntPtr method
 
 
 
-
-        [Test]
-        public void EmitTest15()
-        {
-            TestHelper.UsingTempFile(tempFileName =>
-            {
-                var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
-                var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
-                var tempModule = tempAssemblyBuilder.DefineDynamicModule(tempAssemblyName.Name);
-
-                var emitTest15Builder = tempModule.DefineType(tempModule.Name + "." + "EmitTest15");
-
-                var ctorBuilder =
-                    emitTest15Builder.DefineConstructor(
-                        SR::MethodAttributes.Public |
-                        SR::MethodAttributes.HideBySig |
-                        SR::MethodAttributes.SpecialName |
-                        SR::MethodAttributes.RTSpecialName,
-                        CallingConventions.Standard,
-                        new Type[] { });
-                ctorBuilder.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.Base());
-                    gen.Eval(_ => Console.WriteLine("Hello, dynamic assembly !!"));
-                });
-
-                var emitTest15 = emitTest15Builder.CreateType();
-                var instance = Activator.CreateInstance(emitTest15);
-
-                Console.WriteLine(instance);
-            });
-        }
-
-
-
         [Test]
         public void EmitTest16()
         {
@@ -954,34 +912,6 @@ Parameter[1] = IntPtr method
 
 
         [Test]
-        public void EmitTest17()
-        {
-            TestHelper.UsingTempFile(tempFileName =>
-            {
-                var tempDynamicMethod = new DynamicMethod("Temp", null, null);
-                tempDynamicMethod.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => ThrowException("aiueo"));
-                });
-
-                var temp = (Action)tempDynamicMethod.CreateDelegate(typeof(Action));
-                try
-                {
-                    temp();
-                    Assert.Fail();
-                }
-                catch (Exception e)
-                {
-                    Assert.AreEqual("aiueo", e.Message);
-                }
-            });
-        }
-
-
-
-
-        [Test]
         public void EmitTest18()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1031,13 +961,14 @@ Parameter[1] = IntPtr method
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
-                            Assert.AreEqual(
-@"Cached Field Name: CS$<>9__CachedAnonymousMethodDelegatea2
-Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-"
-                                , e.InnerException.Message);
+                            var match = Regex.Match(e.InnerException.Message, @"[^\r\n].*[^\r\n]");
+                            Assert.IsTrue(match.Success);
+                            Assert.IsTrue(match.Value.IndexOf("Cached Field Name: CS$<>9__CachedAnonymousMethodDelegate") == 0);
+                            match = match.NextMatch();
+                            Assert.IsTrue(match.Success);
+                            Assert.AreEqual("Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", match.Value);
                         }
                     };
 

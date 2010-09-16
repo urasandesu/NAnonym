@@ -54,7 +54,6 @@
     <Compile Include="DI\GlobalClassBase.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
     <Compile Include="DI\GlobalProperty.cs" />
-    <Compile Include="ILTools\ImplicitConversions\OpCode\Mono\Cecil\Cil\OpCode.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
