@@ -37,3 +37,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Test.Urasandesu.NAnonym")]
 [assembly: InternalsVisibleTo("Test.Urasandesu.NAnonym.Cecil")]
+[assembly: InternalsVisibleTo("Urasandesu.NAnonym.Cecil")]

@@ -1,5 +1,6 @@
 ﻿using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym.DI;
+using Urasandesu.NAnonym.Cecil.DI;
 
 namespace Test.Urasandesu.NAnonym.DI
 {

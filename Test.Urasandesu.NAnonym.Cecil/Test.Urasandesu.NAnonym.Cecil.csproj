@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DI\Class1.cs" />
+    <Compile Include="DI\GlobalClassTest.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="ILTools\MixinTest.cs" />
     <Compile Include="ILTools\PortableScopeTest.cs" />
@@ -64,6 +66,10 @@
     <ProjectReference Include="..\Test.Urasandesu.NAnonym.Etc\Test.Urasandesu.NAnonym.Etc.csproj">
       <Project>{E5F91EA1-A3AE-4D1D-A9F9-00AEA41CCA1A}</Project>
       <Name>Test.Urasandesu.NAnonym.Etc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Urasandesu.NAnonym.Cecil\Urasandesu.NAnonym.Cecil.csproj">
+      <Project>{2D460EE3-61D7-4726-8AF5-135352408DCB}</Project>
+      <Name>Urasandesu.NAnonym.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\Urasandesu.NAnonym.Test\Urasandesu.NAnonym.Test.csproj">
       <Project>{D4CD63AA-80F7-4F2E-BBDA-267B26FF6483}</Project>

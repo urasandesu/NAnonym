@@ -12,6 +12,8 @@ using System.Reflection.Emit;
 using Urasandesu.NAnonym;
 using Test.Urasandesu.NAnonym.Etc;
 using SR = System.Reflection;
+using Urasandesu.NAnonym.Cecil.ILTools;
+using UNCI = Urasandesu.NAnonym.Cecil.ILTools;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -23,7 +25,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         {
             var typeC = typeof(Type).ToTypeDef();
             var typeR = typeof(Type);
-            Assert.AreEquivalent(typeC, typeR, Mixin.Equivalent);
+            Assert.AreEquivalent(typeC, typeR, UNCI::Mixin.Equivalent);
         }
 
 
@@ -32,7 +34,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         {
             var typeC = typeof(Type[]).ToTypeRef();
             var typeR = typeof(Type[]);
-            Assert.AreEquivalent(typeC, typeR, Mixin.Equivalent);
+            Assert.AreEquivalent(typeC, typeR, UNCI::Mixin.Equivalent);
         }
 
 
@@ -57,7 +59,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         typeof(RuntimeTypeHandle)
                     },
                     null);
-            Assert.AreEquivalent(getTypeFromHandleC, getTypeFromHandleR, Mixin.Equivalent);
+            Assert.AreEquivalent(getTypeFromHandleC, getTypeFromHandleR, UNCI::Mixin.Equivalent);
         }
 
 
@@ -83,7 +85,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         typeof(Type[])
                     },
                     null);
-            Assert.AreEquivalent(makeGenericTypeC, makeGenericTypeR, Mixin.Equivalent);
+            Assert.AreEquivalent(makeGenericTypeC, makeGenericTypeR, UNCI::Mixin.Equivalent);
         }
 
 
@@ -95,7 +97,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             var opCodesR = typeof(SR::Emit.OpCodes);
             var Ldarg_0C = opCodesC.GetField("Ldarg_0", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             var Ldarg_0R = opCodesR.GetField("Ldarg_0", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.AreEquivalent(Ldarg_0C, Ldarg_0R, Mixin.Equivalent);
+            Assert.AreEquivalent(Ldarg_0C, Ldarg_0R, UNCI::Mixin.Equivalent);
         }
 
 
@@ -125,7 +127,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     },
                     null
                 );
-            Assert.AreEquivalent(dynamicMethodCtorC, dynamicMethodCtorR, Mixin.Equivalent);
+            Assert.AreEquivalent(dynamicMethodCtorC, dynamicMethodCtorR, UNCI::Mixin.Equivalent);
         }
     }
 }

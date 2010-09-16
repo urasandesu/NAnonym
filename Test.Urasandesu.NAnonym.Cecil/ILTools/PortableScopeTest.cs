@@ -22,6 +22,7 @@ using Mono;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MC = Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {

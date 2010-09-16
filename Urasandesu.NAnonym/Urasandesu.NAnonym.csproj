@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\bin\Release\Mono.Cecil.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -66,18 +62,10 @@
     <Compile Include="ILTools\IILOperator.cs" />
     <Compile Include="ILTools\ILabelDeclaration.cs" />
     <Compile Include="ILTools\ILabelGenerator.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCModuleDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCModuleGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCPortableScopeItemImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorImpl.cs" />
     <Compile Include="ILTools\Expressible.cs" />
     <Compile Include="ILTools\ILocalDeclaration.cs" />
     <Compile Include="ILTools\ILocalGenerator.cs" />
-    <Compile Include="ILTools\ILOperator.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCILOperatorImpl.cs" />
     <Compile Include="ILTools\IMemberDeclaration.cs" />
     <Compile Include="ILTools\IMemberGenerator.cs" />
     <Compile Include="ILTools\IMethodBaseDeclaration.cs" />
@@ -88,22 +76,9 @@
     <Compile Include="ILTools\IMethodGenerator.cs" />
     <Compile Include="ILTools\IModuleDeclaration.cs" />
     <Compile Include="ILTools\IModuleGenerator.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCLocalGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBaseDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMemberDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCMemberDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCParameterGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCParameterDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyDeclarationImpl.cs" />
@@ -117,11 +92,8 @@
     <Compile Include="ILTools\IParameterGenerator.cs" />
     <Compile Include="ILTools\ITypeDeclaration.cs" />
     <Compile Include="ILTools\ITypeGenerator.cs" />
-    <Compile Include="ILTools\ImplicitConversions\OpCode\Mono\Cecil\Cil\OpCode.cs" />
     <Compile Include="ILTools\Mixin\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeDefinition\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeReference\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\System\Type\Mixin.cs" />
+    <Compile Include="ILTools\OpCode.cs" />
     <Compile Include="ILTools\OpCodes.cs" />
     <Compile Include="ILTools\ImplicitConversions\OpCode\System\Reflection\Emit\OpCode.cs" />
     <Compile Include="ILTools\PortableScope.cs" />
@@ -129,14 +101,9 @@
     <Compile Include="ILTools\PortableScopeItemRawData.cs" />
     <Compile Include="ILTools\PortableScopeAttribute.cs" />
     <Compile Include="ILTools\PortableScopeRawData.cs" />
-    <Compile Include="ILTools\TypeAnalyzer.cs" />
     <Compile Include="ILTools\TypeSavable.cs" />
     <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtil.cs" />
-    <Compile Include="DI\GlobalClassBase.cs" />
-    <Compile Include="DI\GlobalClass.cs" />
-    <Compile Include="DI\GlobalMethod.cs" />
-    <Compile Include="DI\GlobalProperty.cs" />
     <Compile Include="Linq\DelegateComparer.cs" />
     <Compile Include="Linq\DelegateEqualityComparer.cs" />
     <Compile Include="Linq\Iterable.cs" />

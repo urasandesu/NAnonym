@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using MC = Mono.Cecil;
+//using Mono.Cecil;
+//using Mono.Cecil.Cil;
+//using MC = Mono.Cecil;
 using System.Reflection;
 using System.Reflection.Emit;
 using SR = System.Reflection;
@@ -62,7 +62,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opCdoe)
         {
-            ilGenerator.Emit(opCdoe);
+            ilGenerator.Emit(opCdoe.Cast());
         }
 
         // TODO: OpCode 以外は explicit にしたほうが良さそう。
@@ -119,7 +119,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, MethodInfo meth)
         {
-            ilGenerator.Emit(opcode, meth);
+            ilGenerator.Emit(opcode.Cast(), meth);
         }
 
         public void Emit(OpCode opcode, sbyte arg)
@@ -134,7 +134,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, string str)
         {
-            ilGenerator.Emit(opcode, str);
+            ilGenerator.Emit(opcode.Cast(), str);
         }
 
         public void Emit(OpCode opcode, Type cls)
@@ -144,7 +144,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
         {
-            ilGenerator.Emit(opcode, (ConstructorInfo)(SRConstructorDeclarationImpl)constructorDecl);
+            ilGenerator.Emit(opcode.Cast(), (ConstructorInfo)(SRConstructorDeclarationImpl)constructorDecl);
         }
 
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)

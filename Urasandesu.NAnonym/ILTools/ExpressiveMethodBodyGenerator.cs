@@ -4,12 +4,12 @@ using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
-using Mono.Cecil;
+//using Mono.Cecil;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
-using Mono.Cecil.Cil;
+//using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
+//using Mono.Cecil.Cil;
 using SR = System.Reflection;
-using MC = Mono.Cecil;
+//using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
@@ -428,8 +428,8 @@ namespace Urasandesu.NAnonym.ILTools
                 // 4. ‚»‚Ì‘¼
                 var localDecl = default(ILocalGenerator);
                 var parameterDecl = default(IParameterDeclaration);
-                var variable = default(VariableDefinition);
-                var parameter = default(ParameterDefinition);
+                //var variable = default(VariableDefinition);
+                //var parameter = default(ParameterDefinition);
                 var constantExpression = default(ConstantExpression);
                 var constantField = default(FieldInfo);
                 if ((localDecl = bodyGen.Locals.FirstOrDefault(_localDecl => _localDecl.Name == fieldInfo.Name)) != null)

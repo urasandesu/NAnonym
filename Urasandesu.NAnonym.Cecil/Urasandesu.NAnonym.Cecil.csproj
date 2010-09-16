@@ -8,7 +8,7 @@
     <ProjectGuid>{2D460EE3-61D7-4726-8AF5-135352408DCB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Urasandesu.NAnonym</RootNamespace>
+    <RootNamespace>Urasandesu.NAnonym.Cecil</RootNamespace>
     <AssemblyName>Urasandesu.NAnonym.Cecil</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\jbevain-cecil\cecil\bin\Release\Mono.Cecil.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -45,7 +49,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DI\DependencyUtil.cs" />
+    <Compile Include="DI\GlobalClass.cs" />
+    <Compile Include="DI\GlobalClassBase.cs" />
+    <Compile Include="DI\GlobalMethod.cs" />
+    <Compile Include="DI\GlobalProperty.cs" />
+    <Compile Include="ILTools\ImplicitConversions\OpCode\Mono\Cecil\Cil\OpCode.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCILOperatorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCLocalGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMemberDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBaseDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCModuleDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCModuleGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCParameterDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCParameterGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCPortableScopeItemImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeGeneratorImpl.cs" />
+    <Compile Include="ILTools\Mixin\Mixin.cs" />
+    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeDefinition\Mixin.cs" />
+    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeReference\Mixin.cs" />
+    <Compile Include="ILTools\Mixin\System\Type\Mixin.cs" />
+    <Compile Include="ILTools\TypeAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
+      <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
+      <Name>Urasandesu.NAnonym</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ILTools\Mixin\Mono\Cecil\MethodDefinition\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
