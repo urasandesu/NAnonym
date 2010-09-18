@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Microsoft.VisualBasic.FileIO;
+using System.Reflection;
 
 namespace Urasandesu.NAnonym.Test
 {
+    public delegate NewDomainTestInfo NewDomainTestInfoProvider();
+
+    public delegate void NewDomainTestVerifier(NewDomainTestTarget target);
+
     public static class TestHelper
     {
         public static void UsingTempFile(Action<string> action)
@@ -41,6 +46,32 @@ namespace Urasandesu.NAnonym.Test
             return Directory.GetFiles(path, searchPattern).All(file => TryDelete(file));
         }
 
+        public static void UsingNewDomain(NewDomainTestInfoProvider provider)
+        {
+            var newDomain = default(AppDomain);
+            try
+            {
+                var testInfo = provider();
+
+                newDomain = AppDomain.CreateDomain(testInfo.FriendlyName, null, AppDomain.CurrentDomain.SetupInformation);
+                var marshalByRefTester =
+                    (MarshalByRefTester)newDomain.CreateInstanceAndUnwrap(
+                        typeof(MarshalByRefTester).Assembly.FullName,
+                        typeof(MarshalByRefTester).FullName,
+                        true,
+                        BindingFlags.Default,
+                        null,
+                        new object[] { testInfo },
+                        null,
+                        null,
+                        null);
+                newDomain.DoCallBack(new CrossAppDomainDelegate(marshalByRefTester.Verify));
+            }
+            finally
+            {
+                AppDomain.Unload(newDomain);
+            }
+        }
 
         public static void ThrowException(string value)
         {

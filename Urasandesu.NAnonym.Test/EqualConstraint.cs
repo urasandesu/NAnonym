@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NF = NUnit.Framework;
 
 namespace Urasandesu.NAnonym.Test
 {
-    public class EqualConstraint<T1, T2> : NUnit.Framework.Constraints.EqualConstraint
+    public class EqualConstraint<T1, T2> : NF::Constraints.EqualConstraint
     {
         readonly T1 expected;
         readonly Func<T1, T2, bool> equalityComparer;

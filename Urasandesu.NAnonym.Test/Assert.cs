@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NF = NUnit.Framework;
 
 namespace Urasandesu.NAnonym.Test
 {
-    public class Assert : NUnit.Framework.Assert
+    public class Assert : NF::Assert
     {
         protected Assert()
         {
@@ -13,7 +14,7 @@ namespace Urasandesu.NAnonym.Test
 
         public static void AreEquivalent<T1, T2>(T1 expected, T2 actual, Func<T1, T2, bool> equalityComparer)
         {
-            NUnit.Framework.Assert.That(actual, Is.EqualTo<T1, T2>(expected, equalityComparer));
+            NF::Assert.That(actual, Is.EqualTo<T1, T2>(expected, equalityComparer));
         }
     }
 }

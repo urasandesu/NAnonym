@@ -97,7 +97,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         public void CarryPortableScopeTest02()
         {
             TestHelper.UsingTempFile(tempFileName =>
-            NewDomainTest.Transfer(() =>
+            TestHelper.UsingNewDomain(() =>
             {
                 var tempAssemblyNameDef = CreateTempAssemblyNameDef(tempFileName);
                 var tempAssemblyDef = CreateTempAssemblyDef(tempAssemblyNameDef);
@@ -141,7 +141,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     Assert.AreEqual(10, scope.GetValue(() => a));
                 }
 
-                var testInfo = new NewDomainTestInfo();
+                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.GetFullPath(tempFileName);
                 testInfo.TypeFullName = carryPortableScopeTest02Def.FullName;
                 testInfo.Scope = scope;
