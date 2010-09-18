@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymouslyableTest.cs" />
+    <Compile Include="ClassHoge.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="DI\DependencyUtilTest.cs" />
     <Compile Include="Linq\DelegateComparerTest.cs" />
