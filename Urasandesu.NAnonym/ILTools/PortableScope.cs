@@ -76,8 +76,6 @@ namespace Urasandesu.NAnonym.ILTools
         public static PortableScope CarryFrom(object instance, string methodName, params Type[] parameterTypes)
         {
             // TODO: SR で構築（デフォルトの動作）
-            // HACK: ん？デフォルトの動作全部 SR 側に振っておいて、Cecil 使う場合は Cecil 用の Assembly 参照設定すればいいだけ、にすれば良くない？
-            // HACK: そうすると、static な所謂 Builder メソッドは基本的に extension method として定義するのが良さそう。
             throw new NotImplementedException();
         }
 

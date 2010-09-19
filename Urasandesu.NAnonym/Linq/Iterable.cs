@@ -672,10 +672,6 @@ namespace Urasandesu.NAnonym.Linq
         #endregion
     }
 
-    // NOTE: 使いどころが難しい。
-    // NOTE: selector は必ず指定すること。基本的に列挙のみが可能な、ListTransformer オブジェクトが生成される。
-    // NOTE: invertor を指定した場合は完全版。
-    // NOTE: やっぱりクラスわけよう。
     public sealed class Transformer<TSource, TDestination> : TransformerEnumerateOnly<TSource, TDestination>
     {
         readonly Func<TDestination, TSource> invertor;

@@ -41,11 +41,11 @@ namespace Test.Urasandesu.NAnonym.DI
                 "Modified suffix at Class1.Print",
                 class1.Print(value));
 
-            //Assert.AreEqual(
-            //    "Modified prefix at Class2.Print" +
-            //    value +
-            //    "Modified suffix at Class2.Print",
-            //    class2.Print(value));
+            Assert.AreEqual(
+                "Modified prefix at Class2.Print" +
+                value +
+                "Modified suffix at Class2.Print",
+                class2.Print(value));
         }
     }
 }

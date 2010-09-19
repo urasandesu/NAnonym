@@ -1032,7 +1032,6 @@ Parameter[1] = IntPtr method
                             Assert.AreEqual("[1, aiueo], 2010/08/31", e.InnerException.Message);
                         }
 
-                        // TODO: 対象のスコープにどんな変数が定義してあるかこんな感じで見たい。
                         Assert.AreEqual(2, target.TestInfo.Scope.Items.Count);
                         target.TestInfo.Scope.Items.ForEach(
                         (item, index) =>
@@ -1053,7 +1052,6 @@ Parameter[1] = IntPtr method
                             }
                         });
 
-                        // TODO: 定義してあるかのどうかのチェックと、設定済みの値をこんな感じで見たい。
                         {
                             var a = default(KeyValuePair<int, string>);
                             Assert.IsTrue(target.TestInfo.Scope.Contains(() => a));

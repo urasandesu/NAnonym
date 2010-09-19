@@ -14,8 +14,6 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    // TODO: PortableScope ‚Ì‘Î‰‚ªˆê’Ê‚èI‚í‚Á‚½‚Æ‚±‚ë‚Å Assembly •ªŠ„‚ğs‚¤B
-    //       Urasandesu.NAnonym.
     public class ExpressiveMethodBodyGenerator : IMethodBodyGenerator
     {
         readonly ITypeDeclaration declaringTypeDecl;
