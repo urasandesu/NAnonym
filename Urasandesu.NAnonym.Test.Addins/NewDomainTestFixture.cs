@@ -59,6 +59,7 @@ namespace Urasandesu.NAnonym.Test.Addins
         protected override void DoOneTimeTearDown(TestResult suiteResult)
         {
             base.DoOneTimeTearDown(suiteResult);
+            Fixture = null;
             AppDomain.Unload(newDomain);
             newDomain = null;
         }
