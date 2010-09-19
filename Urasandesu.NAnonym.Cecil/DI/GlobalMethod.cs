@@ -101,8 +101,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<T, TResult>);
                 gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<T, TResult>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<T, TResult>))));
-                T value = default(T);
-                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(value)));
+                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<T>(method.Method.GetParameters()[0].Name))));
+
+                // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
             });
 
             return null;

@@ -1,28 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Assert = Urasandesu.NAnonym.Test.Assert;
-using Urasandesu.NAnonym.DI;
-using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using SR = System.Reflection;
-using Urasandesu.NAnonym;
-using Test.Urasandesu.NAnonym.Etc;
 using System.IO;
-using Microsoft.VisualBasic.FileIO;
-using Urasandesu.NAnonym.Test;
-using System.Threading;
-using Test.Urasandesu.NAnonym.DI;
-using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
-using Mono;
+using System.Reflection;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using MC = Mono.Cecil;
+using NUnit.Framework;
 using Urasandesu.NAnonym.Cecil.ILTools;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Test;
+using Assert = Urasandesu.NAnonym.Test.Assert;
+using MC = Mono.Cecil;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {

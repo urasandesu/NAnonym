@@ -32,7 +32,7 @@ namespace Test.Urasandesu.NAnonym.DI
             var class1 = new Class1();
             var class2 = new Class2();
             string value = "aiueo";
-
+            
             Assert.AreEqual(
                 "Modified prefix at Class1.Print" +
                 "Modified prefix at Class2.Print" +

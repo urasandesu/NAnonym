@@ -13,6 +13,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo DupAddOneInfo;
         readonly MethodInfo AddOneDupInfo;
         readonly MethodInfo SubOneDupInfo;
+        readonly MethodInfo ExpandAndLdargInfo;
         readonly MethodInfo ExpandInfo;
         readonly MethodInfo EndInfo;
         readonly MethodInfo ReturnInfo;
@@ -25,6 +26,7 @@ namespace Urasandesu.NAnonym.ILTools
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
             AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
             SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
+            ExpandAndLdargInfo = TypeSavable.GetMethodInfo<string, object>(() => ExpandAndLdarg<object>).GetGenericMethodDefinition();
             ExpandInfo = TypeSavable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
             EndInfo = TypeSavable.GetMethodInfo(() => End);
             ReturnInfo = TypeSavable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
@@ -95,6 +97,18 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        public bool IsExpandAndLdarg(MethodInfo target)
+        {
+            if (target.Name == ExpandAndLdargInfo.Name && target == ExpandAndLdargInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool IsExpand(MethodInfo target)
         {
             if (target.Name == ExpandInfo.Name && target == ExpandInfo.MakeGenericMethod(target.GetGenericArguments()))
@@ -150,6 +164,11 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         public T SubOneDup<T>(T variable)
+        {
+            return default(T);
+        }
+
+        public T ExpandAndLdarg<T>(string name)
         {
             return default(T);
         }

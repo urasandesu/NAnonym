@@ -55,7 +55,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 action1Def2.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException("Hello, World!!"));
+                    gen.Eval(_ => TestHelper.ThrowException("Hello, World!!"));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -107,7 +107,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     int i = default(int);
                     gen.Eval(_ => _.Addloc(i, 100));
-                    gen.Eval(_ => ThrowException("i.ToString() = {0}", i.ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException("i.ToString() = {0}", i.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -160,7 +160,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     string s = default(string);
                     gen.Eval(_ => _.Addloc(s, new string('a', 10)));
-                    gen.Eval(_ => ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
+                    gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -212,7 +212,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     string s = new string('a', 10);
                     gen.Eval(_ => _.Addloc(s, new string('a', 10)));
-                    gen.Eval(_ => ThrowException("s.ToString() = {0}", s.ToUpper()));
+                    gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.ToUpper()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -262,7 +262,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 action2LocalVariableDef5.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(SR::Emit.OpCodes.Brtrue));
+                    gen.Eval(_ => TestHelper.ThrowException(SR::Emit.OpCodes.Brtrue));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -322,7 +322,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", _.AddOneDup(i))));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", _.DupAddOne(i))));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", _.SubOneDup(i))));
-                    gen.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -386,7 +386,7 @@ i++ = 1
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter[0] Type = {0}", dynamicMethod.GetParameters()[0])));
-                    gen.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -532,7 +532,7 @@ Parameter[0] Type = Int32
                 action2LocalVariableDef8.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException("GetValue(10) = {0}", GetValue(10).ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException("GetValue(10) = {0}", TestHelper.GetValue(10).ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -600,7 +600,7 @@ Parameter[0] Type = Int32
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
-                    gen.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -659,7 +659,7 @@ Parameter[1] = IntPtr method
                 action2LocalVariableDef10.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(i + (int)d));
+                    gen.Eval(_ => TestHelper.ThrowException(i + (int)d));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -667,8 +667,6 @@ Parameter[1] = IntPtr method
                 var scope = action2LocalVariableDef10.CarryPortableScope();
                 scope.SetValue(() => i, i);
                 scope.SetValue(() => d, d);
-                //scope.Bind(() => i, i);
-                //scope.Bind(() => d, d);
 
                 var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
@@ -680,7 +678,7 @@ Parameter[1] = IntPtr method
                     {
                         try
                         {
-                            ((NewDomainTestInfoWithScope)((NewDomainTestInfoWithScope)target.TestInfo)).Scope.DockWith(target.Instance);
+                            ((NewDomainTestInfoWithScope)target.TestInfo).Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
@@ -718,17 +716,13 @@ Parameter[1] = IntPtr method
                 action2LocalVariableDef11.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(a));
+                    gen.Eval(_ => TestHelper.ThrowException(a));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                // 書き込んだ時点で参照が変わってない？
-                // 同期は取られてるはず…か。
-                //var scope = action2LocalVariableDef11.CreateScope();
                 var scope = action2LocalVariableDef11.CarryPortableScope();
                 scope.SetValue(() => a, a);
-                //scope.Bind(() => a, a);
 
                 var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
@@ -809,7 +803,7 @@ Parameter[1] = IntPtr method
                 action2SameDomain1Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(i * (int)d));
+                    gen.Eval(_ => TestHelper.ThrowException(i * (int)d));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -822,9 +816,6 @@ Parameter[1] = IntPtr method
                 scope.SetValue(() => i, i);
                 scope.SetValue(() => d, d);
                 scope.DockWith(instance);
-                //scope.Bind(() => i, i);
-                //scope.Bind(() => d, d);
-                //scope.Reinitialize(instance);
                 try
                 {
                     action2SameDomain1.Invoke(instance, null);
@@ -886,8 +877,8 @@ Parameter[1] = IntPtr method
                 action2SameDomain2Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => ThrowException(_.Expand(s)));   // Expand により、この場で式ツリーが展開される。
-                    //gen.Eval(_ => ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
+                    gen.Eval(_ => TestHelper.ThrowException(_.Expand(s)));   // Expand により、この場で式ツリーが展開される。
+                    //gen.Eval(_ => TestHelper.ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -943,7 +934,7 @@ Parameter[1] = IntPtr method
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.Expand(cacheField.Name)));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.Expand(cacheField.FieldType.FullName)));
-                    gen.Eval(_ => ThrowException(stringBuilder.ToString()));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -1003,12 +994,11 @@ Parameter[1] = IntPtr method
                     var a = new KeyValuePair<int, string>(1, "aiueo");
                     var b = default(DateTime);                                  // 別の AppDomain で値を作成してみる。
 
-                    gen.Eval(_ => ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
+                    gen.Eval(_ => TestHelper.ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
 
                     scope.SetValue(() => a, a);
                 });
 
-                // あー、ここは TEMP ファイルじゃだめなのか・・・
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
@@ -1061,30 +1051,6 @@ Parameter[1] = IntPtr method
 
                 return testInfo;
             }));
-        }
-
-
-
-
-
-        public static void ThrowException(string value)
-        {
-            throw new Exception(value);
-        }
-
-        public static void ThrowException(string value, object param)
-        {
-            throw new Exception(string.Format(value, param));
-        }
-
-        public static void ThrowException(object o)
-        {
-            throw new Exception(string.Format("{0}", o));
-        }
-
-        public static int GetValue(int value)
-        {
-            return value;
         }
     }
 

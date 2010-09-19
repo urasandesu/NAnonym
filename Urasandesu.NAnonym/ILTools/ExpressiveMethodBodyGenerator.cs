@@ -281,10 +281,17 @@ namespace Urasandesu.NAnonym.ILTools
                         il.Emit(OpCodes.Dup);
                         il.Emit(OpCodes.Stloc, localDecl);
                     }
+                    else if (expressible.IsExpandAndLdarg(exp.Method))
+                    {
+                        var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+                        string parameterName = (string)expanded.DynamicInvoke();
+                        var parameterGen = methodGen.Parameters.First(_parameterGen => _parameterGen.Name == parameterName);
+                        il.Emit(OpCodes.Ldarg, parameterGen);
+                    }
                     else if (expressible.IsExpand(exp.Method))
                     {
-                        var expand = Expression.Lambda(exp.Arguments[0]).Compile();
-                        Eval(Expression.Constant(expand.DynamicInvoke()));
+                        var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+                        Eval(Expression.Constant(expanded.DynamicInvoke()));
                     }
                     else if (expressible.IsReturn(exp.Method))
                     {
@@ -409,25 +416,18 @@ namespace Urasandesu.NAnonym.ILTools
                 // 3. 定義時に使った変数そのもの
                 // 4. その他
                 var localDecl = default(ILocalGenerator);
-                var parameterDecl = default(IParameterDeclaration);
-                //var variable = default(VariableDefinition);
-                //var parameter = default(ParameterDefinition);
+                var parameterGen = default(IParameterGenerator);
                 var constantExpression = default(ConstantExpression);
-                var constantField = default(FieldInfo);
                 if ((localDecl = bodyGen.Locals.FirstOrDefault(_localDecl => _localDecl.Name == fieldInfo.Name)) != null)
                 {
                     il.Emit(OpCodes.Ldloc, localDecl);
                 }
-                else if ((parameterDecl = ((IMethodBaseDeclaration)methodGen).Parameters.FirstOrDefault(_parameterDecl => _parameterDecl.Name == fieldInfo.Name)) != null)
+                else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
                 {
-                    il.Emit(OpCodes.Ldarg, parameterDecl);
+                    il.Emit(OpCodes.Ldarg, parameterGen);
                 }
                 else if ((constantExpression = exp.Expression as ConstantExpression) != null)
                 {
-                    //string fieldName = PortableScope.MakeFieldName(methodGen, fieldInfo.Name);
-                    //var fieldDecl = ((ITypeGenerator)declaringTypeDecl).AddField(fieldName, fieldInfo.FieldType, SR::FieldAttributes.Public | SR::FieldAttributes.SpecialName);
-                    //il.Emit(OpCodes.Ldarg_0);
-                    //il.Emit(OpCodes.Ldfld, fieldDecl);
                     // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
                     var item = methodGen.AddPortableScopeItem(fieldInfo);
                     il.Emit(OpCodes.Ldarg_0);
