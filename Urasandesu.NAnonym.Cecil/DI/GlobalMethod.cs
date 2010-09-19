@@ -51,7 +51,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
             newMethod.Name = souceMethodName;
             tbaseType.Methods.Add(newMethod);
 
-            var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
+            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
+            newMethod.Body.InitLocals = true;
             newMethod.ExpressBody(
             gen =>
             {
@@ -75,18 +76,22 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                     { 
                                                         typeof(String) 
                                                     }, null)));
-                // TODO: その場で評価しちゃえる処理が欲しい。ただし、最終的な情報が CIL レベルで埋め込めるものであるという制限は必要！
-                // TODO: 
-                //var cacheField = default(FieldInfo);
-                //gen.Eval(_=>_.Addloc(
+                var cacheField = default(FieldInfo);
+                gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
+                                                    _.Expand(tmpCacheField.Name),
+                                                    BindingFlags.NonPublic | BindingFlags.Static)));
+                var targetMethod = default(MethodInfo);
+                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(method.Method.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                    _.Expand(method.Method.Name),
+                                                    BindingFlags.NonPublic | BindingFlags.Static)));
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
                 var label27 = default(Label);
                 gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
-                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField)); // TODO: 変数のスコープが違いすぎる。。。TotableScope で Bind しようにも、できるタイミングではすでに情報が見えないところに。。。
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Brtrue_S, label27));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldnull));
-                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldftn, method.Method));
+                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldftn, targetMethod));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Newobj, ctor3));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Stsfld, cacheField));
                 gen.Eval(_ => il.MarkLabel(label27));
@@ -94,6 +99,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
+                var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<T, TResult>);
+                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<T, TResult>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<T, TResult>))));
+                T value = default(T);
+                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(value)));
             });
 
             return null;

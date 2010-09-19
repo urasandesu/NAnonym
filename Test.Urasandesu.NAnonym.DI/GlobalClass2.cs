@@ -22,6 +22,7 @@ namespace Test.Urasandesu.NAnonym.DI
                     return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";
                 });
             });
+            class2.Load();
             return class2;
         }
     }

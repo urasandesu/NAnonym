@@ -444,7 +444,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
         {
             var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
             expression(gen);
-            gen.Eval(_ => _.End());
+            //gen.Eval(_ => _.End());   // TODO: 厳密な終了判定が必要かも？ ret が 複数あると、Reflector での C# への変換がうまく行かない（IL 的には特に問題にはならない）。
         }
 
         public static MC::Cil.OpCode Cast(this UNI::OpCode opcode)
