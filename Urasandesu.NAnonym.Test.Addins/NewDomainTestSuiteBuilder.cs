@@ -19,7 +19,7 @@ namespace Urasandesu.NAnonym.Test.Addins
 
         public bool CanBuildFrom(Type type)
         {
-            return Reflect.HasAttribute(type, typeof(NewDomainTestFixtureAttribute).FullName, false);
+            return Reflect.HasAttribute(type, "Urasandesu.NAnonym.Test.NewDomainTestFixtureAttribute", false);
         }
 
         #endregion

@@ -59,12 +59,6 @@
     <Compile Include="NewDomainTestSuiteBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Urasandesu.NAnonym.Test\Urasandesu.NAnonym.Test.csproj">
-      <Project>{D4CD63AA-80F7-4F2E-BBDA-267B26FF6483}</Project>
-      <Name>Urasandesu.NAnonym.Test</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

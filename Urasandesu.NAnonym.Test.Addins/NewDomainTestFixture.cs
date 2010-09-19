@@ -16,7 +16,7 @@ namespace Urasandesu.NAnonym.Test.Addins
         {
             foreach (var methodInfo in FixtureType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (Reflect.HasAttribute(methodInfo, typeof(NewDomainTestAttribute).FullName, false))
+                if (Reflect.HasAttribute(methodInfo, "Urasandesu.NAnonym.Test.NewDomainTestAttribute", false))
                     Add(new NUnitTestMethod(methodInfo));
             }
         }
@@ -24,18 +24,35 @@ namespace Urasandesu.NAnonym.Test.Addins
         protected override void DoOneTimeSetUp(TestResult suiteResult)
         {
             newDomain = AppDomain.CreateDomain(suiteResult.FullName, null, AppDomain.CurrentDomain.SetupInformation);
-            var testBase = (NewDomainTestBase)newDomain.CreateInstanceAndUnwrap(
-                                                    FixtureType.Assembly.FullName,
-                                                    FixtureType.FullName,
-                                                    true,
-                                                    BindingFlags.Default,
-                                                    null,
-                                                    new object[] { },
-                                                    null,
-                                                    null,
-                                                    null);
-            testBase.Console = new ConsoleProxy();
-            Fixture = testBase;
+            var o = newDomain.CreateInstanceAndUnwrap(
+                                    FixtureType.Assembly.FullName,
+                                    FixtureType.FullName,
+                                    true,
+                                    BindingFlags.Default,
+                                    null,
+                                    new object[] { },
+                                    null,
+                                    null,
+                                    null);
+
+            if (Reflect.InheritsFrom(FixtureType, "Urasandesu.NAnonym.Test.NewDomainTestBase"))
+            {
+                var consoleProxy = 
+                    AppDomain.CurrentDomain.CreateInstanceAndUnwrap(
+                        "Urasandesu.NAnonym.Test, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", 
+                        "Urasandesu.NAnonym.Test.ConsoleProxy", 
+                        false, 
+                        BindingFlags.Default, 
+                        null, 
+                        new object[] { }, 
+                        null, 
+                        null, 
+                        null);
+
+                var consolePropertyInfo = Reflect.GetNamedProperty(FixtureType, "Console", BindingFlags.Public | BindingFlags.Instance);
+                consolePropertyInfo.SetValue(o, consoleProxy, null);
+            }
+            Fixture = o;
             base.DoOneTimeSetUp(suiteResult);
         }
 
