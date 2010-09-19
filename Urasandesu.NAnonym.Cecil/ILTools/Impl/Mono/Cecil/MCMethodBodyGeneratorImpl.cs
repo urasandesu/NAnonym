@@ -15,11 +15,15 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     {
         readonly MC::Cil.MethodBody bodyDef;
         readonly ReadOnlyCollection<ILocalGenerator> locals;
+        ReadOnlyCollection<IDirectiveGenerator> directives;
+
         public MCMethodBodyGeneratorImpl(MC::Cil.MethodBody bodyDef)
         {
             this.bodyDef = bodyDef;
             locals = new ReadOnlyCollection<ILocalGenerator>(
                 bodyDef.Variables.TransformEnumerateOnly(variableDef => (ILocalGenerator)(MCLocalGeneratorImpl)variableDef));
+            directives = new ReadOnlyCollection<IDirectiveGenerator>(
+                bodyDef.Instructions.TransformEnumerateOnly(instruction => (IDirectiveGenerator)(MCDirectiveGeneratorImpl)instruction));
         }
 
         public static explicit operator MCMethodBodyGeneratorImpl(MC::Cil.MethodBody bodyDef)
@@ -44,7 +48,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public new ReadOnlyCollection<IDirectiveGenerator> Directives
         {
-            get { throw new NotImplementedException(); }
+            get { return directives; }
         }
     }
 }

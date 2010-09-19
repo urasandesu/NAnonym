@@ -57,6 +57,8 @@
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCDirectiveDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCDirectiveGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCILOperatorImpl.cs" />

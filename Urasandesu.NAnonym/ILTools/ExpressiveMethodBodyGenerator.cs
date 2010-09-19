@@ -4,12 +4,8 @@ using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
-//using Mono.Cecil;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-//using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
-//using Mono.Cecil.Cil;
 using SR = System.Reflection;
-//using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
@@ -24,12 +20,15 @@ namespace Urasandesu.NAnonym.ILTools
 
         readonly MethodInfo GetTypeFromHandle;
 
+        ReadOnlyCollection<IDirectiveGenerator> directives;
+
         internal ExpressiveMethodBodyGenerator(IMethodBaseGenerator methodGen)
         {
             this.methodGen = methodGen;
             declaringTypeDecl = methodGen.DeclaringType; // NOTE: Generator Ç©ÇÁóàÇƒÇ»Ç¢Ç∆Ç‹Ç∏Ç¢Ç¡ÇƒÇ±Ç∆ÇæÇÀÅB
             bodyGen = methodGen.Body;
             il = bodyGen.GetILOperator();
+            directives = bodyGen.Directives;
 
             expressible = new Expressible();
 
@@ -44,21 +43,6 @@ namespace Urasandesu.NAnonym.ILTools
                     },
                     null);
         }
-
-        //public ExpressiveMethodBodyGenerator(ConstructorBuilder constructorBuilder)
-        //    : this((SRConstructorGeneratorImpl)constructorBuilder)
-        //{
-        //}
-
-        //public ExpressiveMethodBodyGenerator(DynamicMethod dynamicMethod)
-        //    : this((SRMethodGeneratorImpl)dynamicMethod)
-        //{
-        //}
-
-        //public ExpressiveMethodBodyGenerator(MethodDefinition methodDef)
-        //    : this((MCMethodGeneratorImpl)methodDef)
-        //{
-        //}
 
         public void Eval(Expression<Action<Expressible>> exp)
         {
@@ -555,7 +539,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public ReadOnlyCollection<IDirectiveGenerator> Directives
         {
-            get { throw new NotImplementedException(); }
+            get { return directives; }
         }
 
         #endregion

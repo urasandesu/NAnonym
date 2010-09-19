@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Test
 {
@@ -10,14 +9,13 @@ namespace Urasandesu.NAnonym.Test
     public class NewDomainTestInfo
     {
         public NewDomainTestInfo()
-            : this("NewDomain")
+            : this(null)
         {
         }
 
         public NewDomainTestInfo(string friendlyName)
         {
-            Required.NotDefault(friendlyName, () => friendlyName);
-            FriendlyName = friendlyName;
+            FriendlyName = string.IsNullOrEmpty(friendlyName) ? "NewDomain" : friendlyName;
         }
 
         public string FriendlyName { get; set; }
@@ -25,7 +23,6 @@ namespace Urasandesu.NAnonym.Test
         public string TypeFullName { get; set; }
         public string MethodName { get; set; }
         public NewDomainTestVerifier TestVerifier { get; set; }
-        public PortableScope Scope { get; set; }
         public virtual void Verify()
         {
             TestVerifier(new NewDomainTestTarget(this));

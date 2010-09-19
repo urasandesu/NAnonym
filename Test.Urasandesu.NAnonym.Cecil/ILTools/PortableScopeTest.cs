@@ -141,17 +141,17 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     Assert.AreEqual(10, scope.GetValue(() => a));
                 }
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.GetFullPath(tempFileName);
                 testInfo.TypeFullName = carryPortableScopeTest02Def.FullName;
                 testInfo.Scope = scope;
                 testInfo.TestVerifier =
                     target =>
                     {
-                        target.TestInfo.Scope.DockWith(target.Instance);
+                        ((NewDomainTestInfoWithScope)target.TestInfo).Scope.DockWith(target.Instance);
                         int a = 0;
-                        Assert.AreEqual(10, target.TestInfo.Scope.FetchValue(() => a, target.Instance));
-                        Assert.NotNull(target.TestInfo.Scope.methodDecl);
+                        Assert.AreEqual(10, ((NewDomainTestInfoWithScope)target.TestInfo).Scope.FetchValue(() => a, target.Instance));
+                        Assert.NotNull(((NewDomainTestInfoWithScope)target.TestInfo).Scope.methodDecl);
                     };
 
                 return testInfo;

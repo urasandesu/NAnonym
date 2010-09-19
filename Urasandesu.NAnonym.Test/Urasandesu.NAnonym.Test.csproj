@@ -60,12 +60,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
-      <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
-      <Name>Urasandesu.NAnonym</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

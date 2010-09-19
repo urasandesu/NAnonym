@@ -60,7 +60,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action1Def2.Name;
@@ -113,7 +113,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef2.Name;
@@ -165,7 +165,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef3.Name;
@@ -217,7 +217,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef4.Name;
@@ -267,7 +267,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef5.Name;
@@ -327,7 +327,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef6.Name;
@@ -391,7 +391,7 @@ i++ = 1
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef7.Name;
@@ -448,7 +448,7 @@ Parameter[0] Type = Int32
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = func1Parameters2.Name;
@@ -494,7 +494,7 @@ Parameter[0] Type = Int32
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
                 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = func1Parameters3.Name;
@@ -537,7 +537,7 @@ Parameter[0] Type = Int32
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef8.Name;
@@ -605,7 +605,7 @@ Parameter[0] Type = Int32
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef9.Name;
@@ -670,7 +670,7 @@ Parameter[1] = IntPtr method
                 //scope.Bind(() => i, i);
                 //scope.Bind(() => d, d);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef10.Name;
@@ -680,7 +680,7 @@ Parameter[1] = IntPtr method
                     {
                         try
                         {
-                            target.TestInfo.Scope.DockWith(target.Instance);
+                            ((NewDomainTestInfoWithScope)((NewDomainTestInfoWithScope)target.TestInfo)).Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
@@ -730,7 +730,7 @@ Parameter[1] = IntPtr method
                 scope.SetValue(() => a, a);
                 //scope.Bind(() => a, a);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef11.Name;
@@ -740,7 +740,7 @@ Parameter[1] = IntPtr method
                     {
                         try
                         {
-                            target.TestInfo.Scope.DockWith(target.Instance);
+                            ((NewDomainTestInfoWithScope)target.TestInfo).Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
@@ -949,7 +949,7 @@ Parameter[1] = IntPtr method
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
                 // 展開してしまうので、別 AppDomain でも問題なし。
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef12.Name;
@@ -1011,7 +1011,7 @@ Parameter[1] = IntPtr method
                 // あー、ここは TEMP ファイルじゃだめなのか・・・
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
 
-                var testInfo = new NewDomainTestInfo(MethodBase.GetCurrentMethod().Name);
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
                 testInfo.TypeFullName = methodTestClassDef.FullName;
                 testInfo.MethodName = action2LocalVariableDef19.Name;
@@ -1022,8 +1022,8 @@ Parameter[1] = IntPtr method
                         try
                         {
                             var b = new DateTime(2010, 8, 31);
-                            target.TestInfo.Scope.SetValue(() => b, b);
-                            target.TestInfo.Scope.DockWith(target.Instance);
+                            ((NewDomainTestInfoWithScope)target.TestInfo).Scope.SetValue(() => b, b);
+                            ((NewDomainTestInfoWithScope)target.TestInfo).Scope.DockWith(target.Instance);
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
@@ -1032,8 +1032,8 @@ Parameter[1] = IntPtr method
                             Assert.AreEqual("[1, aiueo], 2010/08/31", e.InnerException.Message);
                         }
 
-                        Assert.AreEqual(2, target.TestInfo.Scope.Items.Count);
-                        target.TestInfo.Scope.Items.ForEach(
+                        Assert.AreEqual(2, ((NewDomainTestInfoWithScope)target.TestInfo).Scope.Items.Count);
+                        ((NewDomainTestInfoWithScope)target.TestInfo).Scope.Items.ForEach(
                         (item, index) =>
                         {
                             switch (index)
@@ -1054,8 +1054,8 @@ Parameter[1] = IntPtr method
 
                         {
                             var a = default(KeyValuePair<int, string>);
-                            Assert.IsTrue(target.TestInfo.Scope.Contains(() => a));
-                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), target.TestInfo.Scope.GetValue(() => a));
+                            Assert.IsTrue(((NewDomainTestInfoWithScope)target.TestInfo).Scope.Contains(() => a));
+                            Assert.AreEqual(new KeyValuePair<int, string>(1, "aiueo"), ((NewDomainTestInfoWithScope)target.TestInfo).Scope.GetValue(() => a));
                         }
                     };
 
@@ -1086,5 +1086,21 @@ Parameter[1] = IntPtr method
         {
             return value;
         }
+    }
+
+    [Serializable]
+    public class NewDomainTestInfoWithScope : NewDomainTestInfo
+    {
+        public NewDomainTestInfoWithScope()
+            : base()
+        {
+        }
+
+        public NewDomainTestInfoWithScope(string friendlyName)
+            : base(friendlyName)
+        {
+        }
+
+        public PortableScope Scope { get; set; }
     }
 }

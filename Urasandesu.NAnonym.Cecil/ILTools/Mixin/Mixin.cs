@@ -444,7 +444,234 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
         {
             var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
             expression(gen);
-            //gen.Eval(_ => _.End());   // TODO: 厳密な終了判定が必要かも？ ret が 複数あると、Reflector での C# への変換がうまく行かない（IL 的には特に問題にはならない）。
+            if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)
+            {
+                gen.Eval(_ => _.End());
+            }
+        }
+
+        public static UNI::OpCode Cast(this MC::Cil.OpCode opcode)
+        {
+            if (opcode == MC::Cil.OpCodes.Add) return UNI::OpCodes.Add;
+            else if (opcode == MC::Cil.OpCodes.Add_Ovf) return UNI::OpCodes.Add_Ovf;
+            else if (opcode == MC::Cil.OpCodes.Add_Ovf_Un) return UNI::OpCodes.Add_Ovf_Un;
+            else if (opcode == MC::Cil.OpCodes.And) return UNI::OpCodes.And;
+            else if (opcode == MC::Cil.OpCodes.Arglist) return UNI::OpCodes.Arglist;
+            else if (opcode == MC::Cil.OpCodes.Beq) return UNI::OpCodes.Beq;
+            else if (opcode == MC::Cil.OpCodes.Beq_S) return UNI::OpCodes.Beq_S;
+            else if (opcode == MC::Cil.OpCodes.Bge) return UNI::OpCodes.Bge;
+            else if (opcode == MC::Cil.OpCodes.Bge_S) return UNI::OpCodes.Bge_S;
+            else if (opcode == MC::Cil.OpCodes.Bge_Un) return UNI::OpCodes.Bge_Un;
+            else if (opcode == MC::Cil.OpCodes.Bge_Un_S) return UNI::OpCodes.Bge_Un_S;
+            else if (opcode == MC::Cil.OpCodes.Bgt) return UNI::OpCodes.Bgt;
+            else if (opcode == MC::Cil.OpCodes.Bgt_S) return UNI::OpCodes.Bgt_S;
+            else if (opcode == MC::Cil.OpCodes.Bgt_Un) return UNI::OpCodes.Bgt_Un;
+            else if (opcode == MC::Cil.OpCodes.Bgt_Un_S) return UNI::OpCodes.Bgt_Un_S;
+            else if (opcode == MC::Cil.OpCodes.Ble) return UNI::OpCodes.Ble;
+            else if (opcode == MC::Cil.OpCodes.Ble_S) return UNI::OpCodes.Ble_S;
+            else if (opcode == MC::Cil.OpCodes.Ble_Un) return UNI::OpCodes.Ble_Un;
+            else if (opcode == MC::Cil.OpCodes.Ble_Un_S) return UNI::OpCodes.Ble_Un_S;
+            else if (opcode == MC::Cil.OpCodes.Blt) return UNI::OpCodes.Blt;
+            else if (opcode == MC::Cil.OpCodes.Blt_S) return UNI::OpCodes.Blt_S;
+            else if (opcode == MC::Cil.OpCodes.Blt_Un) return UNI::OpCodes.Blt_Un;
+            else if (opcode == MC::Cil.OpCodes.Blt_Un_S) return UNI::OpCodes.Blt_Un_S;
+            else if (opcode == MC::Cil.OpCodes.Bne_Un) return UNI::OpCodes.Bne_Un;
+            else if (opcode == MC::Cil.OpCodes.Bne_Un_S) return UNI::OpCodes.Bne_Un_S;
+            else if (opcode == MC::Cil.OpCodes.Box) return UNI::OpCodes.Box;
+            else if (opcode == MC::Cil.OpCodes.Br) return UNI::OpCodes.Br;
+            else if (opcode == MC::Cil.OpCodes.Br_S) return UNI::OpCodes.Br_S;
+            else if (opcode == MC::Cil.OpCodes.Break) return UNI::OpCodes.Break;
+            else if (opcode == MC::Cil.OpCodes.Brfalse) return UNI::OpCodes.Brfalse;
+            else if (opcode == MC::Cil.OpCodes.Brfalse_S) return UNI::OpCodes.Brfalse_S;
+            else if (opcode == MC::Cil.OpCodes.Brtrue) return UNI::OpCodes.Brtrue;
+            else if (opcode == MC::Cil.OpCodes.Brtrue_S) return UNI::OpCodes.Brtrue_S;
+            else if (opcode == MC::Cil.OpCodes.Call) return UNI::OpCodes.Call;
+            else if (opcode == MC::Cil.OpCodes.Calli) return UNI::OpCodes.Calli;
+            else if (opcode == MC::Cil.OpCodes.Callvirt) return UNI::OpCodes.Callvirt;
+            else if (opcode == MC::Cil.OpCodes.Castclass) return UNI::OpCodes.Castclass;
+            else if (opcode == MC::Cil.OpCodes.Ceq) return UNI::OpCodes.Ceq;
+            else if (opcode == MC::Cil.OpCodes.Cgt) return UNI::OpCodes.Cgt;
+            else if (opcode == MC::Cil.OpCodes.Cgt_Un) return UNI::OpCodes.Cgt_Un;
+            else if (opcode == MC::Cil.OpCodes.Ckfinite) return UNI::OpCodes.Ckfinite;
+            else if (opcode == MC::Cil.OpCodes.Clt) return UNI::OpCodes.Clt;
+            else if (opcode == MC::Cil.OpCodes.Clt_Un) return UNI::OpCodes.Clt_Un;
+            else if (opcode == MC::Cil.OpCodes.Constrained) return UNI::OpCodes.Constrained;
+            else if (opcode == MC::Cil.OpCodes.Conv_I) return UNI::OpCodes.Conv_I;
+            else if (opcode == MC::Cil.OpCodes.Conv_I1) return UNI::OpCodes.Conv_I1;
+            else if (opcode == MC::Cil.OpCodes.Conv_I2) return UNI::OpCodes.Conv_I2;
+            else if (opcode == MC::Cil.OpCodes.Conv_I4) return UNI::OpCodes.Conv_I4;
+            else if (opcode == MC::Cil.OpCodes.Conv_I8) return UNI::OpCodes.Conv_I8;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I) return UNI::OpCodes.Conv_Ovf_I;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I_Un) return UNI::OpCodes.Conv_Ovf_I_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I1) return UNI::OpCodes.Conv_Ovf_I1;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I1_Un) return UNI::OpCodes.Conv_Ovf_I1_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I2) return UNI::OpCodes.Conv_Ovf_I2;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I2_Un) return UNI::OpCodes.Conv_Ovf_I2_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I4) return UNI::OpCodes.Conv_Ovf_I4;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I4_Un) return UNI::OpCodes.Conv_Ovf_I4_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I8) return UNI::OpCodes.Conv_Ovf_I8;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_I8_Un) return UNI::OpCodes.Conv_Ovf_I8_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U) return UNI::OpCodes.Conv_Ovf_U;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U_Un) return UNI::OpCodes.Conv_Ovf_U_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U1) return UNI::OpCodes.Conv_Ovf_U1;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U1_Un) return UNI::OpCodes.Conv_Ovf_U1_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U2) return UNI::OpCodes.Conv_Ovf_U2;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U2_Un) return UNI::OpCodes.Conv_Ovf_U2_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U4) return UNI::OpCodes.Conv_Ovf_U4;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U4_Un) return UNI::OpCodes.Conv_Ovf_U4_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U8) return UNI::OpCodes.Conv_Ovf_U8;
+            else if (opcode == MC::Cil.OpCodes.Conv_Ovf_U8_Un) return UNI::OpCodes.Conv_Ovf_U8_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_R_Un) return UNI::OpCodes.Conv_R_Un;
+            else if (opcode == MC::Cil.OpCodes.Conv_R4) return UNI::OpCodes.Conv_R4;
+            else if (opcode == MC::Cil.OpCodes.Conv_R8) return UNI::OpCodes.Conv_R8;
+            else if (opcode == MC::Cil.OpCodes.Conv_U) return UNI::OpCodes.Conv_U;
+            else if (opcode == MC::Cil.OpCodes.Conv_U1) return UNI::OpCodes.Conv_U1;
+            else if (opcode == MC::Cil.OpCodes.Conv_U2) return UNI::OpCodes.Conv_U2;
+            else if (opcode == MC::Cil.OpCodes.Conv_U4) return UNI::OpCodes.Conv_U4;
+            else if (opcode == MC::Cil.OpCodes.Conv_U8) return UNI::OpCodes.Conv_U8;
+            else if (opcode == MC::Cil.OpCodes.Cpblk) return UNI::OpCodes.Cpblk;
+            else if (opcode == MC::Cil.OpCodes.Cpobj) return UNI::OpCodes.Cpobj;
+            else if (opcode == MC::Cil.OpCodes.Div) return UNI::OpCodes.Div;
+            else if (opcode == MC::Cil.OpCodes.Div_Un) return UNI::OpCodes.Div_Un;
+            else if (opcode == MC::Cil.OpCodes.Dup) return UNI::OpCodes.Dup;
+            else if (opcode == MC::Cil.OpCodes.Endfilter) return UNI::OpCodes.Endfilter;
+            else if (opcode == MC::Cil.OpCodes.Endfinally) return UNI::OpCodes.Endfinally;
+            else if (opcode == MC::Cil.OpCodes.Initblk) return UNI::OpCodes.Initblk;
+            else if (opcode == MC::Cil.OpCodes.Initobj) return UNI::OpCodes.Initobj;
+            else if (opcode == MC::Cil.OpCodes.Isinst) return UNI::OpCodes.Isinst;
+            else if (opcode == MC::Cil.OpCodes.Jmp) return UNI::OpCodes.Jmp;
+            else if (opcode == MC::Cil.OpCodes.Ldarg) return UNI::OpCodes.Ldarg;
+            else if (opcode == MC::Cil.OpCodes.Ldarg_0) return UNI::OpCodes.Ldarg_0;
+            else if (opcode == MC::Cil.OpCodes.Ldarg_1) return UNI::OpCodes.Ldarg_1;
+            else if (opcode == MC::Cil.OpCodes.Ldarg_2) return UNI::OpCodes.Ldarg_2;
+            else if (opcode == MC::Cil.OpCodes.Ldarg_3) return UNI::OpCodes.Ldarg_3;
+            else if (opcode == MC::Cil.OpCodes.Ldarg_S) return UNI::OpCodes.Ldarg_S;
+            else if (opcode == MC::Cil.OpCodes.Ldarga) return UNI::OpCodes.Ldarga;
+            else if (opcode == MC::Cil.OpCodes.Ldarga_S) return UNI::OpCodes.Ldarga_S;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4) return UNI::OpCodes.Ldc_I4;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_0) return UNI::OpCodes.Ldc_I4_0;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_1) return UNI::OpCodes.Ldc_I4_1;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_2) return UNI::OpCodes.Ldc_I4_2;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_3) return UNI::OpCodes.Ldc_I4_3;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_4) return UNI::OpCodes.Ldc_I4_4;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_5) return UNI::OpCodes.Ldc_I4_5;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_6) return UNI::OpCodes.Ldc_I4_6;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_7) return UNI::OpCodes.Ldc_I4_7;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_8) return UNI::OpCodes.Ldc_I4_8;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_M1) return UNI::OpCodes.Ldc_I4_M1;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I4_S) return UNI::OpCodes.Ldc_I4_S;
+            else if (opcode == MC::Cil.OpCodes.Ldc_I8) return UNI::OpCodes.Ldc_I8;
+            else if (opcode == MC::Cil.OpCodes.Ldc_R4) return UNI::OpCodes.Ldc_R4;
+            else if (opcode == MC::Cil.OpCodes.Ldc_R8) return UNI::OpCodes.Ldc_R8;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_Any) return UNI::OpCodes.Ldelem;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_I) return UNI::OpCodes.Ldelem_I;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_I1) return UNI::OpCodes.Ldelem_I1;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_I2) return UNI::OpCodes.Ldelem_I2;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_I4) return UNI::OpCodes.Ldelem_I4;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_I8) return UNI::OpCodes.Ldelem_I8;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_R4) return UNI::OpCodes.Ldelem_R4;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_R8) return UNI::OpCodes.Ldelem_R8;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_Ref) return UNI::OpCodes.Ldelem_Ref;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_U1) return UNI::OpCodes.Ldelem_U1;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_U2) return UNI::OpCodes.Ldelem_U2;
+            else if (opcode == MC::Cil.OpCodes.Ldelem_U4) return UNI::OpCodes.Ldelem_U4;
+            else if (opcode == MC::Cil.OpCodes.Ldelema) return UNI::OpCodes.Ldelema;
+            else if (opcode == MC::Cil.OpCodes.Ldfld) return UNI::OpCodes.Ldfld;
+            else if (opcode == MC::Cil.OpCodes.Ldflda) return UNI::OpCodes.Ldflda;
+            else if (opcode == MC::Cil.OpCodes.Ldftn) return UNI::OpCodes.Ldftn;
+            else if (opcode == MC::Cil.OpCodes.Ldind_I) return UNI::OpCodes.Ldind_I;
+            else if (opcode == MC::Cil.OpCodes.Ldind_I1) return UNI::OpCodes.Ldind_I1;
+            else if (opcode == MC::Cil.OpCodes.Ldind_I2) return UNI::OpCodes.Ldind_I2;
+            else if (opcode == MC::Cil.OpCodes.Ldind_I4) return UNI::OpCodes.Ldind_I4;
+            else if (opcode == MC::Cil.OpCodes.Ldind_I8) return UNI::OpCodes.Ldind_I8;
+            else if (opcode == MC::Cil.OpCodes.Ldind_R4) return UNI::OpCodes.Ldind_R4;
+            else if (opcode == MC::Cil.OpCodes.Ldind_R8) return UNI::OpCodes.Ldind_R8;
+            else if (opcode == MC::Cil.OpCodes.Ldind_Ref) return UNI::OpCodes.Ldind_Ref;
+            else if (opcode == MC::Cil.OpCodes.Ldind_U1) return UNI::OpCodes.Ldind_U1;
+            else if (opcode == MC::Cil.OpCodes.Ldind_U2) return UNI::OpCodes.Ldind_U2;
+            else if (opcode == MC::Cil.OpCodes.Ldind_U4) return UNI::OpCodes.Ldind_U4;
+            else if (opcode == MC::Cil.OpCodes.Ldlen) return UNI::OpCodes.Ldlen;
+            else if (opcode == MC::Cil.OpCodes.Ldloc) return UNI::OpCodes.Ldloc;
+            else if (opcode == MC::Cil.OpCodes.Ldloc_0) return UNI::OpCodes.Ldloc_0;
+            else if (opcode == MC::Cil.OpCodes.Ldloc_1) return UNI::OpCodes.Ldloc_1;
+            else if (opcode == MC::Cil.OpCodes.Ldloc_2) return UNI::OpCodes.Ldloc_2;
+            else if (opcode == MC::Cil.OpCodes.Ldloc_3) return UNI::OpCodes.Ldloc_3;
+            else if (opcode == MC::Cil.OpCodes.Ldloc_S) return UNI::OpCodes.Ldloc_S;
+            else if (opcode == MC::Cil.OpCodes.Ldloca) return UNI::OpCodes.Ldloca;
+            else if (opcode == MC::Cil.OpCodes.Ldloca_S) return UNI::OpCodes.Ldloca_S;
+            else if (opcode == MC::Cil.OpCodes.Ldnull) return UNI::OpCodes.Ldnull;
+            else if (opcode == MC::Cil.OpCodes.Ldobj) return UNI::OpCodes.Ldobj;
+            else if (opcode == MC::Cil.OpCodes.Ldsfld) return UNI::OpCodes.Ldsfld;
+            else if (opcode == MC::Cil.OpCodes.Ldsflda) return UNI::OpCodes.Ldsflda;
+            else if (opcode == MC::Cil.OpCodes.Ldstr) return UNI::OpCodes.Ldstr;
+            else if (opcode == MC::Cil.OpCodes.Ldtoken) return UNI::OpCodes.Ldtoken;
+            else if (opcode == MC::Cil.OpCodes.Ldvirtftn) return UNI::OpCodes.Ldvirtftn;
+            else if (opcode == MC::Cil.OpCodes.Leave) return UNI::OpCodes.Leave;
+            else if (opcode == MC::Cil.OpCodes.Leave_S) return UNI::OpCodes.Leave_S;
+            else if (opcode == MC::Cil.OpCodes.Localloc) return UNI::OpCodes.Localloc;
+            else if (opcode == MC::Cil.OpCodes.Mkrefany) return UNI::OpCodes.Mkrefany;
+            else if (opcode == MC::Cil.OpCodes.Mul) return UNI::OpCodes.Mul;
+            else if (opcode == MC::Cil.OpCodes.Mul_Ovf) return UNI::OpCodes.Mul_Ovf;
+            else if (opcode == MC::Cil.OpCodes.Mul_Ovf_Un) return UNI::OpCodes.Mul_Ovf_Un;
+            else if (opcode == MC::Cil.OpCodes.Neg) return UNI::OpCodes.Neg;
+            else if (opcode == MC::Cil.OpCodes.Newarr) return UNI::OpCodes.Newarr;
+            else if (opcode == MC::Cil.OpCodes.Newobj) return UNI::OpCodes.Newobj;
+            else if (opcode == MC::Cil.OpCodes.Nop) return UNI::OpCodes.Nop;
+            else if (opcode == MC::Cil.OpCodes.Not) return UNI::OpCodes.Not;
+            else if (opcode == MC::Cil.OpCodes.Or) return UNI::OpCodes.Or;
+            else if (opcode == MC::Cil.OpCodes.Pop) return UNI::OpCodes.Pop;
+            else if (opcode == MC::Cil.OpCodes.Readonly) return UNI::OpCodes.Readonly;
+            else if (opcode == MC::Cil.OpCodes.Refanytype) return UNI::OpCodes.Refanytype;
+            else if (opcode == MC::Cil.OpCodes.Refanyval) return UNI::OpCodes.Refanyval;
+            else if (opcode == MC::Cil.OpCodes.Rem) return UNI::OpCodes.Rem;
+            else if (opcode == MC::Cil.OpCodes.Rem_Un) return UNI::OpCodes.Rem_Un;
+            else if (opcode == MC::Cil.OpCodes.Ret) return UNI::OpCodes.Ret;
+            else if (opcode == MC::Cil.OpCodes.Rethrow) return UNI::OpCodes.Rethrow;
+            else if (opcode == MC::Cil.OpCodes.Shl) return UNI::OpCodes.Shl;
+            else if (opcode == MC::Cil.OpCodes.Shr) return UNI::OpCodes.Shr;
+            else if (opcode == MC::Cil.OpCodes.Shr_Un) return UNI::OpCodes.Shr_Un;
+            else if (opcode == MC::Cil.OpCodes.Sizeof) return UNI::OpCodes.Sizeof;
+            else if (opcode == MC::Cil.OpCodes.Starg) return UNI::OpCodes.Starg;
+            else if (opcode == MC::Cil.OpCodes.Starg_S) return UNI::OpCodes.Starg_S;
+            else if (opcode == MC::Cil.OpCodes.Stelem_Any) return UNI::OpCodes.Stelem;
+            else if (opcode == MC::Cil.OpCodes.Stelem_I) return UNI::OpCodes.Stelem_I;
+            else if (opcode == MC::Cil.OpCodes.Stelem_I1) return UNI::OpCodes.Stelem_I1;
+            else if (opcode == MC::Cil.OpCodes.Stelem_I2) return UNI::OpCodes.Stelem_I2;
+            else if (opcode == MC::Cil.OpCodes.Stelem_I4) return UNI::OpCodes.Stelem_I4;
+            else if (opcode == MC::Cil.OpCodes.Stelem_I8) return UNI::OpCodes.Stelem_I8;
+            else if (opcode == MC::Cil.OpCodes.Stelem_R4) return UNI::OpCodes.Stelem_R4;
+            else if (opcode == MC::Cil.OpCodes.Stelem_R8) return UNI::OpCodes.Stelem_R8;
+            else if (opcode == MC::Cil.OpCodes.Stelem_Ref) return UNI::OpCodes.Stelem_Ref;
+            else if (opcode == MC::Cil.OpCodes.Stfld) return UNI::OpCodes.Stfld;
+            else if (opcode == MC::Cil.OpCodes.Stind_I) return UNI::OpCodes.Stind_I;
+            else if (opcode == MC::Cil.OpCodes.Stind_I1) return UNI::OpCodes.Stind_I1;
+            else if (opcode == MC::Cil.OpCodes.Stind_I2) return UNI::OpCodes.Stind_I2;
+            else if (opcode == MC::Cil.OpCodes.Stind_I4) return UNI::OpCodes.Stind_I4;
+            else if (opcode == MC::Cil.OpCodes.Stind_I8) return UNI::OpCodes.Stind_I8;
+            else if (opcode == MC::Cil.OpCodes.Stind_R4) return UNI::OpCodes.Stind_R4;
+            else if (opcode == MC::Cil.OpCodes.Stind_R8) return UNI::OpCodes.Stind_R8;
+            else if (opcode == MC::Cil.OpCodes.Stind_Ref) return UNI::OpCodes.Stind_Ref;
+            else if (opcode == MC::Cil.OpCodes.Stloc) return UNI::OpCodes.Stloc;
+            else if (opcode == MC::Cil.OpCodes.Stloc_0) return UNI::OpCodes.Stloc_0;
+            else if (opcode == MC::Cil.OpCodes.Stloc_1) return UNI::OpCodes.Stloc_1;
+            else if (opcode == MC::Cil.OpCodes.Stloc_2) return UNI::OpCodes.Stloc_2;
+            else if (opcode == MC::Cil.OpCodes.Stloc_3) return UNI::OpCodes.Stloc_3;
+            else if (opcode == MC::Cil.OpCodes.Stloc_S) return UNI::OpCodes.Stloc_S;
+            else if (opcode == MC::Cil.OpCodes.Stobj) return UNI::OpCodes.Stobj;
+            else if (opcode == MC::Cil.OpCodes.Stsfld) return UNI::OpCodes.Stsfld;
+            else if (opcode == MC::Cil.OpCodes.Sub) return UNI::OpCodes.Sub;
+            else if (opcode == MC::Cil.OpCodes.Sub_Ovf) return UNI::OpCodes.Sub_Ovf;
+            else if (opcode == MC::Cil.OpCodes.Sub_Ovf_Un) return UNI::OpCodes.Sub_Ovf_Un;
+            else if (opcode == MC::Cil.OpCodes.Switch) return UNI::OpCodes.Switch;
+            else if (opcode == MC::Cil.OpCodes.Tail) return UNI::OpCodes.Tailcall;
+            else if (opcode == MC::Cil.OpCodes.Throw) return UNI::OpCodes.Throw;
+            else if (opcode == MC::Cil.OpCodes.Unaligned) return UNI::OpCodes.Unaligned;
+            else if (opcode == MC::Cil.OpCodes.Unbox) return UNI::OpCodes.Unbox;
+            else if (opcode == MC::Cil.OpCodes.Unbox_Any) return UNI::OpCodes.Unbox_Any;
+            else if (opcode == MC::Cil.OpCodes.Volatile) return UNI::OpCodes.Volatile;
+            else if (opcode == MC::Cil.OpCodes.Xor) return UNI::OpCodes.Xor;
+
+            throw new NotSupportedException();
         }
 
         public static MC::Cil.OpCode Cast(this UNI::OpCode opcode)
@@ -670,19 +897,5 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
 
             throw new NotSupportedException();
         }
-
-        //public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
-        //{
-        //    var gen = new ExpressiveMethodBodyGenerator((SRConstructorGeneratorImpl)constructorBuilder);
-        //    expression(gen);
-        //    gen.Eval(_ => _.End());
-        //}
-
-        //public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
-        //{
-        //    var gen = new ExpressiveMethodBodyGenerator((SRMethodGeneratorImpl)dynamicMethod);
-        //    expression(gen);
-        //    gen.Eval(_ => _.End());
-        //}
     }
 }

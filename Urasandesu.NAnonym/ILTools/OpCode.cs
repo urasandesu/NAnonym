@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class OpCode
+    public sealed class OpCode
     {
     }
 }
