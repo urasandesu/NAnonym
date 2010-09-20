@@ -68,9 +68,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             throw new NotImplementedException();
         }
 
-        public void Emit(UN::ILTools.OpCode opCdoe)
+        public void Emit(UN::ILTools.OpCode opcode)
         {
-            il.Emit(opCdoe.Cast());
+            il.Emit(opcode.Cast());
         }
 
         public void Emit(UN::ILTools.OpCode opcode, byte arg)

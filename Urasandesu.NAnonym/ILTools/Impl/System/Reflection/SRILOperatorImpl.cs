@@ -20,9 +20,15 @@ namespace Urasandesu.NAnonym.ILTools
     sealed class SRILOperatorImpl : IILOperator
     {
         readonly ILGenerator ilGenerator;
+
+        List<SRDirectiveGeneratorImpl> directives;
+        ReadOnlyCollection<IDirectiveGenerator> readonlyDirectives;
+
         public SRILOperatorImpl(ILGenerator ilGenerator)
         {
             this.ilGenerator = ilGenerator;
+            directives = new List<SRDirectiveGeneratorImpl>();
+            readonlyDirectives = new ReadOnlyCollection<IDirectiveGenerator>(directives.TransformEnumerateOnly(directiveGen => (IDirectiveGenerator)directiveGen));
         }
 
         public static implicit operator SRILOperatorImpl(ILGenerator ilGenerator)
@@ -60,9 +66,10 @@ namespace Urasandesu.NAnonym.ILTools
             throw new NotImplementedException();
         }
 
-        public void Emit(OpCode opCdoe)
+        public void Emit(OpCode opcode)
         {
-            ilGenerator.Emit(opCdoe.Cast());
+            ilGenerator.Emit(opcode.Cast());
+            directives.Add(new SRDirectiveGeneratorImpl(opcode));
         }
 
         // TODO: OpCode 以外は explicit にしたほうが良さそう。
@@ -120,6 +127,7 @@ namespace Urasandesu.NAnonym.ILTools
         public void Emit(OpCode opcode, MethodInfo meth)
         {
             ilGenerator.Emit(opcode.Cast(), meth);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, meth));
         }
 
         public void Emit(OpCode opcode, sbyte arg)
@@ -135,6 +143,7 @@ namespace Urasandesu.NAnonym.ILTools
         public void Emit(OpCode opcode, string str)
         {
             ilGenerator.Emit(opcode.Cast(), str);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, str));
         }
 
         public void Emit(OpCode opcode, Type cls)
@@ -145,6 +154,7 @@ namespace Urasandesu.NAnonym.ILTools
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
         {
             ilGenerator.Emit(opcode.Cast(), (ConstructorInfo)(SRConstructorDeclarationImpl)constructorDecl);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, constructorDecl));
         }
 
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
@@ -165,6 +175,11 @@ namespace Urasandesu.NAnonym.ILTools
         public void SetLabel(ILabelDeclaration loc)
         {
             throw new NotImplementedException();
+        }
+
+        public ReadOnlyCollection<IDirectiveGenerator> Directives
+        {
+            get { return readonlyDirectives; }
         }
     }
 }

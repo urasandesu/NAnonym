@@ -10,7 +10,7 @@ namespace Urasandesu.NAnonym.ILTools
         ILocalGenerator AddLocal(Type localType);
         ILocalGenerator AddLocal(Type localType, bool pinned);
         ILabelGenerator AddLabel();
-        void Emit(OpCode opCdoe);
+        void Emit(OpCode opcode);
         void Emit(OpCode opcode, byte arg);
         void Emit(OpCode opcode, ConstructorInfo con);
         void Emit(OpCode opcode, double arg);

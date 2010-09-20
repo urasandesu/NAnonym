@@ -62,6 +62,8 @@
     <Compile Include="ILTools\IILOperator.cs" />
     <Compile Include="ILTools\ILabelDeclaration.cs" />
     <Compile Include="ILTools\ILabelGenerator.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorImpl.cs" />
     <Compile Include="ILTools\Expressible.cs" />
     <Compile Include="ILTools\ILocalDeclaration.cs" />

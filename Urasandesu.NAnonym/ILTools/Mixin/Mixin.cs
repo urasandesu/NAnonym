@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-//using Mono.Cecil;
-//using Mono.Cecil.Cil;
 using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
-//using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using SR = System.Reflection;
 
@@ -21,349 +18,30 @@ namespace Urasandesu.NAnonym.ILTools
     public static partial class Mixin
     {
 
-        //// だめだ。このまま Write すると更新されてしまう。やっぱり Copy メソッドいるし。
-        //private static IEnumerable<MethodDefinition> GetMethodDefs(this TypeSpecification typeSpec)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static bool Equivalent(this MethodReference x, MethodBase y)
-        //{
-        //    bool equals = x.DeclaringType.Equivalent(y.DeclaringType);
-        //    equals = equals && x.Name == y.Name;
-        //    equals = equals && x.Parameters.Equivalent(y.GetParameters());
-        //    return equals;
-        //}
-
-        //public static bool Equivalent(this MethodDefinition x, MethodInfo y)
-        //{
-        //    bool equals = Equivalent((MethodReference)x, (MethodBase)y);
-        //    equals = equals && x.Attributes.Equivalent(y.Attributes);
-        //    return equals;
-        //}
-
-        //public static bool Equivalent(this MethodDefinition x, MethodDefinition y)
-        //{
-        //    bool equals = x.DeclaringType.Equivalent(y.DeclaringType);
-        //    equals = equals && x.Name == y.Name;
-        //    equals = equals && x.Attributes == y.Attributes;
-        //    equals = equals && x.Parameters.Equivalent(y.Parameters);
-        //    // TODO: CloneEx でコピー対象となった項目も必要！
-        //    return equals;
-        //}
-
-        //public static bool Equivalent(this MethodDefinition x, ConstructorInfo y)
-        //{
-        //    bool equals = x.IsConstructor;
-        //    equals = equals && x.Attributes.Equivalent(y.Attributes);
-        //    equals = equals && x.Parameters.Equivalent(y.GetParameters());
-        //    return equals;
-        //}
-
-        //public static bool Equivalent(this Mono.Cecil.MethodAttributes x, System.Reflection.MethodAttributes y)
-        //{
-        //    return (int)x == (int)y;
-        //}
-
-        //public static Mono.Cecil.MethodAttributes ToMethodAttributes(this System.Reflection.MethodAttributes attribute)
-        //{
-        //    return (Mono.Cecil.MethodAttributes)(int)attribute;
-        //}
-
-        //#region ここ一筋縄じゃ行かなかった。例えば、BindingFlags.IgnoreCase だったら、あらかじめ name は全て小文字化しておきたい、とか。
-        ////// ここ一筋縄じゃ行かなかった。例えば、BindingFlags.IgnoreCase だったら、あらかじめ name は全て小文字化しておきたい、とか。
-        ////// BindingFlags でフィルターかませる感じで。
-        ////public static bool IsInside(this MethodDefinition x, string name, BindingFlags flag)
-        ////{
-        ////    flag = 
-        ////        flag == BindingFlags.Default ?
-        ////            BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.InvokeMethod : 
-        ////            flag;
-
-        ////    bool isInside = true;
-        ////    if ((flag & BindingFlags.DeclaredOnly) == BindingFlags.DeclaredOnly) { }
-        ////    if ((flag & BindingFlags.Instance) == BindingFlags.Instance) { }
-        ////    if ((flag & BindingFlags.Static) == BindingFlags.Static) { }
-        ////    if ((flag & BindingFlags.Public) == BindingFlags.Public) { }
-        ////    if ((flag & BindingFlags.NonPublic) == BindingFlags.NonPublic) { }
-        ////    if ((flag & BindingFlags.FlattenHierarchy) == BindingFlags.FlattenHierarchy) { }
-        ////    if ((flag & BindingFlags.InvokeMethod) == BindingFlags.InvokeMethod) { }
-        ////    if ((flag & BindingFlags.CreateInstance) == BindingFlags.CreateInstance) { }
-        ////    if ((flag & BindingFlags.GetField) == BindingFlags.GetField) { }
-        ////    if ((flag & BindingFlags.SetField) == BindingFlags.SetField) { }
-        ////    if ((flag & BindingFlags.GetProperty) == BindingFlags.GetProperty) { }
-        ////    if ((flag & BindingFlags.SetProperty) == BindingFlags.SetProperty) { }
-        ////    if ((flag & BindingFlags.PutDispProperty) == BindingFlags.PutDispProperty) { }
-        ////    if ((flag & BindingFlags.PutRefDispProperty) == BindingFlags.PutRefDispProperty) { }
-        ////    if ((flag & BindingFlags.ExactBinding) == BindingFlags.ExactBinding) { }
-        ////    if ((flag & BindingFlags.SuppressChangeType) == BindingFlags.SuppressChangeType) { }
-        ////    if ((flag & BindingFlags.OptionalParamBinding) == BindingFlags.OptionalParamBinding) { }
-        ////    if ((flag & BindingFlags.IgnoreReturn) == BindingFlags.IgnoreReturn) { }
-
-
-        ////    throw new NotImplementedException();
-        ////}
-        //#endregion
-
-        //public static bool Equivalent(this IEnumerable<ParameterDefinition> first, IEnumerable<Type> second)
-        //{
-        //    var comparer =
-        //        Iterable.CreateEqualityComparerNullable(default(ParameterDefinition), default(Type),
-        //        (firstItem, secondItem) =>
-        //        {
-        //            return firstItem.ParameterType.Equivalent(secondItem);
-        //        });
-        //    return first.Equivalent(second, comparer);
-        //}
-
-        //public static bool Equivalent(this IEnumerable<ParameterDefinition> first, IEnumerable<ParameterInfo> second)
-        //{
-        //    var comparer =
-        //        Iterable.CreateEqualityComparerNullable(default(ParameterDefinition), default(ParameterInfo),
-        //        (firstItem, secondItem) =>
-        //        {
-        //            return firstItem.Equivalent(secondItem);
-        //        });
-        //    return first.Equivalent(second, comparer);
-        //}
-
-        //public static bool Equivalent(this IEnumerable<ParameterDefinition> first, IEnumerable<ParameterDefinition> second)
-        //{
-        //    var comparer =
-        //        Iterable.CreateEqualityComparerNullable(default(ParameterDefinition), default(ParameterDefinition),
-        //        (firstItem, secondItem) =>
-        //        {
-        //            return firstItem.Equivalent(secondItem);
-        //        });
-        //    return first.Equivalent(second, comparer);
-        //}
-
-        //public static bool Equivalent(this ParameterDefinition x, ParameterInfo y)
-        //{
-        //    return x.Name == y.Name && x.ParameterType.Equivalent(y.ParameterType);
-        //}
-
-        //public static bool Equivalent(this ParameterDefinition x, ParameterDefinition y)
-        //{
-        //    return x.Name == y.Name && x.ParameterType.Equivalent(y.ParameterType);
-        //}
-
-        //public static bool Equivalent(this FieldDefinition x, FieldInfo y)
-        //{
-        //    return x.Name == y.Name && x.FieldType.Equivalent(y.FieldType);
-        //}
-
-        //public static AssemblyDefinition Duplicate(this AssemblyDefinition source)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static ModuleDefinition Duplicate(this ModuleDefinition source)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static TypeDefinition Duplicate(this TypeDefinition source)
-        //{
-        //    var destination = new TypeDefinition(source.Namespace, source.Name, source.Attributes, source.BaseType);
-        //    return destination;
-        //}
-
-        //public static GenericInstanceType Duplicate(this GenericInstanceType source)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static MethodReference DuplicateWithoutBody(this MethodReference source)
-        //{
-        //    var sourceDef = default(MethodDefinition);
-        //    var sourceGen = default(GenericInstanceMethod);
-        //    if ((sourceDef = source as MethodDefinition) != null)
-        //    {
-        //        return sourceDef.DuplicateWithoutBody();
-        //    }
-        //    else if ((sourceGen = source as GenericInstanceMethod) != null)
-        //    {
-        //        return sourceGen.DuplicateWithoutBody();
-        //    }
-        //    else
-        //    {
-        //        throw new NotSupportedException();
-        //    }
-        //}
-
-        //public static MethodReference Duplicate(this MethodReference source)
-        //{
-        //    var sourceDef = default(MethodDefinition);
-        //    var sourceGen = default(GenericInstanceMethod);
-        //    if ((sourceDef = source as MethodDefinition) != null)
-        //    {
-        //        return sourceDef.Duplicate();
-        //    }
-        //    else if ((sourceGen = source as GenericInstanceMethod) != null)
-        //    {
-        //        return sourceGen.Duplicate();
-        //    }
-        //    else
-        //    {
-        //        throw new NotSupportedException();
-        //    }
-        //}
-
-        //public static MethodDefinition DuplicateWithoutBody(this MethodDefinition source)
-        //{
-        //    var destination = new MethodDefinition(source.Name, source.Attributes, source.ReturnType);
-        //    if (source.HasGenericParameters)
-        //    {
-        //        source.GenericParameters.Select(_ => _.Duplicate(destination)).AddRangeTo(destination.GenericParameters);
-        //    }
-        //    source.Parameters.Select(_ => _.Duplicate()).AddRangeTo(destination.Parameters);
-        //    return destination;
-        //}
-
-        //public static MethodDefinition Duplicate(this MethodDefinition source)
-        //{
-        //    var destination = source.DuplicateWithoutBody();
-        //    destination.Body.InitLocals = source.Body.InitLocals;
-        //    source.Body.Variables.Select(_ => _.Duplicate()).AddRangeTo(destination.Body.Variables);
-        //    source.Body.Instructions.Select(_ => _.Duplicate()).AddRangeTo(destination.Body.Instructions);
-        //    source.Body.ExceptionHandlers.Select(_ => _.Duplicate()).AddRangeTo(destination.Body.ExceptionHandlers);
-        //    return destination;
-        //}
-
-        //public static GenericInstanceMethod DuplicateWithoutBody(this GenericInstanceMethod source)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static GenericInstanceMethod Duplicate(this GenericInstanceMethod source)
-        //{
-        //    var destination = new GenericInstanceMethod(source.ElementMethod.Duplicate());
-        //    //source.genericpa
-        //    throw new NotImplementedException();
-        //}
-
-        //public static ParameterDefinition Duplicate(this ParameterDefinition source)
-        //{
-        //    var destination = new ParameterDefinition(source.Name, source.Attributes, source.ParameterType);
-        //    return destination;
-        //}
-
-        //public static GenericParameter Duplicate(this GenericParameter source, IGenericParameterProvider owner)
-        //{
-        //    var destination = new GenericParameter(source.Name, owner);
-        //    return destination;
-        //}
-
-        //public static Instruction Duplicate(this Instruction source)
-        //{
-        //    byte? byteOperand = null;
-        //    CallSite callSiteOperand = null;
-        //    double? doubleOperand = null;
-        //    FieldReference fieldReferenceOperand = null;
-        //    float? floatOperand = null;
-        //    Instruction instructionOperand = null;
-        //    Instruction[] instructionArrayOperand = null;
-        //    int? intOperand = null;
-        //    long? longOperand = null;
-        //    MethodReference methodReferenceOperand = null;
-        //    ParameterDefinition parameterDefinitionOperand = null;
-        //    sbyte? sbyteOperand = null;
-        //    string stringOperand = null;
-        //    TypeReference typeReferenceOperand = null;
-        //    VariableDefinition variableDefinitionOperand = null;
-
-        //    if ((byteOperand = source.Operand as byte?) != null) return Instruction.Create(source.OpCode, byteOperand.Value);
-        //    else if ((callSiteOperand = source.Operand as CallSite) != null) return Instruction.Create(source.OpCode, callSiteOperand);
-        //    else if ((doubleOperand = source.Operand as double?) != null) return Instruction.Create(source.OpCode, doubleOperand.Value);
-        //    else if ((fieldReferenceOperand = source.Operand as FieldReference) != null) return Instruction.Create(source.OpCode, fieldReferenceOperand);
-        //    else if ((floatOperand = source.Operand as float?) != null) return Instruction.Create(source.OpCode, floatOperand.Value);
-        //    else if ((instructionOperand = source.Operand as Instruction) != null) return Instruction.Create(source.OpCode, instructionOperand);
-        //    else if ((instructionArrayOperand = source.Operand as Instruction[]) != null) return Instruction.Create(source.OpCode, instructionArrayOperand);
-        //    else if ((intOperand = source.Operand as int?) != null) return Instruction.Create(source.OpCode, intOperand.Value);
-        //    else if ((longOperand = source.Operand as long?) != null) return Instruction.Create(source.OpCode, longOperand.Value);
-        //    else if ((methodReferenceOperand = source.Operand as MethodReference) != null) return Instruction.Create(source.OpCode, methodReferenceOperand);
-        //    else if ((parameterDefinitionOperand = source.Operand as ParameterDefinition) != null) return Instruction.Create(source.OpCode, parameterDefinitionOperand);
-        //    else if ((sbyteOperand = source.Operand as sbyte?) != null) return Instruction.Create(source.OpCode, sbyteOperand.Value);
-        //    else if ((stringOperand = source.Operand as string) != null) return Instruction.Create(source.OpCode, stringOperand);
-        //    else if ((typeReferenceOperand = source.Operand as TypeReference) != null) return Instruction.Create(source.OpCode, typeReferenceOperand);
-        //    else if ((variableDefinitionOperand = source.Operand as VariableDefinition) != null) return Instruction.Create(source.OpCode, variableDefinitionOperand);
-        //    else return Instruction.Create(source.OpCode);
-        //}
-
-        //public static VariableDefinition Duplicate(this VariableDefinition source)
-        //{
-        //    var destination = new VariableDefinition(source.Name, source.VariableType);
-        //    return destination;
-        //}
-
-        //public static ExceptionHandler Duplicate(this ExceptionHandler source)
-        //{
-        //    var destination = new ExceptionHandler(source.HandlerType);
-        //    destination.CatchType = source.CatchType;
-        //    destination.FilterEnd = source.FilterEnd;
-        //    destination.FilterStart = source.FilterStart;
-        //    destination.HandlerEnd = source.HandlerEnd;
-        //    destination.HandlerStart = source.HandlerStart;
-        //    destination.HandlerType = source.HandlerType;
-        //    destination.TryEnd = source.TryEnd;
-        //    destination.TryStart = source.TryStart;
-        //    return destination;
-        //}
-
-        //public static FieldDefinition Duplicate(this FieldDefinition source)
-        //{
-        //    var destination = new FieldDefinition(source.Name, source.Attributes, source.FieldType);
-        //    return destination;
-        //}
-
-        //public static PropertyDefinition Duplicate(this PropertyDefinition source)
-        //{
-        //    // Property のコピーは外側だけのコピーだけではなく、中身の get_ メソッド、 set_ メソッドのコピーが必要！
-        //    var destination = new PropertyDefinition(source.Name, source.Attributes, source.PropertyType);
-        //    return destination;
-        //}
-
-
-
-
-
-
-
-
-
-
-
         public static bool IsStatic(this PropertyInfo source)
         {
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
         }
 
-        //public static PortableScope CarryPortableScope(this MethodDefinition methodDef)
-        //{
-        //    var scope = new PortableScope((MCMethodGeneratorImpl)methodDef);
-        //    return scope;
-        //}
-
-        //public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
-        //{
-        //    var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
-        //    expression(gen);
-        //    gen.Eval(_ => _.End());
-        //}
-
         public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
         {
             var gen = new ExpressiveMethodBodyGenerator((SRConstructorGeneratorImpl)constructorBuilder);
-            expression(gen);
-            gen.Eval(_ => _.End());
+            ExpressBodyEnd(gen, expression);
         }
 
         public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
         {
             var gen = new ExpressiveMethodBodyGenerator((SRMethodGeneratorImpl)dynamicMethod);
-            expression(gen);
-            gen.Eval(_ => _.End());
+            ExpressBodyEnd(gen, expression);
+        }
+
+        internal static void ExpressBodyEnd(ExpressiveMethodBodyGenerator methodBodyGen, Action<ExpressiveMethodBodyGenerator> expression)
+        {
+            expression(methodBodyGen);
+            if (methodBodyGen.Directives.Last().OpCode != OpCodes.Ret)
+            {
+                methodBodyGen.Eval(_ => _.End());
+            }
         }
 
         public static SR::Emit.OpCode Cast(this OpCode opcode)
@@ -586,6 +264,230 @@ namespace Urasandesu.NAnonym.ILTools
             else if (opcode == OpCodes.Unbox_Any) return SR::Emit.OpCodes.Unbox_Any;
             else if (opcode == OpCodes.Volatile) return SR::Emit.OpCodes.Volatile;
             else if (opcode == OpCodes.Xor) return SR::Emit.OpCodes.Xor;
+
+            throw new NotSupportedException();
+        }
+
+        public static OpCode Cast(this SR::Emit.OpCode opcode)
+        {
+            if (opcode == SR::Emit.OpCodes.Add) return OpCodes.Add;
+            else if (opcode == SR::Emit.OpCodes.Add_Ovf) return OpCodes.Add_Ovf;
+            else if (opcode == SR::Emit.OpCodes.Add_Ovf_Un) return OpCodes.Add_Ovf_Un;
+            else if (opcode == SR::Emit.OpCodes.And) return OpCodes.And;
+            else if (opcode == SR::Emit.OpCodes.Arglist) return OpCodes.Arglist;
+            else if (opcode == SR::Emit.OpCodes.Beq) return OpCodes.Beq;
+            else if (opcode == SR::Emit.OpCodes.Beq_S) return OpCodes.Beq_S;
+            else if (opcode == SR::Emit.OpCodes.Bge) return OpCodes.Bge;
+            else if (opcode == SR::Emit.OpCodes.Bge_S) return OpCodes.Bge_S;
+            else if (opcode == SR::Emit.OpCodes.Bge_Un) return OpCodes.Bge_Un;
+            else if (opcode == SR::Emit.OpCodes.Bge_Un_S) return OpCodes.Bge_Un_S;
+            else if (opcode == SR::Emit.OpCodes.Bgt) return OpCodes.Bgt;
+            else if (opcode == SR::Emit.OpCodes.Bgt_S) return OpCodes.Bgt_S;
+            else if (opcode == SR::Emit.OpCodes.Bgt_Un) return OpCodes.Bgt_Un;
+            else if (opcode == SR::Emit.OpCodes.Bgt_Un_S) return OpCodes.Bgt_Un_S;
+            else if (opcode == SR::Emit.OpCodes.Ble) return OpCodes.Ble;
+            else if (opcode == SR::Emit.OpCodes.Ble_S) return OpCodes.Ble_S;
+            else if (opcode == SR::Emit.OpCodes.Ble_Un) return OpCodes.Ble_Un;
+            else if (opcode == SR::Emit.OpCodes.Ble_Un_S) return OpCodes.Ble_Un_S;
+            else if (opcode == SR::Emit.OpCodes.Blt) return OpCodes.Blt;
+            else if (opcode == SR::Emit.OpCodes.Blt_S) return OpCodes.Blt_S;
+            else if (opcode == SR::Emit.OpCodes.Blt_Un) return OpCodes.Blt_Un;
+            else if (opcode == SR::Emit.OpCodes.Blt_Un_S) return OpCodes.Blt_Un_S;
+            else if (opcode == SR::Emit.OpCodes.Bne_Un) return OpCodes.Bne_Un;
+            else if (opcode == SR::Emit.OpCodes.Bne_Un_S) return OpCodes.Bne_Un_S;
+            else if (opcode == SR::Emit.OpCodes.Box) return OpCodes.Box;
+            else if (opcode == SR::Emit.OpCodes.Br) return OpCodes.Br;
+            else if (opcode == SR::Emit.OpCodes.Br_S) return OpCodes.Br_S;
+            else if (opcode == SR::Emit.OpCodes.Break) return OpCodes.Break;
+            else if (opcode == SR::Emit.OpCodes.Brfalse) return OpCodes.Brfalse;
+            else if (opcode == SR::Emit.OpCodes.Brfalse_S) return OpCodes.Brfalse_S;
+            else if (opcode == SR::Emit.OpCodes.Brtrue) return OpCodes.Brtrue;
+            else if (opcode == SR::Emit.OpCodes.Brtrue_S) return OpCodes.Brtrue_S;
+            else if (opcode == SR::Emit.OpCodes.Call) return OpCodes.Call;
+            else if (opcode == SR::Emit.OpCodes.Calli) return OpCodes.Calli;
+            else if (opcode == SR::Emit.OpCodes.Callvirt) return OpCodes.Callvirt;
+            else if (opcode == SR::Emit.OpCodes.Castclass) return OpCodes.Castclass;
+            else if (opcode == SR::Emit.OpCodes.Ceq) return OpCodes.Ceq;
+            else if (opcode == SR::Emit.OpCodes.Cgt) return OpCodes.Cgt;
+            else if (opcode == SR::Emit.OpCodes.Cgt_Un) return OpCodes.Cgt_Un;
+            else if (opcode == SR::Emit.OpCodes.Ckfinite) return OpCodes.Ckfinite;
+            else if (opcode == SR::Emit.OpCodes.Clt) return OpCodes.Clt;
+            else if (opcode == SR::Emit.OpCodes.Clt_Un) return OpCodes.Clt_Un;
+            else if (opcode == SR::Emit.OpCodes.Constrained) return OpCodes.Constrained;
+            else if (opcode == SR::Emit.OpCodes.Conv_I) return OpCodes.Conv_I;
+            else if (opcode == SR::Emit.OpCodes.Conv_I1) return OpCodes.Conv_I1;
+            else if (opcode == SR::Emit.OpCodes.Conv_I2) return OpCodes.Conv_I2;
+            else if (opcode == SR::Emit.OpCodes.Conv_I4) return OpCodes.Conv_I4;
+            else if (opcode == SR::Emit.OpCodes.Conv_I8) return OpCodes.Conv_I8;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I) return OpCodes.Conv_Ovf_I;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I_Un) return OpCodes.Conv_Ovf_I_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I1) return OpCodes.Conv_Ovf_I1;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I1_Un) return OpCodes.Conv_Ovf_I1_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I2) return OpCodes.Conv_Ovf_I2;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I2_Un) return OpCodes.Conv_Ovf_I2_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I4) return OpCodes.Conv_Ovf_I4;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I4_Un) return OpCodes.Conv_Ovf_I4_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I8) return OpCodes.Conv_Ovf_I8;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_I8_Un) return OpCodes.Conv_Ovf_I8_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U) return OpCodes.Conv_Ovf_U;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U_Un) return OpCodes.Conv_Ovf_U_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U1) return OpCodes.Conv_Ovf_U1;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U1_Un) return OpCodes.Conv_Ovf_U1_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U2) return OpCodes.Conv_Ovf_U2;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U2_Un) return OpCodes.Conv_Ovf_U2_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U4) return OpCodes.Conv_Ovf_U4;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U4_Un) return OpCodes.Conv_Ovf_U4_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U8) return OpCodes.Conv_Ovf_U8;
+            else if (opcode == SR::Emit.OpCodes.Conv_Ovf_U8_Un) return OpCodes.Conv_Ovf_U8_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_R_Un) return OpCodes.Conv_R_Un;
+            else if (opcode == SR::Emit.OpCodes.Conv_R4) return OpCodes.Conv_R4;
+            else if (opcode == SR::Emit.OpCodes.Conv_R8) return OpCodes.Conv_R8;
+            else if (opcode == SR::Emit.OpCodes.Conv_U) return OpCodes.Conv_U;
+            else if (opcode == SR::Emit.OpCodes.Conv_U1) return OpCodes.Conv_U1;
+            else if (opcode == SR::Emit.OpCodes.Conv_U2) return OpCodes.Conv_U2;
+            else if (opcode == SR::Emit.OpCodes.Conv_U4) return OpCodes.Conv_U4;
+            else if (opcode == SR::Emit.OpCodes.Conv_U8) return OpCodes.Conv_U8;
+            else if (opcode == SR::Emit.OpCodes.Cpblk) return OpCodes.Cpblk;
+            else if (opcode == SR::Emit.OpCodes.Cpobj) return OpCodes.Cpobj;
+            else if (opcode == SR::Emit.OpCodes.Div) return OpCodes.Div;
+            else if (opcode == SR::Emit.OpCodes.Div_Un) return OpCodes.Div_Un;
+            else if (opcode == SR::Emit.OpCodes.Dup) return OpCodes.Dup;
+            else if (opcode == SR::Emit.OpCodes.Endfilter) return OpCodes.Endfilter;
+            else if (opcode == SR::Emit.OpCodes.Endfinally) return OpCodes.Endfinally;
+            else if (opcode == SR::Emit.OpCodes.Initblk) return OpCodes.Initblk;
+            else if (opcode == SR::Emit.OpCodes.Initobj) return OpCodes.Initobj;
+            else if (opcode == SR::Emit.OpCodes.Isinst) return OpCodes.Isinst;
+            else if (opcode == SR::Emit.OpCodes.Jmp) return OpCodes.Jmp;
+            else if (opcode == SR::Emit.OpCodes.Ldarg) return OpCodes.Ldarg;
+            else if (opcode == SR::Emit.OpCodes.Ldarg_0) return OpCodes.Ldarg_0;
+            else if (opcode == SR::Emit.OpCodes.Ldarg_1) return OpCodes.Ldarg_1;
+            else if (opcode == SR::Emit.OpCodes.Ldarg_2) return OpCodes.Ldarg_2;
+            else if (opcode == SR::Emit.OpCodes.Ldarg_3) return OpCodes.Ldarg_3;
+            else if (opcode == SR::Emit.OpCodes.Ldarg_S) return OpCodes.Ldarg_S;
+            else if (opcode == SR::Emit.OpCodes.Ldarga) return OpCodes.Ldarga;
+            else if (opcode == SR::Emit.OpCodes.Ldarga_S) return OpCodes.Ldarga_S;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4) return OpCodes.Ldc_I4;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_0) return OpCodes.Ldc_I4_0;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_1) return OpCodes.Ldc_I4_1;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_2) return OpCodes.Ldc_I4_2;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_3) return OpCodes.Ldc_I4_3;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_4) return OpCodes.Ldc_I4_4;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_5) return OpCodes.Ldc_I4_5;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_6) return OpCodes.Ldc_I4_6;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_7) return OpCodes.Ldc_I4_7;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_8) return OpCodes.Ldc_I4_8;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_M1) return OpCodes.Ldc_I4_M1;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I4_S) return OpCodes.Ldc_I4_S;
+            else if (opcode == SR::Emit.OpCodes.Ldc_I8) return OpCodes.Ldc_I8;
+            else if (opcode == SR::Emit.OpCodes.Ldc_R4) return OpCodes.Ldc_R4;
+            else if (opcode == SR::Emit.OpCodes.Ldc_R8) return OpCodes.Ldc_R8;
+            else if (opcode == SR::Emit.OpCodes.Ldelem) return OpCodes.Ldelem;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_I) return OpCodes.Ldelem_I;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_I1) return OpCodes.Ldelem_I1;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_I2) return OpCodes.Ldelem_I2;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_I4) return OpCodes.Ldelem_I4;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_I8) return OpCodes.Ldelem_I8;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_R4) return OpCodes.Ldelem_R4;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_R8) return OpCodes.Ldelem_R8;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_Ref) return OpCodes.Ldelem_Ref;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_U1) return OpCodes.Ldelem_U1;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_U2) return OpCodes.Ldelem_U2;
+            else if (opcode == SR::Emit.OpCodes.Ldelem_U4) return OpCodes.Ldelem_U4;
+            else if (opcode == SR::Emit.OpCodes.Ldelema) return OpCodes.Ldelema;
+            else if (opcode == SR::Emit.OpCodes.Ldfld) return OpCodes.Ldfld;
+            else if (opcode == SR::Emit.OpCodes.Ldflda) return OpCodes.Ldflda;
+            else if (opcode == SR::Emit.OpCodes.Ldftn) return OpCodes.Ldftn;
+            else if (opcode == SR::Emit.OpCodes.Ldind_I) return OpCodes.Ldind_I;
+            else if (opcode == SR::Emit.OpCodes.Ldind_I1) return OpCodes.Ldind_I1;
+            else if (opcode == SR::Emit.OpCodes.Ldind_I2) return OpCodes.Ldind_I2;
+            else if (opcode == SR::Emit.OpCodes.Ldind_I4) return OpCodes.Ldind_I4;
+            else if (opcode == SR::Emit.OpCodes.Ldind_I8) return OpCodes.Ldind_I8;
+            else if (opcode == SR::Emit.OpCodes.Ldind_R4) return OpCodes.Ldind_R4;
+            else if (opcode == SR::Emit.OpCodes.Ldind_R8) return OpCodes.Ldind_R8;
+            else if (opcode == SR::Emit.OpCodes.Ldind_Ref) return OpCodes.Ldind_Ref;
+            else if (opcode == SR::Emit.OpCodes.Ldind_U1) return OpCodes.Ldind_U1;
+            else if (opcode == SR::Emit.OpCodes.Ldind_U2) return OpCodes.Ldind_U2;
+            else if (opcode == SR::Emit.OpCodes.Ldind_U4) return OpCodes.Ldind_U4;
+            else if (opcode == SR::Emit.OpCodes.Ldlen) return OpCodes.Ldlen;
+            else if (opcode == SR::Emit.OpCodes.Ldloc) return OpCodes.Ldloc;
+            else if (opcode == SR::Emit.OpCodes.Ldloc_0) return OpCodes.Ldloc_0;
+            else if (opcode == SR::Emit.OpCodes.Ldloc_1) return OpCodes.Ldloc_1;
+            else if (opcode == SR::Emit.OpCodes.Ldloc_2) return OpCodes.Ldloc_2;
+            else if (opcode == SR::Emit.OpCodes.Ldloc_3) return OpCodes.Ldloc_3;
+            else if (opcode == SR::Emit.OpCodes.Ldloc_S) return OpCodes.Ldloc_S;
+            else if (opcode == SR::Emit.OpCodes.Ldloca) return OpCodes.Ldloca;
+            else if (opcode == SR::Emit.OpCodes.Ldloca_S) return OpCodes.Ldloca_S;
+            else if (opcode == SR::Emit.OpCodes.Ldnull) return OpCodes.Ldnull;
+            else if (opcode == SR::Emit.OpCodes.Ldobj) return OpCodes.Ldobj;
+            else if (opcode == SR::Emit.OpCodes.Ldsfld) return OpCodes.Ldsfld;
+            else if (opcode == SR::Emit.OpCodes.Ldsflda) return OpCodes.Ldsflda;
+            else if (opcode == SR::Emit.OpCodes.Ldstr) return OpCodes.Ldstr;
+            else if (opcode == SR::Emit.OpCodes.Ldtoken) return OpCodes.Ldtoken;
+            else if (opcode == SR::Emit.OpCodes.Ldvirtftn) return OpCodes.Ldvirtftn;
+            else if (opcode == SR::Emit.OpCodes.Leave) return OpCodes.Leave;
+            else if (opcode == SR::Emit.OpCodes.Leave_S) return OpCodes.Leave_S;
+            else if (opcode == SR::Emit.OpCodes.Localloc) return OpCodes.Localloc;
+            else if (opcode == SR::Emit.OpCodes.Mkrefany) return OpCodes.Mkrefany;
+            else if (opcode == SR::Emit.OpCodes.Mul) return OpCodes.Mul;
+            else if (opcode == SR::Emit.OpCodes.Mul_Ovf) return OpCodes.Mul_Ovf;
+            else if (opcode == SR::Emit.OpCodes.Mul_Ovf_Un) return OpCodes.Mul_Ovf_Un;
+            else if (opcode == SR::Emit.OpCodes.Neg) return OpCodes.Neg;
+            else if (opcode == SR::Emit.OpCodes.Newarr) return OpCodes.Newarr;
+            else if (opcode == SR::Emit.OpCodes.Newobj) return OpCodes.Newobj;
+            else if (opcode == SR::Emit.OpCodes.Nop) return OpCodes.Nop;
+            else if (opcode == SR::Emit.OpCodes.Not) return OpCodes.Not;
+            else if (opcode == SR::Emit.OpCodes.Or) return OpCodes.Or;
+            else if (opcode == SR::Emit.OpCodes.Pop) return OpCodes.Pop;
+            else if (opcode == SR::Emit.OpCodes.Readonly) return OpCodes.Readonly;
+            else if (opcode == SR::Emit.OpCodes.Refanytype) return OpCodes.Refanytype;
+            else if (opcode == SR::Emit.OpCodes.Refanyval) return OpCodes.Refanyval;
+            else if (opcode == SR::Emit.OpCodes.Rem) return OpCodes.Rem;
+            else if (opcode == SR::Emit.OpCodes.Rem_Un) return OpCodes.Rem_Un;
+            else if (opcode == SR::Emit.OpCodes.Ret) return OpCodes.Ret;
+            else if (opcode == SR::Emit.OpCodes.Rethrow) return OpCodes.Rethrow;
+            else if (opcode == SR::Emit.OpCodes.Shl) return OpCodes.Shl;
+            else if (opcode == SR::Emit.OpCodes.Shr) return OpCodes.Shr;
+            else if (opcode == SR::Emit.OpCodes.Shr_Un) return OpCodes.Shr_Un;
+            else if (opcode == SR::Emit.OpCodes.Sizeof) return OpCodes.Sizeof;
+            else if (opcode == SR::Emit.OpCodes.Starg) return OpCodes.Starg;
+            else if (opcode == SR::Emit.OpCodes.Starg_S) return OpCodes.Starg_S;
+            else if (opcode == SR::Emit.OpCodes.Stelem) return OpCodes.Stelem;
+            else if (opcode == SR::Emit.OpCodes.Stelem_I) return OpCodes.Stelem_I;
+            else if (opcode == SR::Emit.OpCodes.Stelem_I1) return OpCodes.Stelem_I1;
+            else if (opcode == SR::Emit.OpCodes.Stelem_I2) return OpCodes.Stelem_I2;
+            else if (opcode == SR::Emit.OpCodes.Stelem_I4) return OpCodes.Stelem_I4;
+            else if (opcode == SR::Emit.OpCodes.Stelem_I8) return OpCodes.Stelem_I8;
+            else if (opcode == SR::Emit.OpCodes.Stelem_R4) return OpCodes.Stelem_R4;
+            else if (opcode == SR::Emit.OpCodes.Stelem_R8) return OpCodes.Stelem_R8;
+            else if (opcode == SR::Emit.OpCodes.Stelem_Ref) return OpCodes.Stelem_Ref;
+            else if (opcode == SR::Emit.OpCodes.Stfld) return OpCodes.Stfld;
+            else if (opcode == SR::Emit.OpCodes.Stind_I) return OpCodes.Stind_I;
+            else if (opcode == SR::Emit.OpCodes.Stind_I1) return OpCodes.Stind_I1;
+            else if (opcode == SR::Emit.OpCodes.Stind_I2) return OpCodes.Stind_I2;
+            else if (opcode == SR::Emit.OpCodes.Stind_I4) return OpCodes.Stind_I4;
+            else if (opcode == SR::Emit.OpCodes.Stind_I8) return OpCodes.Stind_I8;
+            else if (opcode == SR::Emit.OpCodes.Stind_R4) return OpCodes.Stind_R4;
+            else if (opcode == SR::Emit.OpCodes.Stind_R8) return OpCodes.Stind_R8;
+            else if (opcode == SR::Emit.OpCodes.Stind_Ref) return OpCodes.Stind_Ref;
+            else if (opcode == SR::Emit.OpCodes.Stloc) return OpCodes.Stloc;
+            else if (opcode == SR::Emit.OpCodes.Stloc_0) return OpCodes.Stloc_0;
+            else if (opcode == SR::Emit.OpCodes.Stloc_1) return OpCodes.Stloc_1;
+            else if (opcode == SR::Emit.OpCodes.Stloc_2) return OpCodes.Stloc_2;
+            else if (opcode == SR::Emit.OpCodes.Stloc_3) return OpCodes.Stloc_3;
+            else if (opcode == SR::Emit.OpCodes.Stloc_S) return OpCodes.Stloc_S;
+            else if (opcode == SR::Emit.OpCodes.Stobj) return OpCodes.Stobj;
+            else if (opcode == SR::Emit.OpCodes.Stsfld) return OpCodes.Stsfld;
+            else if (opcode == SR::Emit.OpCodes.Sub) return OpCodes.Sub;
+            else if (opcode == SR::Emit.OpCodes.Sub_Ovf) return OpCodes.Sub_Ovf;
+            else if (opcode == SR::Emit.OpCodes.Sub_Ovf_Un) return OpCodes.Sub_Ovf_Un;
+            else if (opcode == SR::Emit.OpCodes.Switch) return OpCodes.Switch;
+            else if (opcode == SR::Emit.OpCodes.Tailcall) return OpCodes.Tailcall;
+            else if (opcode == SR::Emit.OpCodes.Throw) return OpCodes.Throw;
+            else if (opcode == SR::Emit.OpCodes.Unaligned) return OpCodes.Unaligned;
+            else if (opcode == SR::Emit.OpCodes.Unbox) return OpCodes.Unbox;
+            else if (opcode == SR::Emit.OpCodes.Unbox_Any) return OpCodes.Unbox_Any;
+            else if (opcode == SR::Emit.OpCodes.Volatile) return OpCodes.Volatile;
+            else if (opcode == SR::Emit.OpCodes.Xor) return OpCodes.Xor;
 
             throw new NotSupportedException();
         }

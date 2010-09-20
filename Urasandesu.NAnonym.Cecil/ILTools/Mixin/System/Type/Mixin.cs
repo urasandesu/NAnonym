@@ -5,7 +5,7 @@ using System.Text;
 using Mono.Cecil;
 using Urasandesu.NAnonym.Linq;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Cecil.ILTools
 {
     public static partial class Mixin
     {

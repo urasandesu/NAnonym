@@ -4,24 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Reflection.Emit;
 using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     sealed class SRMethodBodyGeneratorImpl : SRMethodBodyDeclarationImpl, IMethodBodyGenerator
     {
+        // TODO: SR ～、MC ～ がメンバに持つ変数の型は、無理にインターフェースにする必要はない。
+
         readonly ConstructorBuilder constructorBuilder;
         readonly DynamicMethod dynamicMethod;
-        readonly SRILOperatorImpl il;
+        SRILOperatorImpl il;
         public SRMethodBodyGeneratorImpl(ConstructorBuilder constructorBuilder)
         {
             this.constructorBuilder = constructorBuilder;
-            il = (SRILOperatorImpl)constructorBuilder.GetILGenerator();
+            Initialize((SRILOperatorImpl)constructorBuilder.GetILGenerator());
         }
 
         public SRMethodBodyGeneratorImpl(DynamicMethod dynamicMethod)
         {
             this.dynamicMethod = dynamicMethod;
-            il = (SRILOperatorImpl)dynamicMethod.GetILGenerator();
+            Initialize((SRILOperatorImpl)dynamicMethod.GetILGenerator());
+        }
+
+        void Initialize(SRILOperatorImpl il)
+        {
+            this.il = il;
         }
 
         public static explicit operator SRMethodBodyGeneratorImpl(ConstructorBuilder constructorBuilder)
@@ -46,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public new ReadOnlyCollection<IDirectiveGenerator> Directives
         {
-            get { throw new NotImplementedException(); }
+            get { return il.Directives; }
         }
     }
 }

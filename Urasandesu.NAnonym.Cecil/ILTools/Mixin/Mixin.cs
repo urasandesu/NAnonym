@@ -24,47 +24,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
     public static partial class Mixin
     {
 
-        //public static bool Equivalent(this TypeReference x, Type y)
-        //{
-        //    // HACK: 暫定。x が配列の場合（例えば Type[]）、配列ではない型に解決されてしまう。本来であれば、ArrayType で Resolve が override されているべきにも思うが・・・？
-        //    switch (x.Scope.MetadataScopeType)
-        //    {
-        //        case MetadataScopeType.AssemblyNameReference:
-        //            var assemblyNameReference = x.Scope as AssemblyNameReference;
-        //            return assemblyNameReference.FullName == y.Assembly.FullName && x.FullName == y.FullName;
-        //        case MetadataScopeType.ModuleDefinition:
-        //            var moduleDefinition = x.Scope as ModuleDefinition;
-        //            return moduleDefinition.Assembly.Name.FullName == y.Assembly.FullName && x.FullName == y.FullName;
-        //        case MetadataScopeType.ModuleReference:
-        //        default:
-        //            var resolvedX = x.Resolve();
-        //            return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName == y.FullName;
-        //    }
-        //}
-
-        //public static bool Equivalent(this TypeReference x, TypeReference y)
-        //{
-        //    return x.Module.Assembly.Name.FullName == y.Module.Assembly.Name.FullName && x.FullName == y.FullName;
-        //}
-
-        //public static IEnumerable<MethodDefinition> GetMethodDefs(this TypeReference typeRef)
-        //{
-        //    var typeDef = default(TypeDefinition);
-        //    var typeSpec = default(TypeSpecification);
-        //    if ((typeDef = typeRef as TypeDefinition) != null)
-        //    {
-        //        return typeDef.Methods;
-        //    }
-        //    else if ((typeSpec = typeRef as TypeSpecification) != null)
-        //    {
-        //        return typeSpec.GetMethodDefs();
-        //    }
-        //    else
-        //    {
-        //        throw new NotSupportedException();
-        //    }
-        //}
-
         // だめだ。このまま Write すると更新されてしまう。やっぱり Copy メソッドいるし。
         private static IEnumerable<MethodDefinition> GetMethodDefs(this TypeSpecification typeSpec)
         {
@@ -443,11 +402,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
         public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
             var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
-            expression(gen);
-            if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)
-            {
-                gen.Eval(_ => _.End());
-            }
+            UNI::Mixin.ExpressBodyEnd(gen, expression);
         }
 
         public static UNI::OpCode Cast(this MC::Cil.OpCode opcode)
