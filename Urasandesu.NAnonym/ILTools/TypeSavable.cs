@@ -39,9 +39,29 @@ namespace Urasandesu.NAnonym.ILTools
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
+        public static string GetMethodName<T>(Expression<Func<Action<T>>> methodNameProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
+        }
+
         public static string GetMethodName<T1, T2>(Expression<Func<Action<T1, T2>>> methodNameProvider)
         {
-            throw new NotImplementedException();
+            return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
+        }
+
+        public static ParameterInfo[] GetMethodParameters<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
+        }
+
+        public static Type[] GetMethodParameterTypes<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        {
+            return GetMethodParameters(methodParameterProvider).Select(parameter => parameter.ParameterType).ToArray();
+        }
+
+        public static string[] GetMethodParameterNames<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        {
+            return GetMethodParameters(methodParameterProvider).Select(parameter => parameter.Name).ToArray();
         }
 
         private static MethodInfo GetMethodInfo(LambdaExpression methodProvider)
@@ -49,9 +69,9 @@ namespace Urasandesu.NAnonym.ILTools
             return (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)methodProvider.Body).Operand).Arguments[2]).Value;
         }
 
-        public static string GetParamName<T>(Expression<Func<T>> paramNameProvider)
+        public static string GetName<T>(Expression<Func<T>> nameProvider)
         {
-            return ((MemberExpression)paramNameProvider.Body).Member.Name;
+            return ((MemberExpression)nameProvider.Body).Member.Name;
         }
     }
 }

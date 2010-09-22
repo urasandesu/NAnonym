@@ -80,6 +80,8 @@
     <Compile Include="ILTools\IModuleGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLocalDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLocalGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMemberDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseGeneratorImpl.cs" />
@@ -87,6 +89,8 @@
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRParameterDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRParameterGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRPortableScopeItemImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRTypeDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRTypeGeneratorImpl.cs" />

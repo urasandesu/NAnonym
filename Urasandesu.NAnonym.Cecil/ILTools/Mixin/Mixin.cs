@@ -405,6 +405,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             UNI::Mixin.ExpressBodyEnd(gen, expression);
         }
 
+        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
         public static UNI::OpCode Cast(this MC::Cil.OpCode opcode)
         {
             if (opcode == MC::Cil.OpCodes.Add) return UNI::OpCodes.Add;
@@ -629,6 +630,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             throw new NotSupportedException();
         }
 
+        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
         public static MC::Cil.OpCode Cast(this UNI::OpCode opcode)
         {
             if (opcode == UNI::OpCodes.Add) return MC::Cil.OpCodes.Add;

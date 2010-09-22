@@ -111,12 +111,12 @@ namespace Urasandesu.NAnonym.ILTools
         {
             // HACK: Contains 等の比較にあらかじめ methodDecl まで計算した状態を保持しておく方法が必要。
             // HACK: 頻繁に new されるようであれば、struct 化も検討。
-            return itemRawDataItemDictionary.ContainsKey(new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetParamName(variableRef)));
+            return itemRawDataItemDictionary.ContainsKey(new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetName(variableRef)));
         }
 
         public T GetValue<T>(Expression<Func<T>> variableRef)
         {
-            return (T)itemRawDataItemDictionary[new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetParamName(variableRef))].Value;
+            return (T)itemRawDataItemDictionary[new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetName(variableRef))].Value;
         }
 
         public T FetchValue<T>(Expression<Func<T>> variableRef, object target)
@@ -124,7 +124,7 @@ namespace Urasandesu.NAnonym.ILTools
             Required.NotDefault(target, () => target);
 
             var targetType = target.GetType();
-            var itemRawData = new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetParamName(variableRef));
+            var itemRawData = new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetName(variableRef));
             var fieldInfo = targetType.GetField(itemRawData.FieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             Required.NotDefault(fieldInfo, () => target, "The field \"" + itemRawData.FieldName + "\" is not found.");
 
@@ -147,7 +147,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public PortableScope SetValue<T>(Expression<Func<T>> variableRef, T value)
         {
-            var itemRawData = new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetParamName(variableRef));
+            var itemRawData = new PortableScopeItemRawData(methodDecl, rawData, TypeSavable.GetName(variableRef));
             var item = methodDecl.NewPortableScopeItem(itemRawData, value);
             if (!itemRawDataItemDictionary.ContainsKey(itemRawData))
             {

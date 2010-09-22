@@ -48,6 +48,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Class2.cs" />
     <Compile Include="FieldTestClass1.cs" />
+    <Compile Include="ISample1.cs" />
     <Compile Include="MethodTestClass1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyTestClass1.cs" />

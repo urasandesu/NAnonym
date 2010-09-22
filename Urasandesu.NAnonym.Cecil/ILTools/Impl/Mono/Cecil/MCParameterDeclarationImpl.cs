@@ -27,6 +27,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return (MCTypeDeclarationImpl)parameterRef.ParameterType; }
         }
 
+        public int Position
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         #endregion
     }
 }

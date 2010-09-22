@@ -19,19 +19,21 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             : base(constructorInfo)
         {
             this.constructorInfo = constructorInfo;
-            declaringTypeDecl = (SRTypeDeclarationImpl)constructorInfo.DeclaringType;
+            declaringTypeDecl = new SRTypeDeclarationImpl(constructorInfo.DeclaringType);
             bodyDecl = null;
             methodBodyMaker = null;
         }
 
-        public static explicit operator SRConstructorDeclarationImpl(ConstructorInfo constructorInfo)
-        {
-            return new SRConstructorDeclarationImpl(constructorInfo);
-        }
+        public ConstructorInfo ConstructorInfo { get { return constructorInfo; } }
 
-        public static explicit operator ConstructorInfo(SRConstructorDeclarationImpl methodDecl)
-        {
-            return methodDecl.constructorInfo;
-        }
+        //public static explicit operator SRConstructorDeclarationImpl(ConstructorInfo constructorInfo)
+        //{
+        //    return new SRConstructorDeclarationImpl(constructorInfo);
+        //}
+
+        //public static explicit operator ConstructorInfo(SRConstructorDeclarationImpl methodDecl)
+        //{
+        //    return methodDecl.constructorInfo;
+        //}
     }
 }

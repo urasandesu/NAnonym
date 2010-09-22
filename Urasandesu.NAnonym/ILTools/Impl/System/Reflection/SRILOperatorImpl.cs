@@ -24,22 +24,32 @@ namespace Urasandesu.NAnonym.ILTools
         List<SRDirectiveGeneratorImpl> directives;
         ReadOnlyCollection<IDirectiveGenerator> readonlyDirectives;
 
-        public SRILOperatorImpl(ILGenerator ilGenerator)
+        SRMethodBodyGeneratorImpl methodBodyGen;
+
+        //public SRILOperatorImpl(ILGenerator ilGenerator)
+        //{
+        //    this.ilGenerator = ilGenerator;
+        //    directives = new List<SRDirectiveGeneratorImpl>();
+        //    readonlyDirectives = new ReadOnlyCollection<IDirectiveGenerator>(directives.TransformEnumerateOnly(directiveGen => (IDirectiveGenerator)directiveGen));
+        //}
+
+        public SRILOperatorImpl(ILGenerator ilGenerator, SRMethodBodyGeneratorImpl methodBodyGen)
         {
             this.ilGenerator = ilGenerator;
             directives = new List<SRDirectiveGeneratorImpl>();
             readonlyDirectives = new ReadOnlyCollection<IDirectiveGenerator>(directives.TransformEnumerateOnly(directiveGen => (IDirectiveGenerator)directiveGen));
+            this.methodBodyGen = methodBodyGen;
         }
 
-        public static implicit operator SRILOperatorImpl(ILGenerator ilGenerator)
-        {
-            return new SRILOperatorImpl(ilGenerator);
-        }
+        //public static implicit operator SRILOperatorImpl(ILGenerator ilGenerator)
+        //{
+        //    return new SRILOperatorImpl(ilGenerator);
+        //}
 
-        public static implicit operator ILGenerator(SRILOperatorImpl il)
-        {
-            return il.ilGenerator;
-        }
+        //public static implicit operator ILGenerator(SRILOperatorImpl il)
+        //{
+        //    return il.ilGenerator;
+        //}
 
         public object Source
         {
@@ -48,7 +58,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public ILocalGenerator AddLocal(string name, Type localType)
         {
-            throw new NotImplementedException();
+            var localBuilder = ilGenerator.DeclareLocal(localType);
+            var localGen = new SRLocalGeneratorImpl(name, localBuilder);
+            methodBodyGen.LocalGens.Add(localGen);
+            return localGen;
         }
 
         public ILocalGenerator AddLocal(Type localType)
@@ -81,7 +94,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ConstructorInfo con)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), con);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, con));
         }
 
         public void Emit(OpCode opcode, double arg)
@@ -116,7 +130,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ILocalDeclaration local)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), ((SRLocalGeneratorImpl)local).LocalBuilder);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, local));
         }
 
         public void Emit(OpCode opcode, long arg)
@@ -153,13 +168,14 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
         {
-            ilGenerator.Emit(opcode.Cast(), (ConstructorInfo)(SRConstructorDeclarationImpl)constructorDecl);
+            ilGenerator.Emit(opcode.Cast(), ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, constructorDecl));
         }
 
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), ((SRParameterDeclarationImpl)parameterDecl).Position);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, parameterDecl));
         }
 
         public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)

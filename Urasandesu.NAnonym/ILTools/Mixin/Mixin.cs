@@ -23,15 +23,27 @@ namespace Urasandesu.NAnonym.ILTools
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
         }
 
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression, params ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator((SRConstructorGeneratorImpl)constructorBuilder);
+            var gen = new ExpressiveMethodBodyGenerator(new SRConstructorGeneratorImpl(constructorBuilder, parameterBuilders));
             ExpressBodyEnd(gen, expression);
         }
 
-        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
+        //public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression)
+        //{
+        //    var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder));
+        //    ExpressBodyEnd(gen, expression);
+        //}
+
+        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression, params ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator((SRMethodGeneratorImpl)dynamicMethod);
+            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders));
+            ExpressBodyEnd(gen, expression);
+        }
+
+        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression, params ParameterBuilder[] parameterBuilders)
+        {
+            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(dynamicMethod, parameterBuilders));
             ExpressBodyEnd(gen, expression);
         }
 
@@ -44,6 +56,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
         public static SR::Emit.OpCode Cast(this OpCode opcode)
         {
             if (opcode == OpCodes.Add) return SR::Emit.OpCodes.Add;
@@ -268,6 +281,7 @@ namespace Urasandesu.NAnonym.ILTools
             throw new NotSupportedException();
         }
 
+        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
         public static OpCode Cast(this SR::Emit.OpCode opcode)
         {
             if (opcode == SR::Emit.OpCodes.Add) return OpCodes.Add;

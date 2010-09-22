@@ -15,18 +15,18 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             : base(type)
         {
             this.type = type;
-            baseTypeDecl = type == typeof(object) ? null : (SRTypeDeclarationImpl)type.BaseType;
+            baseTypeDecl = type == typeof(object) ? null : new SRTypeDeclarationImpl(type.BaseType);
         }
 
-        public static explicit operator SRTypeDeclarationImpl(Type type)
-        {
-            return new SRTypeDeclarationImpl(type);
-        }
+        //public static explicit operator SRTypeDeclarationImpl(Type type)
+        //{
+        //    return new SRTypeDeclarationImpl(type);
+        //}
 
-        public static explicit operator Type(SRTypeDeclarationImpl typeDecl)
-        {
-            return typeDecl.type;
-        }
+        //public static explicit operator Type(SRTypeDeclarationImpl typeDecl)
+        //{
+        //    return typeDecl.type;
+        //}
 
         public object Source { get { throw new NotImplementedException(); } }
 
@@ -46,7 +46,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public IConstructorDeclaration GetConstructor(Type[] types)
         {
-            return (SRConstructorDeclarationImpl)type.GetConstructor(types);
+            return new SRConstructorDeclarationImpl(type.GetConstructor(types));
         }
 
         #region ITypeDeclaration メンバ

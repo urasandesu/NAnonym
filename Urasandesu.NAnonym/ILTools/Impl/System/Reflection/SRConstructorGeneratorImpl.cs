@@ -15,7 +15,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         readonly IMethodBodyGenerator bodyGen;
         readonly ITypeGenerator declaringTypeGen;
-        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
+        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, params ParameterBuilder[] parameterBuilders)
             : base(constructorBuilder)
         {
             this.constructorBuilder = constructorBuilder;
@@ -24,15 +24,15 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             declaringTypeGen = declaringTypeBuilder == null ? null : (SRTypeGeneratorImpl)declaringTypeBuilder;
         }
 
-        public static explicit operator SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
-        {
-            return new SRConstructorGeneratorImpl(constructorBuilder);
-        }
+        //public static explicit operator SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
+        //{
+        //    return new SRConstructorGeneratorImpl(constructorBuilder);
+        //}
 
-        public static explicit operator ConstructorBuilder(SRConstructorGeneratorImpl methodDecl)
-        {
-            return methodDecl.constructorBuilder;
-        }
+        //public static explicit operator ConstructorBuilder(SRConstructorGeneratorImpl methodDecl)
+        //{
+        //    return methodDecl.constructorBuilder;
+        //}
 
         public new IMethodBodyGenerator Body
         {
