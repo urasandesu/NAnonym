@@ -16,16 +16,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.typeBuilder = typeBuilder;
         }
 
-        public static explicit operator SRTypeGeneratorImpl(TypeBuilder typeBuilder)
-        {
-            return new SRTypeGeneratorImpl(typeBuilder);
-        }
-
-        public static explicit operator TypeBuilder(SRTypeGeneratorImpl typeGen)
-        {
-            return typeGen.typeBuilder;
-        }
-
         #region ITypeGenerator メンバ
 
         public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)

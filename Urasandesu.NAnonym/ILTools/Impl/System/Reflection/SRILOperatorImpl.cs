@@ -26,13 +26,6 @@ namespace Urasandesu.NAnonym.ILTools
 
         SRMethodBodyGeneratorImpl methodBodyGen;
 
-        //public SRILOperatorImpl(ILGenerator ilGenerator)
-        //{
-        //    this.ilGenerator = ilGenerator;
-        //    directives = new List<SRDirectiveGeneratorImpl>();
-        //    readonlyDirectives = new ReadOnlyCollection<IDirectiveGenerator>(directives.TransformEnumerateOnly(directiveGen => (IDirectiveGenerator)directiveGen));
-        //}
-
         public SRILOperatorImpl(ILGenerator ilGenerator, SRMethodBodyGeneratorImpl methodBodyGen)
         {
             this.ilGenerator = ilGenerator;
@@ -40,16 +33,6 @@ namespace Urasandesu.NAnonym.ILTools
             readonlyDirectives = new ReadOnlyCollection<IDirectiveGenerator>(directives.TransformEnumerateOnly(directiveGen => (IDirectiveGenerator)directiveGen));
             this.methodBodyGen = methodBodyGen;
         }
-
-        //public static implicit operator SRILOperatorImpl(ILGenerator ilGenerator)
-        //{
-        //    return new SRILOperatorImpl(ilGenerator);
-        //}
-
-        //public static implicit operator ILGenerator(SRILOperatorImpl il)
-        //{
-        //    return il.ilGenerator;
-        //}
 
         public object Source
         {

@@ -25,15 +25,5 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         public ConstructorInfo ConstructorInfo { get { return constructorInfo; } }
-
-        //public static explicit operator SRConstructorDeclarationImpl(ConstructorInfo constructorInfo)
-        //{
-        //    return new SRConstructorDeclarationImpl(constructorInfo);
-        //}
-
-        //public static explicit operator ConstructorInfo(SRConstructorDeclarationImpl methodDecl)
-        //{
-        //    return methodDecl.constructorInfo;
-        //}
     }
 }

@@ -19,20 +19,10 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             : base(constructorBuilder)
         {
             this.constructorBuilder = constructorBuilder;
-            bodyGen = (SRMethodBodyGeneratorImpl)constructorBuilder;
+            bodyGen = new SRMethodBodyGeneratorImpl(constructorBuilder);
             var declaringTypeBuilder = constructorBuilder.DeclaringType as TypeBuilder;
-            declaringTypeGen = declaringTypeBuilder == null ? null : (SRTypeGeneratorImpl)declaringTypeBuilder;
+            declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder);
         }
-
-        //public static explicit operator SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
-        //{
-        //    return new SRConstructorGeneratorImpl(constructorBuilder);
-        //}
-
-        //public static explicit operator ConstructorBuilder(SRConstructorGeneratorImpl methodDecl)
-        //{
-        //    return methodDecl.constructorBuilder;
-        //}
 
         public new IMethodBodyGenerator Body
         {

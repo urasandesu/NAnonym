@@ -45,21 +45,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
                 LocalGens.TransformEnumerateOnly(localGen => (ILocalGenerator)localGen));
         }
 
-        public static explicit operator SRMethodBodyGeneratorImpl(ConstructorBuilder constructorBuilder)
-        {
-            return new SRMethodBodyGeneratorImpl(constructorBuilder);
-        }
-
-        public static explicit operator SRMethodBodyGeneratorImpl(DynamicMethod dynamicMethod)
-        {
-            return new SRMethodBodyGeneratorImpl(dynamicMethod);
-        }
-
-        public static explicit operator SRMethodBodyGeneratorImpl(MethodBuilder methodBuilder)
-        {
-            return new SRMethodBodyGeneratorImpl(methodBuilder);
-        }
-
         public IILOperator GetILOperator()
         {
             return il;

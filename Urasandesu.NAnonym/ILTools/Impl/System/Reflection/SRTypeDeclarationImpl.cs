@@ -18,16 +18,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             baseTypeDecl = type == typeof(object) ? null : new SRTypeDeclarationImpl(type.BaseType);
         }
 
-        //public static explicit operator SRTypeDeclarationImpl(Type type)
-        //{
-        //    return new SRTypeDeclarationImpl(type);
-        //}
-
-        //public static explicit operator Type(SRTypeDeclarationImpl typeDecl)
-        //{
-        //    return typeDecl.type;
-        //}
-
         public object Source { get { throw new NotImplementedException(); } }
 
         public string FullName

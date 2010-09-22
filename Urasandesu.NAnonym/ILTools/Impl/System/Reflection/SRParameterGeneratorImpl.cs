@@ -29,11 +29,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return m_parameterTypes[parameterBuilder.Position - 1];
         }
 
-        //public static explicit operator SRParameterGeneratorImpl(ParameterBuilder parameterBuilder)
-        //{
-        //    return new SRParameterGeneratorImpl(parameterBuilder);
-        //}
-
         #region IParameterGenerator メンバ
 
         public new ITypeGenerator ParameterType

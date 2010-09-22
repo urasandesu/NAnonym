@@ -36,7 +36,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         void Initialize(MethodBuilder methodBuilder, params ParameterBuilder[] parameterBuilders)
         {
-            bodyGen = (SRMethodBodyGeneratorImpl)methodBuilder;
+            bodyGen = new SRMethodBodyGeneratorImpl(methodBuilder);
             // TODO: ParameterBuilder 自身から型情報を取得する機能はない。MethodBuilder とセットにして使わないといけない。
             //parameters = 
             //    new ReadOnlyCollection<IParameterGenerator>(
@@ -46,32 +46,17 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         void Initialize(DynamicMethod dynamicMethod, params ParameterBuilder[] parameterBuilders)
         {
-            bodyGen = (SRMethodBodyGeneratorImpl)dynamicMethod;
+            bodyGen = new SRMethodBodyGeneratorImpl(dynamicMethod);
             Initialize(dynamicMethod.DeclaringType as TypeBuilder, parameterBuilders);
         }
 
         void Initialize(TypeBuilder declaringTypeBuilder, params ParameterBuilder[] parameterBuilders)
         {
-            declaringTypeGen = declaringTypeBuilder == null ? null : (SRTypeGeneratorImpl)declaringTypeBuilder;
+            declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder);
             this.parameterBuilders = new List<ParameterBuilder>(parameterBuilders);
             parameters = new ReadOnlyCollection<IParameterGenerator>(
                 this.parameterBuilders.TransformEnumerateOnly(parameterBuilder => (IParameterGenerator)new SRParameterGeneratorImpl(parameterBuilder)));
         }
-
-        //public static explicit operator SRMethodGeneratorImpl(DynamicMethod dynamicMethod)
-        //{
-        //    return new SRMethodGeneratorImpl(dynamicMethod);
-        //}
-
-        //public static explicit operator DynamicMethod(SRMethodGeneratorImpl methodGen)
-        //{
-        //    return methodGen.dynamicMethod;
-        //}
-
-        //public static explicit operator SRMethodGeneratorImpl(MethodBuilder methodBuilder)
-        //{
-        //    return new SRMethodGeneratorImpl(methodBuilder);
-        //}
 
         #region IMethodGenerator メンバ
 
