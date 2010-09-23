@@ -28,16 +28,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.moduleDef = moduleDef;
         }
 
-        public static explicit operator ModuleDefinition(MCModuleGeneratorImpl moduleGen)
-        {
-            return moduleGen.moduleDef;
-        }
-
-        public static explicit operator MCModuleGeneratorImpl(ModuleDefinition moduleDef)
-        {
-            return new MCModuleGeneratorImpl(moduleDef);
-        }
-
         #region IModuleGenerator メンバ
 
         public new UN::ILTools.IAssemblyGenerator Assembly

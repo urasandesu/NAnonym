@@ -15,7 +15,7 @@ using SR = System.Reflection;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using UNCI = Urasandesu.NAnonym.Cecil.ILTools;
 
-namespace Test.Urasandesu.NAnonym.ILTools
+namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
     [TestFixture]
     public partial class MixinTest

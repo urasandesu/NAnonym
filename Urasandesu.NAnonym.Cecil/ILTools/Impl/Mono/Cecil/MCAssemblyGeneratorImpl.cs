@@ -15,15 +15,5 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             : base(assemblyDef)
         {
         }
-
-        public static explicit operator MCAssemblyGeneratorImpl(AssemblyDefinition assemblyDef)
-        {
-            return new MCAssemblyGeneratorImpl(assemblyDef);
-        }
-
-        public static explicit operator AssemblyDefinition(MCAssemblyGeneratorImpl assemblyGen)
-        {
-            return assemblyGen.AssemblyDef;
-        }
     }
 }

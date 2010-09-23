@@ -16,14 +16,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.constructorRef = constructorRef;
         }
 
-        public static explicit operator MCConstructorDeclarationImpl(MethodReference constructorRef)
-        {
-            return new MCConstructorDeclarationImpl(constructorRef);
-        }
-
-        public static explicit operator MethodReference(MCConstructorDeclarationImpl constructorDecl)
-        {
-            return constructorDecl.constructorRef;
-        }
+        internal MethodReference ConstructorRef { get { return constructorRef; } }
     }
 }

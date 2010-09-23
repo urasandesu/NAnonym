@@ -15,21 +15,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.instruction = instruction;
         }
 
-        public static explicit operator MC::Cil.Instruction(MCDirectiveGeneratorImpl directiveGen)
-        {
-            return directiveGen.instruction;
-        }
-
-        public static explicit operator MCDirectiveGeneratorImpl(MC::Cil.Instruction instruction)
-        {
-            return new MCDirectiveGeneratorImpl(instruction);
-        }
-
         #region IDirectiveDeclaration メンバ
 
         OpCode IDirectiveDeclaration.OpCode
         {
-            get { return instruction.OpCode.Cast(); }
+            get { return instruction.OpCode.ToUni(); }
         }
 
         object IDirectiveDeclaration.Operand

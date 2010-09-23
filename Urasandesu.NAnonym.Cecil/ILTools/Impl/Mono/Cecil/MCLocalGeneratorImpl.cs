@@ -16,15 +16,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.variableDef = variableDef;
         }
 
-        public static explicit operator MCLocalGeneratorImpl(VariableDefinition variableDef)
-        {
-            return new MCLocalGeneratorImpl(variableDef);
-        }
-
-        public static explicit operator VariableDefinition(MCLocalGeneratorImpl localGen)
-        {
-            return localGen.variableDef;
-        }
+        internal VariableDefinition VariableDef { get { return variableDef; } }
 
         public string Name
         {

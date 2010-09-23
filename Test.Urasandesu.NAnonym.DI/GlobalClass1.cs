@@ -1,7 +1,7 @@
 ﻿using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym.Cecil.DI;
 
-namespace Test.Urasandesu.NAnonym.DI
+namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
     public class GlobalClass1 : GlobalClassBase
     {

@@ -45,10 +45,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             methodName = methodDef.Name;
             methodAttr = methodDef.Attributes;
             parameterTypeFullNames = methodDef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
-            bodyDecl = (MCMethodBodyGeneratorImpl)methodDef.Body;
+            bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body);
             declaringTypeDecl = (MCTypeGeneratorImpl)methodRef.DeclaringType.Resolve();
             parameters = new ReadOnlyCollection<IParameterDeclaration>(
-                methodRef.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)(MCParameterGeneratorImpl)parameter));
+                methodRef.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
         }
 
         #region IMethodBaseDeclaration メンバ
@@ -77,7 +77,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         #endregion
 
-        protected MethodDefinition MethodDef { get { return methodDef; } }
+        internal MethodDefinition MethodDef { get { return methodDef; } }
         protected IMethodBodyDeclaration BodyDecl { get { return bodyDecl; } }
         protected ITypeDeclaration DeclaringTypeDecl { get { return declaringTypeDecl; } }
 

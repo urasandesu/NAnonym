@@ -39,16 +39,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                 base.Parameters.TransformEnumerateOnly(paramter => (IParameterGenerator)paramter));
         }
 
-        public static explicit operator MCMethodGeneratorImpl(MethodDefinition methodDef)
-        {
-            return new MCMethodGeneratorImpl(methodDef);
-        }
-
-        public static explicit operator MethodDefinition(MCMethodGeneratorImpl methodGen)
-        {
-            return methodGen.MethodDef;
-        }
-
         #region IMethodGenerator メンバ
 
         public new ITypeGenerator ReturnType

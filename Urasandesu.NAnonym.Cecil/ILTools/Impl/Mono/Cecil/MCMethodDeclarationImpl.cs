@@ -19,7 +19,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public UN::ILTools.ITypeDeclaration ReturnType
         {
-            get { return (MCTypeDeclarationImpl)MethodDef.ReturnType; }
+            get { return new MCTypeDeclarationImpl(MethodDef.ReturnType); }
         }
 
         #endregion

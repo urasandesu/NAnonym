@@ -20,15 +20,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             parameterTypeGen = typeDef == null ? null : (MCTypeGeneratorImpl)typeDef;
         }
 
-        public static explicit operator MCParameterGeneratorImpl(ParameterDefinition parameterDef)
-        {
-            return new MCParameterGeneratorImpl(parameterDef);
-        }
-
-        public static explicit operator ParameterDefinition(MCParameterGeneratorImpl parameterGen)
-        {
-            return parameterGen.parameterDef;
-        }
+        internal ParameterDefinition ParameterDef { get { return parameterDef; } }
 
         public new UN::ILTools.ITypeGenerator ParameterType
         {

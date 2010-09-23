@@ -8,8 +8,8 @@
     <ProjectGuid>{90F44336-2079-44AD-9470-397730316906}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test.Urasandesu.NAnonym.DI</RootNamespace>
-    <AssemblyName>Test.Urasandesu.NAnonym.DI</AssemblyName>
+    <RootNamespace>Test.Urasandesu.NAnonym.Cecil.DI</RootNamespace>
+    <AssemblyName>Test.Urasandesu.NAnonym.Cecil.DI</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

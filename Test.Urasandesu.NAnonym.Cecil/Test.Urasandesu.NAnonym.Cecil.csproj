@@ -59,9 +59,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Test.Urasandesu.NAnonym.DI\Test.Urasandesu.NAnonym.DI.csproj">
+    <ProjectReference Include="..\Test.Urasandesu.NAnonym.DI\Test.Urasandesu.NAnonym.Cecil.DI.csproj">
       <Project>{90F44336-2079-44AD-9470-397730316906}</Project>
-      <Name>Test.Urasandesu.NAnonym.DI</Name>
+      <Name>Test.Urasandesu.NAnonym.Cecil.DI</Name>
     </ProjectReference>
     <ProjectReference Include="..\Test.Urasandesu.NAnonym.Etc\Test.Urasandesu.NAnonym.Etc.csproj">
       <Project>{E5F91EA1-A3AE-4D1D-A9F9-00AEA41CCA1A}</Project>

@@ -19,7 +19,7 @@ using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 
-namespace Test.Urasandesu.NAnonym.ILTools
+namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
     [TestFixture]
     public class ExpressiveMethodBodyGeneratorTest

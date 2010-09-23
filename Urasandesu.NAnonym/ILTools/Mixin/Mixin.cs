@@ -57,8 +57,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
-        public static SR::Emit.OpCode Cast(this OpCode opcode)
+        public static SR::Emit.OpCode ToSre(this OpCode opcode)
         {
             if (opcode == OpCodes.Add) return SR::Emit.OpCodes.Add;
             else if (opcode == OpCodes.Add_Ovf) return SR::Emit.OpCodes.Add_Ovf;
@@ -282,8 +281,7 @@ namespace Urasandesu.NAnonym.ILTools
             throw new NotSupportedException();
         }
 
-        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
-        public static OpCode Cast(this SR::Emit.OpCode opcode)
+        public static OpCode ToUni(this SR::Emit.OpCode opcode)
         {
             if (opcode == SR::Emit.OpCodes.Add) return OpCodes.Add;
             else if (opcode == SR::Emit.OpCodes.Add_Ovf) return OpCodes.Add_Ovf;
@@ -543,17 +541,17 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
 
-        // HACK: これは ILTools の Mixin にあるべきじゃない。
-        public static Type[] ParameterTypes(this MethodInfo methodInfo)
-        {
-            return methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-        }
+        //// HACK: これは ILTools の Mixin にあるべきじゃない。
+        //public static Type[] ParameterTypes(this MethodInfo methodInfo)
+        //{
+        //    return methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+        //}
 
-        // HACK: これは ILTools の Mixin にあるべきじゃない。
-        public static string[] ParameterNames(this MethodInfo methodInfo)
-        {
-            return methodInfo.GetParameters().Select(parameter => parameter.Name).ToArray();
-        }
+        //// HACK: これは ILTools の Mixin にあるべきじゃない。
+        //public static string[] ParameterNames(this MethodInfo methodInfo)
+        //{
+        //    return methodInfo.GetParameters().Select(parameter => parameter.Name).ToArray();
+        //}
 
     }
 }

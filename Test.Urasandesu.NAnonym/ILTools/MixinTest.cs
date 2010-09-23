@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using Urasandesu.NAnonym.ILTools;
 using Test.Urasandesu.NAnonym.Etc;
+using Urasandesu.NAnonym;
 
 
 namespace Test.Urasandesu.NAnonym.ILTools

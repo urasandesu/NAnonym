@@ -21,19 +21,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             this.bodyDef = bodyDef;
             locals = new ReadOnlyCollection<ILocalGenerator>(
-                bodyDef.Variables.TransformEnumerateOnly(variableDef => (ILocalGenerator)(MCLocalGeneratorImpl)variableDef));
+                bodyDef.Variables.TransformEnumerateOnly(variableDef => (ILocalGenerator)new MCLocalGeneratorImpl(variableDef)));
             directives = new ReadOnlyCollection<IDirectiveGenerator>(
-                bodyDef.Instructions.TransformEnumerateOnly(instruction => (IDirectiveGenerator)(MCDirectiveGeneratorImpl)instruction));
-        }
-
-        public static explicit operator MCMethodBodyGeneratorImpl(MC::Cil.MethodBody bodyDef)
-        {
-            return new MCMethodBodyGeneratorImpl(bodyDef);
-        }
-
-        public static explicit operator MC::Cil.MethodBody(MCMethodBodyGeneratorImpl bodyGen)
-        {
-            return bodyGen.bodyDef;
+                bodyDef.Instructions.TransformEnumerateOnly(instruction => (IDirectiveGenerator)new MCDirectiveGeneratorImpl(instruction)));
         }
 
         public IILOperator GetILOperator()

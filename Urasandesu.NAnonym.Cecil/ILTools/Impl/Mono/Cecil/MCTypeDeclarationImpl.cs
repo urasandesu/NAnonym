@@ -41,18 +41,8 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.typeRef = typeRef;
             typeDef = typeRef.Resolve();
             typeFullName = typeDef.FullName;
-            moduleDecl = (MCModuleDeclarationImpl)typeRef.Module;
-            baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : (MCTypeDeclarationImpl)typeDef.BaseType;
-        }
-
-        public static explicit operator MCTypeDeclarationImpl(TypeReference typeRef)
-        {
-            return new MCTypeDeclarationImpl(typeRef);
-        }
-
-        public static explicit operator TypeReference(MCTypeDeclarationImpl typeDecl)
-        {
-            return typeDecl.typeRef;
+            moduleDecl = new MCModuleDeclarationImpl(typeRef.Module);
+            baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType);
         }
 
         public string FullName
@@ -78,13 +68,13 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             // MEMO: System.Object..ctor をそのまま参照させると、自身のコンストラクタ呼び出しに変換されてしまう？？
             if (typeRef.Equivalent(typeof(object)))
             {
-                return (MCConstructorDeclarationImpl)typeRef.Module.Import(
-                    typeof(object).GetConstructor(SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, null, types, null));
+                return new MCConstructorDeclarationImpl(typeRef.Module.Import(
+                    typeof(object).GetConstructor(SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, null, types, null)));
             }
             else
             {
-                return (MCConstructorDeclarationImpl)typeDef.GetConstructor(
-                    SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, types);
+                return new MCConstructorDeclarationImpl(typeDef.GetConstructor(
+                    SR::BindingFlags.Public | SR::BindingFlags.NonPublic | SR::BindingFlags.Instance, types));
             }
         }
 
@@ -117,7 +107,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
             moduleDecl.OnDeserialized(context);
-            var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
+            var moduleDef = (ModuleDefinition)moduleDecl.ModuleRef;
             var typeDef = moduleDef.Types.First(type => type.FullName == typeFullName);
             Initialize(typeDef);
             base.OnDeserializedManually(context);

@@ -46,10 +46,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             that.variableDef = variableDef; // MEMO: Index で取得できる範囲の変数は、構築時の名前が残っていないのかも。
         }
 
-        public static explicit operator FieldDefinition(MCPortableScopeItemImpl scopeItem)
-        {
-            return scopeItem.fieldDef;
-        }
+        internal FieldDefinition FieldDef { get { return fieldDef; } }
 
         #region IPortableScopeItem メンバ
 
@@ -122,7 +119,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             var methodDecl = default(IMethodBaseDeclaration);
             if ((methodDecl = context.Context as IMethodBaseDeclaration) != null)
             {
-                var methodDef = (MethodDefinition)(MCMethodGeneratorImpl)methodDecl;
+                var methodDef = ((MCMethodGeneratorImpl)methodDecl).MethodDef;
                 var fieldDef = methodDef.DeclaringType.Fields.First(_fieldDef => _fieldDef.Name == itemRawData.FieldName);
                 var variableDef = methodDef.Body.Variables.First(
                     _variableDef => _variableDef.VariableType.FullName == variableTypeFullName && _variableDef.Index == variableIndex);

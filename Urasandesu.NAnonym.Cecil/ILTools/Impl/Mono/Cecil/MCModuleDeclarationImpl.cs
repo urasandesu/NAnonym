@@ -26,21 +26,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             Initialize(moduleRef);
         }
 
-        public static explicit operator MCModuleDeclarationImpl(ModuleReference moduleRef)
-        {
-            return new MCModuleDeclarationImpl(moduleRef);
-        }
-
-        public static explicit operator ModuleReference(MCModuleDeclarationImpl moduleDecl)
-        {
-            return moduleDecl.moduleRef;
-        }
-
         void Initialize(ModuleReference moduleRef)
         {
             this.moduleRef = moduleRef;
             moduleName = moduleRef.Name;
-            assemblyDecl = (MCAssemblyDeclarationImpl)((ModuleDefinition)moduleRef).Assembly;
+            assemblyDecl = new MCAssemblyDeclarationImpl(((ModuleDefinition)moduleRef).Assembly);
         }
 
         #region IModuleDeclaration メンバ
@@ -52,7 +42,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         #endregion
 
-        protected ModuleReference ModuleRef { get { return moduleRef; } }
+        internal ModuleReference ModuleRef { get { return moduleRef; } }
         protected string ModuleName { get { return moduleName; } }
 
         //[OnDeserialized]
@@ -72,7 +62,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyDecl;
             assemblyDecl.OnDeserialized(context);
-            var assemblyDef = (AssemblyDefinition)assemblyDecl;
+            var assemblyDef = assemblyDecl.AssemblyDef;
             Initialize(assemblyDef.Modules.First(module => module.Name == moduleName));
         }
     }

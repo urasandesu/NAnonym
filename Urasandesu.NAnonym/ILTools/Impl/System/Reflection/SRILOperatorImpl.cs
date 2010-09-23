@@ -67,11 +67,9 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode)
         {
-            ilGenerator.Emit(opcode.Cast());
+            ilGenerator.Emit(opcode.ToSre());
             directives.Add(new SRDirectiveGeneratorImpl(opcode));
         }
-
-        // TODO: OpCode 以外は explicit にしたほうが良さそう。
 
         public void Emit(OpCode opcode, byte arg)
         {
@@ -80,7 +78,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ConstructorInfo con)
         {
-            ilGenerator.Emit(opcode.Cast(), con);
+            ilGenerator.Emit(opcode.ToSre(), con);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, con));
         }
 
@@ -91,7 +89,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, FieldInfo field)
         {
-            ilGenerator.Emit(opcode.Cast(), field);
+            ilGenerator.Emit(opcode.ToSre(), field);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, field));
         }
 
@@ -102,7 +100,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, int arg)
         {
-            ilGenerator.Emit(opcode.Cast(), arg);
+            ilGenerator.Emit(opcode.ToSre(), arg);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
@@ -118,7 +116,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ILocalDeclaration local)
         {
-            ilGenerator.Emit(opcode.Cast(), ((SRLocalGeneratorImpl)local).LocalBuilder);
+            ilGenerator.Emit(opcode.ToSre(), ((SRLocalGeneratorImpl)local).LocalBuilder);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, local));
         }
 
@@ -129,13 +127,13 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, MethodInfo meth)
         {
-            ilGenerator.Emit(opcode.Cast(), meth);
+            ilGenerator.Emit(opcode.ToSre(), meth);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, meth));
         }
 
         public void Emit(OpCode opcode, sbyte arg)
         {
-            ilGenerator.Emit(opcode.Cast(), arg);
+            ilGenerator.Emit(opcode.ToSre(), arg);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
@@ -146,25 +144,25 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, string str)
         {
-            ilGenerator.Emit(opcode.Cast(), str);
+            ilGenerator.Emit(opcode.ToSre(), str);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, str));
         }
 
         public void Emit(OpCode opcode, Type cls)
         {
-            ilGenerator.Emit(opcode.Cast(), cls);
+            ilGenerator.Emit(opcode.ToSre(), cls);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, cls));
         }
 
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
         {
-            ilGenerator.Emit(opcode.Cast(), ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo);
+            ilGenerator.Emit(opcode.ToSre(), ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, constructorDecl));
         }
 
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
         {
-            ilGenerator.Emit(opcode.Cast(), ((SRParameterDeclarationImpl)parameterDecl).Position);
+            ilGenerator.Emit(opcode.ToSre(), ((SRParameterDeclarationImpl)parameterDecl).Position);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, parameterDecl));
         }
 

@@ -10,7 +10,7 @@ using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
 using MC = Mono.Cecil;
 
-namespace Test.Urasandesu.NAnonym.ILTools
+namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
     [TestFixture]
     public class PortableScopeTest

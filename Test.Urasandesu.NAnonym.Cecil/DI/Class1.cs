@@ -1,9 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
-using Test.Urasandesu.NAnonym.DI;
 using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Cecil.DI;
+using Test.Urasandesu.NAnonym.Cecil.DI;
 
 namespace Test
 {

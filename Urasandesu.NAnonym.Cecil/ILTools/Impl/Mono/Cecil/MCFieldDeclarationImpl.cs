@@ -16,14 +16,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.fieldRef = fieldRef;
         }
 
-        public static explicit operator MCFieldDeclarationImpl(FieldReference fieldRef)
-        {
-            return new MCFieldDeclarationImpl(fieldRef);
-        }
-
-        public static explicit operator FieldReference(MCFieldDeclarationImpl fieldDecl)
-        {
-            return fieldDecl.fieldRef;
-        }
+        internal FieldReference FieldRef { get { return fieldRef; } }
     }
 }

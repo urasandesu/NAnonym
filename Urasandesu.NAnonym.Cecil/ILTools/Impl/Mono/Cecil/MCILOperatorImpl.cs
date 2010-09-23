@@ -48,14 +48,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var variableDef = new VariableDefinition(name, moduleDef.Import(localType));
             bodyDef.Variables.Add(variableDef);
-            return (MCLocalGeneratorImpl)variableDef;
+            return new MCLocalGeneratorImpl(variableDef);
         }
 
         public UN::ILTools.ILocalGenerator AddLocal(Type localType)
         {
             var variableDef = new VariableDefinition(moduleDef.Import(localType));
             bodyDef.Variables.Add(variableDef);
-            return (MCLocalGeneratorImpl)variableDef;
+            return new MCLocalGeneratorImpl(variableDef);
         }
 
         public UN::ILTools.ILocalGenerator AddLocal(Type localType, bool pinned)
@@ -70,7 +70,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode)
         {
-            il.Emit(opcode.Cast());
+            il.Emit(opcode.ToMcc());
         }
 
         public void Emit(UN::ILTools.OpCode opcode, byte arg)
@@ -80,17 +80,17 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode, ConstructorInfo con)
         {
-            il.Emit(opcode.Cast(), moduleDef.Import(con));
+            il.Emit(opcode.ToMcc(), moduleDef.Import(con));
         }
 
         public void Emit(UN::ILTools.OpCode opcode, double arg)
         {
-            il.Emit(opcode.Cast(), arg);
+            il.Emit(opcode.ToMcc(), arg);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, FieldInfo field)
         {
-            il.Emit(opcode.Cast(), moduleDef.Import(field));
+            il.Emit(opcode.ToMcc(), moduleDef.Import(field));
         }
 
         public void Emit(UN::ILTools.OpCode opcode, float arg)
@@ -100,7 +100,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode, int arg)
         {
-            il.Emit(opcode.Cast(), arg);
+            il.Emit(opcode.ToMcc(), arg);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.ILabelDeclaration label)
@@ -115,7 +115,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.ILocalDeclaration local)
         {
-            il.Emit(opcode.Cast(), (VariableDefinition)(MCLocalGeneratorImpl)local);
+            il.Emit(opcode.ToMcc(), ((MCLocalGeneratorImpl)local).VariableDef);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, long arg)
@@ -125,12 +125,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode, MethodInfo meth)
         {
-            il.Emit(opcode.Cast(), moduleDef.Import(meth));
+            il.Emit(opcode.ToMcc(), moduleDef.Import(meth));
         }
 
         public void Emit(UN::ILTools.OpCode opcode, sbyte arg)
         {
-            il.Emit(opcode.Cast(), arg);
+            il.Emit(opcode.ToMcc(), arg);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, short arg)
@@ -140,32 +140,32 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UN::ILTools.OpCode opcode, string str)
         {
-            il.Emit(opcode.Cast(), str);
+            il.Emit(opcode.ToMcc(), str);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, Type cls)
         {
-            il.Emit(opcode.Cast(), moduleDef.Import(cls));
+            il.Emit(opcode.ToMcc(), moduleDef.Import(cls));
         }
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.IConstructorDeclaration constructorDecl)
         {
-            il.Emit(opcode.Cast(), (MethodReference)(MCConstructorDeclarationImpl)constructorDecl);
+            il.Emit(opcode.ToMcc(), ((MCConstructorDeclarationImpl)constructorDecl).ConstructorRef);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.IParameterDeclaration parameterDecl)
         {
-            il.Emit(opcode.Cast(), (ParameterDefinition)(MCParameterGeneratorImpl)parameterDecl);
+            il.Emit(opcode.ToMcc(), ((MCParameterGeneratorImpl)parameterDecl).ParameterDef);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.IFieldDeclaration fieldDecl)
         {
-            il.Emit(opcode.Cast(), (FieldReference)(MCFieldDeclarationImpl)fieldDecl);
+            il.Emit(opcode.ToMcc(), ((MCFieldDeclarationImpl)fieldDecl).FieldRef);
         }
 
         public void Emit(UN::ILTools.OpCode opcode, UN::ILTools.IPortableScopeItem scopeItem)
         {
-            il.Emit(opcode.Cast(), (FieldReference)(MCPortableScopeItemImpl)scopeItem);
+            il.Emit(opcode.ToMcc(), ((MCPortableScopeItemImpl)scopeItem).FieldDef);
         }
 
         public void SetLabel(UN::ILTools.ILabelDeclaration loc)

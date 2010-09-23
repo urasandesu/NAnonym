@@ -2,7 +2,7 @@
 using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Cecil.DI;
 
-namespace Test.Urasandesu.NAnonym.DI
+namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
     public class GlobalClass2 : GlobalClassBase
     {

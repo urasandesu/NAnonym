@@ -11,6 +11,7 @@ using Test.Urasandesu.NAnonym.Etc;
 using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Urasandesu.NAnonym;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {

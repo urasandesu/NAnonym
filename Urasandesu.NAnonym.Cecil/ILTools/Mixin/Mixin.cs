@@ -395,18 +395,17 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
 
         public static PortableScope CarryPortableScope(this MethodDefinition methodDef)
         {
-            var scope = new PortableScope((MCMethodGeneratorImpl)methodDef);
+            var scope = new PortableScope(new MCMethodGeneratorImpl(methodDef));
             return scope;
         }
 
         public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
-            var gen = new ExpressiveMethodBodyGenerator((MCMethodGeneratorImpl)methodDef);
+            var gen = new ExpressiveMethodBodyGenerator(new MCMethodGeneratorImpl(methodDef));
             UNI::Mixin.ExpressBodyEnd(gen, expression);
         }
 
-        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
-        public static UNI::OpCode Cast(this MC::Cil.OpCode opcode)
+        public static UNI::OpCode ToUni(this MC::Cil.OpCode opcode)
         {
             if (opcode == MC::Cil.OpCodes.Add) return UNI::OpCodes.Add;
             else if (opcode == MC::Cil.OpCodes.Add_Ovf) return UNI::OpCodes.Add_Ovf;
@@ -630,8 +629,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             throw new NotSupportedException();
         }
 
-        // TODO: 変換先型を明示すること（explicit operator ではないため、戻り値によるオーバーロードができない）
-        public static MC::Cil.OpCode Cast(this UNI::OpCode opcode)
+        public static MC::Cil.OpCode ToMcc(this UNI::OpCode opcode)
         {
             if (opcode == UNI::OpCodes.Add) return MC::Cil.OpCodes.Add;
             else if (opcode == UNI::OpCodes.Add_Ovf) return MC::Cil.OpCodes.Add_Ovf;

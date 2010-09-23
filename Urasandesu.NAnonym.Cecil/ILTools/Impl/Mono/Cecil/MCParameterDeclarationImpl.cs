@@ -24,7 +24,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public UN::ILTools.ITypeDeclaration ParameterType
         {
-            get { return (MCTypeDeclarationImpl)parameterRef.ParameterType; }
+            get { return new MCTypeDeclarationImpl(parameterRef.ParameterType); }
         }
 
         public int Position

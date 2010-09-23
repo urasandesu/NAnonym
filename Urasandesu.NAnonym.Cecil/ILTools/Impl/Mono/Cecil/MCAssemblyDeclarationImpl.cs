@@ -31,17 +31,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             assemblyFullName = assemblyDef.FullName;
         }
 
-        public static explicit operator MCAssemblyDeclarationImpl(AssemblyDefinition assemblyDef)
-        {
-            return new MCAssemblyDeclarationImpl(assemblyDef);
-        }
-
-        public static explicit operator AssemblyDefinition(MCAssemblyDeclarationImpl assemblyDecl)
-        {
-            return assemblyDecl.assemblyDef;
-        }
-
-        protected AssemblyDefinition AssemblyDef { get { return assemblyDef; } }
+        internal AssemblyDefinition AssemblyDef { get { return assemblyDef; } }
         protected string AssemblyFullName { get { return assemblyFullName; } }
 
         //[OnDeserialized]
