@@ -17,6 +17,7 @@ using Assert = Urasandesu.NAnonym.Test.Assert;
 using MC = Mono.Cecil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
+using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -914,7 +915,7 @@ Parameter[1] = IntPtr method
 
                 var candidateCallingCurrentMethods = typeof(ExpressiveMethodBodyGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
-                var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(callingCurrentMethod);
+                var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(callingCurrentMethod);
 
                 // modify ...
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();

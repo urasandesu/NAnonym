@@ -15,6 +15,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.localBuilder = localBuilder;
         }
 
+        public SRLocalGeneratorImpl(LocalBuilder localBuilder)
+            : this(null, localBuilder)
+        {
+        }
+
         internal LocalBuilder LocalBuilder { get { return localBuilder; } }
     }
 }

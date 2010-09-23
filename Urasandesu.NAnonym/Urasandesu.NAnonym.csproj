@@ -106,6 +106,7 @@
     <Compile Include="ILTools\PortableScopeItemRawData.cs" />
     <Compile Include="ILTools\PortableScopeAttribute.cs" />
     <Compile Include="ILTools\PortableScopeRawData.cs" />
+    <Compile Include="ILTools\TypeAnalyzer.cs" />
     <Compile Include="ILTools\TypeSavable.cs" />
     <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtil.cs" />
@@ -136,6 +137,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MemberInitExpressionHelper.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ILTools\Mixin\System\Type\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,6 +15,8 @@ using System.ComponentModel;
 using SR = System.Reflection;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools;
+using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
+
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
@@ -51,7 +53,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             newMethod.Name = souceMethodName;
             tbaseType.Methods.Add(newMethod);
 
-            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymous(method.Method);
+            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(method.Method);
             newMethod.Body.InitLocals = true;
             newMethod.ExpressBody(
             gen =>

@@ -49,7 +49,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public ILocalGenerator AddLocal(Type localType)
         {
-            throw new NotImplementedException();
+            var localBuilder = ilGenerator.DeclareLocal(localType);
+            var localGen = new SRLocalGeneratorImpl(localBuilder);
+            methodBodyGen.LocalGens.Add(localGen);
+            return localGen;
         }
 
         public ILocalGenerator AddLocal(Type localType, bool pinned)
@@ -88,7 +91,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, FieldInfo field)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), field);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, field));
         }
 
         public void Emit(OpCode opcode, float arg)
@@ -98,7 +102,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, int arg)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), arg);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
         public void Emit(OpCode opcode, ILabelDeclaration label)
@@ -130,7 +135,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, sbyte arg)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), arg);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
         public void Emit(OpCode opcode, short arg)
@@ -146,7 +152,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, Type cls)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.Cast(), cls);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, cls));
         }
 
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)

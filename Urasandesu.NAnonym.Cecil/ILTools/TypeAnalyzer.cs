@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using Mono.Cecil;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -15,21 +16,27 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
     // NOTE: つまり Global クラスは Cecil 側になる。
     // TODO: 名前空間をもっと上の段階で区切ったほうがいい。
     // TODO: Urasandesu.NAnonym.CREUtilities.MC, Urasandesu.NAnonym.CREUtilities.SR みたいな。
-    public static class TypeAnalyzer
+    public class TypeAnalyzer : UNI::TypeAnalyzer
     {
-        public static bool IsAnonymous(MethodBase methodBase)
+        protected TypeAnalyzer()
+            : base()
         {
-            return methodBase.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null &&
-                methodBase.Name.IndexOf("<") == 0;
         }
 
-        public static bool IsCandidateAnonymousMethodCache(FieldInfo field)
-        {
-            return -1 < field.Name.IndexOf("__CachedAnonymousMethodDelegate") &&
-                field.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null;
-        }
+        //public static bool IsAnonymous(MethodBase methodBase)
+        //{
+        //    return methodBase.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null &&
+        //        methodBase.Name.IndexOf("<") == 0;
+        //}
 
-        public static FieldInfo GetCacheFieldIfAnonymous(MethodBase methodBase)
+        //public static bool IsCandidateAnonymousMethodCache(FieldInfo field)
+        //{
+        //    return -1 < field.Name.IndexOf("__CachedAnonymousMethodDelegate") &&
+        //        field.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null;
+        //}
+
+        // IL 命令の並びから匿名メソッドのキャッシュフィールドを探し出す。
+        public static FieldInfo GetCacheFieldIfAnonymousByDirective(MethodBase methodBase)
         {
             if (!IsAnonymous(methodBase)) return null;
 

@@ -9,6 +9,8 @@ using Assert = Urasandesu.NAnonym.Test.Assert;
 using SR = System.Reflection;
 using Test.Urasandesu.NAnonym.Etc;
 using System.Text;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -154,6 +156,142 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     Assert.AreEqual("Hello, World!! aiueo", e.Message);
                 }
+            });
+        }
+
+
+
+        [Test]
+        public void EmitTest04()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
+                var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
+                var tempModule = tempAssemblyBuilder.DefineDynamicModule(tempAssemblyName.Name);
+
+                var emitTest04TypeBuilder = tempModule.DefineType(tempModule.Name + "." + MethodBase.GetCurrentMethod().Name);
+                emitTest04TypeBuilder.AddInterfaceImplementation(typeof(ISample2));
+
+                var ctorConstructorBuilder =
+                    emitTest04TypeBuilder.DefineConstructor(
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.SpecialName |
+                        SR::MethodAttributes.RTSpecialName,
+                        CallingConventions.Standard,
+                        new Type[] { });
+                ctorConstructorBuilder.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+                var sample2 = default(ISample2);
+                var executeMethodBuilder =
+                    emitTest04TypeBuilder.DefineMethod(
+                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.NewSlot |
+                        SR::MethodAttributes.Virtual |
+                        SR::MethodAttributes.Final,
+                        CallingConventions.HasThis,
+                        typeof(string),
+                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
+                executeMethodBuilder.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                },
+                valueParameterBuilder);
+
+                var emitTest04 = emitTest04TypeBuilder.CreateType();
+                var instance = (ISample2)Activator.CreateInstance(emitTest04);
+
+                Assert.AreEqual("aiueoaiueoaiueo", instance.Print("aiueo"));
+            });
+        }
+
+
+
+        [Test]
+        public void EmitTest05()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var candidateCallingCurrentMethods = typeof(ExpressiveMethodBodyGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
+                var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest05>"));
+                var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(callingCurrentMethod);
+
+                var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
+                var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
+                var tempModule = tempAssemblyBuilder.DefineDynamicModule(tempAssemblyName.Name);
+
+                var emitTest05TypeBuilder = tempModule.DefineType(tempModule.Name + "." + MethodBase.GetCurrentMethod().Name);
+                emitTest05TypeBuilder.AddInterfaceImplementation(typeof(ISample2));
+
+                var ctorConstructorBuilder =
+                    emitTest05TypeBuilder.DefineConstructor(
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.SpecialName |
+                        SR::MethodAttributes.RTSpecialName,
+                        CallingConventions.Standard,
+                        new Type[] { });
+                ctorConstructorBuilder.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+                var sample2 = default(ISample2);
+                var executeMethodBuilder =
+                    emitTest05TypeBuilder.DefineMethod(
+                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.NewSlot |
+                        SR::MethodAttributes.Virtual |
+                        SR::MethodAttributes.Final,
+                        CallingConventions.HasThis,
+                        typeof(string),
+                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
+                executeMethodBuilder.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.Expand(cacheField.Name)));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.Expand(cacheField.FieldType.FullName)));
+                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                },
+                valueParameterBuilder);
+
+                var emitTest05 = emitTest05TypeBuilder.CreateType();
+                var instance = (ISample2)Activator.CreateInstance(emitTest05);
+
+                string message = instance.Print("aiueo");
+
+                var match = Regex.Match(message, @"[^\r\n].*[^\r\n]");
+                Assert.IsTrue(match.Success);
+                Assert.AreEqual("aiueo", match.Value);
+                match = match.NextMatch();
+                Assert.IsTrue(match.Success);
+                Assert.IsTrue(match.Value.IndexOf("Cached Field Name: CS$<>9__CachedAnonymousMethodDelegate") == 0);
+                match = match.NextMatch();
+                Assert.IsTrue(match.Success);
+                Assert.AreEqual("Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", match.Value);
             });
         }
     }

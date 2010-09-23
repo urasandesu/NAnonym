@@ -51,6 +51,7 @@
     <Compile Include="ClassHoge.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="DI\DependencyUtilTest.cs" />
+    <Compile Include="ILTools\MixinTest.cs" />
     <Compile Include="Linq\DelegateComparerTest.cs" />
     <Compile Include="Linq\DelegateEqualityComparerTest.cs" />
     <Compile Include="Linq\IterableTest.cs" />

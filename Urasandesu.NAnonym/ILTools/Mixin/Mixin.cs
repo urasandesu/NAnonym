@@ -35,6 +35,7 @@ namespace Urasandesu.NAnonym.ILTools
         //    ExpressBodyEnd(gen, expression);
         //}
 
+        // TODO: expression に parameterBuilders を渡せないとまずい。
         public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression, params ParameterBuilder[] parameterBuilders)
         {
             var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders));
@@ -505,5 +506,54 @@ namespace Urasandesu.NAnonym.ILTools
 
             throw new NotSupportedException();
         }
+
+        public static MethodInfo GetMethod(this Type type, MethodInfo methodInfo)
+        {
+            return type.GetMethod(
+                            methodInfo.Name, 
+                            methodInfo.ExportBinding(), 
+                            null, 
+                            methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray(), 
+                            null);
+        }
+
+        public static BindingFlags ExportBinding(this MethodInfo methodInfo)
+        {
+            BindingFlags bindingAttr = BindingFlags.Default;
+
+            if (methodInfo.IsPublic)
+            {
+                bindingAttr |= BindingFlags.Public;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.NonPublic;
+            }
+
+            if (methodInfo.IsStatic)
+            {
+                bindingAttr |= BindingFlags.Static;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.Instance;
+            }
+
+            return bindingAttr;
+        }
+
+
+        // HACK: これは ILTools の Mixin にあるべきじゃない。
+        public static Type[] ParameterTypes(this MethodInfo methodInfo)
+        {
+            return methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+        }
+
+        // HACK: これは ILTools の Mixin にあるべきじゃない。
+        public static string[] ParameterNames(this MethodInfo methodInfo)
+        {
+            return methodInfo.GetParameters().Select(parameter => parameter.Name).ToArray();
+        }
+
     }
 }

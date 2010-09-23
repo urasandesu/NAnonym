@@ -98,8 +98,8 @@ namespace Urasandesu.NAnonym
 
         public static S NotDefault<T, S>(this T obj, Func<T, S> f)
         {
-            if (f == null) throw new ArgumentNullException("f");
-            return EqualityComparer<T>.Default.Equals(obj, default(T)) ? default(S) : f(obj);
+            Required.NotDefault(f, () => f);
+            return obj.IsDefault() ? default(S) : f(obj);
         }
 
 
@@ -110,7 +110,7 @@ namespace Urasandesu.NAnonym
 
             //for (T _obj = next(obj); _obj != null; _obj = next(_obj))
             //    yield return _obj;
-            return Enumerate(obj, next, _obj => EqualityComparer<T>.Default.Equals(_obj, default(T)));
+            return Enumerate(obj, next, _obj => _obj.IsDefault());
         }
 
         // MEMO: これらを参考に、EqualityComparer の boxing 回避版を作成するべし！！
@@ -218,9 +218,72 @@ namespace Urasandesu.NAnonym
             return new TypeRef<T>();
         }*/
 
+        public static bool IsDefault<T>(this T obj)
+        {
+            return obj.EqualsNullable(default(T));
+        }
+
+        public static int GetHashCodeNoBoxing<T>(this T obj)
+        {
+            return EqualityComparer<T>.Default.GetHashCode(obj);
+        }
+
         public static int GetHashCodeOrDefault<T>(this T obj)
         {
-            return EqualityComparer<T>.Default.Equals(obj, default(T)) ? 0 : EqualityComparer<T>.Default.GetHashCode(obj);
+            return obj.IsDefault() ? 0 : obj.GetHashCodeNoBoxing();
+        }
+
+        public static bool EqualsNullable<T>(this T that, T obj)
+        {
+            return EqualityComparer<T>.Default.Equals(that, obj);
+        }
+
+        public static bool EqualsNullable<T>(this T that, object obj)
+        {
+            if (that.IsDefault() && obj == null)
+            {
+                return true;
+            }
+            else if (that.IsDefault() || obj == null || !(obj is T))
+            {
+                return false;
+            }
+            else
+            {
+                return that.EqualsNullable((T)obj);
+            }
+        }
+
+        public static bool EqualsNullable<T, TTarget>(this T that, object obj, Func<T, TTarget> selector)
+        {
+            Required.NotDefault(selector, () => selector);
+
+            if (that.IsDefault() && obj == null)
+            {
+                return true;
+            }
+            else if (that.IsDefault() || obj == null || !(obj is T))
+            {
+                return false;
+            }
+            else
+            {
+                var thatTarget = selector(that);
+                var objTarget = selector((T)obj);
+
+                if (thatTarget.IsDefault() && objTarget.IsDefault())
+                {
+                    return true;
+                }
+                else if (thatTarget.IsDefault() || objTarget.IsDefault())
+                {
+                    return false;
+                }
+                else
+                {
+                    return thatTarget.EqualsNullable(objTarget);
+                }
+            }
         }
     }
 

@@ -13,6 +13,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         ITypeDeclaration typeDecl;
 
+        public SRLocalDeclarationImpl(Type type, int index)
+            : this(null, type, index)
+        {
+        }
+
         public SRLocalDeclarationImpl(string name, Type type, int index)
         {
             this.name = name;

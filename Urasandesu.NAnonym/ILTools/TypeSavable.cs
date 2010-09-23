@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 
 namespace Urasandesu.NAnonym.ILTools
 {
+    // TODO: TypeSavable は Urasandesu.NAnonym 直下にあったほうが自然。
     public static class TypeSavable
     {
         public static MethodInfo GetMethodInfo<TResult>(Expression<Func<Func<TResult>>> methodProvider)

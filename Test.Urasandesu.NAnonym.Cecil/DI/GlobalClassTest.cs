@@ -17,6 +17,7 @@ namespace Test.Urasandesu.NAnonym.DI
             AppDomain.CurrentDomain.Inject<GlobalClass1>();
             AppDomain.CurrentDomain.Inject<GlobalClass2>();
 
+            // TODO: Commit と Rollback の実装。
             // Commit と Rollback できるようにしておけると理想。
             // こんな風に↓
             // AppDomain.CurrentDomain.BeginEdit();
