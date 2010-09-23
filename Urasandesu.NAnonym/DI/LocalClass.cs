@@ -20,6 +20,7 @@ namespace Urasandesu.NAnonym.DI
 
         Type createdType;
 
+        // TODO: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
         public void Load()
         {
             var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
@@ -155,13 +156,13 @@ namespace Urasandesu.NAnonym.DI
             }
         }
 
-        [Obsolete]
-        public LocalClass<TBase> Override(Action<LocalClass<TBase>> overrider)
-        {
-            if (overrider == null) throw new ArgumentNullException("overrider");
-            overrider(this);
-            return this;
-        }
+        //[Obsolete]
+        //public LocalClass<TBase> Override(Action<LocalClass<TBase>> overrider)
+        //{
+        //    if (overrider == null) throw new ArgumentNullException("overrider");
+        //    overrider(this);
+        //    return this;
+        //}
 
         public LocalClass<TBase> Setup(Action<LocalClass<TBase>> setupper)
         {
@@ -171,26 +172,25 @@ namespace Urasandesu.NAnonym.DI
         }
 
 
-        // MEMO: メソッド側は式木作ればアクセスできそう
-        [Obsolete]
-        public LocalMethod<TBase> Method(Expression<Func<TBase, Action>> expression)
-        {
-            throw new NotImplementedException();
-        }
+        //[Obsolete]
+        //public LocalMethod<TBase> Method(Expression<Func<TBase, Action>> expression)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        [Obsolete]
-        public LocalMethod<TBase, TResult> Method<TResult>(Func<TBase, Func<TResult>> method)
-        {
-            if (method == null) throw new ArgumentNullException("method");
+        //[Obsolete]
+        //public LocalMethod<TBase, TResult> Method<TResult>(Func<TBase, Func<TResult>> method)
+        //{
+        //    if (method == null) throw new ArgumentNullException("method");
             
-            throw new NotImplementedException();
-        }
+        //    throw new NotImplementedException();
+        //}
 
-        [Obsolete]
-        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Func<TBase, Func<T, TResult>> expression)
-        {
-            throw new NotImplementedException();
-        }
+        //[Obsolete]
+        //public LocalMethod<TBase, T, TResult> Method<T, TResult>(Func<TBase, Func<T, TResult>> expression)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
         // HACK: method は MethodInfo と間違いやすい。汎用デリゲートについてはもう、Action -> action、Func -> func みたいな変数命名規則にしたほうがいいかも？
@@ -211,20 +211,20 @@ namespace Urasandesu.NAnonym.DI
 
 
 
-        // MEMO: プロパティは先にテスター作るしかなさげ
-        [Obsolete]
-        public LocalPropertyGet<TBase, T> Property<T>(Func<TBase, Func<T>> expression)
-        {
-            throw new NotImplementedException();
-        }
+        //// MEMO: プロパティは先にテスター作るしかなさげ
+        //[Obsolete]
+        //public LocalPropertyGet<TBase, T> Property<T>(Func<TBase, Func<T>> expression)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        [Obsolete]
-        public LocalPropertySet<TBase, T> Property<T>(Func<TBase, Action<T>> propertySet)
-        {
-            if (propertySet == null) throw new ArgumentException("propertySet");
+        //[Obsolete]
+        //public LocalPropertySet<TBase, T> Property<T>(Func<TBase, Action<T>> propertySet)
+        //{
+        //    if (propertySet == null) throw new ArgumentException("propertySet");
 
-            throw new NotImplementedException();
-        }
+        //    throw new NotImplementedException();
+        //}
 
 
 
@@ -280,7 +280,7 @@ namespace Urasandesu.NAnonym.DI
 
         public override int GetHashCode()
         {
-            return this.SourceMethodInfo.GetHashCodeOrDefault();
+            return SourceMethodInfo.GetHashCodeOrDefault();
         }
     }
 }

@@ -10,11 +10,33 @@ namespace Urasandesu.NAnonym.Cecil.DI
     // TODO: 名前を合わせるんだったら、AppDomain への拡張メソッドの命名も SetUp -> Load にしたほうが良さげ。
     public abstract class GlobalClassBase : MarshalByRefObject
     {
-        public void Load()
+        GlobalClassBase modified;
+
+        internal void Setup()
         {
-            var modified = SetUp();
+            modified = OnSetup();
+            if (modified != null)
+            {
+                modified.Setup();
+            }
         }
 
-        protected abstract GlobalClassBase SetUp();
+        protected virtual GlobalClassBase OnSetup()
+        {
+            return null;
+        }
+
+        internal void Load()
+        {
+            OnLoad(modified);
+            if (modified != null)
+            {
+                modified.Load();
+            }
+        }
+
+        protected virtual void OnLoad(GlobalClassBase modified)
+        {
+        }
     }
 }

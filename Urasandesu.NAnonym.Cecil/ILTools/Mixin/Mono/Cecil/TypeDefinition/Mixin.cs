@@ -479,5 +479,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
                 return success;
             }
         }
+
     }
 }

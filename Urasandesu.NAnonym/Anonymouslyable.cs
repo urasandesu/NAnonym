@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Globalization;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym
 {
@@ -356,6 +357,19 @@ namespace Urasandesu.NAnonym
             this.Item3 = item3;
             this.Item4 = item4;
         }
+    }
+
+    // MEMO: とりあえずこのライブラリ用の例外。
+    [Serializable]
+    public class NAnonymException : Exception
+    {
+        public NAnonymException() { }
+        public NAnonymException(string message) : base(message) { }
+        public NAnonymException(string message, Exception inner) : base(message, inner) { }
+        protected NAnonymException(
+          SerializationInfo info,
+          StreamingContext context)
+            : base(info, context) { }
     }
 
 }

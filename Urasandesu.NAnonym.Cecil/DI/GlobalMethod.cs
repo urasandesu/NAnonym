@@ -16,6 +16,7 @@ using SR = System.Reflection;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
+using Urasandesu.NAnonym.DI;
 
 
 namespace Urasandesu.NAnonym.Cecil.DI
@@ -27,6 +28,16 @@ namespace Urasandesu.NAnonym.Cecil.DI
         readonly TypeDefinition tbaseType;
         readonly MethodDefinition method;
 
+        readonly GlobalClass<TBase> globalClass;
+        readonly Func<T, TResult> func;
+
+        public GlobalMethod(GlobalClass<TBase> globalClass, Func<T, TResult> func)
+        {
+            this.globalClass = globalClass;
+            this.func = func;
+        }
+
+        [Obsolete]
         public GlobalMethod(MethodDefinition method)
         {
             this.method = method;
@@ -34,6 +45,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             tbaseType = this.method.DeclaringType;
         }
 
+        [Obsolete]
         public GlobalClass<TBase> As(Func<T, TResult> method)
         {
             //var methodType = method.GetType().ToTypeRef();
@@ -117,9 +129,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
             throw new NotImplementedException();
         }
 
-        public GlobalClass<TBase> Instead(Func<TBase, Func<T, TResult>> method)
+        public GlobalClass<TBase> Instead(Expression<Func<TBase, Func<T, TResult>>> expression)
         {
-            throw new NotImplementedException();
+            var method = DependencyUtil.ExtractMethod(expression);
+            var targetMethod = typeof(TBase).GetMethod(method);
+            globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Instead, targetMethod, func.Method));
+            return globalClass;
         }
     }
 }

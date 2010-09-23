@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 //using Mono.Cecil;
 using Urasandesu.NAnonym.Linq;
+using System.Linq.Expressions;
 //using Mono.Cecil.Cil;
 
 // 名前変えること考えよう…長げーす。
@@ -15,8 +16,17 @@ using Urasandesu.NAnonym.Linq;
 namespace Urasandesu.NAnonym.DI
 {
     // MEMO: GlobalClass、LocalClass で使うユーティリティクラス的な存在になる？
-    public static class DependencyUtil
+    public class DependencyUtil
     {
+        protected DependencyUtil()
+        {
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
+        {
+            return (MethodInfo)((ConstantExpression)((MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
+        }
+
         //public static void BeginEdit(this AppDomain appDomain)
         //{
         //    throw new NotImplementedException();
