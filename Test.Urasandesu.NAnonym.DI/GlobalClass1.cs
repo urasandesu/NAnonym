@@ -19,5 +19,15 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             });
             return class1;
         }
+
+        protected override string AssemblyCodeBase
+        {
+            get { return typeof(Class1).Assembly.CodeBase; }
+        }
+
+        protected override string AssemblyLocation
+        {
+            get { return typeof(Class2).Assembly.Location; }
+        }
     }
 }

@@ -36,5 +36,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
         protected virtual void OnLoad(GlobalClassBase modified)
         {
         }
+
+        protected internal abstract string AssemblyCodeBase { get; }
+        protected internal abstract string AssemblyLocation { get; }
     }
 }
