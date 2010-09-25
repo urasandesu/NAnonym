@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
+    <Compile Include="DI\SetupMode.cs" />
+    <Compile Include="DI\TargetInfo.cs" />
     <Compile Include="ILTools\DeserializableManually.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
@@ -107,7 +109,6 @@
     <Compile Include="ILTools\PortableScopeAttribute.cs" />
     <Compile Include="ILTools\PortableScopeRawData.cs" />
     <Compile Include="ILTools\TypeAnalyzer.cs" />
-    <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\DependencyUtil.cs" />
     <Compile Include="Linq\DelegateComparer.cs" />
     <Compile Include="Linq\DelegateEqualityComparer.cs" />

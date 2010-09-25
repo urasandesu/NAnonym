@@ -1,5 +1,4 @@
 ﻿using Test.Urasandesu.NAnonym.Etc;
-using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Cecil.DI;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DI
@@ -17,10 +16,6 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
                     return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";
                 }).
                 Instead(_ => _.Print);
-                //the.Method<string, string>(_ => _.Print).As(value =>
-                //{
-                //    return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";
-                //});
             });
             return class2;
         }

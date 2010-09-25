@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace Test.Urasandesu.NAnonym
 {
     [NewDomainTestFixture]
-    public class ClassHoge : NewDomainTestBase
+    public class NewDomainTester : NewDomainTestBase
     {
         [NewDomainTest]
         public void Test1()

@@ -8,37 +8,19 @@ using System.Reflection;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using Urasandesu.NAnonym.DI;
 using System.Reflection.Emit;
-//using Urasandesu.NAnonym.Linq;
 using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     public class GlobalClass<TBase> : GlobalClassBase where TBase : class
     {
-        readonly ModuleDefinition tbaseModule;
-        readonly TypeDefinition tbaseType;
-
         internal HashSet<TargetInfo> TargetInfoSet { get; private set; }
 
         public GlobalClass()
         {
-            // HACK: 成功してからコピーするとか、なにか起きたらロールバックするとかの機構があると良い。
-            tbaseModule = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath);
-            tbaseType = tbaseModule.GetType(typeof(TBase).FullName);
-
             TargetInfoSet = new HashSet<TargetInfo>();
         }
 
-        // MEMO: テスト中。
-        [Obsolete]
-        public GlobalClass<TBase> Override(Action<GlobalClass<TBase>> overrider)
-        {
-            if (overrider == null) throw new ArgumentNullException("overrider");
-            overrider(this);
-            return this;
-        }
-
-        // TODO: 最終的にはこちらの I/F にする。
         public GlobalClass<TBase> Setup(Action<GlobalClass<TBase>> overrider)
         {
             if (overrider == null) throw new ArgumentNullException("overrider");
@@ -46,33 +28,15 @@ namespace Urasandesu.NAnonym.Cecil.DI
             return this;
         }
 
-        [Obsolete]
-        public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
-        {
-            // TODO: こういう部分を DependencyUtil に持っていくことになりそう。
-            var method = (MethodInfo)((ConstantExpression)(
-                (MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
-            var targetMethod = tbaseType.Methods.FirstOrDefault(_method => _method.Equivalent(method));
-            return new GlobalMethod<TBase, T, TResult>(targetMethod);
-        }
-
         public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
         {
             return new GlobalMethod<TBase, T, TResult>(this, func);
         }
 
-        //public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> expression)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         protected override GlobalClassBase OnSetup()
         {
             // Setup(Action<GlobalClass<TBase>>) で大方済んでるので、特にここでなにかやる必要は無さそう。
             return null;
-            //tbaseModule.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath);
-            ////return this;
-            //throw new NotImplementedException();
         }
 
 

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-//using Urasandesu.NAnonym.DI;
 using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym.Cecil.DI;
-//using DependencyUtil = Urasandesu.NAnonym.Cecil.DI.DependencyUtil;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
@@ -18,15 +16,6 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             DependencyUtil.Setup<GlobalClass1>();
             DependencyUtil.Setup<GlobalClass2>();
             DependencyUtil.Load();
-
-            // TODO: Commit と Rollback の実装。
-            // Commit と Rollback できるようにしておけると理想。
-            // こんな風に↓
-            // AppDomain.CurrentDomain.BeginEdit();
-            // AppDomain.CurrentDomain.Inject<GlobalClass1>();
-            // AppDomain.CurrentDomain.Inject<GlobalClass2>();
-            // AppDomain.CurrentDomain.AcceptChanges();
-            // System.Data.DataRow クラスのメソッドが参考になりそう。
         }
 
         [Test]

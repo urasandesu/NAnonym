@@ -51,7 +51,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DI\Class1.cs" />
     <Compile Include="DI\GlobalClassTest.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="ILTools\MixinTest.cs" />
