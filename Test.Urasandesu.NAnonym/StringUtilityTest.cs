@@ -68,41 +68,54 @@ namespace Test.Urasandesu.NAnonym
 
 
 
+
         [Test]
-        public void Hoge()
+        public void WithoutExtensionTest01()
         {
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            string a = "a";
-            string a10000 = new string('a', 10000);
-            string ae = new string('\"', 1000);
-            string result = null;
+            string uri = "file:///C:/Documents and Settings/Administrator/NTroll/Test.Urasandesu.NTroll.GlobalClassTestSample/bin/Debug/Urasandesu.NTroll.GlobalClassTestSample.DLL";
+            string path = "C:\\Documents and Settings\\Administrator\\Local Settings\\Application Data\\assembly\\dl3\\M7C3NZ7V.KL7\\826D3A82.LND\\4a4fb7a3\\3ef45ff7_505dcb01\\Urasandesu.NTroll.GlobalClassTestSample.DLL";
 
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < 100000; i++)
-            {
-                result = a.CsvEncode();
-            }
-            stopwatch.Stop();
-            Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
-
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < 100000; i++)
-            {
-                result = a10000.CsvEncode();
-            }
-            stopwatch.Stop();
-            Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
-
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < 100000; i++)
-            {
-                result = ae.CsvEncode();
-            }
-            stopwatch.Stop();
-            Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
+            Assert.AreEqual("file:///C:/Documents and Settings/Administrator/NTroll/Test.Urasandesu.NTroll.GlobalClassTestSample/bin/Debug/Urasandesu.NTroll.GlobalClassTestSample", uri.WithoutExtension());
+            Assert.AreEqual("C:\\Documents and Settings\\Administrator\\Local Settings\\Application Data\\assembly\\dl3\\M7C3NZ7V.KL7\\826D3A82.LND\\4a4fb7a3\\3ef45ff7_505dcb01\\Urasandesu.NTroll.GlobalClassTestSample", path.WithoutExtension());
         }
+
+
+
+        //[Test]
+        //public void Hoge()
+        //{
+        //    var stopwatch = new System.Diagnostics.Stopwatch();
+        //    string a = "a";
+        //    string a10000 = new string('a', 10000);
+        //    string ae = new string('\"', 1000);
+        //    string result = null;
+
+        //    stopwatch.Reset();
+        //    stopwatch.Start();
+        //    for (int i = 0; i < 100000; i++)
+        //    {
+        //        result = a.CsvEncode();
+        //    }
+        //    stopwatch.Stop();
+        //    Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
+
+        //    stopwatch.Reset();
+        //    stopwatch.Start();
+        //    for (int i = 0; i < 100000; i++)
+        //    {
+        //        result = a10000.CsvEncode();
+        //    }
+        //    stopwatch.Stop();
+        //    Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
+
+        //    stopwatch.Reset();
+        //    stopwatch.Start();
+        //    for (int i = 0; i < 100000; i++)
+        //    {
+        //        result = ae.CsvEncode();
+        //    }
+        //    stopwatch.Stop();
+        //    Console.WriteLine("Time: {0} ms", stopwatch.ElapsedMilliseconds);
+        //}
     }
 }

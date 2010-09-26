@@ -31,30 +31,24 @@ namespace Urasandesu.NAnonym.Cecil.DI
         // TODO: 設定ファイル化できると良い。
         // TODO: 設定ファイル化できると良いものを他にも洗い出し。
         const string SetupInfoSetPath = "GlobalSetupInfoSet.xml";
+        const string BackupDirectoryName = "Backup";
 
-        public static void Setup<TGlobalClassType>() where TGlobalClassType : GlobalClassBase
+        public static void BeginEdit()
         {
             if (File.Exists(SetupInfoSetPath))
             {
-                using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
-                    setupInfoSet = (HashSet<GlobalSetupInfo>)setupInfoSetSerializer.Deserialize(setupInfoSetFileStream);
-                }
-                File.Delete(SetupInfoSetPath);
-
-                foreach (var setupInfo in setupInfoSet)
-                {
-                    File.Copy(setupInfo.AssemblyLocation, new Uri(setupInfo.AssemblyCodeBase).LocalPath, true);
-                }
-
-                setupInfoSet = null;
+                CancelEdit();
             }
+        }
+
+        public static void Setup<TGlobalClassType>() where TGlobalClassType : GlobalClassBase
+        {
             // ここで Inject したのは完全な書き換えが可能になる。DLL の場所を記憶しておく必要あり。
             // TODO: GAC に登録されているものは無理げ。厳密名を持ってる Assembly も無理げ。
             // TODO: 遅延署名される Assembly には対応できないと使えない。調査の必要あり。
             // ShadowCopyFiles を "true" にしているのは、デバッグ実行途中で無理やり止めた場合に Unload できないことがあったため。
             // TODO: Rollback 機能。
+            // TODO: Setup 情報は一通りコピーして、ShadowCopyFiles だけ true にする方向で。
             var info = new AppDomainSetup();
             info.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
             info.ShadowCopyFiles = "true";
@@ -72,10 +66,27 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public static void Load()
         {
-            using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.OpenOrCreate, FileAccess.Write))
+            if (!File.Exists(SetupInfoSetPath) && setupInfoSet != null)
             {
-                var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
-                setupInfoSetSerializer.Serialize(setupInfoSetFileStream, setupInfoSet);
+                if (!Directory.Exists(BackupDirectoryName))
+                {
+                    Directory.CreateDirectory(BackupDirectoryName);
+                }
+
+                foreach (var setupInfo in setupInfoSet)
+                {
+                    string assemblyCodeBaseLocalPath = new Uri(setupInfo.AssemblyCodeBase).LocalPath;
+                    File.Copy(assemblyCodeBaseLocalPath, Path.Combine(BackupDirectoryName, Path.GetFileName(assemblyCodeBaseLocalPath)), true);
+
+                    string assemblySymbolCodeBaseLocalPath = new Uri(setupInfo.AssemblySymbolCodeBase).LocalPath;
+                    File.Copy(assemblySymbolCodeBaseLocalPath, Path.Combine(BackupDirectoryName, Path.GetFileName(assemblySymbolCodeBaseLocalPath)), true);
+                }
+
+                using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
+                    setupInfoSetSerializer.Serialize(setupInfoSetFileStream, setupInfoSet);
+                }
             }
 
             foreach (var @class in classSet)
@@ -84,12 +95,63 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
             AppDomain.Unload(newDomain);
         }
+
+        public static void CancelEdit()
+        {
+            // HACK: setupInfoSet って上書きしちゃっていいのかな？
+            if (File.Exists(SetupInfoSetPath))
+            {
+                using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
+                    setupInfoSet = (HashSet<GlobalSetupInfo>)setupInfoSetSerializer.Deserialize(setupInfoSetFileStream);
+                }
+
+                foreach (var setupInfo in setupInfoSet)
+                {
+                    string assemblyCodeBaseLocalPath = new Uri(setupInfo.AssemblyCodeBase).LocalPath;
+                    File.Copy(Path.Combine(BackupDirectoryName, Path.GetFileName(assemblyCodeBaseLocalPath)), assemblyCodeBaseLocalPath, true);
+
+                    string assemblySymbolCodeBaseLocalPath = new Uri(setupInfo.AssemblySymbolCodeBase).LocalPath;
+                    File.Copy(Path.Combine(BackupDirectoryName, Path.GetFileName(assemblySymbolCodeBaseLocalPath)), assemblySymbolCodeBaseLocalPath, true);
+                }
+
+                setupInfoSet = null;
+                File.Delete(SetupInfoSetPath);
+            }
+        }
     }
 
     public class GlobalSetupInfo
     {
-        public string AssemblyCodeBase { get; set; }
-        public string AssemblyLocation { get; set; }
+        string assemblyCodeBase;
+        string assemblyLocation;
+
+        public string AssemblyCodeBase
+        {
+            get { return assemblyCodeBase; }
+            set
+            {
+                assemblyCodeBase = value;
+                AssemblySymbolCodeBase = assemblyCodeBase.WithoutExtension() + ".pdb";
+            }
+        }
+
+        public string AssemblyLocation 
+        {
+            get { return assemblyLocation; }
+            set
+            {
+                assemblyLocation = value;
+                AssemblySymbolLocation = assemblyLocation.WithoutExtension() + ".pdb";
+            }
+        }
+
+        [XmlIgnore]
+        public string AssemblySymbolCodeBase { get; private set; }
+
+        [XmlIgnore]
+        public string AssemblySymbolLocation { get; private set; }
 
         public GlobalSetupInfo()
         {
@@ -100,6 +162,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
             AssemblyCodeBase = assemblyCodeBase;
             AssemblyLocation = assemblyLocation;
         }
+
+
 
         public override bool Equals(object obj)
         {

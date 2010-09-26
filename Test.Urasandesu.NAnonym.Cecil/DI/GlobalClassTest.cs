@@ -13,6 +13,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
     {
         static GlobalClassTest()
         {
+            DependencyUtil.BeginEdit();
             DependencyUtil.Setup<GlobalClass1>();
             DependencyUtil.Setup<GlobalClass2>();
             DependencyUtil.Load();

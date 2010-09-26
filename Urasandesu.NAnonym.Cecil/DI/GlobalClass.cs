@@ -45,7 +45,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
         protected override void OnLoad(GlobalClassBase modified)
         {
             // MEMO: ここで modified に来るのは、OnSetup() の戻り値なので、ここでは特に使う必要はない。
-            var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath);
+            var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
             foreach (var targetInfo in TargetInfoSet)
@@ -129,7 +129,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 }
             }
 
-            tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath);
+            tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new WriterParameters() { WriteSymbols = true });
         }
 
         protected internal override string AssemblyCodeBase

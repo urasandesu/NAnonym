@@ -98,5 +98,18 @@ namespace Urasandesu.NAnonym
                 out dateTime);
             return dateTime;
         }
+
+        public static string WithoutExtension(this string fileFullPathOrUri)
+        {
+            int extensionStartIndex = 0;
+            if (-1 < (extensionStartIndex = fileFullPathOrUri.LastIndexOf('.')))
+            {
+                return fileFullPathOrUri.Substring(0, extensionStartIndex);
+            }
+            else
+            {
+                return fileFullPathOrUri;
+            }
+        }
     }
 }
