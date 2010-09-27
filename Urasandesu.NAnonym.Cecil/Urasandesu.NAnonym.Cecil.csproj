@@ -40,6 +40,7 @@
       <HintPath>..\..\jbevain-cecil\cecil\symbols\pdb\bin\Release\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -54,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DI\DependencyUtil.cs" />
+    <Compile Include="DI\DIAssemblySetup.cs" />
+    <Compile Include="DI\DIConfigurationSection.cs" />
     <Compile Include="DI\GlobalClass.cs" />
     <Compile Include="DI\GlobalClassBase.cs" />
     <Compile Include="DI\GlobalMethod.cs" />

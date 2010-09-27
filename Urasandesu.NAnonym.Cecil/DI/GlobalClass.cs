@@ -132,12 +132,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
             tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new WriterParameters() { WriteSymbols = true });
         }
 
-        protected internal override string AssemblyCodeBase
+        protected internal override string CodeBase
         {
             get { return typeof(TBase).Assembly.CodeBase; }
         }
 
-        protected internal override string AssemblyLocation
+        protected internal override string Location
         {
             get { return typeof(TBase).Assembly.Location; }
         }

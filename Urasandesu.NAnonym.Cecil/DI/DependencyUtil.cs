@@ -10,6 +10,7 @@ using Urasandesu.NAnonym.Linq;
 using Mono.Cecil.Cil;
 using UND = Urasandesu.NAnonym.DI;
 using System.Xml.Serialization;
+using System.Configuration;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
@@ -26,16 +27,13 @@ namespace Urasandesu.NAnonym.Cecil.DI
         static HashSet<GlobalClassBase> classSet = new HashSet<GlobalClassBase>();
         static AppDomain newDomain;
 
-        static HashSet<GlobalSetupInfo> setupInfoSet;
+        static HashSet<DIAssemblySetup> assemblySetupSet;
 
-        // TODO: 設定ファイル化できると良い。
-        // TODO: 設定ファイル化できると良いものを他にも洗い出し。
-        const string SetupInfoSetPath = "GlobalSetupInfoSet.xml";
-        const string BackupDirectoryName = "Backup";
 
         public static void BeginEdit()
         {
-            if (File.Exists(SetupInfoSetPath))
+            var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
+            if (File.Exists(config.AssemblySetupSetPath))
             {
                 CancelEdit();
             }
@@ -56,36 +54,41 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var classType = typeof(TGlobalClassType);
             var @class = (GlobalClassBase)newDomain.CreateInstanceAndUnwrap(classType.Assembly.FullName, classType.FullName);
             classSet.Add(@class);
-            if (setupInfoSet == null)
+            if (assemblySetupSet == null)
             {
-                setupInfoSet = new HashSet<GlobalSetupInfo>();
+                assemblySetupSet = new HashSet<DIAssemblySetup>();
             }
-            setupInfoSet.Add(new GlobalSetupInfo(@class.AssemblyCodeBase, @class.AssemblyLocation));
+            assemblySetupSet.Add(new DIAssemblySetup(@class.CodeBase, @class.Location));
             @class.Setup();
         }
 
         public static void Load()
         {
-            if (!File.Exists(SetupInfoSetPath) && setupInfoSet != null)
+            var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
+            if (!File.Exists(config.AssemblySetupSetPath) && assemblySetupSet != null)
             {
-                if (!Directory.Exists(BackupDirectoryName))
+                if (!Directory.Exists(config.BackupDirectoryName))
                 {
-                    Directory.CreateDirectory(BackupDirectoryName);
+                    Directory.CreateDirectory(config.BackupDirectoryName);
                 }
 
-                foreach (var setupInfo in setupInfoSet)
+                foreach (var assemblySetup in assemblySetupSet)
                 {
-                    string assemblyCodeBaseLocalPath = new Uri(setupInfo.AssemblyCodeBase).LocalPath;
-                    File.Copy(assemblyCodeBaseLocalPath, Path.Combine(BackupDirectoryName, Path.GetFileName(assemblyCodeBaseLocalPath)), true);
+                    File.Copy(
+                        assemblySetup.CodeBaseLocalPath, 
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)), 
+                        true);
 
-                    string assemblySymbolCodeBaseLocalPath = new Uri(setupInfo.AssemblySymbolCodeBase).LocalPath;
-                    File.Copy(assemblySymbolCodeBaseLocalPath, Path.Combine(BackupDirectoryName, Path.GetFileName(assemblySymbolCodeBaseLocalPath)), true);
+                    File.Copy(
+                        assemblySetup.SymbolCodeBaseLocalPath, 
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)), 
+                        true);
                 }
 
-                using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
-                    setupInfoSetSerializer.Serialize(setupInfoSetFileStream, setupInfoSet);
+                    var assemblySetupSetSerializer = new XmlSerializer(typeof(HashSet<DIAssemblySetup>));
+                    assemblySetupSetSerializer.Serialize(assemblySetupSetStream, assemblySetupSet);
                 }
             }
 
@@ -99,85 +102,31 @@ namespace Urasandesu.NAnonym.Cecil.DI
         public static void CancelEdit()
         {
             // HACK: setupInfoSet って上書きしちゃっていいのかな？
-            if (File.Exists(SetupInfoSetPath))
+            var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
+            if (File.Exists(config.AssemblySetupSetPath))
             {
-                using (var setupInfoSetFileStream = new FileStream(SetupInfoSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    var setupInfoSetSerializer = new XmlSerializer(typeof(HashSet<GlobalSetupInfo>));
-                    setupInfoSet = (HashSet<GlobalSetupInfo>)setupInfoSetSerializer.Deserialize(setupInfoSetFileStream);
+                    var assemblySetupSetSerializer = new XmlSerializer(typeof(HashSet<DIAssemblySetup>));
+                    assemblySetupSet = (HashSet<DIAssemblySetup>)assemblySetupSetSerializer.Deserialize(assemblySetupSetStream);
                 }
 
-                foreach (var setupInfo in setupInfoSet)
+                foreach (var assemblySetup in assemblySetupSet)
                 {
-                    string assemblyCodeBaseLocalPath = new Uri(setupInfo.AssemblyCodeBase).LocalPath;
-                    File.Copy(Path.Combine(BackupDirectoryName, Path.GetFileName(assemblyCodeBaseLocalPath)), assemblyCodeBaseLocalPath, true);
+                    File.Copy(
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)), 
+                        assemblySetup.CodeBaseLocalPath, 
+                        true);
 
-                    string assemblySymbolCodeBaseLocalPath = new Uri(setupInfo.AssemblySymbolCodeBase).LocalPath;
-                    File.Copy(Path.Combine(BackupDirectoryName, Path.GetFileName(assemblySymbolCodeBaseLocalPath)), assemblySymbolCodeBaseLocalPath, true);
+                    File.Copy(
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)), 
+                        assemblySetup.SymbolCodeBaseLocalPath, 
+                        true);
                 }
 
-                setupInfoSet = null;
-                File.Delete(SetupInfoSetPath);
+                assemblySetupSet = null;
+                File.Delete(config.AssemblySetupSetPath);
             }
-        }
-    }
-
-    public class GlobalSetupInfo
-    {
-        string assemblyCodeBase;
-        string assemblyLocation;
-
-        public string AssemblyCodeBase
-        {
-            get { return assemblyCodeBase; }
-            set
-            {
-                assemblyCodeBase = value;
-                AssemblySymbolCodeBase = assemblyCodeBase.WithoutExtension() + ".pdb";
-            }
-        }
-
-        public string AssemblyLocation 
-        {
-            get { return assemblyLocation; }
-            set
-            {
-                assemblyLocation = value;
-                AssemblySymbolLocation = assemblyLocation.WithoutExtension() + ".pdb";
-            }
-        }
-
-        [XmlIgnore]
-        public string AssemblySymbolCodeBase { get; private set; }
-
-        [XmlIgnore]
-        public string AssemblySymbolLocation { get; private set; }
-
-        public GlobalSetupInfo()
-        {
-        }
-
-        public GlobalSetupInfo(string assemblyCodeBase, string assemblyLocation)
-        {
-            AssemblyCodeBase = assemblyCodeBase;
-            AssemblyLocation = assemblyLocation;
-        }
-
-
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-
-            var that = default(GlobalSetupInfo);
-            if ((that = obj as GlobalSetupInfo) == null) return false;
-
-            return this.AssemblyCodeBase == that.AssemblyCodeBase && this.AssemblyLocation == that.AssemblyLocation;
-        }
-
-        public override int GetHashCode()
-        {
-            return AssemblyCodeBase.GetHashCodeOrDefault() ^ AssemblyLocation.GetHashCodeOrDefault();
         }
     }
 }

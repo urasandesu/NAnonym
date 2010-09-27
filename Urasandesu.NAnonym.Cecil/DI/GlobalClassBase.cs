@@ -37,7 +37,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
         {
         }
 
-        protected internal abstract string AssemblyCodeBase { get; }
-        protected internal abstract string AssemblyLocation { get; }
+        protected internal abstract string CodeBase { get; }
+        protected internal abstract string Location { get; }
     }
 }

@@ -20,12 +20,12 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             return class2;
         }
 
-        protected override string AssemblyCodeBase
+        protected override string CodeBase
         {
             get { return typeof(Class2).Assembly.CodeBase; }
         }
 
-        protected override string AssemblyLocation
+        protected override string Location
         {
             get { return typeof(Class2).Assembly.Location; }
         }
