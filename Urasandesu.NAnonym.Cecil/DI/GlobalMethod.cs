@@ -25,25 +25,39 @@ namespace Urasandesu.NAnonym.Cecil.DI
     public class GlobalMethod<TBase, T, TResult> where TBase : class
     {
         readonly GlobalClass<TBase> globalClass;
-        readonly Func<T, TResult> func;
+        readonly MethodInfo oldMethod;
+        //readonly GlobalClass<TBase> globalClass;
+        //readonly Func<T, TResult> func;
 
-        public GlobalMethod(GlobalClass<TBase> globalClass, Func<T, TResult> func)
+        //public GlobalMethod(GlobalClass<TBase> globalClass, Func<T, TResult> func)
+        //{
+        //    this.globalClass = globalClass;
+        //    this.func = func;
+        //}
+
+
+        //public GlobalClass<TBase> Override(Func<TBase, Func<T, TResult>> method)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public GlobalClass<TBase> Instead(Expression<Func<TBase, Func<T, TResult>>> expression)
+        //{
+        //    var method = DependencyUtil.ExtractMethod(expression);
+        //    var targetMethod = typeof(TBase).GetMethod(method);
+        //    globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Replace, targetMethod, func.Method));
+        //    return globalClass;
+        //}
+
+        public GlobalMethod(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
         {
             this.globalClass = globalClass;
-            this.func = func;
+            this.oldMethod = oldMethod;
         }
 
-
-        public GlobalClass<TBase> Override(Func<TBase, Func<T, TResult>> method)
+        public GlobalClass<TBase> IsReplacedBy(Func<T, TResult> newFunc)
         {
-            throw new NotImplementedException();
-        }
-
-        public GlobalClass<TBase> Instead(Expression<Func<TBase, Func<T, TResult>>> expression)
-        {
-            var method = DependencyUtil.ExtractMethod(expression);
-            var targetMethod = typeof(TBase).GetMethod(method);
-            globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Instead, targetMethod, func.Method));
+            globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Replace, oldMethod, newFunc.Method));
             return globalClass;
         }
     }

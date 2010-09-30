@@ -8,7 +8,9 @@ namespace Urasandesu.NAnonym.DI
     enum SetupMode
     {
         Override,
-        Instead,
         Implement,
+        Replace,
+        Before,
+        After,
     }
 }

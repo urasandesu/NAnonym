@@ -11,11 +11,11 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             class2.
             Setup(the =>
             {
-                the.Method((string value) =>
+                the.Method<string, string>(_ => _.Print).IsReplacedBy(
+                value =>
                 {
                     return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";
-                }).
-                Instead(_ => _.Print);
+                });
             });
             return class2;
         }

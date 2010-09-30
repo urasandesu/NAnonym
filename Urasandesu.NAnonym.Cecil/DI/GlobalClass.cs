@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Linq.Expressions;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
+using Urasandesu.NAnonym.ILTools;
 using System.Reflection;
-using Urasandesu.NAnonym.Cecil.ILTools;
-using Urasandesu.NAnonym.DI;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using Urasandesu.NAnonym.Linq;
+using System.Linq.Expressions;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using SR = System.Reflection;
+using MC = Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools;
+using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
+using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
@@ -28,9 +36,16 @@ namespace Urasandesu.NAnonym.Cecil.DI
             return this;
         }
 
-        public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
+        //public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
+        //{
+        //    return new GlobalMethod<TBase, T, TResult>(this, func);
+        //}
+
+        public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
         {
-            return new GlobalMethod<TBase, T, TResult>(this, func);
+            var method = DependencyUtil.ExtractMethod(expression);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new GlobalMethod<TBase, T, TResult>(this, oldMethod);
         }
 
         protected override GlobalClassBase OnSetup()
@@ -54,9 +69,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 {
                     case SetupMode.Override:
                         throw new NotImplementedException();
-                    case SetupMode.Instead:
+                    case SetupMode.Replace:
                         {
-                            var sourceMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetInfo.SourceMethodInfo));
+                            var sourceMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetInfo.OldMethod));
                             string souceMethodName = sourceMethodDef.Name;
                             sourceMethodDef.Name = "__" + sourceMethodDef.Name;
 
@@ -65,7 +80,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                             newMethod.Name = souceMethodName;
                             tbaseTypeDef.Methods.Add(newMethod);
 
-                            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(targetInfo.DestinationMethodInfo);
+                            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(targetInfo.NewMethod);
                             newMethod.Body.InitLocals = true;
                             newMethod.ExpressBody(
                             gen =>
@@ -95,8 +110,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                                     _.Expand(tmpCacheField.Name),
                                                                     BindingFlags.NonPublic | BindingFlags.Static)));
                                 var targetMethod = default(MethodInfo);
-                                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.DestinationMethodInfo.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                                    _.Expand(targetInfo.DestinationMethodInfo.Name),
+                                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                                    _.Expand(targetInfo.NewMethod.Name),
                                                                     BindingFlags.NonPublic | BindingFlags.Static)));
                                 var il = default(ILGenerator);
                                 gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
@@ -115,7 +130,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<string, string>);
                                 gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
-                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.DestinationMethodInfo.GetParameters()[0].Name))));
+                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.NewMethod.GetParameters()[0].Name))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             });

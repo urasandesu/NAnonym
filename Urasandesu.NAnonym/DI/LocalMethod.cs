@@ -39,27 +39,40 @@ namespace Urasandesu.NAnonym.DI
     public class LocalMethod<TBase, T, TResult> where TBase : class
     {
         readonly LocalClass<TBase> localClass;
-        readonly Func<T, TResult> func;
+        readonly MethodInfo oldMethod;
+        //readonly Func<T, TResult> func;
 
-        public LocalMethod(LocalClass<TBase> localClass, Func<T, TResult> func)
+        //public LocalMethod(LocalClass<TBase> localClass, Func<T, TResult> func)
+        //{
+        //    this.localClass = localClass;
+        //    this.func = func;
+        //}
+
+        //public LocalClass<TBase> Override(Expression<Func<TBase, Func<T, TResult>>> expression)
+        //{
+        //    var method = DependencyUtil.ExtractMethod(expression);
+        //    var targetMethod = typeof(TBase).GetMethod(method);
+        //    localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Override, targetMethod, func.Method));
+        //    return localClass;
+        //}
+
+        //public LocalClass<TBase> Implement(Expression<Func<TBase, Func<T, TResult>>> expression)
+        //{
+        //    var method = DependencyUtil.ExtractMethod(expression);
+        //    var targetMethod = typeof(TBase).GetMethod(method);
+        //    localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Implement, targetMethod, func.Method));
+        //    return localClass;
+        //}
+
+        public LocalMethod(LocalClass<TBase> localClass, MethodInfo oldMethod)
         {
             this.localClass = localClass;
-            this.func = func;
+            this.oldMethod = oldMethod;
         }
 
-        public LocalClass<TBase> Override(Expression<Func<TBase, Func<T, TResult>>> expression)
+        public LocalClass<TBase> IsImplementedBy(Func<T, TResult> newFunc)
         {
-            var method = DependencyUtil.ExtractMethod(expression);
-            var targetMethod = typeof(TBase).GetMethod(method);
-            localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Override, targetMethod, func.Method));
-            return localClass;
-        }
-
-        public LocalClass<TBase> Implement(Expression<Func<TBase, Func<T, TResult>>> expression)
-        {
-            var method = DependencyUtil.ExtractMethod(expression);
-            var targetMethod = typeof(TBase).GetMethod(method);
-            localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Implement, targetMethod, func.Method));
+            localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Implement, oldMethod, newFunc.Method));
             return localClass;
         }
     }

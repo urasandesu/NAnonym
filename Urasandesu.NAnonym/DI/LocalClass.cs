@@ -53,22 +53,22 @@ namespace Urasandesu.NAnonym.DI
                 {
                     case SetupMode.Override:
                         throw new NotImplementedException();
-                    case SetupMode.Instead:
+                    case SetupMode.Replace:
                         throw new NotSupportedException();
                     case SetupMode.Implement:
                         {
                             var methodBuilder = localClassTypeBuilder.DefineMethod(
-                                                    targetInfo.SourceMethodInfo.Name,
+                                                    targetInfo.OldMethod.Name,
                                                     MethodAttributes.Public |
                                                     MethodAttributes.HideBySig |
                                                     MethodAttributes.NewSlot |
                                                     MethodAttributes.Virtual |
                                                     MethodAttributes.Final,
                                                     CallingConventions.HasThis,
-                                                    targetInfo.SourceMethodInfo.ReturnType,
-                                                    targetInfo.SourceMethodInfo.ParameterTypes());
+                                                    targetInfo.OldMethod.ReturnType,
+                                                    targetInfo.OldMethod.ParameterTypes());
                             // とりあえず
-                            var parameterBuilder = methodBuilder.DefineParameter(1, ParameterAttributes.In, targetInfo.SourceMethodInfo.ParameterNames()[0]);
+                            var parameterBuilder = methodBuilder.DefineParameter(1, ParameterAttributes.In, targetInfo.OldMethod.ParameterNames()[0]);
                             methodBuilder.ExpressBody(
                             gen =>
                             {
@@ -83,14 +83,14 @@ namespace Urasandesu.NAnonym.DI
                                                                     { 
                                                                         typeof(String) 
                                                                     }, null)));
-                                var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetInfo.DestinationMethodInfo);
+                                var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetInfo.NewMethod);
                                 var cacheField = default(FieldInfo);
                                 gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
                                                                     _.Expand(tmpCacheField.Name),
                                                                     BindingFlags.NonPublic | BindingFlags.Static)));
                                 var targetMethod = default(MethodInfo);
-                                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.SourceMethodInfo.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                                    _.Expand(targetInfo.SourceMethodInfo.Name),
+                                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.OldMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                                    _.Expand(targetInfo.OldMethod.Name),
                                                                     BindingFlags.NonPublic | BindingFlags.Static)));
                                 var il = default(ILGenerator);
                                 gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
@@ -100,7 +100,7 @@ namespace Urasandesu.NAnonym.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<string, string>);
                                 gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
-                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.SourceMethodInfo.ParameterNames()[0]))));
+                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.OldMethod.ParameterNames()[0]))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             },
@@ -127,22 +127,28 @@ namespace Urasandesu.NAnonym.DI
         }
 
 
-        // HACK: method は MethodInfo と間違いやすい。汎用デリゲートについてはもう、Action -> action、Func -> func みたいな変数命名規則にしたほうがいいかも？
-        public LocalMethod<TBase> Method(Action method)
-        {
-            throw new NotImplementedException();
-        }
+        //// HACK: method は MethodInfo と間違いやすい。汎用デリゲートについてはもう、Action -> action、Func -> func みたいな変数命名規則にしたほうがいいかも？
+        //public LocalMethod<TBase> Method(Action method)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public LocalMethod<TBase, TResult> Method<TResult>(Func<TResult> method)
-        {
-            throw new NotImplementedException();
-        }
+        //public LocalMethod<TBase, TResult> Method<TResult>(Func<TResult> method)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
-        {
-            return new LocalMethod<TBase, T, TResult>(this, func);
-        }
+        //public LocalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
+        //{
+        //    return new LocalMethod<TBase, T, TResult>(this, func);
+        //}
 
+        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
+        {
+            var method = DependencyUtil.ExtractMethod(expression);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalMethod<TBase, T, TResult>(this, oldMethod);
+        }
 
 
         public LocalPropertyGet<TBase, T> Property<T>(Func<T> propertyGet)

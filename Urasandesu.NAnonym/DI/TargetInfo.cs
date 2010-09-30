@@ -9,28 +9,28 @@ namespace Urasandesu.NAnonym.DI
     class TargetInfo
     {
         public SetupMode Mode { get; set; }
-        public MethodInfo SourceMethodInfo { get; set; }
-        public MethodInfo DestinationMethodInfo { get; set; }
+        public MethodInfo OldMethod { get; set; }
+        public MethodInfo NewMethod { get; set; }
 
         public TargetInfo()
         {
         }
 
-        public TargetInfo(SetupMode mode, MethodInfo sourceMethodInfo, MethodInfo destinationMethodInfo)
+        public TargetInfo(SetupMode mode, MethodInfo oldMethod, MethodInfo newMethod)
         {
             Mode = mode;
-            SourceMethodInfo = sourceMethodInfo;
-            DestinationMethodInfo = destinationMethodInfo;
+            OldMethod = oldMethod;
+            NewMethod = newMethod;
         }
 
         public override bool Equals(object obj)
         {
-            return this.EqualsNullable(obj, that => that.SourceMethodInfo);
+            return this.EqualsNullable(obj, that => that.OldMethod);
         }
 
         public override int GetHashCode()
         {
-            return SourceMethodInfo.GetHashCodeOrDefault();
+            return OldMethod.GetHashCodeOrDefault();
         }
     }
 }
