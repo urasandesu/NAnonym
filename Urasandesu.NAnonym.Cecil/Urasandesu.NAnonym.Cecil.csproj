@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="DI\DependencyUtil.cs" />
     <Compile Include="DI\DIAssemblySetup.cs" />
+    <Compile Include="DI\DIAssemblySetupCollection.cs" />
     <Compile Include="DI\DIConfigurationSection.cs" />
     <Compile Include="DI\GlobalClass.cs" />
     <Compile Include="DI\GlobalClassBase.cs" />
@@ -107,4 +108,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>sgen /a:"$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

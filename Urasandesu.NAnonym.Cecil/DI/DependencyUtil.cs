@@ -87,8 +87,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
                 using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    var assemblySetupSetSerializer = new XmlSerializer(typeof(HashSet<DIAssemblySetup>));
-                    assemblySetupSetSerializer.Serialize(assemblySetupSetStream, assemblySetupSet);
+                    var assemblySetupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
+                    var assemblySetupCollection = new DIAssemblySetupCollection();
+                    assemblySetupCollection.AssemblySetupList = assemblySetupSet.ToArray();
+                    assemblySetupSetSerializer.Serialize(assemblySetupSetStream, assemblySetupCollection);
                 }
             }
 
@@ -107,8 +109,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
             {
                 using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    var assemblySetupSetSerializer = new XmlSerializer(typeof(HashSet<DIAssemblySetup>));
-                    assemblySetupSet = (HashSet<DIAssemblySetup>)assemblySetupSetSerializer.Deserialize(assemblySetupSetStream);
+                    var assemblySetupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
+                    var assemblySetupCollection = (DIAssemblySetupCollection)assemblySetupSetSerializer.Deserialize(assemblySetupSetStream);
+                    assemblySetupSet = new HashSet<DIAssemblySetup>(assemblySetupCollection.AssemblySetupList);
                 }
 
                 foreach (var assemblySetup in assemblySetupSet)
