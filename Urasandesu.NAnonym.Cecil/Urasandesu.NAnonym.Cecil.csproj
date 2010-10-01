@@ -109,6 +109,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>sgen /a:"$(TargetPath)"</PostBuildEvent>
+    <PostBuildEvent>sgen /f /a:"$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
