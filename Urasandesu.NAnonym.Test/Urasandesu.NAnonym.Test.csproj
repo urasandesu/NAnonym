@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleProxy.cs" />
+    <Compile Include="NewDomainSetUpAttribute.cs" />
+    <Compile Include="NewDomainTearDownAttribute.cs" />
     <Compile Include="NewDomainTestAttribute.cs" />
     <Compile Include="NewDomainTestBase.cs" />
     <Compile Include="NewDomainTestFixtureAttribute.cs" />
@@ -55,6 +57,8 @@
     <Compile Include="EqualConstraint.cs" />
     <Compile Include="Is.cs" />
     <Compile Include="MarshalByRefTester.cs" />
+    <Compile Include="NewDomainTestFixtureSetUpAttribute.cs" />
+    <Compile Include="NewDomainTestFixtureTearDownAttribute.cs" />
     <Compile Include="NewDomainTestInfo.cs" />
     <Compile Include="NewDomainTestTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

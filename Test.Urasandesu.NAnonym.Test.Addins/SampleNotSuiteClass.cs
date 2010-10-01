@@ -10,6 +10,30 @@ namespace Test.Urasandesu.NAnonym.Test.Addins
     [TestFixture]
     public class SampleNotSuiteClass
     {
+        [TestFixtureSetUp]
+        public void TestFixtureSetUp()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+        }
+
+        [TestFixtureTearDown]
+        public void TestFixtureTearDown()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+        }
+
         [Test]
         public void Test1()
         {

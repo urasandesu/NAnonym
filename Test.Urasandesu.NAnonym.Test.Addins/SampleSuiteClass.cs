@@ -10,6 +10,34 @@ namespace Test.Urasandesu.NAnonym.Test.Addins
     [NewDomainTestFixture]
     public class SampleSuiteClass : NewDomainTestBase
     {
+        [NewDomainTestFixtureSetUp]
+        public void TestFixtureSetUp()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+            Assert.AreEqual(typeof(SampleSuiteClass).FullName, AppDomain.CurrentDomain.FriendlyName);
+        }
+
+        [NewDomainTestFixtureTearDown]
+        public void TestFixtureTearDown()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+            Assert.AreEqual(typeof(SampleSuiteClass).FullName, AppDomain.CurrentDomain.FriendlyName);
+        }
+
+        [NewDomainSetUp]
+        public void SetUp()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+            Assert.AreEqual(typeof(SampleSuiteClass).FullName, AppDomain.CurrentDomain.FriendlyName);
+        }
+
+        [NewDomainTearDown]
+        public void TearDown()
+        {
+            Console.WriteLine("Run: {0}", MethodBase.GetCurrentMethod().Name);
+            Assert.AreEqual(typeof(SampleSuiteClass).FullName, AppDomain.CurrentDomain.FriendlyName);
+        }
+
         [NewDomainTest]
         public void Test1()
         {

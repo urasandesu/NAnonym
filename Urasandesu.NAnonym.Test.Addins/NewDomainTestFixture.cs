@@ -14,9 +14,13 @@ namespace Urasandesu.NAnonym.Test.Addins
         public NewDomainTestFixture(Type fixtureType)
             : base(fixtureType)
         {
+            base.fixtureSetUpMethods = Reflect.GetMethodsWithAttribute(FixtureType, "Urasandesu.NAnonym.Test.NewDomainTestFixtureSetUpAttribute", true);
+            base.fixtureTearDownMethods = Reflect.GetMethodsWithAttribute(FixtureType, "Urasandesu.NAnonym.Test.NewDomainTestFixtureTearDownAttribute", true);
+            base.setUpMethods = Reflect.GetMethodsWithAttribute(FixtureType, "Urasandesu.NAnonym.Test.NewDomainSetUpAttribute", true);
+            base.tearDownMethods = Reflect.GetMethodsWithAttribute(FixtureType, "Urasandesu.NAnonym.Test.NewDomainTearDownAttribute", true);
             foreach (var methodInfo in FixtureType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (Reflect.HasAttribute(methodInfo, "Urasandesu.NAnonym.Test.NewDomainTestAttribute", false))
+                if (Reflect.HasAttribute(methodInfo, "Urasandesu.NAnonym.Test.NewDomainTestAttribute", true))
                     Add(new NUnitTestMethod(methodInfo));
             }
         }
