@@ -187,7 +187,7 @@ namespace Urasandesu.NAnonym.DI
         //    return new LocalMethod<TBase, T, TResult>(this, func);
         //}
 
-        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
+        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> expression)
         {
             var method = DependencyUtil.ExtractMethod(expression);
             var oldMethod = typeof(TBase).GetMethod(method);

@@ -27,7 +27,12 @@ namespace Urasandesu.NAnonym.DI
             }
         }
 
-        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
+        //public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
+        //{
+        //    return (MethodInfo)((ConstantExpression)((MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
+        //}
+
+        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<FuncReference<TBase, T, TResult>> expression)
         {
             return (MethodInfo)((ConstantExpression)((MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
         }
