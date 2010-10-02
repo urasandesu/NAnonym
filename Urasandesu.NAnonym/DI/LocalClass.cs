@@ -10,7 +10,39 @@ using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.DI
 {
-    public sealed class LocalClass<TBase> where TBase : class
+    public abstract class LocalClass : MarshalByRefObject
+    {
+        LocalClass modified;
+
+        internal void Register()
+        {
+            modified = OnRegister();
+            if (modified != null)
+            {
+                modified.Register();
+            }
+        }
+
+        protected virtual LocalClass OnRegister()
+        {
+            return null;
+        }
+
+        internal void Load()
+        {
+            OnLoad(modified);
+            if (modified != null)
+            {
+                modified.Load();
+            }
+        }
+
+        protected virtual void OnLoad(LocalClass modified)
+        {
+        }
+    }
+
+    public sealed class LocalClass<TBase> : LocalClass
     {
         readonly Type tbaseType = typeof(TBase);
 
@@ -19,7 +51,12 @@ namespace Urasandesu.NAnonym.DI
         Type createdType;
 
         // TODO: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
-        public void Load()
+        // TODO: LocalMethod 生成メソッドの引数用デリゲート型追加。
+        // TODO: 戻り値型、引数型の制限解除。
+        // TODO: 引数数を汎用デリゲート型まで拡張。
+        // TODO: SetupMode.Override 実装。
+        // TODO: LocalClassAssembly キャッシュ機構追加。
+        protected override void OnLoad(LocalClass modified)
         {
             var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
             var localClassAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(localClassAssemblyName, AssemblyBuilderAccess.Run);
@@ -119,11 +156,18 @@ namespace Urasandesu.NAnonym.DI
             TargetInfoSet = new HashSet<TargetInfo>();
         }
 
-        public LocalClass<TBase> Setup(Action<LocalClass<TBase>> setupper)
+        Action<LocalClass<TBase>> setupper;
+
+        public void Setup(Action<LocalClass<TBase>> setupper)
         {
             Required.NotDefault(setupper, () => setupper);
+            this.setupper = setupper;
+        }
+
+        protected override LocalClass OnRegister()
+        {
             setupper(this);
-            return this;
+            return null;
         }
 
 

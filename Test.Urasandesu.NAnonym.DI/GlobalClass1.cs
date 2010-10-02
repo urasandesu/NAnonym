@@ -3,13 +3,12 @@ using Urasandesu.NAnonym.Cecil.DI;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
-    public class GlobalClass1 : GlobalClassBase
+    public class GlobalClass1 : GlobalClass
     {
-        protected override GlobalClassBase OnSetup()
+        protected override GlobalClass OnRegister()
         {
-            var class1 = new GlobalClass<Class1>();
-            class1.
-            Setup(the =>
+            var class1GlobalClass = new GlobalClass<Class1>();
+            class1GlobalClass.Setup(the =>
             {
                 the.Method<string, string>(_ => _.Print).IsReplacedBy(
                 value =>
@@ -17,7 +16,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
                     return "Modified prefix at Class1.Print" + new Class2().Print(value) + "Modified suffix at Class1.Print";
                 });
             });
-            return class1;
+            return class1GlobalClass;
         }
 
         protected override string CodeBase

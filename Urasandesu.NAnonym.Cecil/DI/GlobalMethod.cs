@@ -21,8 +21,7 @@ using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    // HACK: あれ？ where とかいらなくね？もはやなんでも良い気がしてきた。
-    public class GlobalMethod<TBase, T, TResult> where TBase : class
+    public class GlobalMethod<TBase, T, TResult> 
     {
         readonly GlobalClass<TBase> globalClass;
         readonly MethodInfo oldMethod;

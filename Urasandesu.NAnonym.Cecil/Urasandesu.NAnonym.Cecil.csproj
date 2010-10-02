@@ -59,7 +59,6 @@
     <Compile Include="DI\DIAssemblySetupCollection.cs" />
     <Compile Include="DI\DIConfigurationSection.cs" />
     <Compile Include="DI\GlobalClass.cs" />
-    <Compile Include="DI\GlobalClassBase.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
     <Compile Include="DI\GlobalProperty.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />

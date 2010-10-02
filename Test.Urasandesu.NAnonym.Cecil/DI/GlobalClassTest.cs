@@ -13,10 +13,11 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
     {
         static GlobalClassTest()
         {
-            DependencyUtil.BeginEdit();
-            DependencyUtil.Setup<GlobalClass1>();
-            DependencyUtil.Setup<GlobalClass2>();
-            DependencyUtil.Load();
+            DependencyUtil.RollbackGlobal();
+
+            DependencyUtil.RegisterGlobal<GlobalClass1>();
+            DependencyUtil.RegisterGlobal<GlobalClass2>();
+            DependencyUtil.LoadGlobal();
         }
 
         [Test]

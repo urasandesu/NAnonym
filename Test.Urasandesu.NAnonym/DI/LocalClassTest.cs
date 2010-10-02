@@ -36,7 +36,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 });
             });
 
-            sample2LocalClass.Load();
+            DependencyUtil.RegisterLocal(sample2LocalClass);
+            DependencyUtil.LoadLocal();
 
             var sample2 = sample2LocalClass.New();
 

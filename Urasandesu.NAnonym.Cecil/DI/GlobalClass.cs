@@ -20,7 +20,43 @@ using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    public class GlobalClass<TBase> : GlobalClassBase where TBase : class
+    // MEMO: GlobalClass が Generic Type 持っちゃうから、共通で引き回せるような口用。
+    public abstract class GlobalClass : MarshalByRefObject
+    {
+        GlobalClass modified;
+
+        internal void Register()
+        {
+            modified = OnRegister();
+            if (modified != null)
+            {
+                modified.Register();
+            }
+        }
+
+        protected virtual GlobalClass OnRegister()
+        {
+            return null;
+        }
+
+        internal void Load()
+        {
+            OnLoad(modified);
+            if (modified != null)
+            {
+                modified.Load();
+            }
+        }
+
+        protected virtual void OnLoad(GlobalClass modified)
+        {
+        }
+
+        protected internal abstract string CodeBase { get; }
+        protected internal abstract string Location { get; }
+    }
+
+    public class GlobalClass<TBase> : GlobalClass
     {
         internal HashSet<TargetInfo> TargetInfoSet { get; private set; }
 
@@ -29,11 +65,16 @@ namespace Urasandesu.NAnonym.Cecil.DI
             TargetInfoSet = new HashSet<TargetInfo>();
         }
 
-        public GlobalClass<TBase> Setup(Action<GlobalClass<TBase>> overrider)
+        Action<GlobalClass<TBase>> setupper;
+        public void Setup(Action<GlobalClass<TBase>> setupper)
         {
-            if (overrider == null) throw new ArgumentNullException("overrider");
-            overrider(this);
-            return this;
+            this.setupper = Required.NotDefault(setupper, () => setupper);
+        }
+
+        protected override GlobalClass OnRegister()
+        {
+            setupper(this);
+            return null;
         }
 
         //public GlobalMethod<TBase, T, TResult> Method<T, TResult>(Func<T, TResult> func)
@@ -48,16 +89,16 @@ namespace Urasandesu.NAnonym.Cecil.DI
             return new GlobalMethod<TBase, T, TResult>(this, oldMethod);
         }
 
-        protected override GlobalClassBase OnSetup()
-        {
-            // Setup(Action<GlobalClass<TBase>>) で大方済んでるので、特にここでなにかやる必要は無さそう。
-            return null;
-        }
+        //protected override GlobalClassBase OnRegister()
+        //{
+        //    // Setup(Action<GlobalClass<TBase>>) で大方済んでるので、特にここでなにかやる必要は無さそう。
+        //    return null;
+        //}
 
 
 
 
-        protected override void OnLoad(GlobalClassBase modified)
+        protected override void OnLoad(GlobalClass modified)
         {
             // MEMO: ここで modified に来るのは、OnSetup() の戻り値なので、ここでは特に使う必要はない。
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });

@@ -36,7 +36,7 @@ namespace Urasandesu.NAnonym.DI
         }
     }
 
-    public class LocalMethod<TBase, T, TResult> where TBase : class
+    public class LocalMethod<TBase, T, TResult>
     {
         readonly LocalClass<TBase> localClass;
         readonly MethodInfo oldMethod;

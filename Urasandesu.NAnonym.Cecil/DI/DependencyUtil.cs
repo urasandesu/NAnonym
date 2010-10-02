@@ -24,22 +24,22 @@ namespace Urasandesu.NAnonym.Cecil.DI
         {
         }
 
-        static HashSet<GlobalClassBase> classSet = new HashSet<GlobalClassBase>();
+        static HashSet<GlobalClass> classSet = new HashSet<GlobalClass>();
         static AppDomain newDomain;
 
         static HashSet<DIAssemblySetup> assemblySetupSet;
 
 
-        public static void BeginEdit()
-        {
-            var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
-            if (File.Exists(config.AssemblySetupSetPath))
-            {
-                CancelEdit();
-            }
-        }
+        //public static void BeginEdit()
+        //{
+        //    var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
+        //    if (File.Exists(config.AssemblySetupSetPath))
+        //    {
+        //        CancelEdit();
+        //    }
+        //}
 
-        public static void Setup<TGlobalClassType>() where TGlobalClassType : GlobalClassBase
+        public static void RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
             // ここで Inject したのは完全な書き換えが可能になる。DLL の場所を記憶しておく必要あり。
             // TODO: GAC に登録されているものは無理げ。厳密名を持ってる Assembly も無理げ。
@@ -52,17 +52,17 @@ namespace Urasandesu.NAnonym.Cecil.DI
             info.ShadowCopyFiles = "true";
             newDomain = AppDomain.CreateDomain("NewDomain", null, info);
             var classType = typeof(TGlobalClassType);
-            var @class = (GlobalClassBase)newDomain.CreateInstanceAndUnwrap(classType.Assembly.FullName, classType.FullName);
+            var @class = (GlobalClass)newDomain.CreateInstanceAndUnwrap(classType.Assembly.FullName, classType.FullName);
             classSet.Add(@class);
             if (assemblySetupSet == null)
             {
                 assemblySetupSet = new HashSet<DIAssemblySetup>();
             }
             assemblySetupSet.Add(new DIAssemblySetup(@class.CodeBase, @class.Location));
-            @class.Setup();
+            @class.Register();
         }
 
-        public static void Load()
+        public static void LoadGlobal()
         {
             var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
             if (!File.Exists(config.AssemblySetupSetPath) && assemblySetupSet != null)
@@ -101,7 +101,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             AppDomain.Unload(newDomain);
         }
 
-        public static void CancelEdit()
+        public static void RollbackGlobal()
         {
             // HACK: setupInfoSet って上書きしちゃっていいのかな？
             var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    public class LocalPropertyGet<TBase, T> where TBase : class
+    public class LocalPropertyGet<TBase, T>
     {
         public LocalClass<TBase> Override(Func<TBase, Func<T>> expression)
         {
@@ -18,7 +18,7 @@ namespace Urasandesu.NAnonym.DI
         }
     }
 
-    public class LocalPropertySet<TBase, T> where TBase : class
+    public class LocalPropertySet<TBase, T>
     {
         public LocalClass<TBase> Override(Func<TBase, Action<T>> expression)
         {
