@@ -26,10 +26,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                 bodyDef.Instructions.TransformEnumerateOnly(instruction => (IDirectiveGenerator)new MCDirectiveGeneratorImpl(instruction)));
         }
 
-        public IILOperator GetILOperator()
-        {
-            return (MCILOperatorImpl)bodyDef.GetILProcessor();
-        }
+        public IILOperator ILOperator { get { return (MCILOperatorImpl)bodyDef.GetILProcessor(); } }
 
         public new ReadOnlyCollection<ILocalGenerator> Locals
         {

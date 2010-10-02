@@ -787,7 +787,7 @@ Parameter[1] = IntPtr method
                 ctorDef.ExpressBody(
                 gen =>
                 {
-                    var il = gen.GetILOperator();
+                    var il = gen.ILOperator;
                     il.Emit(OpCodes.Ldarg_0);
                     il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[] { }));
                 });
@@ -1053,21 +1053,59 @@ Parameter[1] = IntPtr method
                 return testInfo;
             }));
         }
-    }
 
-    [Serializable]
-    public class NewDomainTestInfoWithScope : NewDomainTestInfo
-    {
-        public NewDomainTestInfoWithScope()
-            : base()
+
+
+
+        [Test]
+        public void EmitTest20()
         {
-        }
+            TestHelper.UsingTempFile(tempFileName =>
+            TestHelper.UsingNewDomain(() =>
+            {
+                // modify ...
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
-        public NewDomainTestInfoWithScope(string friendlyName)
-            : base(friendlyName)
-        {
-        }
+                var action2LocalVariableDef20 =
+                    methodTestClassDef.GetMethod(
+                        "Action2LocalVariable",
+                        BindingFlags.Instance | BindingFlags.Public,
+                        new Type[] { }).DuplicateWithoutBody();
+                action2LocalVariableDef20.Name = "Action2LocalVariable20";
+                methodTestClassDef.Methods.Add(action2LocalVariableDef20);
+                action2LocalVariableDef20.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    var methodToCall = default(Func<string, string>);
+                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall == null = {0}", methodToCall == null));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                });
 
-        public PortableScope Scope { get; set; }
+                methodTestClassDef.Module.Assembly.Write(tempFileName);
+
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef20.Name;
+                testInfo.TestVerifier =
+                    target =>
+                    {
+                        try
+                        {
+                            target.Method.Invoke(target.Instance, null);
+                            Assert.Fail();
+                        }
+                        catch (TargetInvocationException e)
+                        {
+                            Assert.AreEqual("methodToCall == null = True", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
+            }));
+        }
     }
 }

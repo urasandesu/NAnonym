@@ -48,14 +48,14 @@ namespace Urasandesu.NAnonym.Test
 
         public static void UsingNewDomain(NewDomainTestInfoProvider provider)
         {
-            var newDomain = default(AppDomain);
+            var domain = default(AppDomain);
             try
             {
                 var testInfo = provider();
 
-                newDomain = AppDomain.CreateDomain(testInfo.FriendlyName, null, AppDomain.CurrentDomain.SetupInformation);
+                domain = AppDomain.CreateDomain(testInfo.FriendlyName, null, AppDomain.CurrentDomain.SetupInformation);
                 var marshalByRefTester =
-                    (MarshalByRefTester)newDomain.CreateInstanceAndUnwrap(
+                    (MarshalByRefTester)domain.CreateInstanceAndUnwrap(
                         typeof(MarshalByRefTester).Assembly.FullName,
                         typeof(MarshalByRefTester).FullName,
                         true,
@@ -65,11 +65,14 @@ namespace Urasandesu.NAnonym.Test
                         null,
                         null,
                         null);
-                newDomain.DoCallBack(new CrossAppDomainDelegate(marshalByRefTester.Verify));
+                domain.DoCallBack(new CrossAppDomainDelegate(marshalByRefTester.Verify));
             }
             finally
             {
-                AppDomain.Unload(newDomain);
+                if (domain != null)
+                {
+                    AppDomain.Unload(domain);
+                }
             }
         }
 

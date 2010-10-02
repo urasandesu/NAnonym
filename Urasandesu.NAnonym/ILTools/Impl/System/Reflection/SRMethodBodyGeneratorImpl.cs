@@ -45,10 +45,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
                 LocalGens.TransformEnumerateOnly(localGen => (ILocalGenerator)localGen));
         }
 
-        public IILOperator GetILOperator()
-        {
-            return il;
-        }
+        public IILOperator ILOperator { get { return il; } }
 
         public new ReadOnlyCollection<ILocalGenerator> Locals
         {
