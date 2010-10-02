@@ -9,6 +9,7 @@ namespace Urasandesu.NAnonym.ILTools
         string AssemblyQualifiedName { get; }
         ITypeDeclaration BaseType { get; }
         IModuleDeclaration Module { get; }
+        IFieldDeclaration GetField(string name, BindingFlags bindingAttr);
         IFieldDeclaration[] GetFields(BindingFlags attr);
         IConstructorDeclaration GetConstructor(Type[] types);
 

@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Collections;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -168,7 +169,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.ToSre(), ((SRFieldDeclarationImpl)fieldDecl).FieldInfo);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, fieldDecl));
         }
 
         public void Emit(OpCode opcode, IPortableScopeItem scopeItem)

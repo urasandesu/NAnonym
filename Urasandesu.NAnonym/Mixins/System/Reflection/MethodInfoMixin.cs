@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Urasandesu.NAnonym
+namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
-    public static partial class Mixin
+    public static partial class MethodInfoMixin
     {
         public static Type[] ParameterTypes(this MethodInfo methodInfo)
         {

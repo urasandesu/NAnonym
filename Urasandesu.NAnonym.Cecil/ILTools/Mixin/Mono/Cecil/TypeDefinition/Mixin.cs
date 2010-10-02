@@ -22,6 +22,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             return type.Fields.First(field => binder.BindToField(field));
         }
 
+        public static FieldDefinition GetFieldOrDefault(this TypeDefinition type, string name, BindingFlags bindingAttr)
+        {
+            var binder = new Binder(type, name, bindingAttr);
+            return type.Fields.FirstOrDefault(field => binder.BindToField(field));
+        }
+
         public static FieldDefinition[] GetFields(this TypeDefinition type, BindingFlags bindingAttr)
         {
             var binder = new Binder(type, bindingAttr);

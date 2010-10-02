@@ -10,6 +10,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo BaseInfo;
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
+        readonly MethodInfo StfldInfo;
         readonly MethodInfo DupAddOneInfo;
         readonly MethodInfo AddOneDupInfo;
         readonly MethodInfo SubOneDupInfo;
@@ -23,6 +24,7 @@ namespace Urasandesu.NAnonym.ILTools
             BaseInfo = TypeSavable.GetMethodInfo(() => Base);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
+            StfldInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
             AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
             SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
@@ -52,6 +54,18 @@ namespace Urasandesu.NAnonym.ILTools
         public bool IsStloc(MethodInfo target)
         {
             if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsStfld(MethodInfo target)
+        {
+            if (target.Name == StfldInfo.Name && target == StfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -149,6 +163,11 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         public T Stloc<T>(T variable, T value)
+        {
+            return default(T);
+        }
+
+        public T Stfld<T>(T varialbe, T value)
         {
             return default(T);
         }

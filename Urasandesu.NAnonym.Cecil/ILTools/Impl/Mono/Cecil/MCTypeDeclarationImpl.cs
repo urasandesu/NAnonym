@@ -122,6 +122,17 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         }
 
         #endregion
+
+        #region ITypeDeclaration メンバ
+
+
+        public IFieldDeclaration GetField(string name, BindingFlags bindingAttr)
+        {
+            var fieldDef = typeDef.GetFieldOrDefault(name, bindingAttr);
+            return fieldDef == null ? null : new MCFieldGeneratorImpl(fieldDef);
+        }
+
+        #endregion
     }
 
 }

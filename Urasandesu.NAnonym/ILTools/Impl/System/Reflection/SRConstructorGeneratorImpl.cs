@@ -12,16 +12,36 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     sealed class SRConstructorGeneratorImpl : SRConstructorDeclarationImpl, IConstructorGenerator
     {
         readonly ConstructorBuilder constructorBuilder;
+        readonly ParameterBuilder[] parameterBuilders;
+        readonly FieldBuilder[] fieldBuilders;
 
         readonly IMethodBodyGenerator bodyGen;
         readonly ITypeGenerator declaringTypeGen;
-        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, params ParameterBuilder[] parameterBuilders)
+
+        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
+            : this(constructorBuilder, new ParameterBuilder[] { }, new FieldBuilder[] { })
+        {
+        }
+
+        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, ParameterBuilder[] parameterBuilders)
+            : this(constructorBuilder, parameterBuilders, new FieldBuilder[] { })
+        {
+        }
+
+        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, FieldBuilder[] fieldBuilders)
+            : this(constructorBuilder, new ParameterBuilder[] { }, fieldBuilders)
+        {
+        }
+
+        public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
             : base(constructorBuilder)
         {
             this.constructorBuilder = constructorBuilder;
             bodyGen = new SRMethodBodyGeneratorImpl(constructorBuilder);
+            this.parameterBuilders = parameterBuilders;
+            this.fieldBuilders = fieldBuilders;
             var declaringTypeBuilder = constructorBuilder.DeclaringType as TypeBuilder;
-            declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder);
+            declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder, fieldBuilders);
         }
 
         public new IMethodBodyGenerator Body

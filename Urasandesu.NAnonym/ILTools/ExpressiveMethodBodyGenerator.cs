@@ -7,18 +7,23 @@ using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using SR = System.Reflection;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
     public class ExpressiveMethodBodyGenerator : IMethodBodyGenerator
     {
         readonly ITypeDeclaration declaringTypeDecl;
+        // TODO: 一通り動作が通ったら、引数に持たせるようにする。
         readonly IMethodBaseGenerator methodGen;
         readonly IMethodBodyGenerator bodyGen;
         readonly IILOperator il;
         readonly Expressible expressible;
 
         readonly MethodInfo GetTypeFromHandle;
+
+        // TODO: 一通り動作が通ったら、状態クラスを新たに定義し、引数に持たせるようにする。
+        bool noPop;
 
         ReadOnlyCollection<IDirectiveGenerator> directives;
 
@@ -47,7 +52,7 @@ namespace Urasandesu.NAnonym.ILTools
         public void Eval(Expression<Action<Expressible>> exp)
         {
             Eval(exp.Body);
-            if (exp.Body.Type != typeof(void))
+            if (exp.Body.Type != typeof(void) && !noPop)
             {
                 // NOTE: void ではないということは評価スタックに情報が残っているということ。
                 //       pop するのは、基本的に 1 回の Emit(Expression<Action<ExpressiveILProcessor>>) で完結するようにしたいため。
@@ -65,6 +70,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         void Eval(Expression exp)
         {
+            noPop = false;
             if (exp == null) return;
 
             switch (exp.NodeType)
@@ -251,6 +257,15 @@ namespace Urasandesu.NAnonym.ILTools
                         var local = il.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
                         il.Emit(OpCodes.Stloc, local);
                     }
+                    else if (expressible.IsStfld(exp.Method))
+                    {
+                        il.Emit(OpCodes.Ldarg_0);
+                        Eval(exp.Arguments[1]);
+                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+                        var fieldDecl = declaringTypeDecl.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        il.Emit(OpCodes.Stfld, fieldDecl);
+                        noPop = true;
+                    }
                     else if (expressible.IsDupAddOne(exp.Method))
                     {
                         var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
@@ -417,6 +432,7 @@ namespace Urasandesu.NAnonym.ILTools
                 // 4. その他
                 var localDecl = default(ILocalGenerator);
                 var parameterGen = default(IParameterGenerator);
+                var fieldDecl = default(IFieldDeclaration);
                 var constantExpression = default(ConstantExpression);
                 if ((localDecl = bodyGen.Locals.FirstOrDefault(_localDecl => _localDecl.Name == fieldInfo.Name)) != null)
                 {
@@ -425,6 +441,11 @@ namespace Urasandesu.NAnonym.ILTools
                 else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
                 {
                     il.Emit(OpCodes.Ldarg, parameterGen);
+                }
+                else if ((fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)) != null)
+                {
+                    il.Emit(OpCodes.Ldarg_0);
+                    il.Emit(OpCodes.Ldfld, fieldDecl);
                 }
                 else if ((constantExpression = exp.Expression as ConstantExpression) != null)
                 {

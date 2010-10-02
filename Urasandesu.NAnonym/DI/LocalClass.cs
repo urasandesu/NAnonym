@@ -7,6 +7,9 @@ using System.Linq.Expressions;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -50,12 +53,14 @@ namespace Urasandesu.NAnonym.DI
 
         Type createdType;
 
-        // TODO: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
-        // TODO: LocalMethod 生成メソッドの引数用デリゲート型追加。
         // TODO: 戻り値型、引数型の制限解除。
         // TODO: 引数数を汎用デリゲート型まで拡張。
         // TODO: SetupMode.Override 実装。
         // TODO: LocalClassAssembly キャッシュ機構追加。
+        // DOING: フィールドへの参照許可を ExpressiveMethodBodyGenerator に追加。
+        // DOING: 実際の処理を呼び出すための DynamicMethod 用キャッシュ追加。
+        // DONE: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
+        // DONE: LocalMethod 生成メソッドの引数用デリゲート型追加。
         protected override void OnLoad(LocalClass modified)
         {
             var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
@@ -141,7 +146,7 @@ namespace Urasandesu.NAnonym.DI
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             },
-                            parameterBuilder);
+                            new ParameterBuilder[] { parameterBuilder });
                         }
                         break;
                     default:

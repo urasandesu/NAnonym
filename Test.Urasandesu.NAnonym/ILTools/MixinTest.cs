@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Urasandesu.NAnonym.ILTools;
 using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym;
-
+using Urasandesu.NAnonym.ILTools.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {

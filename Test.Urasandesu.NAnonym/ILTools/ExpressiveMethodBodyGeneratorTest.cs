@@ -12,6 +12,7 @@ using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Urasandesu.NAnonym;
+using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -143,7 +144,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 },
-                valueParameterBuilder);
+                new ParameterBuilder[] { valueParameterBuilder });
 
                 var emitTest03 = emitTest03TypeBuilder.CreateType();
                 var instance = (ISample1)Activator.CreateInstance(emitTest03);
@@ -212,7 +213,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
-                valueParameterBuilder);
+                new ParameterBuilder[] { valueParameterBuilder });
 
                 var emitTest04 = emitTest04TypeBuilder.CreateType();
                 var instance = (ISample2)Activator.CreateInstance(emitTest04);
@@ -277,7 +278,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.Expand(cacheField.FieldType.FullName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
-                valueParameterBuilder);
+                new ParameterBuilder[] { valueParameterBuilder });
 
                 var emitTest05 = emitTest05TypeBuilder.CreateType();
                 var instance = (ISample2)Activator.CreateInstance(emitTest05);
@@ -293,6 +294,72 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 match = match.NextMatch();
                 Assert.IsTrue(match.Success);
                 Assert.AreEqual("Cached Field Type: System.Action`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]", match.Value);
+            });
+        }
+
+
+
+        [Test]
+        public void EmitTest06()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
+                var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
+                var tempModule = tempAssemblyBuilder.DefineDynamicModule(tempAssemblyName.Name);
+
+                var emitTest06TypeBuilder = tempModule.DefineType(tempModule.Name + "." + MethodBase.GetCurrentMethod().Name);
+                emitTest06TypeBuilder.AddInterfaceImplementation(typeof(ISample2));
+
+                int fieldValue = default(int);
+                var fieldValueFieldBuilder = emitTest06TypeBuilder.DefineField(TypeSavable.GetName(() => fieldValue), typeof(int), FieldAttributes.Private);
+
+                var ctorConstructorBuilder =
+                    emitTest06TypeBuilder.DefineConstructor(
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.SpecialName |
+                        SR::MethodAttributes.RTSpecialName,
+                        CallingConventions.Standard,
+                        new Type[] { });
+                ctorConstructorBuilder.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                    gen.Eval(_ => _.Stfld(fieldValue, 10));
+                },
+                new FieldBuilder[] { fieldValueFieldBuilder });
+
+                var sample2 = default(ISample2);
+                var executeMethodBuilder =
+                    emitTest06TypeBuilder.DefineMethod(
+                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.NewSlot |
+                        SR::MethodAttributes.Virtual |
+                        SR::MethodAttributes.Final,
+                        CallingConventions.HasThis,
+                        typeof(string),
+                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
+                executeMethodBuilder.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.ExpandAndLdarg<string>(valueParameterName), fieldValue));
+                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                },
+                new ParameterBuilder[] { valueParameterBuilder },
+                new FieldBuilder[] { fieldValueFieldBuilder });
+
+                var emitTest06 = emitTest06TypeBuilder.CreateType();
+                var instance = (ISample2)Activator.CreateInstance(emitTest06);
+
+                string message = instance.Print("aiueo");
+                Assert.AreEqual("Parameter = aiueo, FieldValue = 10", message);
             });
         }
     }

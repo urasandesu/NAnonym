@@ -13,6 +13,7 @@ using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using UNI = Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -402,7 +403,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
         public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveMethodBodyGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
             var gen = new ExpressiveMethodBodyGenerator(new MCMethodGeneratorImpl(methodDef));
-            UNI::Mixin.ExpressBodyEnd(gen, expression);
+            gen.ExpressBodyEnd(expression);
         }
 
         public static UNI::OpCode ToUni(this MC::Cil.OpCode opcode)

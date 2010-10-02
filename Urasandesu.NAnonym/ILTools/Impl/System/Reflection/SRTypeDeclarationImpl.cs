@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -47,7 +49,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
+        public virtual IFieldDeclaration GetField(string name, BindingFlags bindingAttr)
+        {
+            return new SRFieldDeclarationImpl(type.GetField(name, bindingAttr));
+        }
+
         #endregion
     }
-
 }

@@ -17,6 +17,7 @@ using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym.DI;
+using Urasandesu.NAnonym.ILTools.Mixins.System;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
