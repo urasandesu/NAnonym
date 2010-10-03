@@ -69,6 +69,8 @@
     <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCILOperatorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCLabelDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCLabelGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCLocalGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMemberDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBaseDeclarationImpl.cs" />

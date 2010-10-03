@@ -8,22 +8,33 @@ using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using SR = System.Reflection;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
+using System.Collections.Generic;
 
 namespace Urasandesu.NAnonym.ILTools
 {
     public class ExpressiveMethodBodyGenerator : IMethodBodyGenerator
     {
         static readonly Expressible expressible = new Expressible();
-        static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod(
-                                                            "GetTypeFromHandle",
-                                                            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                                                            null,
-                                                            new System.Type[] 
-                                                            {
-                                                                typeof(RuntimeTypeHandle) 
-                                                            },
-                                                            null);
-
+        static readonly MethodInfo GetTypeFromHandle = 
+            typeof(Type).GetMethod(
+                                "GetTypeFromHandle",
+                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                                null,
+                                new Type[] 
+                                {
+                                    typeof(RuntimeTypeHandle) 
+                                },
+                                null);
+        static readonly MethodInfo GetMethodFromHandle =
+            typeof(MethodBase).GetMethod(
+                                "GetMethodFromHandle",
+                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                                null,
+                                new Type[]
+                                {
+                                    typeof(RuntimeMethodHandle)
+                                },
+                                null);
         
         readonly IMethodBaseGenerator methodGen;
         readonly EvalState state;
@@ -37,7 +48,7 @@ namespace Urasandesu.NAnonym.ILTools
         public void Eval(Expression<Action<Expressible>> exp)
         {
             EvalExpression(methodGen, exp.Body, state);
-            if (exp.Body.Type != typeof(void) && !state.NoPop)
+            if (exp.Body.Type != typeof(void) && !state.ProhibitsLastAutoPop)
             {
                 // NOTE: void ではないということは評価スタックに情報が残っているということ。
                 //       pop するのは、基本的に 1 回の Emit(Expression<Action<ExpressiveILProcessor>>) で完結するようにしたいため。
@@ -55,7 +66,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         static void EvalExpression(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
         {
-            state.NoPop = false;
+            state.ProhibitsLastAutoPop = false;
             if (exp == null) return;
 
             switch (exp.NodeType)
@@ -97,9 +108,11 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.GreaterThanOrEqual:
                     break;
                 case ExpressionType.Invoke:
-                    break;
+                    EvalInvoke(methodGen, (InvocationExpression)exp, state);
+                    return;
                 case ExpressionType.Lambda:
-                    break;
+                    EvalLambda(methodGen, (LambdaExpression)exp, state);
+                    return;
                 case ExpressionType.LeftShift:
                     break;
                 case ExpressionType.LessThan:
@@ -231,80 +244,19 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 if (exp.Object.Type == typeof(Expressible))
                 {
-                    if (expressible.IsBase(exp.Method))
-                    {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                        var constructorDecl = methodGen.DeclaringType.BaseType.GetConstructor(new Type[] { });
-                        methodGen.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
-                    }
-                    else if (expressible.IsAddloc(exp.Method))
-                    {
-                        // TODO: 同じ名前の変数は、同じ Scope 内であれば隠せる or 弾く工夫が必要
-                        EvalExpression(methodGen, exp.Arguments[1], state);
-                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                        var local = methodGen.Body.ILOperator.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
-                    }
-                    else if (expressible.IsStfld(exp.Method))
-                    {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                        EvalExpression(methodGen, exp.Arguments[1], state);
-                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                        var fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
-                        state.NoPop = true;
-                    }
-                    else if (expressible.IsDupAddOne(exp.Method))
-                    {
-                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                        var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Add);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-                    }
-                    else if (expressible.IsAddOneDup(exp.Method))
-                    {
-                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                        var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Add);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-                    }
-                    else if (expressible.IsSubOneDup(exp.Method))
-                    {
-                        var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                        var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Sub);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-                    }
-                    else if (expressible.IsExpandAndLdarg(exp.Method))
-                    {
-                        var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
-                        string parameterName = (string)expanded.DynamicInvoke();
-                        var parameterGen = methodGen.Parameters.First(_parameterGen => _parameterGen.Name == parameterName);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
-                    }
-                    else if (expressible.IsExpand(exp.Method))
-                    {
-                        var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
-                        EvalConstant(methodGen, Expression.Constant(expanded.DynamicInvoke()), state);
-                    }
-                    else if (expressible.IsReturn(exp.Method))
-                    {
-                        EvalExpression(methodGen, exp.Arguments[0], state);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ret);
-                    }
-                    else if (expressible.IsEnd(exp.Method))
-                    {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ret);
-                    }
+                    if (expressible.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
+                    else if (expressible.IsAddloc(exp.Method)) EvalAddloc(methodGen, exp, state);
+                    else if (expressible.IsStloc(exp.Method)) EvalStloc(methodGen, exp, state);
+                    else if (expressible.IsStfld(exp.Method)) EvalStfld(methodGen, exp, state);
+                    else if (expressible.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
+                    else if (expressible.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
+                    else if (expressible.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
+                    else if (expressible.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
+                    else if (expressible.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
+                    else if (expressible.IsExpandAndLdarg(exp.Method)) EvalExpandAndLdarg(methodGen, exp, state);
+                    else if (expressible.IsExpand(exp.Method)) EvalExpand(methodGen, exp, state);
+                    else if (expressible.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
+                    else if (expressible.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -329,6 +281,118 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        static void EvalBase(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+            var constructorDecl = methodGen.DeclaringType.BaseType.GetConstructor(new Type[] { });
+            methodGen.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
+        }
+
+        static void EvalAddloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            // TODO: 同じ名前の変数は、同じ Scope 内であれば隠せる or 弾く工夫が必要
+            EvalExpression(methodGen, exp.Arguments[1], state);
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var local = methodGen.Body.ILOperator.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
+        }
+
+        static void EvalStloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Arguments[1], state);
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            state.ProhibitsLastAutoPop = true;
+        }
+
+        static void EvalStfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+            EvalExpression(methodGen, exp.Arguments[1], state);
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
+            state.ProhibitsLastAutoPop = true;
+        }
+
+        static void EvalDupAddOne(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            methodGen.Body.ILOperator.Emit(OpCodes.Add);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+        }
+
+        static void EvalAddOneDup(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            methodGen.Body.ILOperator.Emit(OpCodes.Add);
+            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+        }
+
+        static void EvalSubOneDup(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            methodGen.Body.ILOperator.Emit(OpCodes.Sub);
+            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+        }
+
+        static void EvalIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Arguments[0], state);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ceq);
+            var localDecl = methodGen.Body.ILOperator.AddLocal(typeof(bool));
+            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            var labelDecl = methodGen.Body.ILOperator.AddLabel();
+            state.IfInfoStack.Push(new IfInfo(labelDecl));
+            methodGen.Body.ILOperator.Emit(OpCodes.Brtrue_S, labelDecl);
+        }
+
+        static void EvalEndIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var ifInfo = state.IfInfoStack.Pop();
+            methodGen.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
+        }
+
+        static void EvalExpandAndLdarg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+            string parameterName = (string)expanded.DynamicInvoke();
+            var parameterGen = methodGen.Parameters.First(_parameterGen => _parameterGen.Name == parameterName);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
+        }
+
+        static void EvalExpand(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+            EvalConstant(methodGen, Expression.Constant(expanded.DynamicInvoke()), state);
+        }
+
+        static void EvalReturn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Arguments[0], state);
+            methodGen.Body.ILOperator.Emit(OpCodes.Ret);
+        }
+
+        static void EvalEnd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            methodGen.Body.ILOperator.Emit(OpCodes.Ret);
+        }
+
         static void EvalConstant(IMethodBaseGenerator methodGen, ConstantExpression exp, EvalState state)
         {
             string s = default(string);
@@ -338,6 +402,7 @@ namespace Urasandesu.NAnonym.ILTools
             bool? nb = default(bool?);
             var e = default(Enum);
             var t = default(Type);
+            var mi = default(MethodInfo);
             if (exp.Value == null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldnull);
@@ -372,6 +437,12 @@ namespace Urasandesu.NAnonym.ILTools
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, t);
                 methodGen.Body.ILOperator.Emit(OpCodes.Call, GetTypeFromHandle);
             }
+            else if ((mi = exp.Value as MethodInfo) != null)
+            {
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
+            }
             else
             {
                 // TODO: exp.Value がオブジェクト型の場合はどうするのだ？
@@ -385,17 +456,26 @@ namespace Urasandesu.NAnonym.ILTools
             switch (exp.NodeType)
             {
                 case ExpressionType.Convert:
-                    if (exp.Type == typeof(int))
+                    if (exp.Type.IsSubclassOf(typeof(ValueType)))
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                        if (exp.Type == typeof(int))
+                        {
+                            methodGen.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
-                    else if (typeof(double).IsAssignableFrom(exp.Type))
+                    else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
                     {
-                        throw new NotImplementedException();
+                        // TODO: implicit operator や explicit operator の実装。
+                        methodGen.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
                     }
                     else
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
+                        // TODO: implicit operator や explicit operator の実装。
+                        methodGen.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
                     }
                     break;
                 case ExpressionType.ArrayLength:
@@ -405,6 +485,27 @@ namespace Urasandesu.NAnonym.ILTools
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        static void EvalInvoke(IMethodBaseGenerator methodGen, InvocationExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Expression, state);
+            EvalArguments(methodGen, exp.Arguments, state);
+            if (exp.Expression.Type.IsSubclassOf(typeof(Delegate)))
+            {
+                var invokeMethod = exp.Expression.Type.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
+                methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, invokeMethod);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        static void EvalLambda(IMethodBaseGenerator methodGen, LambdaExpression exp, EvalState state)
+        {
+            // TODO: DynamicMethod 再帰して作ることになる。手間なので後回し。
+            EvalExpression(methodGen, exp.Body, state);
         }
 
         static void EvalMember(IMethodBaseGenerator methodGen, MemberExpression exp, EvalState state)
@@ -563,11 +664,30 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         #endregion
-    }
 
-    class EvalState
-    {
-        public bool NoPop { get; set; }
-    }
+        internal class EvalState
+        {
+            public EvalState()
+            {
+                IfInfoStack = new Stack<IfInfo>();
+            }
 
+            public bool ProhibitsLastAutoPop { get; set; }
+            public Stack<IfInfo> IfInfoStack { get; private set; }
+        }
+
+        internal class IfInfo
+        {
+            public IfInfo()
+            {
+            }
+
+            public IfInfo(ILabelDeclaration labelDecl)
+            {
+                LabelDecl = labelDecl;
+            }
+
+            public ILabelDeclaration LabelDecl { get; private set; }
+        }
+    }
 }

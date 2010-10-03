@@ -95,5 +95,10 @@ namespace Urasandesu.NAnonym.Test
         {
             return value;
         }
+
+        public static string GetValue(string value)
+        {
+            return value;
+        }
     }
 }

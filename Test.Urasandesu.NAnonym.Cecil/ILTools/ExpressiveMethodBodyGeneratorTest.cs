@@ -1080,6 +1080,7 @@ Parameter[1] = IntPtr method
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
                     var methodToCall = default(Func<string, string>);
+                    gen.Eval(_ => _.Addloc(methodToCall, null));
                     gen.Eval(_ => stringBuilder.AppendFormat("methodToCall == null = {0}", methodToCall == null));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
@@ -1101,6 +1102,63 @@ Parameter[1] = IntPtr method
                         catch (TargetInvocationException e)
                         {
                             Assert.AreEqual("methodToCall == null = True", e.InnerException.Message);
+                        }
+                    };
+
+                return testInfo;
+            }));
+        }
+
+
+
+
+        [Test]
+        public void EmitTest21()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            TestHelper.UsingNewDomain(() =>
+            {
+                // modify ...
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
+                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+
+                var action2LocalVariableDef21 =
+                    methodTestClassDef.GetMethod(
+                        "Action2LocalVariable",
+                        BindingFlags.Instance | BindingFlags.Public,
+                        new Type[] { }).DuplicateWithoutBody();
+                action2LocalVariableDef21.Name = "Action2LocalVariable21";
+                methodTestClassDef.Methods.Add(action2LocalVariableDef21);
+                action2LocalVariableDef21.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    var methodToCall = default(Func<string, string>);
+                    gen.Eval(_ => _.If(methodToCall == null));
+                    gen.Eval(_ => _.Stloc(methodToCall, new Func<string, string>(TestHelper.GetValue)));
+                    gen.Eval(_ => _.EndIf());
+                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall("aiueo")));
+                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                });
+
+                methodTestClassDef.Module.Assembly.Write(tempFileName);
+
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
+                testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = methodTestClassDef.FullName;
+                testInfo.MethodName = action2LocalVariableDef21.Name;
+                testInfo.TestVerifier =
+                    target =>
+                    {
+                        try
+                        {
+                            target.Method.Invoke(target.Instance, null);
+                            Assert.Fail();
+                        }
+                        catch (TargetInvocationException e)
+                        {
+                            Assert.AreEqual("methodToCall(\"aiueo\") = aiueo", e.InnerException.Message);
                         }
                     };
 
