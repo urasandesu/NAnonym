@@ -57,10 +57,13 @@ namespace Urasandesu.NAnonym.DI
         // TODO: 引数数を汎用デリゲート型まで拡張。
         // TODO: SetupMode.Override 実装。
         // TODO: LocalClassAssembly キャッシュ機構追加。
-        // DOING: フィールドへの参照許可を ExpressiveMethodBodyGenerator に追加。
         // DOING: 実際の処理を呼び出すための DynamicMethod 用キャッシュ追加。
         // DONE: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
         // DONE: LocalMethod 生成メソッドの引数用デリゲート型追加。
+        // DONE: フィールドへの参照許可を ExpressiveMethodBodyGenerator に追加。
+        // DONE: EMBG リファクタリング。
+        // DONE: 2項演算子（null 比較）実装。
+        // DONE: If 文、Scope を導入。
         protected override void OnLoad(LocalClass modified)
         {
             var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
@@ -89,6 +92,13 @@ namespace Urasandesu.NAnonym.DI
                 gen.Eval(_ => _.Base());
             });
 
+            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(Func<string, string>);
+            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheFieldBuilder =
+                localClassTypeBuilder.DefineField(
+                    TypeSavable.GetName(() => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache), 
+                    typeof(Func<string, string>), 
+                    FieldAttributes.Private);
+
             foreach (var targetInfo in TargetInfoSet)
             {
                 switch (targetInfo.Mode)
@@ -114,6 +124,7 @@ namespace Urasandesu.NAnonym.DI
                             methodBuilder.ExpressBody(
                             gen =>
                             {
+                                gen.Eval(_ => _.If(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache == null));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
                                 gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(string), new Type[] { typeof(string) }, true)));
                                 var method4 = default(MethodInfo);
@@ -140,13 +151,14 @@ namespace Urasandesu.NAnonym.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                                var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<string, string>);
-                                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
-                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.OldMethod.ParameterNames()[0]))));
+                                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
+                                gen.Eval(_ => _.EndIf());
+                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache.Invoke(_.ExpandAndLdarg<string>(targetInfo.OldMethod.ParameterNames()[0]))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             },
-                            new ParameterBuilder[] { parameterBuilder });
+                            new ParameterBuilder[] { parameterBuilder },
+                            new FieldBuilder[] { CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheFieldBuilder });
                         }
                         break;
                     default:

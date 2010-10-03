@@ -359,7 +359,7 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
             var labelDecl = methodGen.Body.ILOperator.AddLabel();
             state.IfInfoStack.Push(new IfInfo(labelDecl));
-            methodGen.Body.ILOperator.Emit(OpCodes.Brtrue_S, labelDecl);
+            methodGen.Body.ILOperator.Emit(OpCodes.Brtrue, labelDecl);
         }
 
         static void EvalEndIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)

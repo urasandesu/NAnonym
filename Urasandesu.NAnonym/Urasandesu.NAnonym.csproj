@@ -86,6 +86,8 @@
     <Compile Include="ILTools\IModuleGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRConstructorDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLabelDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLabelGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRLocalDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRLocalGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMemberDeclarationImpl.cs" />

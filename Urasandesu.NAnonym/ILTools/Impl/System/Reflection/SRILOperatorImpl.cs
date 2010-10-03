@@ -63,7 +63,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public ILabelGenerator AddLabel()
         {
-            throw new NotImplementedException();
+            var label = ilGenerator.DefineLabel();
+            return new SRLabelGeneratorImpl(label);
         }
 
         public void Emit(OpCode opcode)
@@ -107,7 +108,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ILabelDeclaration label)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.ToSre(), ((SRLabelDeclarationImpl)label).Label);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, label));
         }
 
         public void Emit(OpCode opcode, ILabelDeclaration[] labels)
@@ -180,7 +182,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void SetLabel(ILabelDeclaration loc)
         {
-            throw new NotImplementedException();
+            ilGenerator.MarkLabel(((SRLabelDeclarationImpl)loc).Label);
         }
 
         public ReadOnlyCollection<IDirectiveGenerator> Directives

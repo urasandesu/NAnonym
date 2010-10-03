@@ -105,6 +105,14 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
+            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(Func<string, string>);
+            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef =
+                new FieldDefinition(TypeSavable.GetName(
+                    () => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache),
+                    MC::FieldAttributes.Private,
+                    tbaseModuleDef.Import(typeof(Func<string, string>)));
+            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef);
+
             foreach (var targetInfo in TargetInfoSet)
             {
                 switch (targetInfo.Mode)
@@ -127,6 +135,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                             newMethod.ExpressBody(
                             gen =>
                             {
+                                gen.Eval(_ => _.If(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache == null));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
                                 gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(string), new Type[] { typeof(string) }, true)));
                                 var ctor3 = default(ConstructorInfo);
@@ -170,9 +179,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                                var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker = default(Func<string, string>);
-                                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
-                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Invoker.Invoke(_.ExpandAndLdarg<string>(targetInfo.NewMethod.GetParameters()[0].Name))));
+                                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
+                                gen.Eval(_ => _.EndIf());
+                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache.Invoke(_.ExpandAndLdarg<string>(targetInfo.NewMethod.GetParameters()[0].Name))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             });

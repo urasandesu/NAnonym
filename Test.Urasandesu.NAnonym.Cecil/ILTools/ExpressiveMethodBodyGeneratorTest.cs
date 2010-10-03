@@ -18,6 +18,7 @@ using MC = Mono.Cecil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
+using Urasandesu.NAnonym;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -1122,6 +1123,14 @@ Parameter[1] = IntPtr method
                 var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
                 methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
 
+                var methodToCall20 = default(Func<string, string>);
+                var methodToCall20Def = 
+                    new FieldDefinition(
+                        TypeSavable.GetName(() => methodToCall20), 
+                        MC::FieldAttributes.Private, 
+                        methodTestClassDef.Module.Import(typeof(Func<string, string>)));
+                methodTestClassDef.Fields.Add(methodToCall20Def);
+
                 var action2LocalVariableDef21 =
                     methodTestClassDef.GetMethod(
                         "Action2LocalVariable",
@@ -1134,11 +1143,13 @@ Parameter[1] = IntPtr method
                 {
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.If(methodToCall20 == null));
                     var methodToCall = default(Func<string, string>);
-                    gen.Eval(_ => _.If(methodToCall == null));
+                    gen.Eval(_ => _.Addloc(methodToCall, null));
                     gen.Eval(_ => _.Stloc(methodToCall, new Func<string, string>(TestHelper.GetValue)));
+                    gen.Eval(_ => _.Stfld(methodToCall20, methodToCall));
                     gen.Eval(_ => _.EndIf());
-                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall("aiueo")));
+                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall20("aiueo")));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
