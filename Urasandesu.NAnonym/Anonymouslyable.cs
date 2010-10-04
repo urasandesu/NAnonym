@@ -371,5 +371,4 @@ namespace Urasandesu.NAnonym
           StreamingContext context)
             : base(info, context) { }
     }
-
 }

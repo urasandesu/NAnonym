@@ -72,7 +72,7 @@ namespace Urasandesu.NAnonym.DI
 
         public LocalClass<TBase> IsImplementedBy(Func<T, TResult> newFunc)
         {
-            localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Implement, oldMethod, newFunc.Method));
+            localClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Implement, oldMethod, newFunc.Method, newFunc.GetType()));
             return localClass;
         }
     }

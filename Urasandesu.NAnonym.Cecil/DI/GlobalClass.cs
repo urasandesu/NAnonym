@@ -18,6 +18,7 @@ using Urasandesu.NAnonym.Cecil.ILTools;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
@@ -105,14 +106,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
-            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(Func<string, string>);
-            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef =
-                new FieldDefinition(TypeSavable.GetName(
-                    () => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache),
-                    MC::FieldAttributes.Private,
-                    tbaseModuleDef.Import(typeof(Func<string, string>)));
-            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef);
-
             foreach (var targetInfo in TargetInfoSet)
             {
                 switch (targetInfo.Mode)
@@ -121,6 +114,14 @@ namespace Urasandesu.NAnonym.Cecil.DI
                         throw new NotImplementedException();
                     case SetupMode.Replace:
                         {
+                            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(object);
+                            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef =
+                                new FieldDefinition(TypeSavable.GetName(
+                                    () => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache),
+                                    MC::FieldAttributes.Private,
+                                    tbaseModuleDef.Import(targetInfo.DelegateType));
+                            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef);
+
                             var sourceMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetInfo.OldMethod));
                             string souceMethodName = sourceMethodDef.Name;
                             sourceMethodDef.Name = "__" + sourceMethodDef.Name;
@@ -137,9 +138,11 @@ namespace Urasandesu.NAnonym.Cecil.DI
                             {
                                 gen.Eval(_ => _.If(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache == null));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
-                                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", typeof(string), new Type[] { typeof(string) }, true)));
+                                var returnType = targetInfo.OldMethod.ReturnType;
+                                var parameterTypes = targetInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+                                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", _.Expand(returnType), _.Expand(parameterTypes), true)));
                                 var ctor3 = default(ConstructorInfo);
-                                gen.Eval(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                                gen.Eval(_ => _.Addloc(ctor3, _.Expand(targetInfo.DelegateType).GetConstructor(
                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                                     null,
                                                                     new Type[] 
@@ -148,14 +151,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                                         typeof(IntPtr) 
                                                                     }, null)));
                                 var method4 = default(MethodInfo);
-                                gen.Eval(_ => _.Addloc(method4, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetMethod(
+                                gen.Eval(_ => _.Addloc(method4, _.Expand(targetInfo.DelegateType).GetMethod(
                                                                     "Invoke",
                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                                    null,
-                                                                    new Type[] 
-                                                                    { 
-                                                                        typeof(String) 
-                                                                    }, null)));
+                                                                    null, _.Expand(parameterTypes), null)));
                                 var cacheField = default(FieldInfo);
                                 gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
                                                                     _.Expand(tmpCacheField.Name),
@@ -179,9 +178,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, (Func<string, string>)CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(typeof(Func<string, string>))));
+                                gen.Eval(_ => _.ExpandStfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, targetInfo.DelegateType, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
                                 gen.Eval(_ => _.EndIf());
-                                gen.Eval(_ => _.Return(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache.Invoke(_.ExpandAndLdarg<string>(targetInfo.NewMethod.GetParameters()[0].Name))));
+                                var invoke = targetInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
+                                gen.Eval(_ => _.Return(_.ExpandInvoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, invoke, _.ExpandLdargs(targetInfo.OldMethod.ParameterNames()))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             });

@@ -56,7 +56,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public GlobalClass<TBase> IsReplacedBy(Func<T, TResult> newFunc)
         {
-            globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Replace, oldMethod, newFunc.Method));
+            globalClass.TargetInfoSet.Add(new TargetInfo(SetupMode.Replace, oldMethod, newFunc.Method, newFunc.GetType()));
             return globalClass;
         }
     }

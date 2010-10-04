@@ -248,12 +248,15 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (expressible.IsAddloc(exp.Method)) EvalAddloc(methodGen, exp, state);
                     else if (expressible.IsStloc(exp.Method)) EvalStloc(methodGen, exp, state);
                     else if (expressible.IsStfld(exp.Method)) EvalStfld(methodGen, exp, state);
+                    else if (expressible.IsExpandStfld(exp.Method)) EvalExpandStfld(methodGen, exp, state);
                     else if (expressible.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
                     else if (expressible.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
                     else if (expressible.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
+                    else if (expressible.IsExpandInvoke(exp.Method)) EvalExpandInvoke(methodGen, exp, state);
                     else if (expressible.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
                     else if (expressible.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
-                    else if (expressible.IsExpandAndLdarg(exp.Method)) EvalExpandAndLdarg(methodGen, exp, state);
+                    else if (expressible.IsExpandLdarg(exp.Method)) EvalExpandLdarg(methodGen, exp, state);
+                    else if (expressible.IsExpandLdargs(exp.Method)) EvalExpandLdargs(methodGen, exp, state);
                     else if (expressible.IsExpand(exp.Method)) EvalExpand(methodGen, exp, state);
                     else if (expressible.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
                     else if (expressible.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
@@ -316,6 +319,20 @@ namespace Urasandesu.NAnonym.ILTools
             state.ProhibitsLastAutoPop = true;
         }
 
+
+        static void EvalExpandStfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+            EvalExpression(methodGen, exp.Arguments[2], state);
+            var expanded = Expression.Lambda(exp.Arguments[1]).Compile();
+            Type variableType = (Type)expanded.DynamicInvoke();
+            methodGen.Body.ILOperator.Emit(OpCodes.Castclass, variableType);
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
+            state.ProhibitsLastAutoPop = true;
+        }
+
         static void EvalDupAddOne(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
@@ -349,6 +366,15 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
         }
 
+        static void EvalExpandInvoke(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Arguments[0], state);
+            EvalExpression(methodGen, exp.Arguments[2], state);
+            var expanded = Expression.Lambda(exp.Arguments[1]).Compile();
+            var method = (MethodInfo)expanded.DynamicInvoke();
+            methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, method);
+        }
+
         static void EvalIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             EvalExpression(methodGen, exp.Arguments[0], state);
@@ -368,7 +394,7 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
         }
 
-        static void EvalExpandAndLdarg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        static void EvalExpandLdarg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
             string parameterName = (string)expanded.DynamicInvoke();
@@ -376,10 +402,30 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
         }
 
+        static void EvalExpandLdargs(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+            string[] parameterNames = (string[])expanded.DynamicInvoke();
+            parameterNames.ForEach(
+            parameterName =>
+            {
+                var parameterGen = methodGen.Parameters.First(_parameterGetn => _parameterGetn.Name == parameterName);
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
+            });
+        }
+
         static void EvalExpand(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
-            EvalConstant(methodGen, Expression.Constant(expanded.DynamicInvoke()), state);
+            object o = expanded.DynamicInvoke();
+            if (o.GetType().IsArray)
+            {
+                EvalNewArray(methodGen, Expression.NewArrayInit(o.GetType().GetElementType(), ((Array)o).Cast<object>().Select(_o => (Expression)Expression.Constant(_o))), state);
+            }
+            else
+            {
+                EvalConstant(methodGen, Expression.Constant(o), state);
+            }
         }
 
         static void EvalReturn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)

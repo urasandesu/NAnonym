@@ -141,7 +141,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
                     gen.Eval(_ => stringBuilder.Append("Hello, World!! "));
-                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandLdarg<string>(valueParameterName)));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
@@ -208,9 +208,9 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
-                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
-                    gen.Eval(_ => stringBuilder.Append(_.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.ExpandLdarg<string>(valueParameterName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
@@ -273,7 +273,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.ExpandAndLdarg<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.ExpandLdarg<string>(valueParameterName)));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.Expand(cacheField.Name)));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.Expand(cacheField.FieldType.FullName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
@@ -349,7 +349,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 {
                     var stringBuilder = default(StringBuilder);
                     gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.ExpandAndLdarg<string>(valueParameterName), fieldValue));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.ExpandLdarg<string>(valueParameterName), fieldValue));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder },
