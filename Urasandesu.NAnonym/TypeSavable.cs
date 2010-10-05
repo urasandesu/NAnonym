@@ -8,7 +8,6 @@ using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym
 {
-    // TODO: TypeSavable は Urasandesu.NAnonym 直下にあったほうが自然。
     public static class TypeSavable
     {
         public static MethodInfo GetMethodInfo<TResult>(Expression<Func<Func<TResult>>> methodProvider)
@@ -36,6 +35,11 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
+
+        
+        
+        
+        
         public static MethodInfo GetMethodInfo(Expression<Func<Action>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
@@ -61,6 +65,11 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
+        
+        
+        
+        
+        
         public static string GetMethodName(Expression<Func<Action>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
@@ -86,6 +95,11 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
+        
+        
+        
+        
+        
         public static string GetMethodName<TResult>(Expression<Func<Func<TResult>>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
@@ -111,6 +125,16 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
+
+
+
+
+
+        public static ParameterInfo[] GetMethodParameters(Expression<Func<Action>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
+        }
+
         public static ParameterInfo[] GetMethodParameters<T>(Expression<Func<Action<T>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
@@ -127,6 +151,16 @@ namespace Urasandesu.NAnonym
         }
 
         public static ParameterInfo[] GetMethodParameters<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
+        }
+
+
+
+
+
+
+        public static ParameterInfo[] GetMethodParameters<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
@@ -151,6 +185,16 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
+
+
+
+
+
+        public static Type[] GetMethodParameterTypes(Expression<Func<Action>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+        }
+
         public static Type[] GetMethodParameterTypes<T>(Expression<Func<Action<T>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
@@ -167,6 +211,16 @@ namespace Urasandesu.NAnonym
         }
 
         public static Type[] GetMethodParameterTypes<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+        }
+
+
+
+
+
+
+        public static Type[] GetMethodParameterTypes<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
         }
@@ -191,6 +245,16 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
         }
 
+
+
+
+
+
+        public static string[] GetMethodParameterNames(Expression<Func<Action>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+        }
+
         public static string[] GetMethodParameterNames<T>(Expression<Func<Action<T>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
@@ -207,6 +271,16 @@ namespace Urasandesu.NAnonym
         }
 
         public static string[] GetMethodParameterNames<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+        }
+
+
+
+
+
+
+        public static string[] GetMethodParameterNames<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
         }
@@ -231,11 +305,21 @@ namespace Urasandesu.NAnonym
             return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
         }
 
-        static MethodInfo GetMethodInfo(LambdaExpression methodProvider)
+
+        
+        
+        
+        
+        public static MethodInfo GetMethodInfo(LambdaExpression methodProvider)
         {
             return (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)methodProvider.Body).Operand).Arguments[2]).Value;
         }
 
+        
+        
+        
+        
+        
         public static string GetName<T>(Expression<Func<T>> nameProvider)
         {
             return ((MemberExpression)nameProvider.Body).Member.Name;

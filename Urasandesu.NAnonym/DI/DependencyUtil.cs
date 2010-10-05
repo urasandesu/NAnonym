@@ -27,14 +27,64 @@ namespace Urasandesu.NAnonym.DI
             }
         }
 
-        //public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<Func<TBase, Func<T, TResult>>> expression)
-        //{
-        //    return (MethodInfo)((ConstantExpression)((MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
-        //}
-
-        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<FuncReference<TBase, T, TResult>> expression)
+        
+        
+        
+        
+        
+        public static MethodInfo ExtractMethod<TBase, TResult>(Expression<FuncReference<TBase, TResult>> reference)
         {
-            return (MethodInfo)((ConstantExpression)((MethodCallExpression)(((UnaryExpression)expression.Body).Operand)).Arguments[2]).Value;
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<FuncReference<TBase, T, TResult>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        
+        
+        
+        
+        
+        public static MethodInfo ExtractMethod<TBase>(Expression<ActionReference<TBase>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T>(Expression<ActionReference<TBase, T>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2>(Expression<ActionReference<TBase, T1, T2>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> reference)
+        {
+            return TypeSavable.GetMethodInfo((LambdaExpression)reference);
         }
     }
 }
