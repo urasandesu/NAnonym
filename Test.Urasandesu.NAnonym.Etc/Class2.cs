@@ -8,4 +8,12 @@ namespace Test.Urasandesu.NAnonym.Etc
             return "こんにちは、" + value + " 世界！";
         }
     }
+
+    public class Class3
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+    }
 }

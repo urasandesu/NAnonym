@@ -8,6 +8,7 @@ namespace Urasandesu.NAnonym.ILTools
     public sealed class Expressible
     {
         readonly MethodInfo BaseInfo;
+        readonly MethodInfo ThisInfo;
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
         readonly MethodInfo StfldInfo;
@@ -27,6 +28,7 @@ namespace Urasandesu.NAnonym.ILTools
         public Expressible()
         {
             BaseInfo = TypeSavable.GetMethodInfo(() => Base);
+            ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
             StfldInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
@@ -47,6 +49,11 @@ namespace Urasandesu.NAnonym.ILTools
         public bool IsBase(MethodInfo target)
         {
             return target == BaseInfo;
+        }
+
+        public bool IsThis(MethodInfo target)
+        {
+            return target == ThisInfo;
         }
 
         public bool IsAddloc(MethodInfo target)
@@ -191,6 +198,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Base()
         {
+        }
+
+        public object This()
+        {
+            return null;
         }
         
         public void Addloc<T>(T variable, T value)

@@ -35,17 +35,23 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         public MCMethodBaseDeclarationImpl(MethodReference methodRef)
             : base(methodRef)
         {
-            Initialize(methodRef);
+            Initialize(methodRef, ILEmitMode.Normal, null);
         }
 
-        void Initialize(MethodReference methodRef)
+        public MCMethodBaseDeclarationImpl(MethodReference methodRef, ILEmitMode mode, Instruction target)
+            : base(methodRef)
+        {
+            Initialize(methodRef, mode, target);
+        }
+
+        void Initialize(MethodReference methodRef, ILEmitMode mode, Instruction target)
         {
             this.methodRef = methodRef;
             this.methodDef = methodRef.Resolve();
             methodName = methodDef.Name;
             methodAttr = methodDef.Attributes;
             parameterTypeFullNames = methodDef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
-            bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body);
+            bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body, mode, target);
             declaringTypeDecl = (MCTypeGeneratorImpl)methodRef.DeclaringType.Resolve();
             parameters = new ReadOnlyCollection<IParameterDeclaration>(
                 methodRef.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
@@ -122,7 +128,8 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                     method.Name == methodName &&
                     method.Attributes == methodAttr &&
                     method.Parameters.Select(parameter => parameter.ParameterType.FullName).Equivalent(parameterTypeFullNames));
-            Initialize(methodDef);
+            // TODO: PortableScope 系のテストを通るようにする。
+            Initialize(methodDef, ILEmitMode.Normal, null);
             base.OnDeserializedManually(new StreamingContext(context.State, methodDef));
         }
     }

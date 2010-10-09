@@ -6,23 +6,23 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class TargetInfo
+    class TargetMethodInfo
     {
         public SetupMode Mode { get; set; }
         public MethodInfo OldMethod { get; set; }
         public MethodInfo NewMethod { get; set; }
         public Type DelegateType { get; set; }
 
-        public TargetInfo()
+        public TargetMethodInfo()
         {
         }
 
-        public TargetInfo(SetupMode mode, MethodInfo oldMethod, MethodInfo newMethod)
+        public TargetMethodInfo(SetupMode mode, MethodInfo oldMethod, MethodInfo newMethod)
             : this(mode, oldMethod, newMethod, null)
         {
         }
 
-        public TargetInfo(SetupMode mode, MethodInfo oldMethod, MethodInfo newMethod, Type delegateType)
+        public TargetMethodInfo(SetupMode mode, MethodInfo oldMethod, MethodInfo newMethod, Type delegateType)
         {
             Mode = mode;
             OldMethod = oldMethod;

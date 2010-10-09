@@ -49,7 +49,7 @@
     <Compile Include="DI\ActionReference.cs" />
     <Compile Include="DI\FuncReference.cs" />
     <Compile Include="DI\SetupMode.cs" />
-    <Compile Include="DI\TargetInfo.cs" />
+    <Compile Include="DI\TargetMethodInfo.cs" />
     <Compile Include="ILTools\DeserializableManually.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />

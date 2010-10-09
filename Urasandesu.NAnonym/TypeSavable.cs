@@ -315,6 +315,11 @@ namespace Urasandesu.NAnonym
             return (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)methodProvider.Body).Operand).Arguments[2]).Value;
         }
 
+        public static FieldInfo GetFieldInfo<T>(Expression<Func<T>> fieldProvider)
+        {
+            return (FieldInfo)((MemberExpression)fieldProvider.Body).Member;
+        }
+
         
         
         

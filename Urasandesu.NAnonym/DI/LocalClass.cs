@@ -49,12 +49,18 @@ namespace Urasandesu.NAnonym.DI
     {
         readonly Type tbaseType = typeof(TBase);
 
-        internal HashSet<TargetInfo> TargetInfoSet { get; private set; }
+        internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
 
         Type createdType;
 
+        // TODO: コンストラクタで自動生成クラスのフィールド初期化処理を行うよう修正。
+        // TODO: コンストラクタで自動生成クラスのフィールド初期化処理を行う処理をキャッシュ。
+        // TODO: GlobalClass で複数メソッド上書きに対応。
+        // TODO: GlobalClass で、同じ Assembly への書き込みは 1 度で済ませるよう修正。
         // TODO: SetupMode.Override 実装。
         // TODO: LocalClassAssembly キャッシュ機構追加。
+        // DOING: ExpressBodyBefore 処理作成。
+        // DOING: GlobalClass で設定クラスのメソッド呼び出す処理を拡張（インスタンス変数にキャッシュされるタイプ）。
         // DOING: 引数数を汎用デリゲート型まで拡張。
         // DONE: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
         // DONE: LocalMethod 生成メソッドの引数用デリゲート型追加。
@@ -64,6 +70,7 @@ namespace Urasandesu.NAnonym.DI
         // DONE: If 文、Scope を導入。
         // DONE: 実際の処理を呼び出すための DynamicMethod 用キャッシュ追加。
         // DONE: 戻り値型、引数型の制限解除。
+        // DONE: 自動生成クラスのフィールドの初期化を明示するための構文導入。
         protected override void OnLoad(LocalClass modified)
         {
             var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
@@ -170,7 +177,7 @@ namespace Urasandesu.NAnonym.DI
 
         public LocalClass()
         {
-            TargetInfoSet = new HashSet<TargetInfo>();
+            TargetInfoSet = new HashSet<TargetMethodInfo>();
         }
 
         Action<LocalClass<TBase>> setupper;

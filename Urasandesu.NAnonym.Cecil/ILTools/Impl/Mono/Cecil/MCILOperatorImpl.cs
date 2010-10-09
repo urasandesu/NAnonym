@@ -15,7 +15,6 @@ using System.ComponentModel;
 using System.Collections;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools.Impl;
-//using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
 using UN = Urasandesu.NAnonym;
 using UNI = Urasandesu.NAnonym.ILTools;
 
@@ -25,17 +24,34 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     {
         readonly MethodDefinition methodDef;
         readonly MC::Cil.MethodBody bodyDef;
-        readonly ILProcessor il;
+        readonly IILProcessor il;
         readonly ModuleDefinition moduleDef;
 
-        public static implicit operator MCILOperatorImpl(ILProcessor il)
-        {
-            return new MCILOperatorImpl(il);
-        }
+        //public static implicit operator MCILOperatorImpl(ILProcessor il)
+        //{
+        //    return new MCILOperatorImpl(il);
+        //}
 
         public MCILOperatorImpl(ILProcessor il)
+            : this(il, ILEmitMode.Normal, null)
         {
-            this.il = il;
+        }
+
+        public MCILOperatorImpl(ILProcessor il, ILEmitMode mode, Instruction target)
+        {
+            switch (mode)
+            {
+                case ILEmitMode.Normal:
+                    this.il = new NormalILProcessor(il);
+                    break;
+                case ILEmitMode.InsertBefore:
+                    this.il = new InsertBeforeILProcessor(il, target);
+                    break;
+                case ILEmitMode.InsertAfter:
+                    throw new NotImplementedException();
+                default:
+                    throw new NotSupportedException();
+            }
             bodyDef = il.Body;
             methodDef = bodyDef.Method;
             moduleDef = methodDef.Module;
@@ -175,5 +191,341 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             il.Append(((MCLabelDeclarationImpl)loc).Target);
         }
+    }
+
+    class NormalILProcessor : IILProcessor
+    {
+        ILProcessor il;
+        public NormalILProcessor(ILProcessor il)
+        {
+            this.il = il;
+        }
+
+        #region IILProcessor メンバ
+
+        public MCC::MethodBody Body
+        {
+            get { return il.Body; }
+        }
+
+        public void Append(Instruction instruction)
+        {
+            il.Append(instruction);
+        }
+
+        public Instruction Create(MCC::OpCode opcode)
+        {
+            return il.Create(opcode);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, byte value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, CallSite site)
+        {
+            return il.Create(opcode, site);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, double value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, FieldReference field)
+        {
+            return il.Create(opcode, field);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, float value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, Instruction target)
+        {
+            return il.Create(opcode, target);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, Instruction[] targets)
+        {
+            return il.Create(opcode, targets);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, int value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, long value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, MethodReference method)
+        {
+            return il.Create(opcode, method);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, ParameterDefinition parameter)
+        {
+            return il.Create(opcode, parameter);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, sbyte value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, string value)
+        {
+            return il.Create(opcode, value);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, TypeReference type)
+        {
+            return il.Create(opcode, type);
+        }
+
+        public Instruction Create(MCC::OpCode opcode, VariableDefinition variable)
+        {
+            return il.Create(opcode, variable);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode)
+        {
+            il.Emit(opcode);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, byte value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, CallSite site)
+        {
+            il.Emit(opcode, site);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, double value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, FieldReference field)
+        {
+            il.Emit(opcode, field);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, float value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, Instruction target)
+        {
+            il.Emit(opcode, target);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, Instruction[] targets)
+        {
+            il.Emit(opcode, targets);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, int value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, long value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, MethodReference method)
+        {
+            il.Emit(opcode, method);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, ParameterDefinition parameter)
+        {
+            il.Emit(opcode, parameter);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, sbyte value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, string value)
+        {
+            il.Emit(opcode, value);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, TypeReference type)
+        {
+            il.Emit(opcode, type);
+        }
+
+        public virtual void Emit(MCC::OpCode opcode, VariableDefinition variable)
+        {
+            il.Emit(opcode, variable);
+        }
+
+        public void InsertAfter(Instruction target, Instruction instruction)
+        {
+            il.InsertAfter(target, instruction);
+        }
+
+        public void InsertBefore(Instruction target, Instruction instruction)
+        {
+            il.InsertBefore(target, instruction);
+        }
+
+        public void Remove(Instruction instruction)
+        {
+            il.Remove(instruction);
+        }
+
+        public void Replace(Instruction target, Instruction instruction)
+        {
+            il.Replace(target, instruction);
+        }
+
+        #endregion
+    }
+
+    class InsertBeforeILProcessor : NormalILProcessor
+    {
+        Instruction target;
+        public InsertBeforeILProcessor(ILProcessor il, Instruction target)
+            : base(il)
+        {
+            this.target = target;
+        }
+
+        public override void Emit(MCC::OpCode opcode)
+        {
+            InsertBefore(target, Create(opcode));
+        }
+
+        public override void Emit(MCC::OpCode opcode, byte value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, CallSite site)
+        {
+            InsertBefore(target, Create(opcode, site));
+        }
+
+        public override void Emit(MCC::OpCode opcode, double value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, FieldReference field)
+        {
+            InsertBefore(target, Create(opcode, field));
+        }
+
+        public override void Emit(MCC::OpCode opcode, float value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, Instruction target)
+        {
+            InsertBefore(target, Create(opcode, target));
+        }
+
+        public override void Emit(MCC::OpCode opcode, Instruction[] targets)
+        {
+            InsertBefore(target, Create(opcode, targets));
+        }
+
+        public override void Emit(MCC::OpCode opcode, int value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, long value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, MethodReference method)
+        {
+            InsertBefore(target, Create(opcode, method));
+        }
+
+        public override void Emit(MCC::OpCode opcode, ParameterDefinition parameter)
+        {
+            InsertBefore(target, Create(opcode, parameter));
+        }
+
+        public override void Emit(MCC::OpCode opcode, sbyte value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, string value)
+        {
+            InsertBefore(target, Create(opcode, value));
+        }
+
+        public override void Emit(MCC::OpCode opcode, TypeReference type)
+        {
+            InsertBefore(target, Create(opcode, type));
+        }
+
+        public override void Emit(MCC::OpCode opcode, VariableDefinition variable)
+        {
+            InsertBefore(target, Create(opcode, variable));
+        }
+    }
+
+    interface IILProcessor
+    {
+        MCC::MethodBody Body { get; }
+
+        void Append(Instruction instruction);
+        Instruction Create(MCC::OpCode opcode);
+        Instruction Create(MCC::OpCode opcode, byte value);
+        Instruction Create(MCC::OpCode opcode, CallSite site);
+        Instruction Create(MCC::OpCode opcode, double value);
+        Instruction Create(MCC::OpCode opcode, FieldReference field);
+        Instruction Create(MCC::OpCode opcode, float value);
+        Instruction Create(MCC::OpCode opcode, Instruction target);
+        Instruction Create(MCC::OpCode opcode, Instruction[] targets);
+        Instruction Create(MCC::OpCode opcode, int value);
+        Instruction Create(MCC::OpCode opcode, long value);
+        Instruction Create(MCC::OpCode opcode, MethodReference method);
+        Instruction Create(MCC::OpCode opcode, ParameterDefinition parameter);
+        Instruction Create(MCC::OpCode opcode, sbyte value);
+        Instruction Create(MCC::OpCode opcode, string value);
+        Instruction Create(MCC::OpCode opcode, TypeReference type);
+        Instruction Create(MCC::OpCode opcode, VariableDefinition variable);
+        void Emit(MCC::OpCode opcode);
+        void Emit(MCC::OpCode opcode, byte value);
+        void Emit(MCC::OpCode opcode, CallSite site);
+        void Emit(MCC::OpCode opcode, double value);
+        void Emit(MCC::OpCode opcode, FieldReference field);
+        void Emit(MCC::OpCode opcode, float value);
+        void Emit(MCC::OpCode opcode, Instruction target);
+        void Emit(MCC::OpCode opcode, Instruction[] targets);
+        void Emit(MCC::OpCode opcode, int value);
+        void Emit(MCC::OpCode opcode, long value);
+        void Emit(MCC::OpCode opcode, MethodReference method);
+        void Emit(MCC::OpCode opcode, ParameterDefinition parameter);
+        void Emit(MCC::OpCode opcode, sbyte value);
+        void Emit(MCC::OpCode opcode, string value);
+        void Emit(MCC::OpCode opcode, TypeReference type);
+        void Emit(MCC::OpCode opcode, VariableDefinition variable);
+        void InsertAfter(Instruction target, Instruction instruction);
+        void InsertBefore(Instruction target, Instruction instruction);
+        void Remove(Instruction instruction);
+        void Replace(Instruction target, Instruction instruction);
     }
 }

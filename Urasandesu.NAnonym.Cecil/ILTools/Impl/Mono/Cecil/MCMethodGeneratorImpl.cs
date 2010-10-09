@@ -30,6 +30,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             Initialize(methodDef);
         }
 
+        public MCMethodGeneratorImpl(MethodDefinition methodDef, ILEmitMode mode, Instruction target)
+            : base(methodDef, mode, target)
+        {
+            Initialize(methodDef);
+        }
+
         void Initialize(MethodDefinition methodDef)
         {
             var returnTypeDef = methodDef.ReturnType.Resolve();
@@ -93,5 +99,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             base.OnDeserializedManually(context);
             Initialize(MethodDef);
         }
+    }
+
+    enum ILEmitMode
+    {
+        Normal,
+        InsertBefore,
+        InsertAfter,
     }
 }

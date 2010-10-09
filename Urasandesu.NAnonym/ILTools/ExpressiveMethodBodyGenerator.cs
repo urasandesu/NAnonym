@@ -245,6 +245,7 @@ namespace Urasandesu.NAnonym.ILTools
                 if (exp.Object.Type == typeof(Expressible))
                 {
                     if (expressible.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
+                    else if (expressible.IsThis(exp.Method)) EvalThis(methodGen, exp, state);
                     else if (expressible.IsAddloc(exp.Method)) EvalAddloc(methodGen, exp, state);
                     else if (expressible.IsStloc(exp.Method)) EvalStloc(methodGen, exp, state);
                     else if (expressible.IsStfld(exp.Method)) EvalStfld(methodGen, exp, state);
@@ -289,6 +290,11 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
             var constructorDecl = methodGen.DeclaringType.BaseType.GetConstructor(new Type[] { });
             methodGen.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
+        }
+
+        static void EvalThis(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
         }
 
         static void EvalAddloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)

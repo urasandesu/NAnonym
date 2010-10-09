@@ -13,6 +13,7 @@ using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using SR = System.Reflection;
+using SRE = System.Reflection.Emit;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
@@ -25,12 +26,14 @@ namespace Urasandesu.NAnonym.Cecil.DI
     // GlobalClass が Generic Type 持っちゃうから、共通で引き回せるような口用。
     public abstract class GlobalClass : MarshalByRefObject
     {
-        internal HashSet<TargetInfo> TargetInfoSet { get; private set; }
+        //internal HashSet<TargetFieldInfo> TargetFieldInfoSet { get; private set; }
+        internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
         GlobalClass modified;
 
         public GlobalClass()
         {
-            TargetInfoSet = new HashSet<TargetInfo>();
+            //TargetFieldInfoSet = new HashSet<TargetFieldInfo>();
+            TargetInfoSet = new HashSet<TargetMethodInfo>();
         }
 
         internal void Register()
@@ -77,6 +80,13 @@ namespace Urasandesu.NAnonym.Cecil.DI
             setupper(this);
             return null;
         }
+
+        //public T Field<T>(Expression<Func<T>> variable, T value)
+        //{
+        //    var oldField = TypeSavable.GetFieldInfo(variable);
+        //    TargetFieldInfoSet.Add(new TargetFieldInfo(oldField, value));
+        //    return value;
+        //}
 
         public GlobalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> reference)
         {
@@ -157,6 +167,32 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
+            var CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache = default(GlobalClass);
+            var CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef =
+                        new FieldDefinition(TypeSavable.GetName(() => CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache),
+                            MC::FieldAttributes.Private,
+                            tbaseModuleDef.Import(typeof(GlobalClass)));
+            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef);
+
+
+            // TODO: FieldInfo の初期化はコンストラクタでやることになりそう。
+            // TODO: 初期化に使われるのが class だとまずい。
+            // TODO: ばらばらに初期化は難しいか。
+            // TODO: 対象のクラスが何度も new されることを考えると、設定クラスを new して Register する一連の処理を DynamicMethod 化し、キャッシュしたほうが良い。
+            var constructorDef = tbaseTypeDef.Methods.First(methodDef => methodDef.Name == ".ctor");
+            var firstInstruction = constructorDef.Body.Instructions[0];
+            constructorDef.ExpressBodyBefore(
+            gen =>
+            {
+                var settingClassConstructorInfo = default(ConstructorInfo);
+                gen.Eval(_ => _.Addloc(settingClassConstructorInfo, _.Expand(setupper.Method.DeclaringType).GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null)));
+                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache, (GlobalClass)settingClassConstructorInfo.Invoke(null)));
+                var settingClassMethodInfo = default(MethodInfo);
+                gen.Eval(_ => _.Addloc(settingClassMethodInfo, _.Expand(setupper.Method.DeclaringType).GetMethod("Register", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null)));
+                gen.Eval(_ => settingClassMethodInfo.Invoke(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache, null));
+            },
+            firstInstruction);
+
             foreach (var targetInfo in TargetInfoSet)
             {
                 switch (targetInfo.Mode)
@@ -191,46 +227,132 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
                                 var returnType = targetInfo.OldMethod.ReturnType;
                                 var parameterTypes = targetInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                                gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", _.Expand(returnType), _.Expand(parameterTypes), true)));
+                                if (tmpCacheField != null)
+                                {
+                                    gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", _.Expand(returnType), _.Expand(parameterTypes), true)));
+                                }
+                                else
+                                {
+                                    gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", _.Expand(returnType), _.Expand(new Type[] { typeof(TBase) }.Concat(parameterTypes).ToArray()), typeof(TBase), true)));
+                                }
+
                                 var ctor3 = default(ConstructorInfo);
-                                gen.Eval(_ => _.Addloc(ctor3, _.Expand(targetInfo.DelegateType).GetConstructor(
-                                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                                    null,
-                                                                    new Type[] 
+                                var method4 = default(MethodInfo);
+                                if (tmpCacheField != null)
+                                {
+                                    gen.Eval(_ => _.Addloc(ctor3, _.Expand(targetInfo.DelegateType).GetConstructor(
+                                                                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                                        null,
+                                                                        new Type[] 
                                                                     { 
                                                                         typeof(Object), 
                                                                         typeof(IntPtr) 
                                                                     }, null)));
-                                var method4 = default(MethodInfo);
-                                gen.Eval(_ => _.Addloc(method4, _.Expand(targetInfo.DelegateType).GetMethod(
-                                                                    "Invoke",
-                                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                                    null, _.Expand(parameterTypes), null)));
+                                    gen.Eval(_ => _.Addloc(method4, _.Expand(targetInfo.DelegateType).GetMethod(
+                                                                        "Invoke",
+                                                                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                                        null, _.Expand(parameterTypes), null)));
+                                }
+                                
                                 var cacheField = default(FieldInfo);
-                                gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
-                                                                    _.Expand(tmpCacheField.Name),
-                                                                    BindingFlags.NonPublic | BindingFlags.Static)));
+                                var cacheField2 = default(FieldInfo);
+                                if (tmpCacheField != null)
+                                {
+                                    gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
+                                                                        _.Expand(tmpCacheField.Name),
+                                                                        BindingFlags.NonPublic | BindingFlags.Static)));
+                                }
+                                else
+                                {
+                                    gen.Eval(_ => _.Addloc(cacheField2, _.Expand(typeof(TBase)).GetField(
+                                                                            _.Expand(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef.Name),
+                                                                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
+                                }
+
                                 var targetMethod = default(MethodInfo);
-                                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                                    _.Expand(targetInfo.NewMethod.Name),
-                                                                    BindingFlags.NonPublic | BindingFlags.Static)));
+                                var targetMethod2 = default(MethodInfo);
+                                if (tmpCacheField != null)
+                                {
+                                    gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                                        _.Expand(targetInfo.NewMethod.Name),
+                                                                        BindingFlags.NonPublic | BindingFlags.Static)));
+                                }
+                                else
+                                {
+                                    gen.Eval(_ => _.Addloc(targetMethod2, _.Expand(targetInfo.NewMethod.DeclaringType).GetMethod(
+                                                                            _.Expand(targetInfo.NewMethod.Name), 
+                                                                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)));
+                                }
+
+
                                 var il = default(ILGenerator);
                                 gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
-                                var label27 = default(Label);
-                                gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Brtrue_S, label27));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldnull));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldftn, targetMethod));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Newobj, ctor3));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Stsfld, cacheField));
-                                gen.Eval(_ => il.MarkLabel(label27));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
-                                gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                                gen.Eval(_ => _.ExpandStfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, targetInfo.DelegateType, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
-                                gen.Eval(_ => _.EndIf());
+                                if (tmpCacheField != null)
+                                {
+                                    var label27 = default(Label);
+                                    gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Brtrue_S, label27));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldnull));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldftn, targetMethod));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, ctor3));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Stsfld, cacheField));
+                                    gen.Eval(_ => il.MarkLabel(label27));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
+                                    for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
+                                    {
+                                        switch (parametersIndex)
+                                        {
+                                            case 0:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
+                                                break;
+                                            case 1:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
+                                                break;
+                                            case 2:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
+                                                break;
+                                            case 3:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
+                                                break;
+                                            default:
+                                                throw new NotSupportedException();
+                                        }
+                                    }
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
+                                    gen.Eval(_ => _.ExpandStfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, targetInfo.DelegateType, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
+                                    gen.Eval(_ => _.EndIf());
+                                }
+                                else
+                                {
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, cacheField2));
+                                    for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
+                                    {
+                                        switch (parametersIndex)
+                                        {
+                                            case 0:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
+                                                break;
+                                            case 1:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
+                                                break;
+                                            case 2:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
+                                                break;
+                                            case 3:
+                                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)4));
+                                                break;
+                                            default:
+                                                throw new NotSupportedException();
+                                        }
+                                    }
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod2));
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
+                                    gen.Eval(_ => _.ExpandStfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, targetInfo.DelegateType, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType), _.This())));
+                                    gen.Eval(_ => _.EndIf());
+                                }
                                 var invoke = targetInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
                                 gen.Eval(_ => _.Return(_.ExpandInvoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, invoke, _.ExpandLdargs(targetInfo.OldMethod.ParameterNames()))));
 
@@ -259,4 +381,24 @@ namespace Urasandesu.NAnonym.Cecil.DI
             get { return typeof(TBase).Assembly.Location; }
         }
     }
+
+
+
+
+
+    //public class TargetFieldInfo
+    //{
+    //    public FieldInfo OldField { get; set; }
+    //    public object Value { get; set; }
+
+    //    public TargetFieldInfo()
+    //    {
+    //    }
+
+    //    public TargetFieldInfo(FieldInfo oldField, object value)
+    //    {
+    //        OldField = oldField;
+    //        Value = value;
+    //    }
+    //}
 }
