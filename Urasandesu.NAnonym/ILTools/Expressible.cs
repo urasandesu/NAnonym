@@ -11,7 +11,9 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo ThisInfo;
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
+        readonly MethodInfo LdsfldInfo;
         readonly MethodInfo LdfldInfo;
+        readonly MethodInfo StsfldInfo;
         readonly MethodInfo StfldInfo1;
         readonly MethodInfo StfldInfo2;
         readonly MethodInfo DupAddOneInfo;
@@ -34,7 +36,9 @@ namespace Urasandesu.NAnonym.ILTools
             ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
+            LdsfldInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldsfld).GetGenericMethodDefinition();
             LdfldInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldfld).GetGenericMethodDefinition();
+            StsfldInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stsfld).GetGenericMethodDefinition();
             StfldInfo1 = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
             StfldInfo2 = TypeSavable.GetMethodInfo<object, Type, object, object>(() => Stfld);
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
@@ -86,9 +90,33 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        public bool IsLdsfld(MethodInfo target)
+        {
+            if (target.Name == LdsfldInfo.Name && target == LdsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool IsLdfld(MethodInfo target)
         {
             if (target.Name == LdfldInfo.Name && target == LdfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsStsfld(MethodInfo target)
+        {
+            if (target.Name == StsfldInfo.Name && target == StsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -243,7 +271,17 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
+        public T Ldsfld<T>(T variable)
+        {
+            return default(T);
+        }
+
         public T Ldfld<T>(T variable)
+        {
+            return default(T);
+        }
+
+        public T Stsfld<T>(T variable, T value)
         {
             return default(T);
         }

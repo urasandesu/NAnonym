@@ -36,7 +36,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 var dynamicMethod = default(DynamicMethod);
                 var returnType = targetMethodInfo.OldMethod.ReturnType;
                 var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", _.Expand(returnType), _.Expand(new Type[] { typeof(TBase) }.Concat(parameterTypes).ToArray()), typeof(TBase), true)));
+                gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
+                                                            "dynamicMethod", 
+                                                            _.Expand(returnType), 
+                                                            _.Expand(new Type[] { typeof(TBase) }.Concat(parameterTypes).ToArray()), 
+                                                            typeof(TBase), 
+                                                            true)));
 
 
                 var cacheField = default(FieldInfo);
@@ -76,10 +81,19 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.Stfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType), _.Extract(targetMethodInfo.DelegateType), dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType), _.This())));
+                gen.Eval(_ => _.Stfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType), 
+                                      _.Extract(targetMethodInfo.DelegateType), 
+                                      dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType), _.This())));
                 gen.Eval(_ => _.EndIf());
-                var invoke = targetMethodInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)), _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
+                var invoke = targetMethodInfo.DelegateType.GetMethod(
+                                                            "Invoke", 
+                                                            BindingFlags.Public | BindingFlags.Instance, 
+                                                            null, 
+                                                            parameterTypes, 
+                                                            null);
+                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)), 
+                                                _.Extract(invoke), 
+                                                _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
             });
         }
     }

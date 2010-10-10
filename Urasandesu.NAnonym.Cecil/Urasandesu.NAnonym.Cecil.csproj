@@ -68,6 +68,8 @@
     <Compile Include="DI\GlobalPropertyInjection.cs" />
     <Compile Include="DI\GlobalReplaceAnonymousInstanceMethodInjection.cs" />
     <Compile Include="DI\GlobalReplaceAnonymousStaticMethodInjection.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\IILProcessor.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\InsertBeforeILProcessor.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="ILTools\Impl\Mono\Cecil\MCPortableScopeItemImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\NormalILProcessor.cs" />
     <Compile Include="ILTools\Mixin\Mixin.cs" />
     <Compile Include="ILTools\Mixin\Mono\Cecil\TypeDefinition\Mixin.cs" />
     <Compile Include="ILTools\Mixin\Mono\Cecil\TypeReference\Mixin.cs" />
