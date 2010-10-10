@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -12,6 +13,7 @@ namespace Urasandesu.NAnonym.DI
         public MethodInfo OldMethod { get; set; }
         public MethodInfo NewMethod { get; set; }
         public Type DelegateType { get; set; }
+        public NewMethodType NewMethodType { get; private set; }
 
         public TargetMethodInfo()
         {
@@ -28,6 +30,21 @@ namespace Urasandesu.NAnonym.DI
             OldMethod = oldMethod;
             NewMethod = newMethod;
             DelegateType = delegateType;
+
+            NewMethodType = NewMethodType.None;
+            if (TypeAnalyzer.IsAnonymous(newMethod))
+            {
+                NewMethodType |= NewMethodType.Anonymous;
+            }
+
+            if (newMethod.IsStatic)
+            {
+                NewMethodType |= NewMethodType.Static;
+            }
+            else
+            {
+                NewMethodType |= NewMethodType.Instance;
+            }
         }
 
         public override bool Equals(object obj)
@@ -39,5 +56,16 @@ namespace Urasandesu.NAnonym.DI
         {
             return OldMethod.GetHashCodeOrDefault();
         }
+    }
+
+    [Flags]
+    enum NewMethodType
+    {
+        None = 0,
+        Anonymous = 1,
+        Instance = 2,
+        Static = 4,
+        AnonymousInstance = Anonymous | Instance,
+        AnonymousStatic = Anonymous | Static,
     }
 }

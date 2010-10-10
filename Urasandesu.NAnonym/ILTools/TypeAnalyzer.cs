@@ -15,8 +15,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public static bool IsAnonymous(MethodBase methodBase)
         {
-            return methodBase.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null &&
-                methodBase.Name.IndexOf("<") == 0;
+            return methodBase.DeclaringType.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null ||
+                methodBase.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null && methodBase.Name.IndexOf("<") == 0;
         }
 
         public static bool IsCandidateAnonymousMethodCache(FieldInfo field)

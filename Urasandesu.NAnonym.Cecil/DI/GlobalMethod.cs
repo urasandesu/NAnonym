@@ -34,7 +34,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public GlobalClass IsReplacedBy(Delegate @delegate)
         {
-            globalClass.TargetInfoSet.Add(new TargetMethodInfo(SetupMode.Replace, oldMethod, @delegate.Method, @delegate.GetType()));
+            globalClass.TargetMethodInfoSet.Add(new TargetMethodInfo(SetupMode.Replace, oldMethod, @delegate.Method, @delegate.GetType()));
             return globalClass;
         }
     }

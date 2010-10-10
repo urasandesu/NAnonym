@@ -58,9 +58,16 @@
     <Compile Include="DI\DIAssemblySetup.cs" />
     <Compile Include="DI\DIAssemblySetupCollection.cs" />
     <Compile Include="DI\DIConfigurationSection.cs" />
+    <Compile Include="DI\GlobalAnonymousInstanceMethodInjection.cs" />
+    <Compile Include="DI\GlobalAnonymousStaticMethodInjection.cs" />
     <Compile Include="DI\GlobalClass.cs" />
+    <Compile Include="DI\GlobalConstructorInjection.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
+    <Compile Include="DI\GlobalMethodInjection.cs" />
     <Compile Include="DI\GlobalProperty.cs" />
+    <Compile Include="DI\GlobalPropertyInjection.cs" />
+    <Compile Include="DI\GlobalReplaceAnonymousInstanceMethodInjection.cs" />
+    <Compile Include="DI\GlobalReplaceAnonymousStaticMethodInjection.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
