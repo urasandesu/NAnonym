@@ -157,10 +157,10 @@ namespace Urasandesu.NAnonym.DI
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                                 gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                                gen.Eval(_ => _.ExpandStfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, targetInfo.DelegateType, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
+                                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
                                 gen.Eval(_ => _.EndIf());
                                 var invoke = targetInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                                gen.Eval(_ => _.Return(_.ExpandInvoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, invoke, _.ExpandLdargs(targetInfo.OldMethod.ParameterNames()))));
+                                gen.Eval(_ => _.Return(_.Invoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetInfo.OldMethod.ParameterNames())))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             },

@@ -11,17 +11,19 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo ThisInfo;
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
-        readonly MethodInfo StfldInfo;
-        readonly MethodInfo ExpandStfldInfo;
+        readonly MethodInfo StfldInfo1;
+        readonly MethodInfo StfldInfo2;
         readonly MethodInfo DupAddOneInfo;
         readonly MethodInfo AddOneDupInfo;
         readonly MethodInfo SubOneDupInfo;
-        readonly MethodInfo ExpandInvokeInfo;
+        readonly MethodInfo InvokeInfo;
         readonly MethodInfo IfInfo;
         readonly MethodInfo EndIfInfo;
-        readonly MethodInfo ExpandLdargInfo;
-        readonly MethodInfo ExpandLdargsInfo;
+        readonly MethodInfo LdargInfo;
         readonly MethodInfo ExpandInfo;
+        readonly MethodInfo ExtractInfo1;
+        readonly MethodInfo ExtractInfo2;
+        readonly MethodInfo ExtractInfo3;
         readonly MethodInfo EndInfo;
         readonly MethodInfo ReturnInfo;
 
@@ -31,17 +33,19 @@ namespace Urasandesu.NAnonym.ILTools
             ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
-            StfldInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
-            ExpandStfldInfo = TypeSavable.GetMethodInfo<object, Type, object, object>(() => ExpandStfld);
+            StfldInfo1 = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
+            StfldInfo2 = TypeSavable.GetMethodInfo<object, Type, object, object>(() => Stfld);
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
             AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
             SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
-            ExpandInvokeInfo = TypeSavable.GetMethodInfo<object, MethodInfo, object[], object>(() => ExpandInvoke);
+            InvokeInfo = TypeSavable.GetMethodInfo<object, MethodInfo, object[], object>(() => Invoke);    
             IfInfo = TypeSavable.GetMethodInfo<bool>(() => If);
             EndIfInfo = TypeSavable.GetMethodInfo(() => EndIf);
-            ExpandLdargInfo = TypeSavable.GetMethodInfo<string, object>(() => ExpandLdarg<object>).GetGenericMethodDefinition();
-            ExpandLdargsInfo = TypeSavable.GetMethodInfo<string[], object[]>(() => ExpandLdargs);
+            LdargInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldarg).GetGenericMethodDefinition();
             ExpandInfo = TypeSavable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
+            ExtractInfo1 = TypeSavable.GetMethodInfo<object, object>(() => Extract).GetGenericMethodDefinition();
+            ExtractInfo2 = TypeSavable.GetMethodInfo<object, object>(() => Extract<object>).GetGenericMethodDefinition();
+            ExtractInfo3 = TypeSavable.GetMethodInfo<object, Type, object>(() => Extract);
             EndInfo = TypeSavable.GetMethodInfo(() => End);
             ReturnInfo = TypeSavable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
         }
@@ -82,7 +86,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsStfld(MethodInfo target)
         {
-            if (target.Name == StfldInfo.Name && target == StfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target == StfldInfo2)
+            {
+                return true;
+            }
+            else if (target.Name == StfldInfo1.Name && target == StfldInfo1.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -90,11 +98,6 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 return false;
             }
-        }
-
-        public bool IsExpandStfld(MethodInfo target)
-        {
-            return target == ExpandStfldInfo;
         }
 
         public bool IsDupAddOne(MethodInfo target)
@@ -133,9 +136,9 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public bool IsExpandInvoke(MethodInfo target)
+        public bool IsInvoke(MethodInfo target)
         {
-            return target == ExpandInvokeInfo;
+            return target == InvokeInfo;
         }
 
         public bool IsIf(MethodInfo target)
@@ -148,9 +151,9 @@ namespace Urasandesu.NAnonym.ILTools
             return target == EndIfInfo;
         }
 
-        public bool IsExpandLdarg(MethodInfo target)
+        public bool IsLdarg(MethodInfo target)
         {
-            if (target.Name == ExpandLdargInfo.Name && target == ExpandLdargInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == LdargInfo.Name && target == LdargInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -160,14 +163,26 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public bool IsExpandLdargs(MethodInfo target)
-        {
-            return target == ExpandLdargsInfo;
-        }
-
         public bool IsExpand(MethodInfo target)
         {
             if (target.Name == ExpandInfo.Name && target == ExpandInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsExtract(MethodInfo target)
+        {
+            if (target == ExtractInfo3)
+            {
+                return true;
+            }
+            else if (target.Name == ExtractInfo1.Name && target == ExtractInfo1.MakeGenericMethod(target.GetGenericArguments()) ||
+                target.Name == ExtractInfo2.Name && target == ExtractInfo2.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -219,7 +234,7 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
-        public object ExpandStfld(object variable, Type variableType, object value)
+        public object Stfld(object variable, Type variableType, object value)
         {
             return null;
         }
@@ -239,7 +254,7 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
-        public object ExpandInvoke(object variable, MethodInfo method, object[] parameters)
+        public object Invoke(object variable, MethodInfo method, object[] parameters)
         {
             return null;
         }
@@ -252,12 +267,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
         }
 
-        public object[] ExpandLdargs(string[] names)
-        {
-            return new object[] { };
-        }
-
-        public T ExpandLdarg<T>(string name)
+        public T Ldarg<T>(T variable)
         {
             return default(T);
         }
@@ -265,9 +275,24 @@ namespace Urasandesu.NAnonym.ILTools
         // その場で展開するってことで結構制限厳しくしてもいいのかも？
         // Expand するってことで、副作用がある処理は書けないってことで問題ないと思われ。
         // ただ、これをそのまま LambdaExpression に
-        public T Expand<T>(T value)
+        public T Expand<T>(T constant)
         {
             return default(T);
+        }
+
+        public T Extract<T>(T constant)
+        {
+            return default(T);
+        }
+
+        public T Extract<T>(object constant)
+        {
+            return default(T);
+        }
+
+        public object Extract(object constant, Type type)
+        {
+            return null;
         }
 
         public void End()
