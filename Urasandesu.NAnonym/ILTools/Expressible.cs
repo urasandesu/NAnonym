@@ -11,6 +11,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo ThisInfo;
         readonly MethodInfo AddlocInfo;
         readonly MethodInfo StlocInfo;
+        readonly MethodInfo LdfldInfo;
         readonly MethodInfo StfldInfo1;
         readonly MethodInfo StfldInfo2;
         readonly MethodInfo DupAddOneInfo;
@@ -33,6 +34,7 @@ namespace Urasandesu.NAnonym.ILTools
             ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
+            LdfldInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldfld).GetGenericMethodDefinition();
             StfldInfo1 = TypeSavable.GetMethodInfo<object, object, object>(() => Stfld).GetGenericMethodDefinition();
             StfldInfo2 = TypeSavable.GetMethodInfo<object, Type, object, object>(() => Stfld);
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
@@ -75,6 +77,18 @@ namespace Urasandesu.NAnonym.ILTools
         public bool IsStloc(MethodInfo target)
         {
             if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsLdfld(MethodInfo target)
+        {
+            if (target.Name == LdfldInfo.Name && target == LdfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -225,6 +239,11 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         public T Stloc<T>(T variable, T value)
+        {
+            return default(T);
+        }
+
+        public T Ldfld<T>(T variable)
         {
             return default(T);
         }

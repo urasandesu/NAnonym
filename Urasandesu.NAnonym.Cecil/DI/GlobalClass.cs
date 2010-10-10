@@ -26,6 +26,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
     // GlobalClass が Generic Type 持っちゃうから、共通で引き回せるような口用。
     public abstract class GlobalClass : MarshalByRefObject
     {
+        public static readonly string CacheFieldPrefix = "UNCD$<>0__Cached";
+
         //internal HashSet<TargetFieldInfo> TargetFieldInfoSet { get; private set; }
         internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
         GlobalClass modified;
@@ -167,12 +169,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
-            var CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache = default(GlobalClass);
-            var CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef =
-                        new FieldDefinition(TypeSavable.GetName(() => CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache),
+            var UNCD_d__lt__rt_0__CachedSettingDef =
+                        new FieldDefinition(
+                            CacheFieldPrefix + "Setting",
                             MC::FieldAttributes.Private,
                             tbaseModuleDef.Import(typeof(GlobalClass)));
-            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef);
+            tbaseTypeDef.Fields.Add(UNCD_d__lt__rt_0__CachedSettingDef);
 
 
             // TODO: FieldInfo の初期化はコンストラクタでやることになりそう。
@@ -186,10 +188,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
             {
                 var settingClassConstructorInfo = default(ConstructorInfo);
                 gen.Eval(_ => _.Addloc(settingClassConstructorInfo, _.Expand(setupper.Method.DeclaringType).GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null)));
-                gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache, (GlobalClass)settingClassConstructorInfo.Invoke(null)));
+                gen.Eval(_ => _.Stfld(_.Extract<GlobalClass>(UNCD_d__lt__rt_0__CachedSettingDef.Name), (GlobalClass)settingClassConstructorInfo.Invoke(null)));
                 var settingClassMethodInfo = default(MethodInfo);
                 gen.Eval(_ => _.Addloc(settingClassMethodInfo, _.Expand(setupper.Method.DeclaringType).GetMethod("Register", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null)));
-                gen.Eval(_ => settingClassMethodInfo.Invoke(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCache, null));
+                gen.Eval(_ => settingClassMethodInfo.Invoke(_.Ldfld(_.Extract<GlobalClass>(UNCD_d__lt__rt_0__CachedSettingDef.Name)), null));
             },
             firstInstruction);
 
@@ -201,13 +203,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
                         throw new NotImplementedException();
                     case SetupMode.Replace:
                         {
-                            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(object);
-                            var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef =
-                                new FieldDefinition(TypeSavable.GetName(
-                                    () => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache),
+                            var UNCD_d__lt__rt_0__CachedMethodDef =
+                                new FieldDefinition(
+                                    CacheFieldPrefix + "Method",
                                     MC::FieldAttributes.Private,
                                     tbaseModuleDef.Import(targetInfo.DelegateType));
-                            tbaseTypeDef.Fields.Add(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheDef);
+                            tbaseTypeDef.Fields.Add(UNCD_d__lt__rt_0__CachedMethodDef);
 
                             var sourceMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetInfo.OldMethod));
                             string souceMethodName = sourceMethodDef.Name;
@@ -223,7 +224,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                             newMethod.ExpressBody(
                             gen =>
                             {
-                                gen.Eval(_ => _.If(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache == null));
+                                gen.Eval(_ => _.If(_.Ldfld(_.Extract(UNCD_d__lt__rt_0__CachedMethodDef.Name, targetInfo.DelegateType)) == null));
                                 var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
                                 var returnType = targetInfo.OldMethod.ReturnType;
                                 var parameterTypes = targetInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
@@ -265,7 +266,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                 else
                                 {
                                     gen.Eval(_ => _.Addloc(cacheField2, _.Expand(typeof(TBase)).GetField(
-                                                                            _.Expand(CS_d__lt__rt_9__CachedAnonymousSettingClassObjCacheDef.Name),
+                                                                            _.Expand(UNCD_d__lt__rt_0__CachedSettingDef.Name),
                                                                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
                                 }
 
@@ -321,7 +322,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                     }
                                     gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
                                     gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                                    gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
+                                    gen.Eval(_ => _.Stfld(_.Extract(UNCD_d__lt__rt_0__CachedMethodDef.Name, targetInfo.DelegateType), _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
                                     gen.Eval(_ => _.EndIf());
                                 }
                                 else
@@ -350,11 +351,11 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                     }
                                     gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod2));
                                     gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                                    gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType), _.This())));
+                                    gen.Eval(_ => _.Stfld(_.Extract(UNCD_d__lt__rt_0__CachedMethodDef.Name, targetInfo.DelegateType), _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType), _.This())));
                                     gen.Eval(_ => _.EndIf());
                                 }
                                 var invoke = targetInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                                gen.Eval(_ => _.Return(_.Invoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetInfo.OldMethod.ParameterNames())))));
+                                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(UNCD_d__lt__rt_0__CachedMethodDef.Name, targetInfo.DelegateType)), _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetInfo.OldMethod.ParameterNames())))));
 
                                 // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                             });
