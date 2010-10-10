@@ -149,6 +149,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
+            var declaringType = TypeAnalyzer.SearchManuallyGenerated(setupper.Method.DeclaringType);
+
             var cachedConstructDef = new FieldDefinition(
                     CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, tbaseModuleDef.Import(typeof(Action)));
             tbaseTypeDef.Fields.Add(cachedConstructDef);
@@ -174,7 +176,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                     var il = default(ILGenerator);
                     gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
                     var settingConstructor = default(ConstructorInfo);
-                    gen.Eval(_ => _.Addloc(settingConstructor, _.Expand(setupper.Method.DeclaringType).GetConstructor(
+                    gen.Eval(_ => _.Addloc(settingConstructor, _.Expand(declaringType).GetConstructor(
                                                                             BindingFlags.Public | BindingFlags.Instance,
                                                                             null,
                                                                             Type.EmptyTypes,
@@ -185,7 +187,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                     gen.Eval(_ => il.Emit(OpCodes.Newobj, settingConstructor));
                     gen.Eval(_ => il.Emit(OpCodes.Stfld, settingField));
                     var settingRegisterMethod = default(MethodInfo);
-                    gen.Eval(_ => _.Addloc(settingRegisterMethod, _.Expand(setupper.Method.DeclaringType).GetMethod(
+                    gen.Eval(_ => _.Addloc(settingRegisterMethod, _.Expand(declaringType).GetMethod(
                                                                             "Register",
                                                                             BindingFlags.NonPublic | BindingFlags.Instance,
                                                                             null,

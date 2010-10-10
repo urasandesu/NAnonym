@@ -13,6 +13,18 @@ namespace Urasandesu.NAnonym.ILTools
         {
         }
 
+        public static Type SearchManuallyGenerated(Type type)
+        {
+            if (type.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() == null)
+            {
+                return type;
+            }
+            else
+            {
+                return SearchManuallyGenerated(type.DeclaringType);
+            }
+        }
+
         public static bool IsAnonymous(MethodBase methodBase)
         {
             return methodBase.DeclaringType.GetCustomAttributes(true).OfType<CompilerGeneratedAttribute>().FirstOrDefault() != null ||
