@@ -54,13 +54,14 @@ namespace Urasandesu.NAnonym.DI
 
     public abstract class LocalClass : DependencyClass
     {
+        public static readonly string CacheFieldPrefix = "UND$<>0__Cached";
     }
 
     public sealed class LocalClass<TBase> : LocalClass
     {
         readonly Type tbaseType = typeof(TBase);
 
-        internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
+        //internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
 
         Type createdType;
 
@@ -92,71 +93,71 @@ namespace Urasandesu.NAnonym.DI
                 gen.Eval(_ => _.Base());
             });
 
-            foreach (var targetInfo in TargetInfoSet)
+            int targetMethodInfoSetIndex = 0;
+            foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
-                if (targetInfo.Mode == SetupModes.Override)
+                if (targetMethodInfo.Mode == SetupModes.Override)
                 {
                     throw new NotImplementedException();
                 }
-                else if (targetInfo.Mode == SetupModes.Implement)
+                else if (targetMethodInfo.Mode == SetupModes.Implement)
                 {
 
-                    var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache = default(object);
-                    var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheFieldBuilder =
+                    var cacheMethodBuilder =
                         localClassTypeBuilder.DefineField(
-                            TypeSavable.GetName(() => CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache),
-                            targetInfo.DelegateType,
+                            CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++,
+                            targetMethodInfo.DelegateType,
                             FieldAttributes.Private);
 
                     var methodBuilder = localClassTypeBuilder.DefineMethod(
-                                            targetInfo.OldMethod.Name,
+                                            targetMethodInfo.OldMethod.Name,
                                             MethodAttributes.Public |
                                             MethodAttributes.HideBySig |
                                             MethodAttributes.NewSlot |
                                             MethodAttributes.Virtual |
                                             MethodAttributes.Final,
                                             CallingConventions.HasThis,
-                                            targetInfo.OldMethod.ReturnType,
-                                            targetInfo.OldMethod.ParameterTypes());
+                                            targetMethodInfo.OldMethod.ReturnType,
+                                            targetMethodInfo.OldMethod.ParameterTypes());
                     // とりあえず
-                    var parameterBuilder = methodBuilder.DefineParameter(1, ParameterAttributes.In, targetInfo.OldMethod.ParameterNames()[0]);
+                    var parameterBuilder = methodBuilder.DefineParameter(1, ParameterAttributes.In, targetMethodInfo.OldMethod.ParameterNames()[0]);
                     methodBuilder.ExpressBody(
                     gen =>
                     {
-                        gen.Eval(_ => _.If(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache == null));
-                        var CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method = default(DynamicMethod);
-                        var returnType = targetInfo.OldMethod.ReturnType;
-                        var parameterTypes = targetInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                        gen.Eval(_ => _.Addloc(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method, new DynamicMethod("CS$<>9__CachedAnonymousMethodDelegate1Method", _.Expand(returnType), _.Expand(parameterTypes), true)));
+                        gen.Eval(_ => _.If(_.Ldfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType)) == null));
+                        var dynamicMethod = default(DynamicMethod);
+                        var returnType = targetMethodInfo.OldMethod.ReturnType;
+                        var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+                        gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", _.Expand(returnType), _.Expand(parameterTypes), true)));
                         var method4 = default(MethodInfo);
-                        gen.Eval(_ => _.Addloc(method4, _.Expand(targetInfo.DelegateType).GetMethod(
+                        gen.Eval(_ => _.Addloc(method4, _.Expand(targetMethodInfo.DelegateType).GetMethod(
                                                             "Invoke",
                                                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                             null, _.Expand(parameterTypes), null)));
-                        var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetInfo.NewMethod);
+                        var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetMethodInfo.NewMethod);
                         var cacheField = default(FieldInfo);
                         gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
                                                             _.Expand(tmpCacheField.Name),
                                                             BindingFlags.NonPublic | BindingFlags.Static)));
                         var targetMethod = default(MethodInfo);
-                        gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetInfo.OldMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                            _.Expand(targetInfo.OldMethod.Name),
+                        gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetMethodInfo.OldMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                            _.Expand(targetMethodInfo.OldMethod.Name),
                                                             BindingFlags.NonPublic | BindingFlags.Static)));
                         var il = default(ILGenerator);
-                        gen.Eval(_ => _.Addloc(il, CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.GetILGenerator()));
+                        gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
                         gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
                         gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
                         gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
                         gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
-                        gen.Eval(_ => _.Stfld(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(targetInfo.DelegateType), CS_d__lt__rt_9__CachedAnonymousMethodDelegate1Method.CreateDelegate(_.Expand(targetInfo.DelegateType))));
+                        gen.Eval(_ => _.Stfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType), _.Extract(targetMethodInfo.DelegateType), dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
                         gen.Eval(_ => _.EndIf());
-                        var invoke = targetInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                        gen.Eval(_ => _.Return(_.Invoke(CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCache, _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetInfo.OldMethod.ParameterNames())))));
+                        var invoke = targetMethodInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
+                        gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType)), _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
 
                         // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                     },
                     new ParameterBuilder[] { parameterBuilder },
-                    new FieldBuilder[] { CS_d__lt__rt_9__CachedAnonymousMethodDelegate1MethodCacheFieldBuilder });
+                    new FieldBuilder[] { cacheMethodBuilder });
                 }
                 else
                 {
@@ -168,7 +169,7 @@ namespace Urasandesu.NAnonym.DI
 
         public LocalClass()
         {
-            TargetInfoSet = new HashSet<TargetMethodInfo>();
+            //TargetInfoSet = new HashSet<TargetMethodInfo>();
         }
 
         Action<LocalClass<TBase>> setupper;
