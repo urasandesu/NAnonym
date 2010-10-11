@@ -1,11 +1,12 @@
 ﻿using Test.Urasandesu.NAnonym.Etc;
+using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Cecil.DI;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
     public class GlobalClass2 : GlobalClass
     {
-        protected override GlobalClass OnRegister()
+        protected override DependencyClass OnRegister()
         {
             var class2GlobalClass = new GlobalClass<Class2>();
             class2GlobalClass.Setup(the =>

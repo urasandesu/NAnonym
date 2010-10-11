@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Cecil.DI;
 using Test.Urasandesu.NAnonym.Etc;
 
@@ -9,7 +10,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
     public class GlobalClass3_1 : GlobalClass
     {
-        protected override GlobalClass OnRegister()
+        protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3>();
             class3GlobalClass.Setup(the =>

@@ -5,12 +5,24 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    enum SetupMode
+    public class SetupMode
     {
-        Override,
-        Implement,
-        Replace,
-        Before,
-        After,
     }
+
+    public class SetupModes
+    {
+        protected SetupModes() { }
+
+        public static readonly SetupMode Override = new SetupMode();
+        public static readonly SetupMode Implement = new SetupMode();
+    }
+
+    //enum SetupMode
+    //{
+    //    Override,
+    //    Implement,
+    //    Replace,
+    //    Before,
+    //    After,
+    //}
 }

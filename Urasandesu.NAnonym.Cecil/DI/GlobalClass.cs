@@ -9,48 +9,49 @@ using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.ILTools.Mixins.System;
 using MC = Mono.Cecil;
 using System.Reflection.Emit;
+using UND = Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     // GlobalClass が Generic Type 持っちゃうから、共通で引き回せるような口用。
-    public abstract class GlobalClass : MarshalByRefObject
+    public abstract class GlobalClass : DependencyClass
     {
         public static readonly string CacheFieldPrefix = "UNCD$<>0__Cached";
 
-        internal HashSet<TargetMethodInfo> TargetMethodInfoSet { get; private set; }
-        GlobalClass modified;
+        //internal HashSet<TargetMethodInfo> TargetMethodInfoSet { get; private set; }
+        //GlobalClass modified;
 
-        public GlobalClass()
-        {
-            TargetMethodInfoSet = new HashSet<TargetMethodInfo>();
-        }
+        //public GlobalClass()
+        //{
+        //    TargetMethodInfoSet = new HashSet<TargetMethodInfo>();
+        //}
 
-        internal void Register()
-        {
-            modified = OnRegister();
-            if (modified != null)
-            {
-                modified.Register();
-            }
-        }
+        //internal void Register()
+        //{
+        //    modified = OnRegister();
+        //    if (modified != null)
+        //    {
+        //        modified.Register();
+        //    }
+        //}
 
-        protected virtual GlobalClass OnRegister()
-        {
-            return null;
-        }
+        //protected virtual GlobalClass OnRegister()
+        //{
+        //    return null;
+        //}
 
-        internal void Load()
-        {
-            OnLoad(modified);
-            if (modified != null)
-            {
-                modified.Load();
-            }
-        }
+        //internal void Load()
+        //{
+        //    OnLoad(modified);
+        //    if (modified != null)
+        //    {
+        //        modified.Load();
+        //    }
+        //}
 
-        protected virtual void OnLoad(GlobalClass modified)
-        {
-        }
+        //protected virtual void OnLoad(GlobalClass modified)
+        //{
+        //}
 
         protected internal abstract string CodeBase { get; }
         protected internal abstract string Location { get; }
@@ -64,7 +65,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             this.setupper = Required.NotDefault(setupper, () => setupper);
         }
 
-        protected override GlobalClass OnRegister()
+        protected override DependencyClass OnRegister()
         {
             setupper(this);
             return null;
@@ -143,7 +144,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
 
 
-        protected override void OnLoad(GlobalClass modified)
+        protected override void OnLoad(DependencyClass modified)
         {
             // MEMO: ここで modified に来るのは、OnSetup() の戻り値なので、ここでは特に使う必要はない。
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
@@ -237,4 +238,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
         }
     }
 
+    public class SetupModes : UND::SetupModes
+    {
+        protected SetupModes() : base() { }
+
+        public static readonly SetupMode Replace = new SetupMode();
+        public static readonly SetupMode Before = new SetupMode();
+        public static readonly SetupMode After = new SetupMode();
+    }
 }

@@ -7,7 +7,7 @@ using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class TargetMethodInfo
+    public class TargetMethodInfo
     {
         public SetupMode Mode { get; set; }
         public MethodInfo OldMethod { get; set; }
@@ -59,7 +59,7 @@ namespace Urasandesu.NAnonym.DI
     }
 
     [Flags]
-    enum NewMethodType
+    public enum NewMethodType
     {
         None = 0,
         Anonymous = 1,
