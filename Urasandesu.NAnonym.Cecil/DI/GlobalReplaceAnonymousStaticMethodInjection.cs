@@ -29,7 +29,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             newMethod.Name = oldMethodName;
             tbaseTypeDef.Methods.Add(newMethod);
 
-            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(targetMethodInfo.NewMethod);
+            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetMethodInfo.NewMethod);
             newMethod.Body.InitLocals = true;
             newMethod.ExpressBody(
             gen =>
@@ -40,17 +40,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
                 gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", _.Expand(returnType), _.Expand(parameterTypes), true)));
 
-                var ctor3 = default(ConstructorInfo);
-                var method4 = default(MethodInfo);
-                gen.Eval(_ => _.Addloc(ctor3, _.Expand(targetMethodInfo.DelegateType).GetConstructor(
-                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                    null,
-                                                    new Type[] 
-                                                                    { 
-                                                                        typeof(Object), 
-                                                                        typeof(IntPtr) 
-                                                                    }, null)));
-                gen.Eval(_ => _.Addloc(method4, _.Expand(targetMethodInfo.DelegateType).GetMethod(
+                var invokeForLocal = default(MethodInfo);
+                gen.Eval(_ => _.Addloc(invokeForLocal, _.Expand(targetMethodInfo.DelegateType).GetMethod(
                                                     "Invoke",
                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                     null, _.Expand(parameterTypes), null)));
@@ -60,23 +51,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                     _.Expand(tmpCacheField.Name),
                                                     BindingFlags.NonPublic | BindingFlags.Static)));
 
-                var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetMethodInfo.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                    _.Expand(targetMethodInfo.NewMethod.Name),
-                                                    BindingFlags.NonPublic | BindingFlags.Static)));
-
 
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
-                var label27 = default(Label);
-                gen.Eval(_ => _.Addloc(label27, il.DefineLabel()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Brtrue_S, label27));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldnull));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldftn, targetMethod));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, ctor3));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Stsfld, cacheField));
-                gen.Eval(_ => il.MarkLabel(label27));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
                 for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
                 {
@@ -98,12 +75,21 @@ namespace Urasandesu.NAnonym.Cecil.DI
                             throw new NotSupportedException();
                     }
                 }
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
+                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, invokeForLocal));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.Stfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType), _.Extract(targetMethodInfo.DelegateType), dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
+                gen.Eval(_ => _.Stfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType),
+                                      _.Extract(targetMethodInfo.DelegateType), 
+                                      dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
                 gen.Eval(_ => _.EndIf());
-                var invoke = targetMethodInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)), _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
+                var invokeForInvoke = targetMethodInfo.DelegateType.GetMethod(
+                                                            "Invoke",
+                                                            BindingFlags.Public | BindingFlags.Instance,
+                                                            null,
+                                                            parameterTypes,
+                                                            null);
+                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)), 
+                                                _.Extract(invokeForInvoke), 
+                                                _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
             });
         }
     }
