@@ -68,7 +68,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsAddloc(MethodInfo target)
         {
-            if (target.Name == AddlocInfo.Name && target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == AddlocInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == AddlocInfo.GetGenericArguments().Length &&
+                target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -80,7 +83,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsStloc(MethodInfo target)
         {
-            if (target.Name == StlocInfo.Name && target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == StlocInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == StlocInfo.GetGenericArguments().Length &&
+                target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -92,7 +98,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdsfld(MethodInfo target)
         {
-            if (target.Name == LdsfldInfo.Name && target == LdsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == LdsfldInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == LdsfldInfo.GetGenericArguments().Length &&
+                target == LdsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -104,7 +113,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdfld(MethodInfo target)
         {
-            if (target.Name == LdfldInfo.Name && target == LdfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == LdfldInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == LdfldInfo.GetGenericArguments().Length &&
+                target == LdfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -116,7 +128,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsStsfld(MethodInfo target)
         {
-            if (target.Name == StsfldInfo.Name && target == StsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == StsfldInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == StsfldInfo.GetGenericArguments().Length &&
+                target == StsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -132,7 +147,10 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 return true;
             }
-            else if (target.Name == StfldInfo1.Name && target == StfldInfo1.MakeGenericMethod(target.GetGenericArguments()))
+            else if (target.Name == StfldInfo1.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == StfldInfo1.GetGenericArguments().Length &&
+                target == StfldInfo1.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -144,7 +162,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsDupAddOne(MethodInfo target)
         {
-            if (target.Name == DupAddOneInfo.Name && target == DupAddOneInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == DupAddOneInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == DupAddOneInfo.GetGenericArguments().Length &&
+                target == DupAddOneInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -156,7 +177,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsAddOneDup(MethodInfo target)
         {
-            if (target.Name == AddOneDupInfo.Name && target == AddOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == AddOneDupInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == AddOneDupInfo.GetGenericArguments().Length &&
+                target == AddOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -168,7 +192,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsSubOneDup(MethodInfo target)
         {
-            if (target.Name == SubOneDupInfo.Name && target == SubOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == SubOneDupInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == SubOneDupInfo.GetGenericArguments().Length &&
+                target == SubOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -195,7 +222,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdarg(MethodInfo target)
         {
-            if (target.Name == LdargInfo.Name && target == LdargInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == LdargInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == LdargInfo.GetGenericArguments().Length &&
+                target == LdargInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -207,7 +237,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsExpand(MethodInfo target)
         {
-            if (target.Name == ExpandInfo.Name && target == ExpandInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == ExpandInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == ExpandInfo.GetGenericArguments().Length &&
+                target == ExpandInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -223,8 +256,16 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 return true;
             }
-            else if (target.Name == ExtractInfo1.Name && target == ExtractInfo1.MakeGenericMethod(target.GetGenericArguments()) ||
-                target.Name == ExtractInfo2.Name && target == ExtractInfo2.MakeGenericMethod(target.GetGenericArguments()))
+            else if (
+                target.Name == ExtractInfo1.Name &&
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == ExtractInfo1.GetGenericArguments().Length &&
+                target == ExtractInfo1.MakeGenericMethod(target.GetGenericArguments()) 
+                ||
+                target.Name == ExtractInfo2.Name &&
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == ExtractInfo2.GetGenericArguments().Length &&
+                target == ExtractInfo2.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -241,7 +282,10 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsReturn(MethodInfo target)
         {
-            if (target.Name == ReturnInfo.Name && target == ReturnInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (target.Name == ReturnInfo.Name && 
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == ReturnInfo.GetGenericArguments().Length &&
+                target == ReturnInfo.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -291,7 +335,7 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
-        public object Stfld(object variable, Type variableType, object value)
+        public object Stfld(object variable, Type castType, object value)
         {
             return null;
         }
@@ -342,12 +386,12 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
-        public T Extract<T>(object constant)
+        public TForCast Extract<TForCast>(object constant)
         {
-            return default(T);
+            return default(TForCast);
         }
 
-        public object Extract(object constant, Type type)
+        public object Extract(object constant, Type castType)
         {
             return null;
         }

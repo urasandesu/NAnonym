@@ -166,38 +166,43 @@ namespace Urasandesu.NAnonym.Cecil.DI
                 gen =>
                 {
                     gen.Eval(_ => _.If(_.Ldsfld(_.Extract(cachedConstructDef.Name, typeof(Action))) == null));
-                    var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
-                                                                "dynamicMethod",
-                                                                _.Expand(typeof(void)),
-                                                                _.Expand(new Type[] { typeof(TBase) }),
-                                                                typeof(TBase),
-                                                                true)));
-                    var il = default(ILGenerator);
-                    gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
-                    var settingConstructor = default(ConstructorInfo);
-                    gen.Eval(_ => _.Addloc(settingConstructor, _.Expand(declaringType).GetConstructor(
-                                                                            BindingFlags.Public | BindingFlags.Instance,
-                                                                            null,
-                                                                            Type.EmptyTypes,
-                                                                            null)));
-                    var settingField = default(FieldInfo);
-                    gen.Eval(_ => _.Addloc(settingField, _.Expand(typeof(TBase)).GetField(_.Expand(cachedSettingDef.Name), BindingFlags.Instance | BindingFlags.NonPublic)));
-                    gen.Eval(_ => il.Emit(OpCodes.Ldarg_0));
-                    gen.Eval(_ => il.Emit(OpCodes.Newobj, settingConstructor));
-                    gen.Eval(_ => il.Emit(OpCodes.Stfld, settingField));
-                    var settingRegisterMethod = default(MethodInfo);
-                    gen.Eval(_ => _.Addloc(settingRegisterMethod, _.Expand(declaringType).GetMethod(
-                                                                            "Register",
-                                                                            BindingFlags.NonPublic | BindingFlags.Instance,
-                                                                            null,
-                                                                            Type.EmptyTypes,
-                                                                            null)));
-                    gen.Eval(_ => il.Emit(OpCodes.Ldarg_0));
-                    gen.Eval(_ => il.Emit(OpCodes.Ldfld, settingField));
-                    gen.Eval(_ => il.Emit(OpCodes.Callvirt, settingRegisterMethod));
-                    gen.Eval(_ => il.Emit(OpCodes.Ret));
-                    gen.Eval(_ => _.Stsfld(_.Extract<Action>(cachedConstructDef.Name), (Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                    {
+                        var dynamicMethod = default(DynamicMethod);
+                        gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
+                                                                    "dynamicMethod",
+                                                                    _.Expand(typeof(void)),
+                                                                    _.Expand(new Type[] { typeof(TBase) }),
+                                                                    typeof(TBase),
+                                                                    true)));
+                        var il = default(ILGenerator);
+                        gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
+                        var settingConstructor = default(ConstructorInfo);
+                        gen.Eval(_ => _.Addloc(settingConstructor, _.Expand(declaringType).GetConstructor(
+                                                                                BindingFlags.Public | BindingFlags.Instance,
+                                                                                null,
+                                                                                Type.EmptyTypes,
+                                                                                null)));
+                        var settingField = default(FieldInfo);
+                        gen.Eval(_ => _.Addloc(settingField, _.Expand(typeof(TBase)).GetField(
+                                                                                        _.Expand(cachedSettingDef.Name),
+                                                                                        BindingFlags.Instance | BindingFlags.NonPublic)));
+                        gen.Eval(_ => il.Emit(OpCodes.Ldarg_0));
+                        gen.Eval(_ => il.Emit(OpCodes.Newobj, settingConstructor));
+                        gen.Eval(_ => il.Emit(OpCodes.Stfld, settingField));
+                        var settingRegisterMethod = default(MethodInfo);
+                        gen.Eval(_ => _.Addloc(settingRegisterMethod, _.Expand(declaringType).GetMethod(
+                                                                                "Register",
+                                                                                BindingFlags.NonPublic | BindingFlags.Instance,
+                                                                                null,
+                                                                                Type.EmptyTypes,
+                                                                                null)));
+                        gen.Eval(_ => il.Emit(OpCodes.Ldarg_0));
+                        gen.Eval(_ => il.Emit(OpCodes.Ldfld, settingField));
+                        gen.Eval(_ => il.Emit(OpCodes.Callvirt, settingRegisterMethod));
+                        gen.Eval(_ => il.Emit(OpCodes.Ret));
+                        gen.Eval(_ => _.Stsfld(_.Extract<Action>(cachedConstructDef.Name),
+                                               (Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                    }
                     gen.Eval(_ => _.EndIf());
                     gen.Eval(_ => _.Ldsfld(_.Extract<Action>(cachedConstructDef.Name)).Invoke());
                 },
@@ -205,11 +210,13 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
 
 
-            int targetInfoSetIndex = 0;
+            int targetMethodInfoSetIndex = 0;
             foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
                 var cachedMethodDef = new FieldDefinition(
-                    CacheFieldPrefix + "Method" + targetInfoSetIndex++, MC::FieldAttributes.Private, tbaseModuleDef.Import(targetMethodInfo.DelegateType));
+                                            CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++, 
+                                            MC::FieldAttributes.Private, 
+                                            tbaseModuleDef.Import(targetMethodInfo.DelegateType));
                 tbaseTypeDef.Fields.Add(cachedMethodDef);
 
                 var methodInjection = GlobalMethodInjection.CreateInstance<TBase>(tbaseTypeDef, targetMethodInfo);
@@ -228,9 +235,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
         {
             get { return typeof(TBase).Assembly.Location; }
         }
-
-
-
     }
 
 }
