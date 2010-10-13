@@ -9,4 +9,9 @@ namespace Test.Urasandesu.NAnonym.Etc
     {
         string Print(string value);
     }
+
+    public interface ISample3
+    {
+        int Add(int x, int y);
+    }
 }

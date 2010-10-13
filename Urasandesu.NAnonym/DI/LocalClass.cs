@@ -7,50 +7,13 @@ using System.Linq.Expressions;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
+using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.ILTools.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
-    public abstract class DependencyClass : MarshalByRefObject
-    {
-        DependencyClass modified;
-
-        internal HashSet<TargetMethodInfo> TargetMethodInfoSet { get; private set; }
-
-        public DependencyClass()
-        {
-            TargetMethodInfoSet = new HashSet<TargetMethodInfo>();
-        }
-
-        internal void Register()
-        {
-            modified = OnRegister();
-            if (modified != null)
-            {
-                modified.Register();
-            }
-        }
-
-        protected virtual DependencyClass OnRegister()
-        {
-            return null;
-        }
-
-        internal void Load()
-        {
-            OnLoad(modified);
-            if (modified != null)
-            {
-                modified.Load();
-            }
-        }
-
-        protected virtual void OnLoad(DependencyClass modified)
-        {
-        }
-    }
 
     public abstract class LocalClass : DependencyClass
     {
@@ -59,11 +22,101 @@ namespace Urasandesu.NAnonym.DI
 
     public sealed class LocalClass<TBase> : LocalClass
     {
-        readonly Type tbaseType = typeof(TBase);
-
-        //internal HashSet<TargetMethodInfo> TargetInfoSet { get; private set; }
-
         Type createdType;
+
+        Action<LocalClass<TBase>> setupper;
+        public void Setup(Action<LocalClass<TBase>> setupper)
+        {
+            Required.NotDefault(setupper, () => setupper);
+            this.setupper = setupper;
+        }
+
+        protected override DependencyClass OnRegister()
+        {
+            setupper(this);
+            return null;
+        }
+
+        public LocalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, TResult>(this, oldMethod);
+        }
+
+        public LocalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T, TResult>(this, oldMethod);
+        }
+
+        public LocalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, TResult>(this, oldMethod);
+        }
+
+        public LocalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, T3, TResult>(this, oldMethod);
+        }
+
+        public LocalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, T3, T4, TResult>(this, oldMethod);
+        }
+
+        public LocalAction<TBase> Method(Expression<ActionReference<TBase>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase>(this, oldMethod);
+        }
+
+        public LocalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T>(this, oldMethod);
+        }
+
+        public LocalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2>(this, oldMethod);
+        }
+
+        public LocalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2, T3>(this, oldMethod);
+        }
+
+        public LocalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> reference)
+        {
+            var method = DependencyUtil.ExtractMethod(reference);
+            var oldMethod = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2, T3, T4>(this, oldMethod);
+        }
+
+
+        public LocalPropertyGet<TBase, T> Property<T>(Func<T> propertyGet)
+        {
+            throw new NotImplementedException();
+        }
+
+        public LocalPropertySet<TBase, T> Property<T>(Action<T> propertySet)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override void OnLoad(DependencyClass modified)
         {
@@ -71,9 +124,9 @@ namespace Urasandesu.NAnonym.DI
             var localClassAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(localClassAssemblyName, AssemblyBuilderAccess.Run);
             var localClassModuleBuilder = localClassAssemblyBuilder.DefineDynamicModule("LocalClassModule");
             var localClassTypeBuilder = localClassModuleBuilder.DefineType("LocalClassType");
-            if (tbaseType.IsInterface)
+            if (typeof(TBase).IsInterface)
             {
-                localClassTypeBuilder.AddInterfaceImplementation(tbaseType);
+                localClassTypeBuilder.AddInterfaceImplementation(typeof(TBase));
             }
             else
             {
@@ -81,11 +134,11 @@ namespace Urasandesu.NAnonym.DI
             }
 
             var localClassConstructorBuilder = localClassTypeBuilder.DefineConstructor(
-                                                    MethodAttributes.Public | 
-                                                    MethodAttributes.HideBySig | 
-                                                    MethodAttributes.SpecialName | 
-                                                    MethodAttributes.RTSpecialName, 
-                                                    CallingConventions.Standard, 
+                                                    MethodAttributes.Public |
+                                                    MethodAttributes.HideBySig |
+                                                    MethodAttributes.SpecialName |
+                                                    MethodAttributes.RTSpecialName,
+                                                    CallingConventions.Standard,
                                                     new Type[] { });
             localClassConstructorBuilder.ExpressBody(
             gen =>
@@ -119,8 +172,13 @@ namespace Urasandesu.NAnonym.DI
                                             CallingConventions.HasThis,
                                             targetMethodInfo.OldMethod.ReturnType,
                                             targetMethodInfo.OldMethod.ParameterTypes());
-                    // とりあえず
-                    var parameterBuilder = methodBuilder.DefineParameter(1, ParameterAttributes.In, targetMethodInfo.OldMethod.ParameterNames()[0]);
+
+                    var parameterBuilders = new List<ParameterBuilder>();
+                    foreach (var parameterName in targetMethodInfo.OldMethod.ParameterNames())
+                    {
+                        parameterBuilders.Add(methodBuilder.DefineParameter(1, ParameterAttributes.In, parameterName));
+                    }
+
                     methodBuilder.ExpressBody(
                     gen =>
                     {
@@ -145,10 +203,29 @@ namespace Urasandesu.NAnonym.DI
                                                             BindingFlags.NonPublic | BindingFlags.Static)));
                         var il = default(ILGenerator);
                         gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
-                        gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldsfld, cacheField));
-                        gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ldarg_0));
-                        gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Callvirt, method4));
-                        gen.Eval(_ => il.Emit(SR::Emit.OpCodes.Ret));
+                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
+                        for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
+                        {
+                            switch (parametersIndex)
+                            {
+                                case 0:
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
+                                    break;
+                                case 1:
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
+                                    break;
+                                case 2:
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
+                                    break;
+                                case 3:
+                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
+                                    break;
+                                default:
+                                    throw new NotSupportedException();
+                            }
+                        }
+                        gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
+                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
                         gen.Eval(_ => _.Stfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType), _.Extract(targetMethodInfo.DelegateType), dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
                         gen.Eval(_ => _.EndIf());
                         var invoke = targetMethodInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
@@ -156,7 +233,7 @@ namespace Urasandesu.NAnonym.DI
 
                         // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
                     },
-                    new ParameterBuilder[] { parameterBuilder },
+                    parameterBuilders.ToArray(),
                     new FieldBuilder[] { cacheMethodBuilder });
                 }
                 else
@@ -165,43 +242,6 @@ namespace Urasandesu.NAnonym.DI
                 }
             }
             createdType = localClassTypeBuilder.CreateType();
-        }
-
-        public LocalClass()
-        {
-            //TargetInfoSet = new HashSet<TargetMethodInfo>();
-        }
-
-        Action<LocalClass<TBase>> setupper;
-
-        public void Setup(Action<LocalClass<TBase>> setupper)
-        {
-            Required.NotDefault(setupper, () => setupper);
-            this.setupper = setupper;
-        }
-
-        protected override DependencyClass OnRegister()
-        {
-            setupper(this);
-            return null;
-        }
-
-        public LocalMethod<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> expression)
-        {
-            var method = DependencyUtil.ExtractMethod(expression);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalMethod<TBase, T, TResult>(this, oldMethod);
-        }
-
-
-        public LocalPropertyGet<TBase, T> Property<T>(Func<T> propertyGet)
-        {
-            throw new NotImplementedException();
-        }
-
-        public LocalPropertySet<TBase, T> Property<T>(Action<T> propertySet)
-        {
-            throw new NotImplementedException();
         }
 
         

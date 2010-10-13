@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
     <Compile Include="DI\ActionReference.cs" />
+    <Compile Include="DI\DependencyClass.cs" />
     <Compile Include="DI\FuncReference.cs" />
     <Compile Include="DI\SetupMode.cs" />
     <Compile Include="DI\TargetMethodInfo.cs" />

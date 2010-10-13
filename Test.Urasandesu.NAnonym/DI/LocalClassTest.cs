@@ -44,6 +44,32 @@ namespace Test.Urasandesu.NAnonym.ILTools
             Assert.AreEqual("aiueoaiueoaiueo", sample2.Print("aiueo"));
         }
 
+
+
+
+        [Test]
+        public void Test2()
+        {
+            var sample3LocalClass = new LocalClass<ISample3>();
+            sample3LocalClass.Setup(
+            the =>
+            {
+                the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
+                (x, y) =>
+                {
+                    return x + y;
+                });
+            });
+
+            DependencyUtil.RegisterLocal(sample3LocalClass);
+            DependencyUtil.LoadLocal();
+
+            var sample3 = sample3LocalClass.New();
+
+            Assert.AreEqual(2, sample3.Add(1, 1));
+        }
+
+
         //[Test]
         //public void Hoge()
         //{
