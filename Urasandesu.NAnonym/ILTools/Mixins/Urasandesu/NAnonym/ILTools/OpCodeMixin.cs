@@ -8,7 +8,7 @@ namespace Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools
 {
     public static class OpCodeMixin
     {
-        public static SRE::OpCode ToSre(this OpCode opcode)
+        public static SRE::OpCode ToClr(this OpCode opcode)
         {
             if (opcode == OpCodes.Add) return SRE::OpCodes.Add;
             else if (opcode == OpCodes.Add_Ovf) return SRE::OpCodes.Add_Ovf;

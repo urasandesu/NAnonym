@@ -5,9 +5,9 @@ using System.Text;
 using Mono.Cecil;
 using Urasandesu.NAnonym.Linq;
 
-namespace Urasandesu.NAnonym.Cecil.ILTools
+namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.System
 {
-    public static partial class Mixin
+    public static class TypeMixin
     {
         public static TypeDefinition ToTypeDef(this Type type)
         {

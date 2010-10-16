@@ -8,6 +8,8 @@ using Mono.Cecil;
 using MC = Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using UNI = Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools
 {

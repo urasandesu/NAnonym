@@ -13,7 +13,8 @@ using Urasandesu.NAnonym;
 using Test.Urasandesu.NAnonym.Etc;
 using SR = System.Reflection;
 using Urasandesu.NAnonym.Cecil.ILTools;
-//using UNCI = Urasandesu.NAnonym.Cecil.ILTools;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {

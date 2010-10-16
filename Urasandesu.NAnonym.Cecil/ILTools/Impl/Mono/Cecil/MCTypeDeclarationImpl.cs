@@ -8,6 +8,7 @@ using SR = System.Reflection;
 using System.Runtime.Serialization;
 using System.Reflection;
 using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {

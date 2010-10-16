@@ -23,7 +23,8 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo IfInfo;
         readonly MethodInfo EndIfInfo;
         readonly MethodInfo LdargInfo;
-        readonly MethodInfo ExpandInfo;
+        readonly MethodInfo ExpandInfo1;
+        readonly MethodInfo ExpandInfo2;
         readonly MethodInfo ExtractInfo1;
         readonly MethodInfo ExtractInfo2;
         readonly MethodInfo ExtractInfo3;
@@ -48,7 +49,8 @@ namespace Urasandesu.NAnonym.ILTools
             IfInfo = TypeSavable.GetMethodInfo<bool>(() => If);
             EndIfInfo = TypeSavable.GetMethodInfo(() => EndIf);
             LdargInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldarg).GetGenericMethodDefinition();
-            ExpandInfo = TypeSavable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
+            ExpandInfo1 = TypeSavable.GetMethodInfo<object, object>(() => Expand).GetGenericMethodDefinition();
+            ExpandInfo2 = TypeSavable.GetMethodInfo<object, Type, object>(() => Expand).GetGenericMethodDefinition();
             ExtractInfo1 = TypeSavable.GetMethodInfo<object, object>(() => Extract).GetGenericMethodDefinition();
             ExtractInfo2 = TypeSavable.GetMethodInfo<object, object>(() => Extract<object>).GetGenericMethodDefinition();
             ExtractInfo3 = TypeSavable.GetMethodInfo<object, Type, object>(() => Extract);
@@ -237,10 +239,17 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsExpand(MethodInfo target)
         {
-            if (target.Name == ExpandInfo.Name && 
+            if (target.Name == ExpandInfo1.Name && 
                 target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ExpandInfo.GetGenericArguments().Length &&
-                target == ExpandInfo.MakeGenericMethod(target.GetGenericArguments()))
+                target.GetGenericArguments().Length == ExpandInfo1.GetGenericArguments().Length &&
+                target == ExpandInfo1.MakeGenericMethod(target.GetGenericArguments()))
+            {
+                return true;
+            }
+            else if (target.Name == ExpandInfo2.Name &&
+                target.IsGenericMethod &&
+                target.GetGenericArguments().Length == ExpandInfo2.GetGenericArguments().Length &&
+                target == ExpandInfo2.MakeGenericMethod(target.GetGenericArguments()))
             {
                 return true;
             }
@@ -377,6 +386,11 @@ namespace Urasandesu.NAnonym.ILTools
         // Expand するってことで、副作用がある処理は書けないってことで問題ないと思われ。
         // ただ、これをそのまま LambdaExpression に
         public T Expand<T>(T constant)
+        {
+            return default(T);
+        }
+
+        public T Expand<T>(T staticMember, Type declaringType)
         {
             return default(T);
         }

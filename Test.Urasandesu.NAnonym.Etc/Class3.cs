@@ -12,4 +12,13 @@ namespace Test.Urasandesu.NAnonym.Etc
             return x + y;
         }
     }
+
+    public class SimpleType1
+    {
+        int value;
+        public int Increase()
+        {
+            return value++;
+        }
+    }
 }

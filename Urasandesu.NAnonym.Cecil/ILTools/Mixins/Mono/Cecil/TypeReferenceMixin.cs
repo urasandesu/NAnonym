@@ -9,11 +9,10 @@ using System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
 //using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
 
-namespace Urasandesu.NAnonym.Cecil.ILTools
+namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
 {
-    public static partial class Mixin
+    public static class TypeReferenceMixin
     {
-
         public static bool Equivalent(this TypeReference x, Type y)
         {
             // HACK: 暫定。x が配列の場合（例えば Type[]）、配列ではない型に解決されてしまう。本来であれば、ArrayType で Resolve が override されているべきにも思うが・・・？
@@ -28,7 +27,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
                 case MetadataScopeType.ModuleReference:
                 default:
                     var resolvedX = x.Resolve();
-                    return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName == y.FullName;
+                    return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName.Replace("/", "+") == y.FullName;
             }
         }
 
@@ -53,6 +52,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             {
                 throw new NotSupportedException();
             }
+        }
+
+        public static Type ToType(this TypeReference source)
+        {
+            throw new NotImplementedException();
         }
     }
 }

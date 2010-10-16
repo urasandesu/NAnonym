@@ -95,10 +95,29 @@
     <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCTypeGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\NormalILProcessor.cs" />
-    <Compile Include="ILTools\Mixin\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeDefinition\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\Mono\Cecil\TypeReference\Mixin.cs" />
-    <Compile Include="ILTools\Mixin\System\Type\Mixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\AssemblyDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\Cil\ExceptionHandlerMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\Cil\InstructionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\Cil\OpCodeMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\Cil\VariableDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\FieldDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\FieldReferenceMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\GenericInstanceMethodMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\GenericInstanceTypeMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\GenericParameterMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\MethodAttributesMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\MethodDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\MethodReferenceMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\ModuleDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\ParameterDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\PropertyDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\TypeDefinitionMixin.cs" />
+    <Compile Include="ILTools\Mixins\Mono\Cecil\TypeReferenceMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\Collections\Generic\IEnumerableMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\Reflection\MethodAttributesMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\Reflection\PropertyInfoMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\TypeMixin.cs" />
+    <Compile Include="ILTools\Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
     <Compile Include="ILTools\TypeAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -107,9 +126,6 @@
       <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
       <Name>Urasandesu.NAnonym</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ILTools\Mixin\Mono\Cecil\MethodDefinition\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

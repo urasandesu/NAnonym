@@ -69,7 +69,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode)
         {
-            ilGenerator.Emit(opcode.ToSre());
+            ilGenerator.Emit(opcode.ToClr());
             directives.Add(new SRDirectiveGeneratorImpl(opcode));
         }
 
@@ -80,7 +80,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ConstructorInfo con)
         {
-            ilGenerator.Emit(opcode.ToSre(), con);
+            ilGenerator.Emit(opcode.ToClr(), con);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, con));
         }
 
@@ -91,7 +91,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, FieldInfo field)
         {
-            ilGenerator.Emit(opcode.ToSre(), field);
+            ilGenerator.Emit(opcode.ToClr(), field);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, field));
         }
 
@@ -102,13 +102,13 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, int arg)
         {
-            ilGenerator.Emit(opcode.ToSre(), arg);
+            ilGenerator.Emit(opcode.ToClr(), arg);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
         public void Emit(OpCode opcode, ILabelDeclaration label)
         {
-            ilGenerator.Emit(opcode.ToSre(), ((SRLabelDeclarationImpl)label).Label);
+            ilGenerator.Emit(opcode.ToClr(), ((SRLabelDeclarationImpl)label).Label);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, label));
         }
 
@@ -119,7 +119,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, ILocalDeclaration local)
         {
-            ilGenerator.Emit(opcode.ToSre(), ((SRLocalGeneratorImpl)local).LocalBuilder);
+            ilGenerator.Emit(opcode.ToClr(), ((SRLocalGeneratorImpl)local).LocalBuilder);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, local));
         }
 
@@ -130,13 +130,13 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, MethodInfo meth)
         {
-            ilGenerator.Emit(opcode.ToSre(), meth);
+            ilGenerator.Emit(opcode.ToClr(), meth);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, meth));
         }
 
         public void Emit(OpCode opcode, sbyte arg)
         {
-            ilGenerator.Emit(opcode.ToSre(), arg);
+            ilGenerator.Emit(opcode.ToClr(), arg);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
@@ -147,31 +147,31 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, string str)
         {
-            ilGenerator.Emit(opcode.ToSre(), str);
+            ilGenerator.Emit(opcode.ToClr(), str);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, str));
         }
 
         public void Emit(OpCode opcode, Type cls)
         {
-            ilGenerator.Emit(opcode.ToSre(), cls);
+            ilGenerator.Emit(opcode.ToClr(), cls);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, cls));
         }
 
         public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
         {
-            ilGenerator.Emit(opcode.ToSre(), ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo);
+            ilGenerator.Emit(opcode.ToClr(), ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, constructorDecl));
         }
 
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
         {
-            ilGenerator.Emit(opcode.ToSre(), ((SRParameterDeclarationImpl)parameterDecl).Position);
+            ilGenerator.Emit(opcode.ToClr(), ((SRParameterDeclarationImpl)parameterDecl).Position);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, parameterDecl));
         }
 
         public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)
         {
-            ilGenerator.Emit(opcode.ToSre(), ((SRFieldDeclarationImpl)fieldDecl).FieldInfo);
+            ilGenerator.Emit(opcode.ToClr(), ((SRFieldDeclarationImpl)fieldDecl).FieldInfo);
             directives.Add(new SRDirectiveGeneratorImpl(opcode, fieldDecl));
         }
 

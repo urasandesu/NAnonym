@@ -9,6 +9,7 @@ using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
 using MC = Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {

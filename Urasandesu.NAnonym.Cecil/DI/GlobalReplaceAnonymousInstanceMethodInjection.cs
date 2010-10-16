@@ -7,6 +7,7 @@ using Urasandesu.NAnonym.Cecil.ILTools;
 using Urasandesu.NAnonym.DI;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using SRE = System.Reflection.Emit;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {

@@ -73,6 +73,19 @@ namespace Urasandesu.NAnonym.ILTools
             foreach (var exp in exps)
             {
                 EvalExpression(methodGen, exp, state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    var extractInfo = state.ExtractInfoStack.Pop();
+                    if (extractInfo.Value is string && extractInfo.Type != typeof(string))
+                    {
+                        var fieldInfo = new ExpressibleFieldInfo((string)extractInfo.Value, extractInfo.Type);
+                        EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
             }
         }
 
@@ -315,9 +328,23 @@ namespace Urasandesu.NAnonym.ILTools
         {
             // TODO: “¯‚¶–¼‘O‚Ì•Ï”‚ÍA“¯‚¶ Scope “à‚Å‚ ‚ê‚Î‰B‚¹‚é or ’e‚­H•v‚ª•K—v
             EvalExpression(methodGen, exp.Arguments[1], state);
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-            var local = methodGen.Body.ILOperator.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
+            if (exp.Arguments[0] is MemberExpression)
+            {
+                var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+                var local = methodGen.Body.ILOperator.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
+                methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
+            }
+            else
+            {
+                EvalExpression(methodGen, exp.Arguments[0], state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    var extractInfo = state.ExtractInfoStack.Pop();
+                    string name = (string)extractInfo.Value;
+                    var local = methodGen.Body.ILOperator.AddLocal(name, extractInfo.Type);
+                    methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                }
+            }
         }
 
         static void EvalStloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
@@ -543,20 +570,51 @@ namespace Urasandesu.NAnonym.ILTools
 
         static void EvalExpand(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
-            var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
-            object o = expanded.DynamicInvoke();
-            if (o.GetType().IsArray)
+            if (exp.Arguments.Count == 1)
             {
-                EvalNewArray(methodGen, Expression.NewArrayInit(o.GetType().GetElementType(), ((Array)o).Cast<object>().Select(_o => (Expression)Expression.Constant(_o))), state);
+                var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
+                object o = expanded.DynamicInvoke();
+                if (o.GetType().IsArray)
+                {
+                    EvalNewArray(methodGen, Expression.NewArrayInit(o.GetType().GetElementType(), ((Array)o).Cast<object>().Select(_o => (Expression)Expression.Constant(_o))), state);
+                }
+                else if (typeof(LambdaExpression).IsAssignableFrom(o.GetType()))
+                {
+                    EvalExpression(methodGen, ((LambdaExpression)o).Body, state);
+                    state.ProhibitsLastAutoPop = true;
+                }
+                else
+                {
+                    EvalConstant(methodGen, Expression.Constant(o), state);
+                }
             }
-            else if (typeof(LambdaExpression).IsAssignableFrom(o.GetType()))
+            else if (exp.Arguments.Count == 2)
             {
-                EvalExpression(methodGen, ((LambdaExpression)o).Body, state);
-                state.ProhibitsLastAutoPop = true;
+                var expanded0 = Expression.Lambda(exp.Arguments[0]).Compile();
+                object staticMember = expanded0.DynamicInvoke();
+                var expanded1 = Expression.Lambda(exp.Arguments[1]).Compile();
+                Type declaringType = (Type)expanded1.DynamicInvoke();
+
+                var targetFieldInfo = default(FieldInfo);
+                foreach (var member in declaringType.GetMembers(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    var fieldInfo = default(FieldInfo);
+                    if ((fieldInfo = member as FieldInfo) != null && staticMember.Equals(fieldInfo.GetValue(null)))
+                    {
+                        targetFieldInfo = fieldInfo;
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                EvalMember(methodGen, Expression.Field(null, targetFieldInfo), state);
             }
             else
             {
-                EvalConstant(methodGen, Expression.Constant(o), state);
+                throw new NotImplementedException();
             }
         }
 
@@ -598,6 +656,7 @@ namespace Urasandesu.NAnonym.ILTools
             var e = default(Enum);
             var t = default(Type);
             var mi = default(MethodInfo);
+            var ci = default(ConstructorInfo);
             if (exp.Value == null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldnull);
@@ -641,6 +700,12 @@ namespace Urasandesu.NAnonym.ILTools
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
                 methodGen.Body.ILOperator.Emit(OpCodes.Call, GetMethodFromHandle);
                 methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
+            }
+            else if ((ci = exp.Value as ConstructorInfo) != null)
+            {
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, ci);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(ConstructorInfo));
             }
             else
             {
@@ -917,6 +982,72 @@ namespace Urasandesu.NAnonym.ILTools
 
             public Type Type { get; private set; }
             public object Value { get; private set; }
+        }
+
+        internal class ExpressibleFieldInfo : FieldInfo
+        {
+            string name;
+            Type fieldType;
+            public ExpressibleFieldInfo(string name, Type fieldType)
+            {
+                this.name = name;
+                this.fieldType = fieldType;
+            }
+
+            public override FieldAttributes Attributes
+            {
+                get { return FieldAttributes.Public | FieldAttributes.Static; }
+            }
+
+            public override RuntimeFieldHandle FieldHandle
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override Type FieldType
+            {
+                get { return fieldType; }
+            }
+
+            public override object GetValue(object obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, System.Globalization.CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Type DeclaringType
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object[] GetCustomAttributes(bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool IsDefined(Type attributeType, bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override string Name
+            {
+                get { return name; }
+            }
+
+            public override Type ReflectedType
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
     }
 }

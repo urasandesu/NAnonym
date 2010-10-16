@@ -8,7 +8,7 @@ namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit
 {
     public static class OpCodeMixin
     {
-        public static OpCode ToUni(this SRE::OpCode opcode)
+        public static OpCode ToNAnonym(this SRE::OpCode opcode)
         {
             if (opcode == SRE::OpCodes.Add) return OpCodes.Add;
             else if (opcode == SRE::OpCodes.Add_Ovf) return OpCodes.Add_Ovf;

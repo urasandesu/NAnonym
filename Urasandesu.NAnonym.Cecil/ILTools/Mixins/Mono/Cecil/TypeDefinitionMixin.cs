@@ -5,10 +5,11 @@ using System.Text;
 using Mono.Cecil;
 using System.Reflection;
 using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System.Collections.Generic;
 
-namespace Urasandesu.NAnonym.Cecil.ILTools
+namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
 {
-    public static partial class Mixin
+    public static class TypeDefinitionMixin
     {
         public static MethodDefinition GetMethod(this TypeDefinition type, string name, BindingFlags bindingAttr, Type[] types)
         {
@@ -486,5 +487,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools
             }
         }
 
+        public static TypeDefinition Duplicate(this TypeDefinition source)
+        {
+            var destination = new TypeDefinition(source.Namespace, source.Name, source.Attributes, source.BaseType);
+            return destination;
+        }
     }
 }

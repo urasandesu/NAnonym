@@ -41,7 +41,7 @@ namespace Urasandesu.NAnonym.DI
         public void Field<T>(Expression<Func<T>> reference, Expression<Func<Expressible, T>> exp) { Field((LambdaExpression)reference, (LambdaExpression)exp, typeof(T)); }
         public void Field(Expression<Func<object>> reference, Expression<Func<Expressible, object>> exp, Type type) { throw new NotImplementedException(); }
         
-        public void Field(LambdaExpression reference, LambdaExpression exp, Type type) 
+        void Field(LambdaExpression reference, LambdaExpression exp, Type type) 
         {
             TargetFieldInfoSet.Add(new TargetFieldInfo(reference, exp, type));
         }

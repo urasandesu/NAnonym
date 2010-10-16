@@ -39,7 +39,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { return opcode; }
         }
 
-        public object Operand
+        public object RawOperand
         {
             get { return operand; }
         }
@@ -48,7 +48,22 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public override string ToString()
         {
-            return string.Format("{0} {1}", OpCode, Operand);
+            return string.Format("{0} {1}", OpCode, RawOperand);
         }
+
+        #region IDirectiveDeclaration メンバ
+
+
+        public object NAnonymOperand
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public object ClrOperand
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }
