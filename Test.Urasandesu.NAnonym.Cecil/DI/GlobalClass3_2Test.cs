@@ -24,9 +24,9 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
         {
             var class3 = new Class3();
 
-            Assert.AreEqual(2, class3.Add(1, 1));
             Assert.AreEqual(4, class3.Add(1, 1));
             Assert.AreEqual(6, class3.Add(1, 1));
+            Assert.AreEqual(8, class3.Add(1, 1));
         }
     }
 }

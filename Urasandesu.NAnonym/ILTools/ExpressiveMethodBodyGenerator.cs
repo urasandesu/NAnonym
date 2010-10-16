@@ -56,6 +56,18 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        public static void Eval(Expression<Action<Expressible>> exp, IMethodBaseGenerator methodGen)
+        {
+            var state = new EvalState();
+            EvalExpression(methodGen, exp.Body, state);
+            if (exp.Body.Type != typeof(void) && !state.ProhibitsLastAutoPop)
+            {
+                // NOTE: void ではないということは評価スタックに情報が残っているということ。
+                //       pop するのは、基本的に 1 回の Emit(Expression<Action<ExpressiveILProcessor>>) で完結するようにしたいため。
+                methodGen.Body.ILOperator.Emit(OpCodes.Pop);
+            }
+        }
+
         static void EvalArguments(IMethodBaseGenerator methodGen, ReadOnlyCollection<Expression> exps, EvalState state)
         {
             foreach (var exp in exps)
@@ -537,6 +549,11 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 EvalNewArray(methodGen, Expression.NewArrayInit(o.GetType().GetElementType(), ((Array)o).Cast<object>().Select(_o => (Expression)Expression.Constant(_o))), state);
             }
+            else if (typeof(LambdaExpression).IsAssignableFrom(o.GetType()))
+            {
+                EvalExpression(methodGen, ((LambdaExpression)o).Body, state);
+                state.ProhibitsLastAutoPop = true;
+            }
             else
             {
                 EvalConstant(methodGen, Expression.Constant(o), state);
@@ -576,6 +593,7 @@ namespace Urasandesu.NAnonym.ILTools
             int? ni = default(int?);
             double? nd = default(double?);
             char? nc = default(char?);
+            sbyte? nsb = default(sbyte?);
             bool? nb = default(bool?);
             var e = default(Enum);
             var t = default(Type);
@@ -600,6 +618,10 @@ namespace Urasandesu.NAnonym.ILTools
             else if ((nc = exp.Value as char?) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(char)nc);
+            }
+            else if ((nsb = exp.Value as sbyte?) != null)
+            {
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)nsb);
             }
             else if ((nb = exp.Value as bool?) != null)
             {
@@ -638,6 +660,10 @@ namespace Urasandesu.NAnonym.ILTools
                         if (exp.Type == typeof(int))
                         {
                             methodGen.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                        }
+                        else if (exp.Type == typeof(sbyte))
+                        {
+                            methodGen.Body.ILOperator.Emit(OpCodes.Conv_I2);
                         }
                         else
                         {

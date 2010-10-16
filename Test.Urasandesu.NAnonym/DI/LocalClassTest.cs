@@ -70,6 +70,34 @@ namespace Test.Urasandesu.NAnonym.ILTools
         }
 
 
+
+
+        [Test]
+        public void Test3()
+        {
+            var sample3LocalClass = new LocalClass<ISample3>();
+            sample3LocalClass.Setup(
+            the =>
+            {
+                int value = 0;
+                the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
+                (x, y) =>
+                {
+                    return value += x + y;
+                });
+            });
+
+            DependencyUtil.RegisterLocal(sample3LocalClass);
+            DependencyUtil.LoadLocal();
+
+            var sample3 = sample3LocalClass.New();
+
+            Assert.AreEqual(2, sample3.Add(1, 1));
+            Assert.AreEqual(4, sample3.Add(1, 1));
+            Assert.AreEqual(6, sample3.Add(1, 1));
+        }
+
+
         //[Test]
         //public void Hoge()
         //{

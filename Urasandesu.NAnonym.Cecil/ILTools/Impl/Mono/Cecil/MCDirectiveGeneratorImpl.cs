@@ -24,7 +24,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         object IDirectiveDeclaration.Operand
         {
-            get { throw new NotImplementedException(); }
+            get { return instruction.Operand; }
         }
 
         #endregion

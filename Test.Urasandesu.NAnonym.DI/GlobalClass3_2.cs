@@ -15,8 +15,9 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             var class3GlobalClass = new GlobalClass<Class3>();
             class3GlobalClass.Setup(the =>
             {
-                int value = 0;
+                int value = 2;
 
+                the.Field(() => value, value);
                 the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
                 (x, y) =>
                 {

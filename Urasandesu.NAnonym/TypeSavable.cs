@@ -317,6 +317,11 @@ namespace Urasandesu.NAnonym
 
         public static FieldInfo GetFieldInfo<T>(Expression<Func<T>> fieldProvider)
         {
+            return GetFieldInfo((LambdaExpression)fieldProvider);
+        }
+
+        public static FieldInfo GetFieldInfo(LambdaExpression fieldProvider)
+        {
             return (FieldInfo)((MemberExpression)fieldProvider.Body).Member;
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -12,11 +13,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     sealed class SRConstructorGeneratorImpl : SRConstructorDeclarationImpl, IConstructorGenerator
     {
         readonly ConstructorBuilder constructorBuilder;
-        readonly ParameterBuilder[] parameterBuilders;
-        readonly FieldBuilder[] fieldBuilders;
 
         readonly IMethodBodyGenerator bodyGen;
         readonly ITypeGenerator declaringTypeGen;
+
+        List<ParameterBuilder> parameterBuilders;
+        ReadOnlyCollection<IParameterGenerator> parameters;
 
         public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
             : this(constructorBuilder, new ParameterBuilder[] { }, new FieldBuilder[] { })
@@ -38,8 +40,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             this.constructorBuilder = constructorBuilder;
             bodyGen = new SRMethodBodyGeneratorImpl(constructorBuilder);
-            this.parameterBuilders = parameterBuilders;
-            this.fieldBuilders = fieldBuilders;
+            this.parameterBuilders = new List<ParameterBuilder>(parameterBuilders);
+            parameters = new ReadOnlyCollection<IParameterGenerator>(
+                this.parameterBuilders.TransformEnumerateOnly(parameterBuilder => (IParameterGenerator)new SRParameterGeneratorImpl(parameterBuilder)));
             var declaringTypeBuilder = constructorBuilder.DeclaringType as TypeBuilder;
             declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder, fieldBuilders);
         }
@@ -53,7 +56,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public new ReadOnlyCollection<IParameterGenerator> Parameters
         {
-            get { throw new NotImplementedException(); }
+            get { return parameters; }
         }
 
         public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
