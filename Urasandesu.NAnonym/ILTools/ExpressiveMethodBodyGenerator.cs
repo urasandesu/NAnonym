@@ -868,6 +868,14 @@ namespace Urasandesu.NAnonym.ILTools
 
         #endregion
 
+        public void Dump()
+        {
+            for (int directivesIndex = 0; directivesIndex < Directives.Count; directivesIndex++)
+            {
+                Console.WriteLine(string.Format("L_{0:X4}: {1}", directivesIndex, Directives[directivesIndex]));
+            }
+        }
+
         internal class EvalState
         {
             public EvalState()
