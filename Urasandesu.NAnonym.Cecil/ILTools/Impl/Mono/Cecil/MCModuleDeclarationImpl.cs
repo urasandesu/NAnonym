@@ -5,20 +5,18 @@ using System.Text;
 using Mono.Cecil;
 using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCModuleDeclarationImpl : UN::ILTools.DeserializableManually, UN::ILTools.IModuleDeclaration
+    class MCModuleDeclarationImpl : UNI::DeserializableManually, UNI::IModuleDeclaration
     {
         [NonSerialized]
         ModuleReference moduleRef;
         string moduleName;
 
-        UN::ILTools.IAssemblyDeclaration assemblyDecl;
-
-        //[NonSerialized]
-        //bool deserialized;
+        UNI::IAssemblyGenerator assemblyGen;
 
         public MCModuleDeclarationImpl(ModuleReference moduleRef)
             : base(true)
@@ -30,14 +28,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             this.moduleRef = moduleRef;
             moduleName = moduleRef.Name;
-            assemblyDecl = new MCAssemblyDeclarationImpl(((ModuleDefinition)moduleRef).Assembly);
+            assemblyGen = new MCAssemblyGeneratorImpl(((ModuleDefinition)moduleRef).Assembly);
         }
 
         #region IModuleDeclaration メンバ
 
-        public UN::ILTools.IAssemblyDeclaration Assembly
+        public UNI::IAssemblyDeclaration Assembly
         {
-            get { throw new NotImplementedException(); }
+            get { return assemblyGen; }
         }
 
         #endregion
@@ -45,22 +43,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         internal ModuleReference ModuleRef { get { return moduleRef; } }
         protected string ModuleName { get { return moduleName; } }
 
-        //[OnDeserialized]
-        //internal void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyDecl;
-        //        assemblyDecl.OnDeserialized(context);
-        //        var assemblyDef = (AssemblyDefinition)assemblyDecl;
-        //        Initialize(assemblyDef.Modules.First(module => module.Name == moduleName));
-        //    }
-        //}
-
         protected override void OnDeserializedManually(StreamingContext context)
         {
-            var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyDecl;
+            var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyGen;
             assemblyDecl.OnDeserialized(context);
             var assemblyDef = assemblyDecl.AssemblyDef;
             Initialize(assemblyDef.Modules.First(module => module.Name == moduleName));

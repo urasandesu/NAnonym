@@ -17,7 +17,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             this.parameterDef = parameterDef;
             var typeDef = parameterDef.ParameterType as TypeDefinition;
-            parameterTypeGen = typeDef == null ? null : (MCTypeGeneratorImpl)typeDef;
+            parameterTypeGen = typeDef == null ? null : new MCTypeGeneratorImpl(typeDef);
         }
 
         internal ParameterDefinition ParameterDef { get { return parameterDef; } }

@@ -64,14 +64,14 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region IMethodBaseGenerator メンバ
-
-
         public new ITypeGenerator DeclaringType
         {
             get { return declaringTypeGen; }
+        }
+
+        public IMethodBaseGenerator CreateInstance(string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

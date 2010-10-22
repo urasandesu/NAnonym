@@ -53,6 +53,7 @@
     <Compile Include="DI\TargetMethodInfo.cs" />
     <Compile Include="ILTools\DeserializableManually.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
+    <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />
     <Compile Include="ILTools\IConstructorDeclaration.cs" />

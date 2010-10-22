@@ -61,7 +61,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return baseTypeDecl; }
         }
 
-        public IModuleDeclaration Module { get { throw new NotImplementedException(); } }
+        public IModuleDeclaration Module { get { return moduleDecl; } }
 
         public IConstructorDeclaration GetConstructor(Type[] types)
         {

@@ -39,7 +39,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         void Initialize(MethodDefinition methodDef)
         {
             var returnTypeDef = methodDef.ReturnType.Resolve();
-            returnTypeGen = (MCTypeGeneratorImpl)returnTypeDef;
+            returnTypeGen = new MCTypeGeneratorImpl(returnTypeDef);
             // TODO: 反変がサポートされるようになったら修正する。
             parameters = new ReadOnlyCollection<IParameterGenerator>(
                 base.Parameters.TransformEnumerateOnly(paramter => (IParameterGenerator)paramter));
@@ -81,18 +81,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCPortableScopeItemImpl(itemRawData, fieldDef, variableDef);
         }
 
-        #endregion
+        public IMethodBaseGenerator CreateInstance(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        {
+            throw new NotImplementedException();
+        }
 
-        //[OnDeserialized]
-        //internal new void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        base.OnDeserialized(context);
-        //        Initialize(MethodDef);
-        //    }
-        //}
+        #endregion
 
         protected override void OnDeserializedManually(StreamingContext context)
         {

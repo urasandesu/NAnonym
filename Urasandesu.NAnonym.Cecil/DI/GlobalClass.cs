@@ -183,32 +183,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                                                     _.Expand(targetField.Name),
                                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
-                                var dummyModuleDef = ModuleDefinition.CreateModule("Dummy", ModuleKind.Dll);
-                                var dummyTypeDef = new TypeDefinition("Dummy", "Dummy", MC::TypeAttributes.Public, dummyModuleDef.Import(typeof(object)));
-                                dummyModuleDef.Types.Add(dummyTypeDef);
-                                var dummyMethodDef = new MethodDefinition("Dummy", MC::MethodAttributes.Public | MC::MethodAttributes.Static, dummyModuleDef.Import(typeof(void)));
-                                dummyTypeDef.Methods.Add(dummyMethodDef);
-
-                                var dummyMethodGen = new MCMethodGeneratorImpl(dummyMethodDef);
-                                ExpressiveMethodBodyGenerator.Eval(_ => _.Expand(targetFieldInfo.Expression), dummyMethodGen);
-
-                                foreach (var directive in dummyMethodGen.Body.Directives)
-                                {
-                                    if (directive.ClrOperand == null && directive.RawOperand == null) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode).ToClr()));
-                                    else if (directive.ClrOperand is byte) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((byte)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is ConstructorInfo) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((ConstructorInfo)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is double) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((double)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is FieldInfo) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((FieldInfo)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is float) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((float)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is int) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((int)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is long) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((long)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is MethodInfo) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((MethodInfo)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is sbyte) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((sbyte)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is short) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((short)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is string) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((string)directive.ClrOperand)));
-                                    else if (directive.ClrOperand is Type) gen.Eval(_ => il.Emit(_.Expand(directive.OpCode.ToClr(), typeof(SRE::OpCodes)), _.Expand((Type)directive.ClrOperand)));
-                                    else throw new NotImplementedException();
-                                }
+                                var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
+                                macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(targetFieldInfo.Expression));
 
                                 gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, targetFieldActual));
                             }

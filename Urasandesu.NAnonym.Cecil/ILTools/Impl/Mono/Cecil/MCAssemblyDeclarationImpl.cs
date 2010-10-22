@@ -16,9 +16,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         AssemblyDefinition assemblyDef;
         string assemblyFullName;
 
-        //[NonSerialized]
-        //bool deserialized;
-
         public MCAssemblyDeclarationImpl(AssemblyDefinition assemblyDef)
             : base(true)
         {
@@ -33,17 +30,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         internal AssemblyDefinition AssemblyDef { get { return assemblyDef; } }
         protected string AssemblyFullName { get { return assemblyFullName; } }
-
-        //[OnDeserialized]
-        //internal void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        var assemblyDef = GlobalAssemblyResolver.Instance.Resolve(assemblyFullName);
-        //        Initialize(assemblyDef);
-        //    }
-        //}
 
         protected override void OnDeserializedManually(StreamingContext context)
         {

@@ -6,9 +6,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using SR = System.Reflection;
+using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
 using System.Collections.Generic;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -56,7 +58,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public static void Eval(Expression<Action<Expressible>> exp, IMethodBaseGenerator methodGen)
+        public static void EvalTo(Expression<Action<Expressible>> exp, IMethodBaseGenerator methodGen)
         {
             var state = new EvalState();
             EvalExpression(methodGen, exp.Body, state);
@@ -297,6 +299,19 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     // instance method call
                     EvalExpression(methodGen, exp.Object, state);
+                    if (0 < state.ExtractInfoStack.Count)
+                    {
+                        var extractInfo = state.ExtractInfoStack.Pop();
+                        if (extractInfo.Value is string && extractInfo.Type != typeof(string))
+                        {
+                            var fieldInfo = new ExpressibleFieldInfo((string)extractInfo.Value, extractInfo.Type);
+                            EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
                     if (exp.Object.Type.IsValueType)
                     {
                         // NOTE: 値型のメソッドを呼び出すには、アドレスへの変換が必要。
@@ -1048,6 +1063,19 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 get { throw new NotImplementedException(); }
             }
+        }
+
+        public ReadOnlyCollection<IDirectiveGenerator> ToDirectives(LambdaExpression expression)
+        {
+            var dummyAssemblyName = new AssemblyName("Dummy");
+            var dummyAssembly = ((IAssemblyGenerator)methodGen.DeclaringType.Module.Assembly).CreateInstance(dummyAssemblyName);
+            var dummyModule = dummyAssembly.AddModule("Dummy");
+            var dummyType = dummyModule.AddType("Dummy.Dummy", TypeAttributes.Public, typeof(object));
+            var dummyMethod = dummyType.AddMethod("Dummy", MethodAttributes.Public | MethodAttributes.Static, typeof(void), Type.EmptyTypes);
+
+            EvalTo(_ => _.Expand(expression), dummyMethod);
+
+            return dummyMethod.Body.Directives;
         }
     }
 }
