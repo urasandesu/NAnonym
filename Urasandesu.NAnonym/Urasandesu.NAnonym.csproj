@@ -49,6 +49,11 @@
     <Compile Include="DI\ActionReference.cs" />
     <Compile Include="DI\DependencyClass.cs" />
     <Compile Include="DI\FuncReference.cs" />
+    <Compile Include="DI\LocalAnonymousInstanceMethodInjection.cs" />
+    <Compile Include="DI\LocalAnonymousStaticMethodInjection.cs" />
+    <Compile Include="DI\LocalImplementAnonymousInstanceMethodInjection.cs" />
+    <Compile Include="DI\LocalImplementAnonymousStaticMethodInjection.cs" />
+    <Compile Include="DI\LocalMethodInjection.cs" />
     <Compile Include="DI\SetupMode.cs" />
     <Compile Include="DI\TargetMethodInfo.cs" />
     <Compile Include="ILTools\DeserializableManually.cs" />

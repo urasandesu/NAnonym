@@ -120,10 +120,11 @@ namespace Urasandesu.NAnonym.DI
 
         protected override void OnLoad(DependencyClass modified)
         {
-            var localClassAssemblyName = new AssemblyName("LocalClassAssembly");
+            var localClassAssemblyName = new AssemblyName("LocalClasses");
+            localClassAssemblyName.Version = new Version(1, 0, 0, 0);
             var localClassAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(localClassAssemblyName, AssemblyBuilderAccess.RunAndSave);
-            var localClassModuleBuilder = localClassAssemblyBuilder.DefineDynamicModule("LocalClassModule", "LocalClassModule.dll");
-            var localClassTypeBuilder = localClassModuleBuilder.DefineType("LocalClassType");
+            var localClassModuleBuilder = localClassAssemblyBuilder.DefineDynamicModule("LocalClasses", "LocalClasses.dll");
+            var localClassTypeBuilder = localClassModuleBuilder.DefineType("LocalClasses.LocalClassType");
             if (typeof(TBase).IsInterface)
             {
                 localClassTypeBuilder.AddInterfaceImplementation(typeof(TBase));
@@ -133,113 +134,112 @@ namespace Urasandesu.NAnonym.DI
                 throw new NotImplementedException();
             }
 
-            var localClassConstructorBuilder = localClassTypeBuilder.DefineConstructor(
-                                                    MethodAttributes.Public |
-                                                    MethodAttributes.HideBySig |
-                                                    MethodAttributes.SpecialName |
-                                                    MethodAttributes.RTSpecialName,
-                                                    CallingConventions.Standard,
-                                                    new Type[] { });
-            localClassConstructorBuilder.ExpressBody(
-            gen =>
+            var targetFieldDeclaringTypeDictionary = new Dictionary<Type, FieldBuilder>();
+            if (0 < TargetFieldInfoSet.Count)
             {
-                gen.Eval(_ => _.Base());
-            });
+                var cachedConstructBuilder = localClassTypeBuilder.DefineField(
+                    CacheFieldPrefix + "Construct", typeof(Action), FieldAttributes.Private | FieldAttributes.Static);
+
+                var targetFieldDeclaringTypeUsedDictionary = new Dictionary<Type, bool>();
+                int targetFieldDeclaringTypeIndex = 0;
+                foreach (var targetFieldInfo in TargetFieldInfoSet)
+                {
+                    var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
+                    if (!targetFieldDeclaringTypeDictionary.ContainsKey(targetField.DeclaringType))
+                    {
+                        var cachedTargetFieldDeclaringTypeBuilder = localClassTypeBuilder.DefineField(
+                                CacheFieldPrefix + "TargetFieldDeclaringType" + targetFieldDeclaringTypeIndex++, targetField.DeclaringType, FieldAttributes.Private);
+                        targetFieldDeclaringTypeDictionary.Add(targetField.DeclaringType, cachedTargetFieldDeclaringTypeBuilder);
+                        targetFieldDeclaringTypeUsedDictionary.Add(targetField.DeclaringType, false);
+                    }
+                }
+
+                var localClassConstructorBuilder = localClassTypeBuilder.DefineConstructor(
+                                                        MethodAttributes.Public |
+                                                        MethodAttributes.HideBySig |
+                                                        MethodAttributes.SpecialName |
+                                                        MethodAttributes.RTSpecialName,
+                                                        CallingConventions.Standard,
+                                                        new Type[] { });
+                localClassConstructorBuilder.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.If(_.Ldsfld(_.Extract(cachedConstructBuilder.Name, typeof(Action))) == null));
+                    {
+                        var dynamicMethod = default(DynamicMethod);
+                        gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
+                                                                    "dynamicMethod",
+                                                                    _.Expand(typeof(void)),
+                                                                    new Type[] { _.Expand(localClassTypeBuilder) },
+                                                                    _.Expand(localClassTypeBuilder),
+                                                                    true)));
+                        var il = default(ILGenerator);
+                        gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
+                        foreach (var targetFieldInfo in TargetFieldInfoSet)
+                        {
+                            var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
+                            if (!targetFieldDeclaringTypeUsedDictionary[targetField.DeclaringType])
+                            {
+                                targetFieldDeclaringTypeUsedDictionary[targetField.DeclaringType] = true;
+
+                                var targetFieldDeclaringTypeConstructor = default(ConstructorInfo);
+                                gen.Eval(_ => _.Addloc(targetFieldDeclaringTypeConstructor,
+                                                       _.Expand(targetField.DeclaringType).GetConstructor(
+                                                                                BindingFlags.Public | BindingFlags.Instance,
+                                                                                null,
+                                                                                Type.EmptyTypes,
+                                                                                null)));
+
+                                gen.Eval(_ => _.Addloc(_.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
+                                                       _.Expand(localClassTypeBuilder).GetField(
+                                                                                _.Expand(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
+                                                                                BindingFlags.Instance | BindingFlags.NonPublic)));
+                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
+                                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, targetFieldDeclaringTypeConstructor));
+                                gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)));
+                            }
+
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)));
+                            var targetFieldActual = default(FieldInfo);
+                            gen.Eval(_ => _.Addloc(targetFieldActual,
+                                                   _.Expand(targetField.DeclaringType).GetField(
+                                                                                _.Expand(targetField.Name),
+                                                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
+
+                            var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
+                            macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(targetFieldInfo.Expression));
+
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, targetFieldActual));
+                        }
+                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
+                        gen.Eval(_ => _.Stsfld(_.Extract<Action>(cachedConstructBuilder.Name),
+                                               (Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                    }
+                    gen.Eval(_ => _.EndIf());
+                    gen.Eval(_ => _.Ldsfld(_.Extract<Action>(cachedConstructBuilder.Name)).Invoke());
+                    gen.Eval(_ => _.Base());
+                },
+                new FieldBuilder[] { cachedConstructBuilder }.Concat(targetFieldDeclaringTypeDictionary.Values).ToArray());
+            }
+
+
+
 
             int targetMethodInfoSetIndex = 0;
             foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
-                if (targetMethodInfo.Mode == SetupModes.Override)
-                {
-                    throw new NotImplementedException();
-                }
-                else if (targetMethodInfo.Mode == SetupModes.Implement)
-                {
+                var cachedMethodBuilder =
+                    localClassTypeBuilder.DefineField(
+                        CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++,
+                        targetMethodInfo.DelegateType,
+                        FieldAttributes.Private);
 
-                    var cacheMethodBuilder =
-                        localClassTypeBuilder.DefineField(
-                            CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++,
-                            targetMethodInfo.DelegateType,
-                            FieldAttributes.Private);
-
-                    var methodBuilder = localClassTypeBuilder.DefineMethod(
-                                            targetMethodInfo.OldMethod.Name,
-                                            MethodAttributes.Public |
-                                            MethodAttributes.HideBySig |
-                                            MethodAttributes.NewSlot |
-                                            MethodAttributes.Virtual |
-                                            MethodAttributes.Final,
-                                            CallingConventions.HasThis,
-                                            targetMethodInfo.OldMethod.ReturnType,
-                                            targetMethodInfo.OldMethod.ParameterTypes());
-
-                    var parameterBuilders = new List<ParameterBuilder>();
-                    foreach (var parameterName in targetMethodInfo.OldMethod.ParameterNames())
-                    {
-                        parameterBuilders.Add(methodBuilder.DefineParameter(1, ParameterAttributes.In, parameterName));
-                    }
-
-                    methodBuilder.ExpressBody(
-                    gen =>
-                    {
-                        gen.Eval(_ => _.If(_.Ldfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType)) == null));
-                        var dynamicMethod = default(DynamicMethod);
-                        var returnType = targetMethodInfo.OldMethod.ReturnType;
-                        var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                        gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", _.Expand(returnType), _.Expand(parameterTypes), true)));
-                        var method4 = default(MethodInfo);
-                        gen.Eval(_ => _.Addloc(method4, _.Expand(targetMethodInfo.DelegateType).GetMethod(
-                                                            "Invoke",
-                                                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                            null, _.Expand(parameterTypes), null)));
-                        var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetMethodInfo.NewMethod);
-                        var cacheField = default(FieldInfo);
-                        gen.Eval(_ => _.Addloc(cacheField, Type.GetType(_.Expand(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
-                                                            _.Expand(tmpCacheField.Name),
-                                                            BindingFlags.NonPublic | BindingFlags.Static)));
-                        var targetMethod = default(MethodInfo);
-                        gen.Eval(_ => _.Addloc(targetMethod, Type.GetType(_.Expand(targetMethodInfo.OldMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                            _.Expand(targetMethodInfo.OldMethod.Name),
-                                                            BindingFlags.NonPublic | BindingFlags.Static)));
-                        var il = default(ILGenerator);
-                        gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
-                        for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
-                        {
-                            switch (parametersIndex)
-                            {
-                                case 0:
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                                    break;
-                                case 1:
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
-                                    break;
-                                case 2:
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
-                                    break;
-                                case 3:
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
-                                    break;
-                                default:
-                                    throw new NotSupportedException();
-                            }
-                        }
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                        gen.Eval(_ => _.Stfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType), _.Extract(targetMethodInfo.DelegateType), dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
-                        gen.Eval(_ => _.EndIf());
-                        var invoke = targetMethodInfo.DelegateType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance, null, parameterTypes, null);
-                        gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cacheMethodBuilder.Name, targetMethodInfo.DelegateType)), _.Extract(invoke), _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
-
-                        // HACK: Expand ～ シリーズはもう少し種類があると良さげ。
-                    },
-                    parameterBuilders.ToArray(),
-                    new FieldBuilder[] { cacheMethodBuilder });
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+                var methodInjection = LocalMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
+                var cachedSettingBuilder = targetFieldDeclaringTypeDictionary.ContainsKey(targetMethodInfo.NewMethod.DeclaringType) ? 
+                                                targetFieldDeclaringTypeDictionary[targetMethodInfo.NewMethod.DeclaringType] : 
+                                                default(FieldBuilder);
+                methodInjection.Apply(cachedSettingBuilder, cachedMethodBuilder);
             }
             createdType = localClassTypeBuilder.CreateType();
         }
@@ -251,34 +251,4 @@ namespace Urasandesu.NAnonym.DI
             return (TBase)createdType.GetConstructor(new Type[] { }).Invoke(new object[] { });
         }
     }
-
-    //abstract class LocalMethodInjection
-    //{
-    //    public static LocalMethodInjection CreateInstance<TBase>(TypeBuilder localClassTypeBuilder, TargetMethodInfo targetMethodInfo)
-    //    {
-    //        // MEMO: 先に NewMethod の定義先情報で振り分けたほうが共通化できる処理が多そう。
-    //        if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
-    //        {
-    //            return LocalAnonymousInstanceMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
-    //        }
-    //        else if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
-    //        {
-    //            return LocalAnonymousStaticMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
-    //        }
-    //        else
-    //        {
-    //            throw new NotImplementedException();
-    //        }
-    //    }
-
-    //    protected readonly TypeBuilder localClassTypeBuilder;
-    //    protected readonly TargetMethodInfo targetMethodInfo;
-    //    public LocalMethodInjection(TypeBuilder localClassTypeBuilder, TargetMethodInfo targetMethodInfo)
-    //    {
-    //        this.localClassTypeBuilder = localClassTypeBuilder;
-    //        this.targetMethodInfo = targetMethodInfo;
-    //    }
-
-    //    public abstract void Apply(FieldDefinition cachedSettingDef, FieldDefinition cachedMethodDef);
-    //}
 }

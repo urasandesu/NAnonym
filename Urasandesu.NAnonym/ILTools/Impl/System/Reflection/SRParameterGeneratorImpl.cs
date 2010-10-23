@@ -29,6 +29,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return m_parameterTypes[parameterBuilder.Position - 1];
         }
 
+        internal ParameterBuilder ParameterBuilder
+        {
+            get { return parameterBuilder; }
+        }
+
         #region IParameterGenerator メンバ
 
         public new ITypeGenerator ParameterType

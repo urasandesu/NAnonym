@@ -9,28 +9,166 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     class SRDirectiveDeclarationImpl : IDirectiveDeclaration
     {
         OpCode opcode;
-        object operand;
+        object rawOperand;
+        object nanonymOperand;
+        object clrOperand;
 
-        public SRDirectiveDeclarationImpl(OpCode opcode) { this.opcode = opcode; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, byte arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, ConstructorInfo con) { this.opcode = opcode; this.operand = con; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, double arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, FieldInfo field) { this.opcode = opcode; this.operand = field; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, float arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, int arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, ILabelDeclaration label) { this.opcode = opcode; this.operand = label; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, ILabelDeclaration[] labels) { this.opcode = opcode; this.operand = labels; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, ILocalDeclaration local) { this.opcode = opcode; this.operand = local; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, long arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, MethodInfo meth) { this.opcode = opcode; this.operand = meth; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, sbyte arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, short arg) { this.opcode = opcode; this.operand = arg; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, string str) { this.opcode = opcode; this.operand = str; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, Type cls) { this.opcode = opcode; this.operand = cls; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, IConstructorDeclaration constructorDecl) { this.opcode = opcode; this.operand = constructorDecl; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, IParameterDeclaration parameterDecl) { this.opcode = opcode; this.operand = parameterDecl; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, IFieldDeclaration fieldDecl) { this.opcode = opcode; this.operand = fieldDecl; }
-        public SRDirectiveDeclarationImpl(OpCode opcode, IPortableScopeItem scopeItem) { this.opcode = opcode; this.operand = scopeItem; }
+        public SRDirectiveDeclarationImpl(OpCode opcode)
+        {
+            this.opcode = opcode;
+            rawOperand = null;
+            nanonymOperand = null;
+            clrOperand = null;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, byte arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, ConstructorInfo con)
+        {
+            this.opcode = opcode; 
+            rawOperand = con;
+            nanonymOperand = new SRConstructorDeclarationImpl(con);
+            clrOperand = con;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, double arg)
+        {
+            this.opcode = opcode; 
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, FieldInfo field)
+        {
+            this.opcode = opcode;
+            rawOperand = field;
+            nanonymOperand = new SRFieldDeclarationImpl(field);
+            clrOperand = field;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, float arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, int arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, ILabelDeclaration label)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRLabelGeneratorImpl)label).Label;
+            nanonymOperand = label;
+            clrOperand = ((SRLabelGeneratorImpl)label).Label;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, ILabelDeclaration[] labels)
+        {
+            this.opcode = opcode;
+            rawOperand = labels.Select(label => ((SRLabelGeneratorImpl)label).Label).ToArray();
+            nanonymOperand = labels;
+            clrOperand = labels.Select(label => ((SRLabelGeneratorImpl)label).Label).ToArray();
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, ILocalDeclaration local)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRLocalGeneratorImpl)local).LocalBuilder;
+            nanonymOperand = local;
+            clrOperand = ((SRLocalGeneratorImpl)local).LocalBuilder;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, long arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, MethodInfo meth)
+        {
+            this.opcode = opcode;
+            rawOperand = meth;
+            nanonymOperand = new SRMethodDeclarationImpl(meth);
+            clrOperand = meth;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, sbyte arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, short arg)
+        {
+            this.opcode = opcode;
+            rawOperand = arg;
+            nanonymOperand = arg;
+            clrOperand = arg;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, string str)
+        {
+            this.opcode = opcode;
+            rawOperand = str;
+            nanonymOperand = str;
+            clrOperand = str;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, Type cls)
+        {
+            this.opcode = opcode;
+            rawOperand = cls;
+            nanonymOperand = cls;
+            clrOperand = cls;
+        }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, IConstructorDeclaration constructorDecl)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo;
+            nanonymOperand = constructorDecl;
+            clrOperand = ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo;
+        }
+        
+        public SRDirectiveDeclarationImpl(OpCode opcode, IParameterDeclaration parameterDecl)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRParameterGeneratorImpl)parameterDecl).ParameterBuilder;
+            nanonymOperand = parameterDecl;
+            clrOperand = ((SRParameterGeneratorImpl)parameterDecl).ParameterBuilder;
+        }
+        
+        public SRDirectiveDeclarationImpl(OpCode opcode, IFieldDeclaration fieldDecl)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRFieldGeneratorImpl)fieldDecl).FieldInfo;
+            nanonymOperand = fieldDecl;
+            clrOperand = ((SRFieldGeneratorImpl)fieldDecl).FieldInfo;
+        }
+        
+        public SRDirectiveDeclarationImpl(OpCode opcode, IPortableScopeItem scopeItem)
+        {
+            throw new NotImplementedException();
+        }
 
         #region IDirectiveDeclaration メンバ
 
@@ -41,7 +179,17 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public object RawOperand
         {
-            get { return operand; }
+            get { return rawOperand; }
+        }
+
+        public object NAnonymOperand
+        {
+            get { return nanonymOperand; }
+        }
+
+        public object ClrOperand
+        {
+            get { return clrOperand; }
         }
 
         #endregion
@@ -50,20 +198,5 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             return string.Format("{0} {1}", OpCode, RawOperand);
         }
-
-        #region IDirectiveDeclaration メンバ
-
-
-        public object NAnonymOperand
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public object ClrOperand
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        #endregion
     }
 }

@@ -1,43 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Reflection;
+using System.Linq.Expressions;
 using System.Reflection.Emit;
-using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools;
-using Urasandesu.NAnonym.DI;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools;
+using SR = System.Reflection;
 using SRE = System.Reflection.Emit;
-using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
-namespace Urasandesu.NAnonym.Cecil.DI
+namespace Urasandesu.NAnonym.DI
 {
-    class GlobalReplaceAnonymousStaticMethodInjection : GlobalAnonymousStaticMethodInjection
+    class LocalImplementAnonymousStaticMethodInjection : LocalAnonymousStaticMethodInjection
     {
-        public GlobalReplaceAnonymousStaticMethodInjection(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
-            : base(tbaseTypeDef, targetMethodInfo)
+        public LocalImplementAnonymousStaticMethodInjection(TypeBuilder tbaseTypeBuilder, TargetMethodInfo targetMethodInfo)
+            : base(tbaseTypeBuilder, targetMethodInfo)
         {
         }
 
-        public override void Apply(FieldDefinition cachedSettingDef, FieldDefinition cachedMethodDef)
+        public override void Apply(FieldBuilder cachedSettingBuilder, FieldBuilder cachedMethodBuilder)
         {
-            var oldMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetMethodInfo.OldMethod));
-            string oldMethodName = oldMethodDef.Name;
-            oldMethodDef.Name = "__" + oldMethodDef.Name;
+            var methodBuilder = localClassTypeBuilder.DefineMethod(
+                                    targetMethodInfo.OldMethod.Name,
+                                    MethodAttributes.Public |
+                                    MethodAttributes.HideBySig |
+                                    MethodAttributes.NewSlot |
+                                    MethodAttributes.Virtual |
+                                    MethodAttributes.Final,
+                                    CallingConventions.HasThis,
+                                    targetMethodInfo.OldMethod.ReturnType,
+                                    targetMethodInfo.OldMethod.ParameterTypes());
 
-            // 元のメソッドと同じメソッドを追加（処理の中身は空にする）
-            var newMethod = oldMethodDef.DuplicateWithoutBody();
-            newMethod.Name = oldMethodName;
-            tbaseTypeDef.Methods.Add(newMethod);
+            int parameterPosition = 1;
+            var parameterBuilders = new List<ParameterBuilder>();
+            foreach (var parameterName in targetMethodInfo.OldMethod.ParameterNames())
+            {
+                parameterBuilders.Add(methodBuilder.DefineParameter(parameterPosition++, ParameterAttributes.In, parameterName));
+            }
 
-            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(targetMethodInfo.NewMethod);
-            newMethod.Body.InitLocals = true;
-            newMethod.ExpressBody(
+            var tmpCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(targetMethodInfo.NewMethod);
+            methodBuilder.ExpressBody(
             gen =>
             {
                 var returnType = targetMethodInfo.OldMethod.ReturnType;
                 var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                gen.Eval(_ => _.If(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)) == null));
+                gen.Eval(_ => _.If(_.Ldfld(_.Extract(cachedMethodBuilder.Name, targetMethodInfo.DelegateType)) == null));
                 {
                     var dynamicMethod = default(DynamicMethod);
                     gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", _.Expand(returnType), _.Expand(parameterTypes), true)));
@@ -102,7 +112,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                     }
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                    gen.Eval(_ => _.Stfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType),
+                    gen.Eval(_ => _.Stfld(_.Extract(cachedMethodBuilder.Name, targetMethodInfo.DelegateType),
                                           _.Extract(targetMethodInfo.DelegateType),
                                           dynamicMethod.CreateDelegate(_.Expand(targetMethodInfo.DelegateType))));
                 }
@@ -113,10 +123,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
                                                     null,
                                                     parameterTypes,
                                                     null);
-                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)),
+                gen.Eval(_ => _.Return(_.Invoke(_.Ldfld(_.Extract(cachedMethodBuilder.Name, targetMethodInfo.DelegateType)),
                                                 _.Extract(invokeForInvoke),
                                                 _.Ldarg(_.Extract<object[]>(targetMethodInfo.OldMethod.ParameterNames())))));
-            });
+            },
+            parameterBuilders.ToArray(),
+            new FieldBuilder[] { cachedMethodBuilder });
         }
     }
 }

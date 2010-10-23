@@ -35,7 +35,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public IMethodBaseGenerator AddMethod(string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
-            throw new NotImplementedException();
+            var methodBuilder = typeBuilder.DefineMethod(name, attributes, returnType, parameterTypes);
+            return new SRMethodGeneratorImpl(methodBuilder);
         }
 
         #endregion

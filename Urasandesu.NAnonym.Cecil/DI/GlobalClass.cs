@@ -122,8 +122,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
             if (0 < TargetFieldInfoSet.Count)
             {
-                var manuallyType = TypeAnalyzer.SearchManuallyGenerated(setupper.Method.DeclaringType);
-
                 var cachedConstructDef = new FieldDefinition(
                         CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, tbaseModuleDef.Import(typeof(Action)));
                 tbaseTypeDef.Fields.Add(cachedConstructDef);

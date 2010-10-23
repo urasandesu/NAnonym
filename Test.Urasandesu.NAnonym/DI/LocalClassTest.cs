@@ -80,6 +80,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             the =>
             {
                 int value = 0;
+                the.Field(() => value, 0);
                 the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
                 (x, y) =>
                 {
