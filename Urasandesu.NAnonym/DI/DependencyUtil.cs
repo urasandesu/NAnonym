@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -25,6 +26,11 @@ namespace Urasandesu.NAnonym.DI
             {
                 @class.Load();
             }
+        }
+
+        public static void RollbackLocal()
+        {
+            classSet.Clear();
         }
 
         

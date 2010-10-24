@@ -225,22 +225,12 @@ namespace Urasandesu.NAnonym.DI
 
 
 
-
-            int targetMethodInfoSetIndex = 0;
+            var methodInjection = new LocalMethodInjection(localClassTypeBuilder, targetFieldDeclaringTypeDictionary);
             foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
-                var cachedMethodBuilder =
-                    localClassTypeBuilder.DefineField(
-                        CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++,
-                        targetMethodInfo.DelegateType,
-                        FieldAttributes.Private);
-
-                var methodInjection = LocalMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
-                var cachedSettingBuilder = targetFieldDeclaringTypeDictionary.ContainsKey(targetMethodInfo.NewMethod.DeclaringType) ? 
-                                                targetFieldDeclaringTypeDictionary[targetMethodInfo.NewMethod.DeclaringType] : 
-                                                default(FieldBuilder);
-                methodInjection.Apply(cachedSettingBuilder, cachedMethodBuilder);
+                methodInjection.Apply(targetMethodInfo);
             }
+
             createdType = localClassTypeBuilder.CreateType();
         }
 

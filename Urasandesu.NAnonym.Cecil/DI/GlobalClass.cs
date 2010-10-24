@@ -198,19 +198,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
 
 
-            int targetMethodInfoSetIndex = 0;
+            var methodInjection = new GlobalMethodInjection(tbaseTypeDef);
             foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
-                var cachedMethodDef = new FieldDefinition(
-                                            CacheFieldPrefix + "Method" + targetMethodInfoSetIndex++, 
-                                            MC::FieldAttributes.Private, 
-                                            tbaseModuleDef.Import(targetMethodInfo.DelegateType));
-                tbaseTypeDef.Fields.Add(cachedMethodDef);
-
-                var methodInjection = GlobalMethodInjection.CreateInstance<TBase>(tbaseTypeDef, targetMethodInfo);
-                var cachedSettingDef = tbaseTypeDef.Fields.FirstOrDefault(
-                    field => field.FieldType.Resolve().GetFullName() == targetMethodInfo.NewMethod.DeclaringType.FullName);
-                methodInjection.Apply(cachedSettingDef, cachedMethodDef);
+                methodInjection.Apply(targetMethodInfo);
             }
 
             tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new WriterParameters() { WriteSymbols = true });
@@ -225,14 +216,5 @@ namespace Urasandesu.NAnonym.Cecil.DI
         {
             get { return typeof(TBase).Assembly.Location; }
         }
-    }
-
-    public class SetupModes : UND::SetupModes
-    {
-        protected SetupModes() : base() { }
-
-        public static readonly SetupMode Replace = new SetupMode();
-        public static readonly SetupMode Before = new SetupMode();
-        public static readonly SetupMode After = new SetupMode();
     }
 }

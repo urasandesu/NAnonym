@@ -1,46 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Linq.Expressions;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools;
-using SR = System.Reflection;
-using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
-    abstract class LocalMethodInjection
+    class LocalMethodInjection : DependencyMethodInjection
     {
-        public static LocalMethodInjection CreateInstance<TBase>(TypeBuilder localClassTypeBuilder, TargetMethodInfo targetMethodInfo)
-        {
-            // MEMO: 先に NewMethod の定義先情報で振り分けたほうが共通化できる処理が多そう。
-            if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
-            {
-                return LocalAnonymousInstanceMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
-            }
-            else if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
-            {
-                return LocalAnonymousStaticMethodInjection.CreateInstance<TBase>(localClassTypeBuilder, targetMethodInfo);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         protected readonly TypeBuilder localClassTypeBuilder;
-        protected readonly TargetMethodInfo targetMethodInfo;
-        public LocalMethodInjection(TypeBuilder localClassTypeBuilder, TargetMethodInfo targetMethodInfo)
+        readonly Dictionary<Type, FieldBuilder> targetFieldDeclaringTypeDictionary;
+        public LocalMethodInjection(TypeBuilder localClassTypeBuilder, Dictionary<Type, FieldBuilder> targetFieldDeclaringTypeDictionary)
         {
             this.localClassTypeBuilder = localClassTypeBuilder;
-            this.targetMethodInfo = targetMethodInfo;
+            this.targetFieldDeclaringTypeDictionary = targetFieldDeclaringTypeDictionary;
         }
 
-        public abstract void Apply(FieldBuilder cachedSettingBuilder, FieldBuilder cachedMethodBuilder);
+        protected override string UniqueCacheMethodFieldName()
+        {
+            return LocalClass.CacheFieldPrefix + "Method" + IncreaseSequence();
+        }
+
+        public override void Apply(TargetMethodInfo targetMethodInfo)
+        {
+            var cachedMethodBuilder = localClassTypeBuilder.DefineField(
+                UniqueCacheMethodFieldName(), targetMethodInfo.DelegateType, FieldAttributes.Private);
+
+            var cachedSettingBuilder = targetFieldDeclaringTypeDictionary.ContainsKey(targetMethodInfo.NewMethod.DeclaringType) ?
+                                            targetFieldDeclaringTypeDictionary[targetMethodInfo.NewMethod.DeclaringType] :
+                                            default(FieldBuilder);
+
+            var definer = LocalMethodInjectionDefiner.Create(targetMethodInfo);
+            var methodBuilder = definer.DefineMethod(localClassTypeBuilder);
+
+            int parameterPosition = 1;
+            var parameterBuilders = new List<ParameterBuilder>();
+            foreach (var parameterName in targetMethodInfo.OldMethod.ParameterNames())
+            {
+                parameterBuilders.Add(methodBuilder.DefineParameter(parameterPosition++, ParameterAttributes.In, parameterName));
+            }
+
+            var injectionBuilder = LocalMethodInjectionBuilder.Create(targetMethodInfo);
+            injectionBuilder.LocalClassTypeBuilder = localClassTypeBuilder;
+            injectionBuilder.CachedSettingBuilder = cachedSettingBuilder;
+            injectionBuilder.MethodBuilder = methodBuilder;
+            injectionBuilder.CachedMethodBuilder = cachedMethodBuilder;
+            injectionBuilder.ParameterBuilders = parameterBuilders.ToArray();
+            injectionBuilder.Construct();
+        }
     }
 }

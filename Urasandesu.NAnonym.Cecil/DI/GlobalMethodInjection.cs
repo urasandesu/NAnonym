@@ -1,39 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
+using MC = Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    abstract class GlobalMethodInjection
+    class GlobalMethodInjection : DependencyMethodInjection
     {
-        public static GlobalMethodInjection CreateInstance<TBase>(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
-        {
-            // MEMO: 先に NewMethod の定義先情報で振り分けたほうが共通化できる処理が多そう。
-            if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
-            {
-                return GlobalAnonymousInstanceMethodInjection.CreateInstance<TBase>(tbaseTypeDef, targetMethodInfo);
-            }
-            else if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
-            {
-                return GlobalAnonymousStaticMethodInjection.CreateInstance<TBase>(tbaseTypeDef, targetMethodInfo);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         protected readonly TypeDefinition tbaseTypeDef;
-        protected readonly TargetMethodInfo targetMethodInfo;
-        public GlobalMethodInjection(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
+        public GlobalMethodInjection(TypeDefinition tbaseTypeDef)
         {
             this.tbaseTypeDef = tbaseTypeDef;
-            this.targetMethodInfo = targetMethodInfo;
         }
 
-        public abstract void Apply(FieldDefinition cachedSettingDef, FieldDefinition cachedMethodDef);
+        protected override string UniqueCacheMethodFieldName()
+        {
+            return GlobalClass.CacheFieldPrefix + "Method" + IncreaseSequence();
+        }
+
+        public override void Apply(TargetMethodInfo targetMethodInfo)
+        {
+            var cachedMethodDef = new FieldDefinition(
+                                        UniqueCacheMethodFieldName(),
+                                        MC::FieldAttributes.Private,
+                                        tbaseTypeDef.Module.Import(targetMethodInfo.DelegateType));
+            tbaseTypeDef.Fields.Add(cachedMethodDef);
+
+            var cachedSettingDef = tbaseTypeDef.Fields.FirstOrDefault(
+                field => field.FieldType.Resolve().GetFullName() == targetMethodInfo.NewMethod.DeclaringType.FullName);
+
+            var definer = GlobalMethodInjectionDefiner.Create(targetMethodInfo);
+            var methodDef = definer.DefineMethod(tbaseTypeDef);
+
+            var injectionBuilder = GlobalMethodInjectionBuilder.Create(targetMethodInfo);
+            injectionBuilder.TBaseTypeDef = tbaseTypeDef;
+            injectionBuilder.NewMethod = methodDef;
+            injectionBuilder.CachedMethodDef = cachedMethodDef;
+            injectionBuilder.CachedSettingDef = cachedSettingDef;
+            injectionBuilder.Construct();
+        }
     }
 }

@@ -22,6 +22,12 @@ namespace Test.Urasandesu.NAnonym.ILTools
     [TestFixture]
     public class LocalClassTest
     {
+        [SetUp]
+        public void SetUp()
+        {
+            DependencyUtil.RollbackLocal();
+        }
+
         [Test]
         public void Test1()
         {

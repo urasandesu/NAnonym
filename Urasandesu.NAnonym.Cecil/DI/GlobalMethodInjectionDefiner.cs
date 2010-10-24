@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    abstract class GlobalAnonymousInstanceMethodInjection : GlobalMethodInjection
+    abstract class GlobalMethodInjectionDefiner
     {
-        public new static GlobalAnonymousInstanceMethodInjection CreateInstance<TBase>(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
+        protected readonly TargetMethodInfo targetMethodInfo;
+        public GlobalMethodInjectionDefiner(TargetMethodInfo targetMethodInfo)
+        {
+            this.targetMethodInfo = targetMethodInfo;
+        }
+
+        public static GlobalMethodInjectionDefiner Create(TargetMethodInfo targetMethodInfo)
         {
             if (targetMethodInfo.Mode == SetupModes.Override)
             {
@@ -21,7 +24,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
             else if (targetMethodInfo.Mode == SetupModes.Replace)
             {
-                return new GlobalReplaceAnonymousInstanceMethodInjection(tbaseTypeDef, targetMethodInfo);
+                return new GlobalReplaceMethodInjectionDefiner(targetMethodInfo);
             }
             else if (targetMethodInfo.Mode == SetupModes.Before)
             {
@@ -37,11 +40,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
         }
 
-        public GlobalAnonymousInstanceMethodInjection(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
-            : base(tbaseTypeDef, targetMethodInfo)
-        {
-        }
-
-        public override abstract void Apply(FieldDefinition cachedSettingDef, FieldDefinition cachedMethodDef);
+        public abstract MethodDefinition DefineMethod(TypeDefinition tbaseTypeDef);
     }
 }

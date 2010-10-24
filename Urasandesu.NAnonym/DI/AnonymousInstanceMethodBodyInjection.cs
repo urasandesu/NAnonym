@@ -14,46 +14,18 @@ using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class LocalImplementAnonymousInstanceMethodInjection : LocalAnonymousInstanceMethodInjection
+    class AnonymousInstanceMethodBodyInjection : DependencyMethodBodyInjection
     {
-        public LocalImplementAnonymousInstanceMethodInjection(TypeBuilder tbaseTypeBuilder, TargetMethodInfo targetMethodInfo)
-            : base(tbaseTypeBuilder, targetMethodInfo)
+        protected readonly string cachedSettingName;
+        protected readonly Type ownerType;
+        public AnonymousInstanceMethodBodyInjection(TargetMethodInfo targetMethodInfo, string cachedMethodName, string cachedSettingName, Type ownerType)
+            : base(targetMethodInfo, cachedMethodName)
         {
+            this.cachedSettingName = cachedSettingName;
+            this.ownerType = ownerType;
         }
 
-        public override void Apply(FieldBuilder cachedSettingBuilder, FieldBuilder cachedMethodBuilder)
-        {
-            var methodBuilder = localClassTypeBuilder.DefineMethod(
-                                    targetMethodInfo.OldMethod.Name,
-                                    MethodAttributes.Public |
-                                    MethodAttributes.HideBySig |
-                                    MethodAttributes.NewSlot |
-                                    MethodAttributes.Virtual |
-                                    MethodAttributes.Final,
-                                    CallingConventions.HasThis,
-                                    targetMethodInfo.OldMethod.ReturnType,
-                                    targetMethodInfo.OldMethod.ParameterTypes());
-
-            int parameterPosition = 1;
-            var parameterBuilders = new List<ParameterBuilder>();
-            foreach (var parameterName in targetMethodInfo.OldMethod.ParameterNames())
-            {
-                parameterBuilders.Add(methodBuilder.DefineParameter(parameterPosition++, ParameterAttributes.In, parameterName));
-            }
-
-            methodBuilder.ExpressBody(
-            gen =>
-            {
-                var ownerType = (Type)localClassTypeBuilder;
-                var returnType = targetMethodInfo.OldMethod.ReturnType;
-                var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-                ApplyBody(gen, cachedMethodBuilder.Name, cachedSettingBuilder.Name, ownerType, returnType, parameterTypes);
-            },
-            parameterBuilders.ToArray(),
-            new FieldBuilder[] { cachedMethodBuilder });
-        }
-
-        void ApplyBody(ExpressiveMethodBodyGenerator gen, string cachedMethodName, string cachedSettingName, Type ownerType, Type returnType, Type[] parameterTypes)
+        public override void Apply(ExpressiveMethodBodyGenerator gen)
         {
             gen.Eval(_ => _.If(_.Ldfld(_.Extract(cachedMethodName, targetMethodInfo.DelegateType)) == null));
             {
