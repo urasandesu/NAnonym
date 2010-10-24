@@ -11,7 +11,7 @@ using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    class GlobalReplaceAnonymousInstanceMethodInjection<TBase> : GlobalAnonymousInstanceMethodInjection
+    class GlobalReplaceAnonymousInstanceMethodInjection : GlobalAnonymousInstanceMethodInjection
     {
         public GlobalReplaceAnonymousInstanceMethodInjection(TypeDefinition tbaseTypeDef, TargetMethodInfo targetMethodInfo)
             : base(tbaseTypeDef, targetMethodInfo)
@@ -33,6 +33,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             newMethod.ExpressBody(
             gen =>
             {
+                var ownerType = Type.GetType(tbaseTypeDef.GetAssemblyQualifiedName());
                 var returnType = targetMethodInfo.OldMethod.ReturnType;
                 var parameterTypes = targetMethodInfo.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
                 gen.Eval(_ => _.If(_.Ldfld(_.Extract(cachedMethodDef.Name, targetMethodInfo.DelegateType)) == null));
@@ -41,13 +42,13 @@ namespace Urasandesu.NAnonym.Cecil.DI
                     gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
                                                                 "dynamicMethod",
                                                                 _.Expand(returnType),
-                                                                _.Expand(new Type[] { typeof(TBase) }.Concat(parameterTypes).ToArray()),
-                                                                typeof(TBase),
+                                                                new Type[] { _.Expand(ownerType) }.Concat(_.Expand(parameterTypes)).ToArray(),
+                                                                _.Expand(ownerType),
                                                                 true)));
 
 
                     var cacheField = default(FieldInfo);
-                    gen.Eval(_ => _.Addloc(cacheField, _.Expand(typeof(TBase)).GetField(
+                    gen.Eval(_ => _.Addloc(cacheField, _.Expand(ownerType).GetField(
                                                             _.Expand(cachedSettingDef.Name),
                                                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 

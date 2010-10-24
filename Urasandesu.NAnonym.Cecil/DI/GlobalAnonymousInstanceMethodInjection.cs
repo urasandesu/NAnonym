@@ -21,7 +21,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
             else if (targetMethodInfo.Mode == SetupModes.Replace)
             {
-                return new GlobalReplaceAnonymousInstanceMethodInjection<TBase>(tbaseTypeDef, targetMethodInfo);
+                return new GlobalReplaceAnonymousInstanceMethodInjection(tbaseTypeDef, targetMethodInfo);
             }
             else if (targetMethodInfo.Mode == SetupModes.Before)
             {

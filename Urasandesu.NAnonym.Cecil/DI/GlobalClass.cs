@@ -209,7 +209,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
                 var methodInjection = GlobalMethodInjection.CreateInstance<TBase>(tbaseTypeDef, targetMethodInfo);
                 var cachedSettingDef = tbaseTypeDef.Fields.FirstOrDefault(
-                    field => field.FieldType.Resolve().FullName.Replace("/", "+") == targetMethodInfo.NewMethod.DeclaringType.FullName);
+                    field => field.FieldType.Resolve().GetFullName() == targetMethodInfo.NewMethod.DeclaringType.FullName);
                 methodInjection.Apply(cachedSettingDef, cachedMethodDef);
             }
 
