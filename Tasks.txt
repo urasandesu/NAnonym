@@ -1,0 +1,51 @@
+// TODO: フィールドの初期化も DSL な書き方ができるように（the.Field(() => value).As(_ => new SimpleType1()); みたいな）。
+// TODO: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
+// TODO: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。
+// TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
+// TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。
+// TODO: GlobalClass で複数メソッド上書きに対応。
+// TODO: GlobalClass で、同じ Assembly への書き込みは 1 度で済ませるよう修正。
+// TODO: SetupMode.Override 実装。
+// TODO: LocalClassAssembly キャッシュ機構追加。
+// TODO: static メソッドの SetupMode.Replace 実装。
+
+
+
+// DOING: メソッドやプロパティの戻り値はできるだけ特化する、引数はできるだけ汎化するの原則適用。
+
+
+
+
+
+
+
+// DONE: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
+// DONE: LocalMethod 生成メソッドの引数用デリゲート型追加。
+// DONE: フィールドへの参照許可を ExpressiveMethodBodyGenerator に追加。
+// DONE: EMBG リファクタリング。
+// DONE: 2項演算子（null 比較）実装。
+// DONE: If 文、Scope を導入。
+// DONE: 実際の処理を呼び出すための DynamicMethod 用キャッシュ追加。
+// DONE: 戻り値型、引数型の制限解除。
+// DONE: 自動生成クラスのフィールドの初期化を明示するための構文導入。
+// DONE: ExpressBodyBefore 処理作成。
+// DONE: GlobalClass で設定クラスのメソッド呼び出す処理を拡張（インスタンス変数にキャッシュされるタイプ）。
+// DONE: 引数数を汎用デリゲート型まで拡張。
+// DONE: コンストラクタで自動生成クラスのフィールド初期化処理を行うよう修正。
+// DONE: FieldInfo の初期化はコンストラクタでやることになりそう。
+// DONE: 対象のクラスが何度も new されることを考えると、設定クラスを new して Register する一連の処理を DynamicMethod 化し、キャッシュしたほうが良い。
+// DONE: Expand 系の呼び出しを整理。Expand...メソッド群は冗長。従来の Expand に加え、変数の型が分からないものを Extract として追加。
+// DONE: キャッシュ用フィールドの名前変更（GlobalClass -> UNCD$<>0__Cached...）
+// DONE: キャッシュ用フィールド、既にあるものを上書かないよう修正。
+// DONE: コンストラクタで自動生成クラスのフィールド初期化処理を行う処理をキャッシュ。
+// DONE: 匿名メソッドが完全に現在のクラスに展開される場合の対応。
+// DONE: 匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
+// DONE: C# 魔改造 02 -言語内 DSL- みたいなエントリ書く。+ ラムダ式が使えるようになって…。+ try ～ finally の例…。+ インターフェースと相性悪くね？…
+// DONE: キャッシュ用フィールドの名前変更（LocalClass -> UND$<>0__Cached...）
+// DONE: LocalClass で引数数を汎用デリゲート型まで拡張。
+// DONE: GlobalClass 設定クラスキャッシュ方法修正（限定版）。
+// DONE: OpCode デバッグ簡易化処理追加。
+// DONE: GlobalClass 設定クラスキャッシュ方法修正（完全版）。
+// DONE: IMethodBodyGenerator、IMethodBaseGenerator、ITypeGenerator、IModuleGenerator 順に CreateTemporary みたいなのが必要。
+// DONE: LocalClass で匿名メソッドが完全に現在のクラスに展開される場合の対応。
+// DONE: GlobalReplaceAnonymousInstanceMethodInjection の TBase って要らなくね？
