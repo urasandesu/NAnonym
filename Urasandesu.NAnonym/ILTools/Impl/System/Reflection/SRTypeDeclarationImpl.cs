@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -14,6 +15,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         readonly ITypeDeclaration baseTypeDecl;
         IModuleDeclaration moduleDecl;
+        List<IFieldDeclaration> listFields;
+        ReadOnlyCollection<IFieldDeclaration> fields;
         public SRTypeDeclarationImpl(Type type)
             : base(type)
         {
@@ -24,6 +27,14 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             {
                 moduleDecl = new SRModuleGeneratorImple(moduleBuilder);
             }
+            listFields = new List<IFieldDeclaration>();
+            if (!(type is TypeBuilder))
+            {
+                listFields.AddRange(type.GetFields(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
+                    .Select(field => (IFieldDeclaration)new SRFieldDeclarationImpl(field)));
+            }
+            fields = new ReadOnlyCollection<IFieldDeclaration>(listFields);
         }
 
         static ModuleBuilder ExportModule(Type type)
@@ -70,114 +81,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         #endregion
-    }
 
-    class SRModuleDeclarationImpl : IModuleDeclaration
-    {
-        Module module;
-        IAssemblyDeclaration assemblyDecl;
-        public SRModuleDeclarationImpl(Module module)
+        #region ITypeDeclaration メンバ
+
+        public ReadOnlyCollection<IFieldDeclaration> Fields
         {
-            this.module = module;
-            var assemblyBuilder = ExportAssembly(module);
-            if (assemblyBuilder != null)
-            {
-                assemblyDecl = new SRAssemblyGeneratorImpl(assemblyBuilder);
-            }
-        }
-
-        static AssemblyBuilder ExportAssembly(Module module)
-        {
-            if (!(module is ModuleBuilder)) return null;
-
-            var moduleBuilderType = typeof(ModuleBuilder);
-            var m_assemblyBuilder = moduleBuilderType.GetField("m_assemblyBuilder", BindingFlags.NonPublic | BindingFlags.Instance);
-            return m_assemblyBuilder == null ? default(AssemblyBuilder) : (AssemblyBuilder)m_assemblyBuilder.GetValue(module);
-        }
-
-        #region IModuleDeclaration メンバ
-
-        public IAssemblyDeclaration Assembly
-        {
-            get { return assemblyDecl; }
-        }
-
-        #endregion
-
-        #region IDeserializableManually メンバ
-
-        public void OnDeserialized(StreamingContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-    }
-
-    class SRModuleGeneratorImple : SRModuleDeclarationImpl, IModuleGenerator
-    {
-        ModuleBuilder moduleBuilder;
-        public SRModuleGeneratorImple(ModuleBuilder moduleBuilder)
-            : base(moduleBuilder)
-        {
-            this.moduleBuilder = moduleBuilder;
-        }
-
-        #region IModuleGenerator メンバ
-
-        public new IAssemblyGenerator Assembly
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public ITypeGenerator AddType(string fullName, TypeAttributes attr, Type parent)
-        {
-            var typeBuilder = moduleBuilder.DefineType(fullName, attr, parent);
-            return new SRTypeGeneratorImpl(typeBuilder);
-        }
-
-        #endregion
-    }
-
-    class SRAssemblyDeclarationImpl : IAssemblyDeclaration
-    {
-        Assembly assembly;
-        public SRAssemblyDeclarationImpl(Assembly assembly)
-        {
-            this.assembly = assembly;
-        }
-
-        #region IDeserializableManually メンバ
-
-        public void OnDeserialized(StreamingContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-    }
-
-    class SRAssemblyGeneratorImpl : SRAssemblyDeclarationImpl, IAssemblyGenerator
-    {
-        AssemblyBuilder assemblyBuilder;
-        public SRAssemblyGeneratorImpl(AssemblyBuilder assemblyBuilder)
-            : base(assemblyBuilder)
-        {
-            this.assemblyBuilder = assemblyBuilder;
-        }
-
-        #region IAssemblyGenerator メンバ
-
-        public IAssemblyGenerator CreateInstance(AssemblyName name)
-        {
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-            return new SRAssemblyGeneratorImpl(assemblyBuilder);
-        }
-
-        public IModuleGenerator AddModule(string name)
-        {
-            var moduleBuilder = assemblyBuilder.DefineDynamicModule(name);
-            return new SRModuleGeneratorImple(moduleBuilder);
+            get { return fields; }
         }
 
         #endregion

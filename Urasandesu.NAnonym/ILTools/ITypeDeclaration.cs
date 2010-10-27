@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -9,8 +10,9 @@ namespace Urasandesu.NAnonym.ILTools
         string AssemblyQualifiedName { get; }
         ITypeDeclaration BaseType { get; }
         IModuleDeclaration Module { get; }
-        IFieldDeclaration GetField(string name, BindingFlags bindingAttr);
-        IFieldDeclaration[] GetFields(BindingFlags attr);
+        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
+        //IFieldDeclaration GetField(string name, BindingFlags bindingAttr);
+        //IFieldDeclaration[] GetFields(BindingFlags attr);
         IConstructorDeclaration GetConstructor(Type[] types);
 
     }

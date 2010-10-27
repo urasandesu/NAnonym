@@ -378,7 +378,7 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
                 string name = (string)extractInfo.Value;
-                var fieldDecl = methodGen.DeclaringType.GetField(name, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldDecl);
             }
         }
@@ -391,7 +391,7 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
                 string name = (string)extractInfo.Value;
-                var fieldDecl = methodGen.DeclaringType.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldDecl);
             }
         }
@@ -421,7 +421,7 @@ namespace Urasandesu.NAnonym.ILTools
             if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
             {
                 var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                var fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == fieldInfo.Name);
                 methodGen.Body.ILOperator.Emit(OpCodes.Stsfld, fieldDecl);
             }
             else
@@ -431,7 +431,7 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
                     var name = (string)extractInfo.Value;
-                    var fieldDecl = methodGen.DeclaringType.GetField(name, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
                     methodGen.Body.ILOperator.Emit(OpCodes.Stsfld, fieldDecl);
                 }
             }
@@ -465,7 +465,7 @@ namespace Urasandesu.NAnonym.ILTools
             if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
             {
                 var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                var fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == fieldInfo.Name);
                 methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
             }
             else
@@ -475,7 +475,7 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
                     var name = (string)extractInfo.Value;
-                    var fieldDecl = methodGen.DeclaringType.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
                     methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
                 }
             }
@@ -814,7 +814,7 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
                 }
-                else if ((fieldDecl = methodGen.DeclaringType.GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)) != null)
+                else if ((fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == fieldInfo.Name)) != null)
                 {
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldDecl);
@@ -1068,7 +1068,7 @@ namespace Urasandesu.NAnonym.ILTools
         public ReadOnlyCollection<IDirectiveGenerator> ToDirectives(LambdaExpression expression)
         {
             var dummyAssemblyName = new AssemblyName("Dummy");
-            var dummyAssembly = ((IAssemblyGenerator)methodGen.DeclaringType.Module.Assembly).CreateInstance(dummyAssemblyName);
+            var dummyAssembly = methodGen.DeclaringType.Module.Assembly.CreateInstance(dummyAssemblyName);
             var dummyModule = dummyAssembly.AddModule("Dummy");
             var dummyType = dummyModule.AddType("Dummy.Dummy", TypeAttributes.Public, typeof(object));
             var dummyMethod = dummyType.AddMethod("Dummy", MethodAttributes.Public | MethodAttributes.Static, typeof(void), Type.EmptyTypes);

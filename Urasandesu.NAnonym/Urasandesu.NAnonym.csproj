@@ -81,6 +81,8 @@
     <Compile Include="ILTools\IILOperator.cs" />
     <Compile Include="ILTools\ILabelDeclaration.cs" />
     <Compile Include="ILTools\ILabelGenerator.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRAssemblyDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRFieldDeclarationImpl.cs" />
@@ -112,6 +114,8 @@
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRMethodGeneratorImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRModuleDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRModuleGeneratorImple.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRParameterDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRParameterGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRPortableScopeItemImpl.cs" />

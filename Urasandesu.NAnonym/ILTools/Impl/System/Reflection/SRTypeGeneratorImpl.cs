@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using SR = System.Reflection;
 using System.Reflection;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -13,6 +14,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     {
         readonly TypeBuilder typeBuilder;
         readonly FieldBuilder[] fieldBuilders;
+
+        List<IFieldGenerator> listFields;
+        ReadOnlyCollection<IFieldGenerator> fields;
 
         public SRTypeGeneratorImpl(TypeBuilder typeBuilder)
             : base(typeBuilder)
@@ -24,6 +28,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             : this(typeBuilder)
         {
             this.fieldBuilders = fieldBuilders;
+            listFields = new List<IFieldGenerator>();
+            listFields.AddRange(fieldBuilders.Select(fieldBuilder => (IFieldGenerator)new SRFieldGeneratorImpl(fieldBuilder)));
+            fields = new ReadOnlyCollection<IFieldGenerator>(listFields);
         }
 
         #region ITypeGenerator メンバ
@@ -48,5 +55,25 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         internal FieldBuilder[] FieldBuilders { get { return fieldBuilders; } }
+
+        #region ITypeGenerator メンバ
+
+
+        public new ReadOnlyCollection<IFieldGenerator> Fields
+        {
+            get { return fields; }
+        }
+
+        #endregion
+
+        #region ITypeGenerator メンバ
+
+
+        public new IModuleGenerator Module
+        {
+            get { return base.Module as IModuleGenerator; }
+        }
+
+        #endregion
     }
 }

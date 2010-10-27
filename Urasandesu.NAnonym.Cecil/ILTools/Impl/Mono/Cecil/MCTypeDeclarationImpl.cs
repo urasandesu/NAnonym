@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
-//using Urasandesu.NAnonym.ILTools.Impl.Mono.Cecil;
 using SR = System.Reflection;
 using System.Runtime.Serialization;
 using System.Reflection;
+using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -28,8 +29,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         IModuleDeclaration moduleDecl;
 
-        //[NonSerialized]
-        //bool deserialized;
+        ReadOnlyCollection<IFieldDeclaration> fields;
         
         public MCTypeDeclarationImpl(TypeReference typeRef)
             : base(typeRef)
@@ -42,8 +42,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.typeRef = typeRef;
             typeDef = typeRef.Resolve();
             typeFullName = typeDef.FullName;
-            moduleDecl = new MCModuleDeclarationImpl(typeRef.Module);
+            moduleDecl = new MCModuleGeneratorImpl(typeRef.Module);
             baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType);
+            fields = new ReadOnlyCollection<IFieldDeclaration>(typeDef.Fields.TransformEnumerateOnly(fieldDef => (IFieldDeclaration)new MCFieldGeneratorImpl(fieldDef)));
         }
 
         public string FullName
@@ -81,29 +82,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         protected TypeDefinition TypeDef { get { return typeDef; } }
 
-        //[OnDeserialized]
-        //internal void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
-        //        moduleDecl.OnDeserialized(context);
-        //        var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
-        //        Initialize(moduleDef.Types.First(type => type.FullName == typeFullName));
-        //    }
-        //}
-
-        //public override void OnDeserialization(object sender)
-        //{
-        //    //var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
-        //    //moduleDecl.OnDeserialized(context);
-        //    var moduleDef = (ModuleDefinition)(ModuleReference)moduleDecl;
-        //    var typeDef = moduleDef.Types.First(type => type.FullName == typeFullName);
-        //    Initialize(typeDef);
-        //    base.OnDeserialization(typeDef);
-        //}
-
         protected override void OnDeserializedManually(StreamingContext context)
         {
             var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
@@ -131,6 +109,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var fieldDef = typeDef.GetFieldOrDefault(name, bindingAttr);
             return fieldDef == null ? null : new MCFieldGeneratorImpl(fieldDef);
+        }
+
+        #endregion
+
+        #region ITypeDeclaration メンバ
+
+
+        public ReadOnlyCollection<IFieldDeclaration> Fields
+        {
+            get { return fields; }
         }
 
         #endregion

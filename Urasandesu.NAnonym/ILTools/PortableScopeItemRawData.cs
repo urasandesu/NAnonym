@@ -49,8 +49,7 @@ namespace Urasandesu.NAnonym.ILTools
                 if (!localIndexInitialized)
                 {
                     string truncatedFieldName = TruncatedFieldName;
-                    var fieldDecls = methodDecl.DeclaringType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-                    var fieldDecl = fieldDecls.First(_fieldDecl => _fieldDecl.Name.IndexOf(truncatedFieldName) == 0);
+                    var fieldDecl = methodDecl.DeclaringType.Fields.First(_fieldDecl => _fieldDecl.Name.IndexOf(truncatedFieldName) == 0);
                     this.localIndex = int.Parse(fieldDecl.Name.Substring(fieldDecl.Name.LastIndexOf(PortableScope.NameDelimiter) + PortableScope.NameDelimiter.Length));
                     localIndexInitialized = true;
                 }

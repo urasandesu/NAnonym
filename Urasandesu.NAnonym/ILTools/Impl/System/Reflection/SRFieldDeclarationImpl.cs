@@ -20,7 +20,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         string IMemberDeclaration.Name
         {
-            get { throw new NotImplementedException(); }
+            get { return fieldInfo.Name; }
         }
 
         #endregion

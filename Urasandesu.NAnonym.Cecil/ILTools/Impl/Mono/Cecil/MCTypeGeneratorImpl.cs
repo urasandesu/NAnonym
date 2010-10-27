@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -16,10 +17,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     sealed class MCTypeGeneratorImpl : MCTypeDeclarationImpl, ITypeGenerator
     {
         TypeDefinition typeDef;
+        ReadOnlyCollection<IFieldGenerator> fields;
         public MCTypeGeneratorImpl(TypeDefinition typeDef)
             : base(typeDef)
         {
             this.typeDef = typeDef;
+            fields = new ReadOnlyCollection<IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (IFieldGenerator)fieldDecl));
         }
 
         internal TypeDefinition TypeDef
@@ -42,6 +45,26 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             typeDef.Methods.Add(methodDef);
             parameterTypes.ForEach(parameterType => methodDef.Parameters.Add(new ParameterDefinition(typeDef.Module.Import(parameterType))));
             return new MCMethodGeneratorImpl(methodDef);
+        }
+
+        #endregion
+
+        #region ITypeGenerator メンバ
+
+
+        public new ReadOnlyCollection<IFieldGenerator> Fields
+        {
+            get { return fields; }
+        }
+
+        #endregion
+
+        #region ITypeGenerator メンバ
+
+
+        public new IModuleGenerator Module
+        {
+            get { return base.Module as IModuleGenerator; }
         }
 
         #endregion

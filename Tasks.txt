@@ -1,6 +1,3 @@
-// TODO: フィールドの初期化も DSL な書き方ができるように（the.Field(() => value).As(_ => new SimpleType1()); みたいな）。
-// TODO: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
-// TODO: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。
 // TODO: GlobalClass で複数メソッド上書きに対応。
@@ -11,7 +8,9 @@
 
 
 
-// DOING: メソッドやプロパティの戻り値はできるだけ特化する、引数はできるだけ汎化するの原則適用。
+// DOING: フィールドの初期化も DSL な書き方ができるように（the.Field(() => value).As(_ => new SimpleType1()); みたいな）。
+// DOING: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
+// DOING: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。
 
 
 
@@ -49,3 +48,4 @@
 // DONE: IMethodBodyGenerator、IMethodBaseGenerator、ITypeGenerator、IModuleGenerator 順に CreateTemporary みたいなのが必要。
 // DONE: LocalClass で匿名メソッドが完全に現在のクラスに展開される場合の対応。
 // DONE: GlobalReplaceAnonymousInstanceMethodInjection の TBase って要らなくね？
+// DONE: メソッドやプロパティの戻り値はできるだけ特化する、引数はできるだけ汎化するの原則適用。
