@@ -10,7 +10,7 @@ using UNI = Urasandesu.NAnonym.ILTools;
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCModuleDeclarationImpl : UNI::DeserializableManually, UNI::IModuleDeclaration
+    class MCModuleDeclarationImpl : UNI::ManuallyDeserializable, UNI::IModuleDeclaration
     {
         [NonSerialized]
         ModuleReference moduleRef;

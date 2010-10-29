@@ -8,7 +8,7 @@ using System.Threading;
 namespace Urasandesu.NAnonym.ILTools
 {
     [Serializable]
-    public abstract class DeserializableManually : IDeserializableManually
+    public abstract class ManuallyDeserializable : IManuallyDeserializable
     {
         const int False = 0;
         const int True = 1;
@@ -23,7 +23,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         bool deserializesManually;
 
-        protected DeserializableManually(bool deserializesManually)
+        protected ManuallyDeserializable(bool deserializesManually)
         {
             this.deserializesManually = deserializesManually;
             sync = new object();

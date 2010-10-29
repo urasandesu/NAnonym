@@ -9,7 +9,7 @@ using UN = Urasandesu.NAnonym;
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCMemberDeclarationImpl : UN::ILTools.DeserializableManually, UN::ILTools.IMemberDeclaration
+    class MCMemberDeclarationImpl : UN::ILTools.ManuallyDeserializable, UN::ILTools.IMemberDeclaration
     {
         [NonSerialized]
         MemberReference memberRef;

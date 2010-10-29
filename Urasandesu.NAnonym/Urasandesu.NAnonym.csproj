@@ -64,14 +64,14 @@
     <Compile Include="DI\SetupModes.cs" />
     <Compile Include="DI\TargetFieldInfo.cs" />
     <Compile Include="DI\TargetMethodInfo.cs" />
-    <Compile Include="ILTools\DeserializableManually.cs" />
+    <Compile Include="ILTools\ManuallyDeserializable.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />
     <Compile Include="ILTools\IConstructorDeclaration.cs" />
     <Compile Include="ILTools\IConstructorGenerator.cs" />
-    <Compile Include="ILTools\IDeserializableManually.cs" />
+    <Compile Include="ILTools\IManuallyDeserializable.cs" />
     <Compile Include="ILTools\IDirectiveDeclaration.cs" />
     <Compile Include="ILTools\IDirectiveGenerator.cs" />
     <Compile Include="ILTools\IEventDeclaration.cs" />

@@ -27,7 +27,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         #region IDeserializableManually メンバ
 
-        void IDeserializableManually.OnDeserialized(StreamingContext context)
+        void IManuallyDeserializable.OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
         }

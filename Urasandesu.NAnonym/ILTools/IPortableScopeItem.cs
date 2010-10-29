@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public interface IPortableScopeItem : ILocalDeclaration, IFieldDeclaration, IDeserializableManually
+    public interface IPortableScopeItem : ILocalDeclaration, IFieldDeclaration, IManuallyDeserializable
     {
         object Value { get; set; }
         object Source { get; }

@@ -10,7 +10,7 @@ using UN = Urasandesu.NAnonym;
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCAssemblyDeclarationImpl : UN::ILTools.DeserializableManually, UN::ILTools.IAssemblyDeclaration
+    class MCAssemblyDeclarationImpl : UN::ILTools.ManuallyDeserializable, UN::ILTools.IAssemblyDeclaration
     {
         [NonSerialized]
         AssemblyDefinition assemblyDef;

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public interface IMemberDeclaration : IDeserializableManually
+    public interface IMemberDeclaration : IManuallyDeserializable
     {
         string Name { get; }
     }

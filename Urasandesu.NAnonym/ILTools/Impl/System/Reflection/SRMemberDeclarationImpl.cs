@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
-    class SRMemberDeclarationImpl : DeserializableManually, IMemberDeclaration
+    class SRMemberDeclarationImpl : ManuallyDeserializable, IMemberDeclaration
     {
         readonly MemberInfo memberInfo;
         public SRMemberDeclarationImpl(MemberInfo memberInfo)

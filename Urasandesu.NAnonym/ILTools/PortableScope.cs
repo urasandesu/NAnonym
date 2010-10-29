@@ -18,7 +18,7 @@ using System.Threading;
 namespace Urasandesu.NAnonym.ILTools
 {
     [Serializable]
-    public sealed class PortableScope : DeserializableManually
+    public sealed class PortableScope : ManuallyDeserializable
     {
         public const string NameDelimiter = "<>";
         public const string MemberAccessOperator = ".";
