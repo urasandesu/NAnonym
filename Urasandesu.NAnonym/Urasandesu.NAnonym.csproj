@@ -50,11 +50,14 @@
     <Compile Include="DI\AnonymousInstanceMethodBodyInjection.cs" />
     <Compile Include="DI\AnonymousStaticMethodBodyInjection.cs" />
     <Compile Include="DI\DependencyClass.cs" />
+    <Compile Include="DI\DependencyField.cs" />
+    <Compile Include="DI\DependencyMethod.cs" />
     <Compile Include="DI\DependencyMethodBodyInjection.cs" />
     <Compile Include="DI\DependencyMethodInjection.cs" />
     <Compile Include="DI\FuncReference.cs" />
     <Compile Include="DI\LocalAnonymousInstanceMethodInjectionBuilder.cs" />
     <Compile Include="DI\LocalAnonymousStaticMethodInjectionBuilder.cs" />
+    <Compile Include="DI\LocalField.cs" />
     <Compile Include="DI\LocalImplementMethodInjectionDefiner.cs" />
     <Compile Include="DI\LocalMethodInjection.cs" />
     <Compile Include="DI\LocalMethodInjectionBuilder.cs" />

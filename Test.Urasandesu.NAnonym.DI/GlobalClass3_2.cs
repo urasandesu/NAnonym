@@ -17,7 +17,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             {
                 int value = 2;
 
-                the.Field(() => value, value);
+                the.Field(() => value).As(value);
                 the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
                 (x, y) =>
                 {

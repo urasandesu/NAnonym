@@ -86,7 +86,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             the =>
             {
                 int value = 0;
-                the.Field(() => value, 0);
+                the.Field(() => value).As(1);
                 the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
                 (x, y) =>
                 {
@@ -99,9 +99,9 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
             var sample3 = sample3LocalClass.New();
 
-            Assert.AreEqual(2, sample3.Add(1, 1));
-            Assert.AreEqual(4, sample3.Add(1, 1));
-            Assert.AreEqual(6, sample3.Add(1, 1));
+            Assert.AreEqual(3, sample3.Add(1, 1));
+            Assert.AreEqual(5, sample3.Add(1, 1));
+            Assert.AreEqual(7, sample3.Add(1, 1));
         }
 
 

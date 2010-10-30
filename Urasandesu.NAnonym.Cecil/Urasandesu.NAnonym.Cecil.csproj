@@ -62,6 +62,7 @@
     <Compile Include="DI\GlobalAnonymousStaticMethodInjectionBuilder.cs" />
     <Compile Include="DI\GlobalClass.cs" />
     <Compile Include="DI\GlobalConstructorInjection.cs" />
+    <Compile Include="DI\GlobalField.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
     <Compile Include="DI\GlobalMethodInjection.cs" />
     <Compile Include="DI\GlobalMethodInjectionBuilder.cs" />

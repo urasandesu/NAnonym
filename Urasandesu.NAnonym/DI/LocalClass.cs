@@ -18,6 +18,8 @@ namespace Urasandesu.NAnonym.DI
     public abstract class LocalClass : DependencyClass
     {
         public static readonly string CacheFieldPrefix = "UND$<>0__Cached";
+        public LocalFieldInt Field(Expression<Func<int>> reference) { return new LocalFieldInt(this, reference); }
+        public LocalField<T> Field<T>(Expression<Func<T>> reference) { return new LocalField<T>(this, reference); }
     }
 
     public sealed class LocalClass<TBase> : LocalClass

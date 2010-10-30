@@ -25,6 +25,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
         public static readonly string CacheFieldPrefix = "UNCD$<>0__Cached";
         protected internal abstract string CodeBase { get; }
         protected internal abstract string Location { get; }
+
+        public GlobalFieldInt Field(Expression<Func<int>> reference) { return new GlobalFieldInt(this, reference); }
+        public GlobalField<T> Field<T>(Expression<Func<T>> reference) { return new GlobalField<T>(this, reference); }
     }
 
     public class GlobalClass<TBase> : GlobalClass
