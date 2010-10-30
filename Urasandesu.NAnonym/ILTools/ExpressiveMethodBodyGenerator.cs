@@ -273,27 +273,17 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     if (expressible.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
                     else if (expressible.IsThis(exp.Method)) EvalThis(methodGen, exp, state);
-                    else if (expressible.IsAddloc(exp.Method)) EvalAddloc(methodGen, exp, state);
-                    else if (expressible.IsLdloc(exp.Method)) EvalLdloc(methodGen, exp, state);
-                    else if (expressible.IsStloc(exp.Method)) EvalStloc(methodGen, exp, state);
-                    else if (expressible.IsLdsfld(exp.Method)) EvalLdsfld(methodGen, exp, state);
-                    else if (expressible.IsLdfld(exp.Method)) EvalLdfld(methodGen, exp, state);
-                    else if (expressible.IsStsfld(exp.Method)) EvalStsfld(methodGen, exp, state);
-                    else if (expressible.IsStfld(exp.Method)) EvalStfld(methodGen, exp, state);
                     else if (expressible.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
                     else if (expressible.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
                     else if (expressible.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
                     else if (expressible.IsInvoke(exp.Method)) EvalInvoke(methodGen, exp, state);
                     else if (expressible.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
                     else if (expressible.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
-                    else if (expressible.IsLdarg(exp.Method)) EvalLdarg(methodGen, exp, state);
-                    else if (expressible.IsExpand(exp.Method)) EvalExpand(methodGen, exp, state);
-                    else if (expressible.IsExtract(exp.Method)) EvalExtract(methodGen, exp, state);
                     else if (expressible.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
                     else if (expressible.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
                     else if (expressible.IsLd(exp.Method)) EvalLd(methodGen, exp, state);
                     else if (expressible.IsSt(exp.Method)) EvalSt(methodGen, exp, state);
-                    else if (expressible.IsX(exp.Method)) EvalX(methodGen, exp, state);
+                    else if (expressible.IsX(exp.Method)) EvalExtract(methodGen, exp, state);
                     else if (expressible.IsCm(exp.Method)) EvalCm(methodGen, exp, state);
                     else
                     {
@@ -343,167 +333,6 @@ namespace Urasandesu.NAnonym.ILTools
         static void EvalThis(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-        }
-
-        static void EvalAddloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            // TODO: ìØÇ∂ñºëOÇÃïœêîÇÕÅAìØÇ∂ Scope ì‡Ç≈Ç†ÇÍÇŒâBÇπÇÈ or íeÇ≠çHïvÇ™ïKóv
-            EvalExpression(methodGen, exp.Arguments[1], state);
-            if (exp.Arguments[0] is MemberExpression)
-            {
-                var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                var local = methodGen.Body.ILOperator.AddLocal(fieldInfo.Name, fieldInfo.FieldType);
-                methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
-            }
-            else
-            {
-                EvalExpression(methodGen, exp.Arguments[0], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    string name = (string)extractInfo.Value;
-                    var local = methodGen.Body.ILOperator.AddLocal(name, extractInfo.Type);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
-                }
-            }
-        }
-
-        static void EvalLdloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            if (0 < state.ExtractInfoStack.Count)
-            {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                if (extractInfo.Value is string && extractInfo.Type != typeof(string))
-                {
-                    var fieldInfo = new ExpressibleFieldInfo((string)extractInfo.Value, extractInfo.Type);
-                    EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-        }
-
-        static void EvalStloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            EvalExpression(methodGen, exp.Arguments[1], state);
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-            state.ProhibitsLastAutoPop = true;
-        }
-
-        static void EvalLdsfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            if (0 < state.ExtractInfoStack.Count)
-            {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                string name = (string)extractInfo.Value;
-                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldDecl);
-            }
-        }
-
-        static void EvalLdfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            if (0 < state.ExtractInfoStack.Count)
-            {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                string name = (string)extractInfo.Value;
-                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldDecl);
-            }
-        }
-
-        static void EvalStsfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            if (exp.Arguments.Count == 2)
-            {
-                EvalExpression(methodGen, exp.Arguments[1], state);
-            }
-            else
-            {
-                EvalExpression(methodGen, exp.Arguments[2], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    throw new NotImplementedException();
-                }
-                EvalExpression(methodGen, exp.Arguments[1], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    Type variableType = (Type)extractInfo.Value;
-                    methodGen.Body.ILOperator.Emit(OpCodes.Castclass, variableType);
-                }
-            }
-
-            if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
-            {
-                var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == fieldInfo.Name);
-                methodGen.Body.ILOperator.Emit(OpCodes.Stsfld, fieldDecl);
-            }
-            else
-            {
-                EvalExpression(methodGen, exp.Arguments[0], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    var name = (string)extractInfo.Value;
-                    var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stsfld, fieldDecl);
-                }
-            }
-            state.ProhibitsLastAutoPop = true;
-        }
-
-        static void EvalStfld(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            if (exp.Arguments.Count == 2)
-            {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                EvalExpression(methodGen, exp.Arguments[1], state);
-            }
-            else
-            {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                EvalExpression(methodGen, exp.Arguments[2], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    throw new NotImplementedException();
-                }
-                EvalExpression(methodGen, exp.Arguments[1], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    Type variableType = (Type)extractInfo.Value;
-                    methodGen.Body.ILOperator.Emit(OpCodes.Castclass, variableType);
-                }
-            }
-
-            if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
-            {
-                var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == fieldInfo.Name);
-                methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
-            }
-            else
-            {
-                EvalExpression(methodGen, exp.Arguments[0], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    var name = (string)extractInfo.Value;
-                    var fieldDecl = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldDecl => _fieldDecl.Name == name);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldDecl);
-                }
-            }
-            state.ProhibitsLastAutoPop = true;
         }
 
         static void EvalDupAddOne(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
@@ -577,123 +406,6 @@ namespace Urasandesu.NAnonym.ILTools
         {
             var ifInfo = state.IfInfoStack.Pop();
             methodGen.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
-        }
-
-        static void EvalLdarg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            if (0 < state.ExtractInfoStack.Count)
-            {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                if (extractInfo.Value.GetType().IsArray)
-                {
-                    ((Array)extractInfo.Value).OfType<string>().
-                    ForEach(parameterName =>
-                    {
-                        var parameterGen = methodGen.Parameters.First(_parameterGetn => _parameterGetn.Name == parameterName);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
-                    });
-                }
-                else
-                {
-                    string parameterName = (string)extractInfo.Value;
-                    var parameterGen = methodGen.Parameters.First(_parameterGen => _parameterGen.Name == parameterName);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
-                }
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        static void EvalExpand(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            if (exp.Arguments.Count == 1)
-            {
-                var expanded = Expression.Lambda(exp.Arguments[0]).Compile();
-                object o = expanded.DynamicInvoke();
-                if (o.GetType().IsArray)
-                {
-                    EvalNewArray(methodGen, Expression.NewArrayInit(o.GetType().GetElementType(), ((Array)o).Cast<object>().Select(_o => (Expression)Expression.Constant(_o))), state);
-                }
-                else if (typeof(LambdaExpression).IsAssignableFrom(o.GetType()))
-                {
-                    EvalExpression(methodGen, ((LambdaExpression)o).Body, state);
-                    state.ProhibitsLastAutoPop = true;
-                }
-                else
-                {
-                    EvalConstant(methodGen, Expression.Constant(o), state);
-                }
-            }
-            else if (exp.Arguments.Count == 2)
-            {
-                var expanded0 = Expression.Lambda(exp.Arguments[0]).Compile();
-                object staticMember = expanded0.DynamicInvoke();
-                var expanded1 = Expression.Lambda(exp.Arguments[1]).Compile();
-                Type declaringType = (Type)expanded1.DynamicInvoke();
-
-                var targetFieldInfo = default(FieldInfo);
-                foreach (var member in declaringType.GetMembers(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
-                {
-                    var fieldInfo = default(FieldInfo);
-                    if ((fieldInfo = member as FieldInfo) != null && staticMember.Equals(fieldInfo.GetValue(null)))
-                    {
-                        targetFieldInfo = fieldInfo;
-                        break;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                EvalMember(methodGen, Expression.Field(null, targetFieldInfo), state);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        static void EvalExtract(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            var extracted = Expression.Lambda(exp.Arguments[0]).Compile();
-            object o = extracted.DynamicInvoke();
-            if (exp.Arguments.Count == 1)
-            {
-                state.ExtractInfoStack.Push(new ExtractInfo(exp.Type, o));
-            }
-            else
-            {
-                var extracted1 = Expression.Lambda(exp.Arguments[1]).Compile();
-                Type type = (Type)extracted1.DynamicInvoke();
-                state.ExtractInfoStack.Push(new ExtractInfo(type, o));
-            }
-        }
-
-        static void EvalExtracted(IMethodBaseGenerator methodGen, ExtractInfo extractInfo, EvalState state)
-        {
-            if (extractInfo.Type.IsArray)
-            {
-                EvalNewArray(methodGen, Expression.NewArrayInit(extractInfo.Type.GetElementType(),
-                    ((Array)extractInfo.Value).Cast<object>().Select(value => (Expression)Expression.Constant(value))), state);
-            }
-            else if (typeof(LambdaExpression).IsAssignableFrom(extractInfo.Type))
-            {
-                EvalExpression(methodGen, ((LambdaExpression)extractInfo.Value).Body, state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    extractInfo = state.ExtractInfoStack.Pop();
-                    EvalExtracted(methodGen, extractInfo, state);
-                }
-                state.ProhibitsLastAutoPop = true;
-            }
-            else
-            {
-                EvalConstant(methodGen, Expression.Constant(extractInfo.Value), state);
-            }
         }
 
         static void EvalReturn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
@@ -797,7 +509,7 @@ namespace Urasandesu.NAnonym.ILTools
             state.ProhibitsLastAutoPop = true;
         }
 
-        static void EvalX(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        static void EvalExtract(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var extracted = Expression.Lambda(exp.Arguments[0]).Compile();
             object o = extracted.DynamicInvoke();
@@ -810,6 +522,29 @@ namespace Urasandesu.NAnonym.ILTools
                 var extracted1 = Expression.Lambda(exp.Arguments[1]).Compile();
                 Type type = (Type)extracted1.DynamicInvoke();
                 state.ExtractInfoStack.Push(new ExtractInfo(type, o));
+            }
+        }
+
+        static void EvalExtracted(IMethodBaseGenerator methodGen, ExtractInfo extractInfo, EvalState state)
+        {
+            if (extractInfo.Type.IsArray)
+            {
+                EvalNewArray(methodGen, Expression.NewArrayInit(extractInfo.Type.GetElementType(),
+                    ((Array)extractInfo.Value).Cast<object>().Select(value => (Expression)Expression.Constant(value))), state);
+            }
+            else if (typeof(LambdaExpression).IsAssignableFrom(extractInfo.Type))
+            {
+                EvalExpression(methodGen, ((LambdaExpression)extractInfo.Value).Body, state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    extractInfo = state.ExtractInfoStack.Pop();
+                    EvalExtracted(methodGen, extractInfo, state);
+                }
+                state.ProhibitsLastAutoPop = true;
+            }
+            else
+            {
+                EvalConstant(methodGen, Expression.Constant(extractInfo.Value), state);
             }
         }
 
