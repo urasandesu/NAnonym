@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection
+namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
     public static class PropertyInfoMixin
     {

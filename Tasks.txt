@@ -9,8 +9,6 @@
 
 
 // DOING: フィールドの初期化も DSL な書き方ができるように（the.Field(() => value).As(_ => new SimpleType1()); みたいな）。
-// DOING: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
-// DOING: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。
 
 
 
@@ -49,3 +47,5 @@
 // DONE: LocalClass で匿名メソッドが完全に現在のクラスに展開される場合の対応。
 // DONE: GlobalReplaceAnonymousInstanceMethodInjection の TBase って要らなくね？
 // DONE: メソッドやプロパティの戻り値はできるだけ特化する、引数はできるだけ汎化するの原則適用。
+// DONE: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
+// DONE: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。

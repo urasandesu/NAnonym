@@ -31,7 +31,7 @@ namespace Urasandesu.NAnonym.DI
         public void Field(Expression<Func<double>> reference, double arg) { throw new NotImplementedException(); }
         public void Field(Expression<Func<FieldInfo>> reference, FieldInfo field) { throw new NotImplementedException(); }
         public void Field(Expression<Func<float>> reference, float arg) { throw new NotImplementedException(); }
-        public void Field(Expression<Func<int>> reference, int arg) { Field(reference, _ => _.Expand(arg)); }
+        public void Field(Expression<Func<int>> reference, int arg) { Field(reference, _ => _.X(arg)); }
         public void Field(Expression<Func<long>> reference, long arg) { throw new NotImplementedException(); }
         public void Field(Expression<Func<MethodInfo>> reference, MethodInfo meth) { throw new NotImplementedException(); }
         public void Field(Expression<Func<sbyte>> reference, sbyte arg) { throw new NotImplementedException(); }

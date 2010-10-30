@@ -29,6 +29,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         IModuleDeclaration moduleDecl;
 
+        [NonSerialized]
         ReadOnlyCollection<IFieldDeclaration> fields;
         
         public MCTypeDeclarationImpl(TypeReference typeRef)

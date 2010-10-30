@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -10,6 +11,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo BaseInfo;
         readonly MethodInfo ThisInfo;
         readonly MethodInfo AddlocInfo;
+        readonly MethodInfo LdlocInfo;
         readonly MethodInfo StlocInfo;
         readonly MethodInfo LdsfldInfo;
         readonly MethodInfo LdfldInfo;
@@ -31,11 +33,20 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo EndInfo;
         readonly MethodInfo ReturnInfo;
 
+        readonly MethodInfo LdInfo1;
+        readonly MethodInfo LdInfo2;
+        readonly MethodInfo LdInfo3;
+        readonly MethodInfo StInfo1;
+        readonly MethodInfo StInfo2;
+        readonly MethodInfo XInfo;
+        readonly MethodInfo CmInfo;
+
         public Expressible()
         {
             BaseInfo = TypeSavable.GetMethodInfo(() => Base);
             ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
             AddlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Addloc).GetGenericMethodDefinition();
+            LdlocInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldloc).GetGenericMethodDefinition();
             StlocInfo = TypeSavable.GetMethodInfo<object, object, object>(() => Stloc).GetGenericMethodDefinition();
             LdsfldInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldsfld).GetGenericMethodDefinition();
             LdfldInfo = TypeSavable.GetMethodInfo<object, object>(() => Ldfld).GetGenericMethodDefinition();
@@ -56,6 +67,14 @@ namespace Urasandesu.NAnonym.ILTools
             ExtractInfo3 = TypeSavable.GetMethodInfo<object, Type, object>(() => Extract);
             EndInfo = TypeSavable.GetMethodInfo(() => End);
             ReturnInfo = TypeSavable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
+
+            LdInfo1 = TypeSavable.GetMethodInfo<string, object>(() => Ld);
+            LdInfo2 = TypeSavable.GetMethodInfo<string[], object[]>(() => Ld);
+            LdInfo3 = TypeSavable.GetMethodInfo<string, object>(() => Ld<object>).GetGenericMethodDefinition();
+            StInfo1 = TypeSavable.GetMethodInfo<object, StoreExpressible<object>>(() => St<object>).GetGenericMethodDefinition();
+            StInfo2 = TypeSavable.GetMethodInfo<string, StoreExpressible>(() => St);
+            XInfo = TypeSavable.GetMethodInfo<object, object>(() => X).GetGenericMethodDefinition();
+            CmInfo = TypeSavable.GetMethodInfo<object, Type, object>(() => Cm).GetGenericMethodDefinition();
         }
 
         public bool IsBase(MethodInfo target)
@@ -70,10 +89,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsAddloc(MethodInfo target)
         {
-            if (target.Name == AddlocInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == AddlocInfo.GetGenericArguments().Length &&
-                target == AddlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (AddlocInfo.Equivalent(target))
             {
                 return true;
             }
@@ -83,12 +99,14 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        public bool IsLdloc(MethodInfo target)
+        {
+            return LdlocInfo.Equivalent(target);
+        }
+
         public bool IsStloc(MethodInfo target)
         {
-            if (target.Name == StlocInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == StlocInfo.GetGenericArguments().Length &&
-                target == StlocInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (StlocInfo.Equivalent(target))
             {
                 return true;
             }
@@ -100,10 +118,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdsfld(MethodInfo target)
         {
-            if (target.Name == LdsfldInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == LdsfldInfo.GetGenericArguments().Length &&
-                target == LdsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (LdsfldInfo.Equivalent(target))
             {
                 return true;
             }
@@ -115,10 +130,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdfld(MethodInfo target)
         {
-            if (target.Name == LdfldInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == LdfldInfo.GetGenericArguments().Length &&
-                target == LdfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (LdfldInfo.Equivalent(target))
             {
                 return true;
             }
@@ -130,10 +142,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsStsfld(MethodInfo target)
         {
-            if (target.Name == StsfldInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == StsfldInfo.GetGenericArguments().Length &&
-                target == StsfldInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (StsfldInfo.Equivalent(target))
             {
                 return true;
             }
@@ -145,14 +154,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsStfld(MethodInfo target)
         {
-            if (target == StfldInfo2)
+            if (StfldInfo2.Equivalent(target))
             {
                 return true;
             }
-            else if (target.Name == StfldInfo1.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == StfldInfo1.GetGenericArguments().Length &&
-                target == StfldInfo1.MakeGenericMethod(target.GetGenericArguments()))
+            else if (StfldInfo1.Equivalent(target))
             {
                 return true;
             }
@@ -164,10 +170,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsDupAddOne(MethodInfo target)
         {
-            if (target.Name == DupAddOneInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == DupAddOneInfo.GetGenericArguments().Length &&
-                target == DupAddOneInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (DupAddOneInfo.Equivalent(target))
             {
                 return true;
             }
@@ -179,10 +182,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsAddOneDup(MethodInfo target)
         {
-            if (target.Name == AddOneDupInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == AddOneDupInfo.GetGenericArguments().Length &&
-                target == AddOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (AddOneDupInfo.Equivalent(target))
             {
                 return true;
             }
@@ -194,10 +194,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsSubOneDup(MethodInfo target)
         {
-            if (target.Name == SubOneDupInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == SubOneDupInfo.GetGenericArguments().Length &&
-                target == SubOneDupInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (SubOneDupInfo.Equivalent(target))
             {
                 return true;
             }
@@ -224,10 +221,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsLdarg(MethodInfo target)
         {
-            if (target.Name == LdargInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == LdargInfo.GetGenericArguments().Length &&
-                target == LdargInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (LdargInfo.Equivalent(target))
             {
                 return true;
             }
@@ -239,17 +233,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsExpand(MethodInfo target)
         {
-            if (target.Name == ExpandInfo1.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ExpandInfo1.GetGenericArguments().Length &&
-                target == ExpandInfo1.MakeGenericMethod(target.GetGenericArguments()))
+            if (ExpandInfo1.Equivalent(target))
             {
                 return true;
             }
-            else if (target.Name == ExpandInfo2.Name &&
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ExpandInfo2.GetGenericArguments().Length &&
-                target == ExpandInfo2.MakeGenericMethod(target.GetGenericArguments()))
+            else if (ExpandInfo2.Equivalent(target))
             {
                 return true;
             }
@@ -261,20 +249,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsExtract(MethodInfo target)
         {
-            if (target == ExtractInfo3)
+            if (ExtractInfo3.Equivalent(target))
             {
                 return true;
             }
-            else if (
-                target.Name == ExtractInfo1.Name &&
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ExtractInfo1.GetGenericArguments().Length &&
-                target == ExtractInfo1.MakeGenericMethod(target.GetGenericArguments()) 
-                ||
-                target.Name == ExtractInfo2.Name &&
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ExtractInfo2.GetGenericArguments().Length &&
-                target == ExtractInfo2.MakeGenericMethod(target.GetGenericArguments()))
+            else if (ExtractInfo1.Equivalent(target) || ExtractInfo2.Equivalent(target))
             {
                 return true;
             }
@@ -291,10 +270,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public bool IsReturn(MethodInfo target)
         {
-            if (target.Name == ReturnInfo.Name && 
-                target.IsGenericMethod &&
-                target.GetGenericArguments().Length == ReturnInfo.GetGenericArguments().Length &&
-                target == ReturnInfo.MakeGenericMethod(target.GetGenericArguments()))
+            if (ReturnInfo.Equivalent(target))
             {
                 return true;
             }
@@ -302,6 +278,26 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 return false;
             }
+        }
+
+        public bool IsLd(MethodInfo target)
+        {
+            return LdInfo2 == target || LdInfo1 == target || LdInfo3.Equivalent(target);
+        }
+
+        public bool IsSt(MethodInfo target)
+        {
+            return StInfo2 == target || StInfo1.Equivalent(target);
+        }
+
+        public bool IsX(MethodInfo target)
+        {
+            return XInfo.Equivalent(target);
+        }
+
+        public bool IsCm(MethodInfo target)
+        {
+            return CmInfo.Equivalent(target);
         }
 
 
@@ -314,36 +310,49 @@ namespace Urasandesu.NAnonym.ILTools
         {
             return null;
         }
-        
+
+        [Obsolete]
         public void Addloc<T>(T variable, T value)
         {
         }
 
+        [Obsolete]
+        public T Ldloc<T>(T variable)
+        {
+            return default(T);
+        }
+
+        [Obsolete]
         public T Stloc<T>(T variable, T value)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Ldsfld<T>(T variable)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Ldfld<T>(T variable)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Stsfld<T>(T variable, T value)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Stfld<T>(T variable, T value)
         {
             return default(T);
         }
 
+        [Obsolete]
         public object Stfld(object variable, Type castType, object value)
         {
             return null;
@@ -377,6 +386,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
         }
 
+        [Obsolete]
         public T Ldarg<T>(T variable)
         {
             return default(T);
@@ -385,26 +395,31 @@ namespace Urasandesu.NAnonym.ILTools
         // その場で展開するってことで結構制限厳しくしてもいいのかも？
         // Expand するってことで、副作用がある処理は書けないってことで問題ないと思われ。
         // ただ、これをそのまま LambdaExpression に
+        [Obsolete]
         public T Expand<T>(T constant)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Expand<T>(T staticMember, Type declaringType)
         {
             return default(T);
         }
 
+        [Obsolete]
         public T Extract<T>(T constant)
         {
             return default(T);
         }
 
+        [Obsolete]
         public TForCast Extract<TForCast>(object constant)
         {
             return default(TForCast);
         }
 
+        [Obsolete]
         public object Extract(object constant, Type castType)
         {
             return null;
@@ -416,6 +431,46 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Return<T>(T variable)
         {
+        }
+
+        
+        
+        // 新 API テスト
+
+        public T Ld<T>(string variableName)
+        {
+            return default(T);
+        }
+
+        public object Ld(string variableName)
+        {
+            return null;
+        }
+
+        public object[] Ld(string[] variableNames)
+        {
+            return null;
+        }
+
+        public StoreExpressible<T> St<T>(T variable)
+        {
+            return default(StoreExpressible<T>);
+        }
+
+        public StoreExpressible St(string variableName)
+        {
+            return null;
+        }
+
+        public T X<T>(T constant) 
+        {
+            return default(T);
+        }
+
+
+        public TValue Cm<TValue>(TValue constMember, Type declaringType)
+        {
+            return default(TValue);
         }
     }
 }

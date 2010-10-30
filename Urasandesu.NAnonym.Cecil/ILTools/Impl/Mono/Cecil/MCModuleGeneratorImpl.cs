@@ -31,7 +31,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public new IAssemblyGenerator Assembly
         {
-            get { throw new NotImplementedException(); }
+            get { return base.Assembly as IAssemblyGenerator; }
         }
 
         public ITypeGenerator AddType(string fullName, SR::TypeAttributes attr, Type parent)

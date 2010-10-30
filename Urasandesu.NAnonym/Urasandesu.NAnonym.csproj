@@ -129,10 +129,10 @@
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\OpCodeMixin.cs" />
-    <Compile Include="ILTools\Mixins\System\Reflection\FieldInfoMixin.cs" />
-    <Compile Include="ILTools\Mixins\System\Reflection\MethodInfoMixin.cs" />
-    <Compile Include="ILTools\Mixins\System\Reflection\PropertyInfoMixin.cs" />
-    <Compile Include="ILTools\Mixins\System\TypeMixin.cs" />
+    <Compile Include="ILTools\StoreExpressible.cs" />
+    <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
+    <Compile Include="Mixins\System\TypeMixin.cs" />
     <Compile Include="ILTools\Mixins\Urasandesu\NAnonym\ILTools\ExpressiveMethodBodyGeneratorMixin.cs" />
     <Compile Include="ILTools\Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
     <Compile Include="ILTools\OpCode.cs" />

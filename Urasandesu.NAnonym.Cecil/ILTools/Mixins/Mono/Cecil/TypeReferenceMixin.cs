@@ -56,7 +56,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
 
         public static Type ToType(this TypeReference source)
         {
-            throw new NotImplementedException();
+            return Type.GetType(source.Resolve().GetAssemblyQualifiedName());
         }
     }
 }

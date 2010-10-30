@@ -9,7 +9,7 @@ using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
 using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
@@ -164,17 +164,17 @@ namespace Urasandesu.NAnonym.DI
                 localClassConstructorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.If(_.Ldsfld(_.Extract(cachedConstructBuilder.Name, typeof(Action))) == null));
+                    gen.Eval(_ => _.If(_.Ld(_.X(cachedConstructBuilder.Name)) == null));
                     {
                         var dynamicMethod = default(DynamicMethod);
-                        gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod(
+                        gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
                                                                     "dynamicMethod",
-                                                                    _.Expand(typeof(void)),
-                                                                    new Type[] { _.Expand(localClassTypeBuilder) },
-                                                                    _.Expand(localClassTypeBuilder),
+                                                                    typeof(void),
+                                                                    new Type[] { _.X(localClassTypeBuilder) },
+                                                                    _.X(localClassTypeBuilder),
                                                                     true)));
                         var il = default(ILGenerator);
-                        gen.Eval(_ => _.Addloc(il, dynamicMethod.GetILGenerator()));
+                        gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
                         foreach (var targetFieldInfo in TargetFieldInfoSet)
                         {
                             var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
@@ -183,28 +183,28 @@ namespace Urasandesu.NAnonym.DI
                                 targetFieldDeclaringTypeUsedDictionary[targetField.DeclaringType] = true;
 
                                 var targetFieldDeclaringTypeConstructor = default(ConstructorInfo);
-                                gen.Eval(_ => _.Addloc(targetFieldDeclaringTypeConstructor,
-                                                       _.Expand(targetField.DeclaringType).GetConstructor(
+                                gen.Eval(_ => _.St(targetFieldDeclaringTypeConstructor).As(
+                                                       _.X(targetField.DeclaringType).GetConstructor(
                                                                                 BindingFlags.Public | BindingFlags.Instance,
                                                                                 null,
                                                                                 Type.EmptyTypes,
                                                                                 null)));
 
-                                gen.Eval(_ => _.Addloc(_.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
-                                                       _.Expand(localClassTypeBuilder).GetField(
-                                                                                _.Expand(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
+                                gen.Eval(_ => _.St(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)).As(
+                                                       _.X(localClassTypeBuilder).GetField(
+                                                                                _.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
                                                                                 BindingFlags.Instance | BindingFlags.NonPublic)));
                                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
                                 gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, targetFieldDeclaringTypeConstructor));
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)));
+                                gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name))));
                             }
 
                             gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Extract<FieldInfo>(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)));
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name))));
                             var targetFieldActual = default(FieldInfo);
-                            gen.Eval(_ => _.Addloc(targetFieldActual,
-                                                   _.Expand(targetField.DeclaringType).GetField(
-                                                                                _.Expand(targetField.Name),
+                            gen.Eval(_ => _.St(targetFieldActual).As(
+                                                   _.X(targetField.DeclaringType).GetField(
+                                                                                _.X(targetField.Name),
                                                                                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
                             var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
@@ -213,11 +213,10 @@ namespace Urasandesu.NAnonym.DI
                             gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, targetFieldActual));
                         }
                         gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                        gen.Eval(_ => _.Stsfld(_.Extract<Action>(cachedConstructBuilder.Name),
-                                               (Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                        gen.Eval(_ => _.St(_.X(cachedConstructBuilder.Name)).As(dynamicMethod.CreateDelegate(typeof(Action), _.This())));
                     }
                     gen.Eval(_ => _.EndIf());
-                    gen.Eval(_ => _.Ldsfld(_.Extract<Action>(cachedConstructBuilder.Name)).Invoke());
+                    gen.Eval(_ => _.Ld<Action>(_.X(cachedConstructBuilder.Name)).Invoke());
                     gen.Eval(_ => _.Base());
                 },
                 new FieldBuilder[] { cachedConstructBuilder }.Concat(targetFieldDeclaringTypeDictionary.Values).ToArray());
@@ -232,6 +231,7 @@ namespace Urasandesu.NAnonym.DI
             }
 
             createdType = localClassTypeBuilder.CreateType();
+            localClassAssemblyBuilder.Save("LocalClasses.dll");
         }
 
         

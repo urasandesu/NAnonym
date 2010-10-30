@@ -110,7 +110,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     int i = default(int);
-                    gen.Eval(_ => _.Addloc(i, 100));
+                    gen.Eval(_ => _.St(i).As(100));
                     gen.Eval(_ => TestHelper.ThrowException("i.ToString() = {0}", i.ToString()));
                 });
 
@@ -163,7 +163,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     string s = default(string);
-                    gen.Eval(_ => _.Addloc(s, new string('a', 10)));
+                    gen.Eval(_ => _.St(s).As(new string('a', 10)));
                     gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
                 });
 
@@ -215,7 +215,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     string s = new string('a', 10);
-                    gen.Eval(_ => _.Addloc(s, new string('a', 10)));
+                    gen.Eval(_ => _.St(s).As(new string('a', 10)));
                     gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.ToUpper()));
                 });
 
@@ -318,11 +318,11 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 {
                     var stringBuilder = default(StringBuilder);
                     int one = default(int);
-                    gen.Eval(_ => _.Addloc(one, 1));
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.St(one).As(1));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("1 + 1 = {0}", one + 1)));
                     int i = default(int);
-                    gen.Eval(_ => _.Addloc(i, default(int)));
+                    gen.Eval(_ => _.St(i).As(default(int)));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", _.AddOneDup(i))));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", _.DupAddOne(i))));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", _.SubOneDup(i))));
@@ -383,9 +383,9 @@ i++ = 1
                 gen =>
                 {
                     var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Addloc(dynamicMethod, new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
+                    gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Name = {0}", dynamicMethod.Name)));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
                     gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
@@ -492,7 +492,7 @@ Parameter[0] Type = Int32
                 {
                     int value = default(int);
                     double d = default(double);
-                    gen.Eval(_ => _.Addloc(d, 0d));
+                    gen.Eval(_ => _.St(d).As(0d));
                     gen.Eval(_ => _.Return(value + value * (int)d));
                 });
 
@@ -587,7 +587,7 @@ Parameter[0] Type = Int32
                 gen =>
                 {
                     var ctor3 = default(ConstructorInfo);
-                    gen.Eval(_ => _.Addloc(ctor3, typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                    gen.Eval(_ => _.St(ctor3).As(typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
                                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                         null,
                                                         new Type[] 
@@ -596,11 +596,11 @@ Parameter[0] Type = Int32
                                                             typeof(IntPtr) 
                                                         }, null)));
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
                     gen.Eval(_ => stringBuilder.AppendFormat("Name = {0}\r\n", ctor3.Name));
                     gen.Eval(_ => stringBuilder.AppendFormat("IsPublic = {0}\r\n", ctor3.IsPublic));
                     var parameterInfos = default(ParameterInfo[]);
-                    gen.Eval(_ => _.Addloc(parameterInfos, ctor3.GetParameters()));
+                    gen.Eval(_ => _.St(parameterInfos).As(ctor3.GetParameters()));
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
                     gen.Eval(_ => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
@@ -881,7 +881,7 @@ Parameter[1] = IntPtr method
                 action2SameDomain2Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(_.Expand(s)));   // Expand により、この場で式ツリーが展開される。
+                    gen.Eval(_ => TestHelper.ThrowException(_.X(s)));   // Expand により、この場で式ツリーが展開される。
                     //gen.Eval(_ => TestHelper.ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
                 });
 
@@ -935,9 +935,9 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.Expand(cacheField.Name)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.Expand(cacheField.FieldType.FullName)));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.X(cacheField.Name)));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.X(cacheField.FieldType.FullName)));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
@@ -1081,9 +1081,9 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
                     var methodToCall = default(Func<string, string>);
-                    gen.Eval(_ => _.Addloc(methodToCall, null));
+                    gen.Eval(_ => _.St(methodToCall).As(null));
                     gen.Eval(_ => stringBuilder.AppendFormat("methodToCall == null = {0}", methodToCall == null));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
@@ -1144,12 +1144,12 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Addloc(stringBuilder, new StringBuilder()));
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
                     gen.Eval(_ => _.If(methodToCall20 == null));
                     var methodToCall = default(Func<string, string>);
-                    gen.Eval(_ => _.Addloc(methodToCall, null));
-                    gen.Eval(_ => _.Stloc(methodToCall, new Func<string, string>(TestHelper.GetValue)));
-                    gen.Eval(_ => _.Stfld(methodToCall20, methodToCall));
+                    gen.Eval(_ => _.St(methodToCall).As(null));
+                    gen.Eval(_ => _.St(methodToCall).As(new Func<string, string>(TestHelper.GetValue)));
+                    gen.Eval(_ => _.St(methodToCall20).As(methodToCall));
                     gen.Eval(_ => _.EndIf());
                     gen.Eval(_ => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall20("aiueo")));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));

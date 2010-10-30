@@ -46,7 +46,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return m_moduleField == null ? default(ModuleBuilder) : (ModuleBuilder)m_moduleField.GetValue(type);
         }
 
-        public object Source { get { throw new NotImplementedException(); } }
+        public new object Source { get { throw new NotImplementedException(); } }
 
         public string FullName
         {

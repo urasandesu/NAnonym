@@ -34,29 +34,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         #endregion
 
-        //[OnDeserialized]
-        //internal void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized && context.Context != null)
-        //    {
-        //        deserialized = true;
-        //        Initialize((MemberReference)context.Context);
-        //    }
-        //}
-
-        //#region IDeserializationCallback メンバ
-
-        //public virtual void OnDeserialization(object sender)
-        //{
-        //    var memberRef = default(MemberReference);
-        //    if ((memberRef = sender as MemberReference) != null)
-        //    {
-        //        Initialize(memberRef);
-        //    }
-        //}
-
-        //#endregion
-
         protected override void OnDeserializedManually(StreamingContext context)
         {
             var memberRef = default(MemberReference);

@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection
+namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
-    public static class MethodInfoMixin
+    public static class FieldInfoMixin
     {
-        public static BindingFlags ExportBinding(this MethodInfo methodInfo)
+        public static BindingFlags ExportBinding(this FieldInfo fieldInfo)
         {
             BindingFlags bindingAttr = BindingFlags.Default;
 
-            if (methodInfo.IsPublic)
+            if (fieldInfo.IsPublic)
             {
                 bindingAttr |= BindingFlags.Public;
             }
@@ -21,7 +21,7 @@ namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection
                 bindingAttr |= BindingFlags.NonPublic;
             }
 
-            if (methodInfo.IsStatic)
+            if (fieldInfo.IsStatic)
             {
                 bindingAttr |= BindingFlags.Static;
             }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Reflection.Emit;
 using SR = System.Reflection;
 using System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection

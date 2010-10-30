@@ -16,18 +16,18 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     [Serializable]
     sealed class MCTypeGeneratorImpl : MCTypeDeclarationImpl, ITypeGenerator
     {
-        TypeDefinition typeDef;
+        [NonSerialized]
         ReadOnlyCollection<IFieldGenerator> fields;
+
         public MCTypeGeneratorImpl(TypeDefinition typeDef)
             : base(typeDef)
         {
-            this.typeDef = typeDef;
             fields = new ReadOnlyCollection<IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (IFieldGenerator)fieldDecl));
         }
 
-        internal TypeDefinition TypeDef
+        internal new TypeDefinition TypeDef
         {
-            get { return typeDef; }
+            get { return base.TypeDef; }
         }
 
         public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
@@ -41,9 +41,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
-            var methodDef = new MethodDefinition(name, (MethodAttributes)attributes, typeDef.Module.Import(returnType));
-            typeDef.Methods.Add(methodDef);
-            parameterTypes.ForEach(parameterType => methodDef.Parameters.Add(new ParameterDefinition(typeDef.Module.Import(parameterType))));
+            var methodDef = new MethodDefinition(name, (MethodAttributes)attributes, TypeDef.Module.Import(returnType));
+            TypeDef.Methods.Add(methodDef);
+            parameterTypes.ForEach(parameterType => methodDef.Parameters.Add(new ParameterDefinition(TypeDef.Module.Import(parameterType))));
             return new MCMethodGeneratorImpl(methodDef);
         }
 
