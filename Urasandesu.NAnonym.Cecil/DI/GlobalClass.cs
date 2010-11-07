@@ -123,82 +123,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
-            if (0 < TargetFieldInfoSet.Count)
-            {
-                var cachedConstructDef = new FieldDefinition(
-                        CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, tbaseModuleDef.Import(typeof(Action)));
-                tbaseTypeDef.Fields.Add(cachedConstructDef);
+            var fieldsForDeclaringType = new Dictionary<Type, FieldDefinition>();
 
-                foreach (var constructorDef in tbaseTypeDef.Methods.Where(methodDef => methodDef.Name == ".ctor"))
-                {
-                    var firstInstruction = constructorDef.Body.Instructions[0];
-                    constructorDef.ExpressBodyBefore(
-                    gen =>
-                    {
-                        gen.Eval(_ => _.If(_.Ld(_.X(cachedConstructDef.Name)) == null));
-                        {
-                            var dynamicMethod = default(DynamicMethod);
-                            gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
-                                                                        "dynamicMethod",
-                                                                        typeof(void),
-                                                                        new Type[] { typeof(TBase) },
-                                                                        typeof(TBase),
-                                                                        true)));
-                            var il = default(ILGenerator);
-                            gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
-                            var targetFieldDeclaringTypeDictionary = new Dictionary<Type, FieldDefinition>();
-                            int targetFieldDeclaringTypeIndex = 0;
-                            foreach (var targetFieldInfo in TargetFieldInfoSet)
-                            {
-                                var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                                if (!targetFieldDeclaringTypeDictionary.ContainsKey(targetField.DeclaringType))
-                                {
-                                    var cachedTargetFieldDeclaringTypeDef = new FieldDefinition(
-                                            CacheFieldPrefix + "TargetFieldDeclaringType" + targetFieldDeclaringTypeIndex++,
-                                            MC::FieldAttributes.Private, tbaseModuleDef.Import(targetField.DeclaringType));
-                                    tbaseTypeDef.Fields.Add(cachedTargetFieldDeclaringTypeDef);
-                                    targetFieldDeclaringTypeDictionary.Add(targetField.DeclaringType, cachedTargetFieldDeclaringTypeDef);
-
-                                    var targetFieldDeclaringTypeConstructor = default(ConstructorInfo);
-                                    gen.Eval(_ => _.St(targetFieldDeclaringTypeConstructor).As(
-                                                           _.X(targetField.DeclaringType).GetConstructor(
-                                                                                    BindingFlags.Public | BindingFlags.Instance,
-                                                                                    null,
-                                                                                    Type.EmptyTypes,
-                                                                                    null)));
-
-                                    gen.Eval(_ => _.St(_.X(cachedTargetFieldDeclaringTypeDef.Name)).As(
-                                                           typeof(TBase).GetField(
-                                                                                    _.X(cachedTargetFieldDeclaringTypeDef.Name),
-                                                                                    BindingFlags.Instance | BindingFlags.NonPublic)));
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, targetFieldDeclaringTypeConstructor));
-                                    gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(_.X(cachedTargetFieldDeclaringTypeDef.Name))));
-                                }
-
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name))));
-                                var targetFieldActual = default(FieldInfo);
-                                gen.Eval(_ => _.St(targetFieldActual).As(
-                                                       _.X(targetField.DeclaringType).GetField(
-                                                                                    _.X(targetField.Name),
-                                                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
-
-                                var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
-                                macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(targetFieldInfo.Expression));
-
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, targetFieldActual));
-                            }
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                            gen.Eval(_ => _.St(_.X(cachedConstructDef.Name)).As(
-                                                   dynamicMethod.CreateDelegate(typeof(Action), _.This())));
-                        }
-                        gen.Eval(_ => _.EndIf());
-                        gen.Eval(_ => _.Ld<Action>(_.X(cachedConstructDef.Name)).Invoke());
-                    },
-                    firstInstruction);
-                }
-            }
+            var constructorInjection = new GlobalConstructorInjection(tbaseTypeDef, TargetFieldInfoSet, fieldsForDeclaringType);
+            constructorInjection.Apply();
 
 
             var methodInjection = new GlobalMethodInjection(tbaseTypeDef);

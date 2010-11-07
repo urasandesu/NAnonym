@@ -8,6 +8,7 @@ namespace Urasandesu.NAnonym.DI
         {
             return targetMethodInfoSetIndex++;
         }
+        protected int TargetMethodInfoSetIndex { get { return targetMethodInfoSetIndex; } }
         protected abstract string UniqueCacheMethodFieldName();
         public abstract void Apply(TargetMethodInfo targetMethodInfo);
     }

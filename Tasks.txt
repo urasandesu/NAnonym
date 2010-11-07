@@ -1,7 +1,9 @@
+// TODO: 置き換え前のメソッドにアクセス可能なオーバーロードの用意。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
-// TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。
+// TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
 // TODO: GlobalClass で、同じ Assembly への書き込みは 1 度で済ませるよう修正。
+// TODO: 変更の積み重ねについて、変更する側でバージョン管理できるよう修正（変更される側だと安全性は高まるが、使い勝手が格段に落ちるため）。
 // TODO: SetupMode.Override 実装。
 // TODO: LocalClassAssembly キャッシュ機構追加。
 // TODO: static メソッドの SetupMode.Replace 実装。
@@ -9,7 +11,7 @@
 
 
 
-// DOING: LocalClass、GlobalClass のコンストラクト処理を共通化。
+// DOING: コンストラクト処理共通化で作成した枠組みを使い、メソッド注入処理を再共通化。
 
 
 
@@ -49,3 +51,4 @@
 // DONE: Expressible で利用できるメソッド呼び出し簡易化。特によく使うものは簡易名を利用できるように。St 系は元の代入演算子が復元しやすいように、やっぱり _.As みたいなのが入ったほうがいいね。
 // DONE: Expressible で利用できるメソッド修正。スタックが導入された今となっては、基本的に Expand は必要ないはず。Extract に統一。
 // DONE: フィールドの初期化も DSL な書き方ができるように（the.Field(() => value).As(_ => new SimpleType1()); みたいな）。
+// DONE: LocalClass、GlobalClass のコンストラクト処理を共通化。

@@ -136,104 +136,22 @@ namespace Urasandesu.NAnonym.DI
                 throw new NotImplementedException();
             }
 
-            var targetFieldDeclaringTypeDictionary = new Dictionary<Type, FieldBuilder>();
-            if (0 < TargetFieldInfoSet.Count)
-            {
-                var cachedConstructBuilder = localClassTypeBuilder.DefineField(
-                    CacheFieldPrefix + "Construct", typeof(Action), FieldAttributes.Private | FieldAttributes.Static);
 
-                var targetFieldDeclaringTypeUsedDictionary = new Dictionary<Type, bool>();
-                int targetFieldDeclaringTypeIndex = 0;
-                foreach (var targetFieldInfo in TargetFieldInfoSet)
-                {
-                    var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                    if (!targetFieldDeclaringTypeDictionary.ContainsKey(targetField.DeclaringType))
-                    {
-                        var cachedTargetFieldDeclaringTypeBuilder = localClassTypeBuilder.DefineField(
-                                CacheFieldPrefix + "TargetFieldDeclaringType" + targetFieldDeclaringTypeIndex++, targetField.DeclaringType, FieldAttributes.Private);
-                        targetFieldDeclaringTypeDictionary.Add(targetField.DeclaringType, cachedTargetFieldDeclaringTypeBuilder);
-                        targetFieldDeclaringTypeUsedDictionary.Add(targetField.DeclaringType, false);
-                    }
-                }
+            var fieldsForDeclaringType = new Dictionary<Type, FieldBuilder>();
 
-                var localClassConstructorBuilder = localClassTypeBuilder.DefineConstructor(
-                                                        MethodAttributes.Public |
-                                                        MethodAttributes.HideBySig |
-                                                        MethodAttributes.SpecialName |
-                                                        MethodAttributes.RTSpecialName,
-                                                        CallingConventions.Standard,
-                                                        new Type[] { });
-                localClassConstructorBuilder.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.If(_.Ld(_.X(cachedConstructBuilder.Name)) == null));
-                    {
-                        var dynamicMethod = default(DynamicMethod);
-                        gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
-                                                                    "dynamicMethod",
-                                                                    typeof(void),
-                                                                    new Type[] { _.X(localClassTypeBuilder) },
-                                                                    _.X(localClassTypeBuilder),
-                                                                    true)));
-                        var il = default(ILGenerator);
-                        gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
-                        foreach (var targetFieldInfo in TargetFieldInfoSet)
-                        {
-                            var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                            if (!targetFieldDeclaringTypeUsedDictionary[targetField.DeclaringType])
-                            {
-                                targetFieldDeclaringTypeUsedDictionary[targetField.DeclaringType] = true;
-
-                                var targetFieldDeclaringTypeConstructor = default(ConstructorInfo);
-                                gen.Eval(_ => _.St(targetFieldDeclaringTypeConstructor).As(
-                                                       _.X(targetField.DeclaringType).GetConstructor(
-                                                                                BindingFlags.Public | BindingFlags.Instance,
-                                                                                null,
-                                                                                Type.EmptyTypes,
-                                                                                null)));
-
-                                gen.Eval(_ => _.St(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name)).As(
-                                                       _.X(localClassTypeBuilder).GetField(
-                                                                                _.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name),
-                                                                                BindingFlags.Instance | BindingFlags.NonPublic)));
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, targetFieldDeclaringTypeConstructor));
-                                gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name))));
-                            }
-
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(_.X(targetFieldDeclaringTypeDictionary[targetField.DeclaringType].Name))));
-                            var targetFieldActual = default(FieldInfo);
-                            gen.Eval(_ => _.St(targetFieldActual).As(
-                                                   _.X(targetField.DeclaringType).GetField(
-                                                                                _.X(targetField.Name),
-                                                                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
-
-                            var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
-                            macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(targetFieldInfo.Expression));
-
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, targetFieldActual));
-                        }
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                        gen.Eval(_ => _.St(_.X(cachedConstructBuilder.Name)).As(dynamicMethod.CreateDelegate(typeof(Action), _.This())));
-                    }
-                    gen.Eval(_ => _.EndIf());
-                    gen.Eval(_ => _.Ld<Action>(_.X(cachedConstructBuilder.Name)).Invoke());
-                    gen.Eval(_ => _.Base());
-                },
-                new FieldBuilder[] { cachedConstructBuilder }.Concat(targetFieldDeclaringTypeDictionary.Values).ToArray());
-            }
+            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, TargetFieldInfoSet, fieldsForDeclaringType);
+            constructorInjection.Apply();
 
 
-
-            var methodInjection = new LocalMethodInjection(localClassTypeBuilder, targetFieldDeclaringTypeDictionary);
+            // 最終的には constructorInjection を食わせる。
+            var methodInjection = new LocalMethodInjection(localClassTypeBuilder, fieldsForDeclaringType);
             foreach (var targetMethodInfo in TargetMethodInfoSet)
             {
                 methodInjection.Apply(targetMethodInfo);
             }
 
             createdType = localClassTypeBuilder.CreateType();
-            localClassAssemblyBuilder.Save("LocalClasses.dll");
+            //localClassAssemblyBuilder.Save("LocalClasses.dll");
         }
 
         
