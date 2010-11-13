@@ -7,10 +7,10 @@ namespace Urasandesu.NAnonym.DI
 {
     abstract class BodyInjectionDefiner
     {
-        public BodyInjection Injection { get; private set; }
-        public BodyInjectionDefiner(BodyInjection injection)
+        public BodyInjection ParentBody { get; private set; }
+        public BodyInjectionDefiner(BodyInjection parentBody)
         {
-            Injection = injection;
+            ParentBody = parentBody;
         }
 
         public abstract void Create();

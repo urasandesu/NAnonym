@@ -13,12 +13,11 @@ namespace Urasandesu.NAnonym.DI
 
         public LocalConstructorInjection(
             TypeBuilder declaringTypeBuilder,
-            HashSet<TargetFieldInfo> fieldSet,
-            Dictionary<Type, FieldBuilder> fieldsForDeclaringType)
+            HashSet<TargetFieldInfo> fieldSet)
             : base(fieldSet)
         {
             DeclaringTypeBuilder = declaringTypeBuilder;
-            FieldsForDeclaringType = fieldsForDeclaringType;
+            FieldsForDeclaringType = new Dictionary<Type,FieldBuilder>();
         }
 
         protected override void ApplyContent()

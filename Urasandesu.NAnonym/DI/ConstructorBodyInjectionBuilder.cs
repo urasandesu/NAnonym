@@ -16,18 +16,18 @@ namespace Urasandesu.NAnonym.DI
 {
     class ConstructorBodyInjectionBuilder : BodyInjectionBuilder
     {
-        public new ConstructorBodyInjectionDefiner Definer { get { return (ConstructorBodyInjectionDefiner)base.Definer; } }
-        public ConstructorBodyInjectionBuilder(ConstructorBodyInjectionDefiner definer)
-            : base(definer)
+        public new ConstructorBodyInjectionDefiner ParentBodyDefiner { get { return (ConstructorBodyInjectionDefiner)base.ParentBodyDefiner; } }
+        public ConstructorBodyInjectionBuilder(ConstructorBodyInjectionDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
         {
         }
 
         public override void Construct()
         {
-            var bodyInjection = Definer.Injection;
+            var bodyInjection = ParentBodyDefiner.ParentBody;
             var gen = bodyInjection.Gen;
-            var injectionDefiner = bodyInjection.Builder.Definer;
-            var injection = injectionDefiner.Injection;
+            var injectionDefiner = bodyInjection.ParentBuilder.ParentDefiner;
+            var injection = injectionDefiner.Parent;
 
             gen.Eval(_ => _.If(_.Ld(_.X(injectionDefiner.CachedConstructName)) == null));
             {

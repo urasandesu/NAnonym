@@ -123,17 +123,11 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
             var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
 
-            var fieldsForDeclaringType = new Dictionary<Type, FieldDefinition>();
-
-            var constructorInjection = new GlobalConstructorInjection(tbaseTypeDef, TargetFieldInfoSet, fieldsForDeclaringType);
+            var constructorInjection = new GlobalConstructorInjection(tbaseTypeDef, TargetFieldInfoSet);
             constructorInjection.Apply();
 
-
-            var methodInjection = new GlobalMethodInjection(tbaseTypeDef);
-            foreach (var targetMethodInfo in TargetMethodInfoSet)
-            {
-                methodInjection.Apply(targetMethodInfo);
-            }
+            var methodInjection = new GlobalMethodInjection(constructorInjection, TargetMethodInfoSet);
+            methodInjection.Apply();
 
             tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new WriterParameters() { WriteSymbols = true });
         }

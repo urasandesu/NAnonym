@@ -7,12 +7,12 @@ namespace Urasandesu.NAnonym.DI
 {
     class ConstructorInjectionDefiner : InjectionDefiner
     {
-        public new ConstructorInjection Injection { get { return (ConstructorInjection)base.Injection; } }
+        public new ConstructorInjection Parent { get { return (ConstructorInjection)base.Parent; } }
         public Dictionary<Type, bool> InitializedDeclaringTypeConstructor { get; private set; }
         public virtual string CachedConstructName { get { throw new NotImplementedException(); } }
 
-        public ConstructorInjectionDefiner(ConstructorInjection injection)
-            : base(injection)
+        public ConstructorInjectionDefiner(ConstructorInjection parent)
+            : base(parent)
         {
             InitializedDeclaringTypeConstructor = new Dictionary<Type, bool>();
         }

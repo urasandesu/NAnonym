@@ -9,30 +9,39 @@ using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
 using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class AnonymousStaticMethodBodyInjection : DependencyMethodBodyInjection
+    class AnonymousStaticMethodBodyInjectionBuilder : MethodBodyInjectionBuilder
     {
-        protected readonly FieldInfo tmpCacheField;
-        public AnonymousStaticMethodBodyInjection(TargetMethodInfo targetMethodInfo, string cachedMethodName, FieldInfo tmpCacheField)
-            : base(targetMethodInfo, cachedMethodName)
+        public AnonymousStaticMethodBodyInjectionBuilder(MethodBodyInjectionDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
         {
-            this.tmpCacheField = tmpCacheField;
         }
 
-        public override void Apply(ExpressiveMethodBodyGenerator gen)
+        public override void Construct()
         {
-            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodName)) == null));
+            var bodyDefiner = ParentBodyDefiner.ParentBody;
+            var definer = bodyDefiner.ParentBuilder.ParentDefiner;
+
+            var injectionMethod = definer.InjectionMethod;
+            var gen = bodyDefiner.Gen;
+            var cachedMethodFieldName = definer.CachedMethodFieldName;
+            var anonymousStaticMethodCacheField = definer.AnonymousStaticMethodCacheField;
+            var returnType = definer.ReturnType;
+            var parameterTypes = definer.ParameterTypes;
+
+            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodFieldName)) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
                 gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod("dynamicMethod", _.X(returnType), _.X(parameterTypes), true)));
 
-                var invokeForLocal = default(ConstructorInfo);
-                var method4 = default(MethodInfo);
-                gen.Eval(_ => _.St(invokeForLocal).As(_.X(targetMethodInfo.DelegateType).GetConstructor(
+                var delegateConstructor = default(ConstructorInfo);
+                var invokeForLocal = default(MethodInfo);
+                gen.Eval(_ => _.St(delegateConstructor).As(_.X(injectionMethod.DelegateType).GetConstructor(
                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                     null,
                                                     new Type[] 
@@ -40,33 +49,33 @@ namespace Urasandesu.NAnonym.DI
                                                         typeof(Object), 
                                                         typeof(IntPtr) 
                                                     }, null)));
-                gen.Eval(_ => _.St(method4).As(_.X(targetMethodInfo.DelegateType).GetMethod(
+                gen.Eval(_ => _.St(invokeForLocal).As(_.X(injectionMethod.DelegateType).GetMethod(
                                                     "Invoke",
                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                     null, _.X(parameterTypes), null)));
 
                 var cacheField = default(FieldInfo);
-                gen.Eval(_ => _.St(cacheField).As(Type.GetType(_.X(tmpCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
-                                                    _.X(tmpCacheField.Name),
+                gen.Eval(_ => _.St(cacheField).As(Type.GetType(_.X(anonymousStaticMethodCacheField.DeclaringType.AssemblyQualifiedName)).GetField(
+                                                    _.X(anonymousStaticMethodCacheField.Name),
                                                     BindingFlags.NonPublic | BindingFlags.Static)));
 
                 var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.St(targetMethod).As(Type.GetType(_.X(targetMethodInfo.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                    _.X(targetMethodInfo.NewMethod.Name),
+                gen.Eval(_ => _.St(targetMethod).As(Type.GetType(_.X(injectionMethod.NewMethod.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                    _.X(injectionMethod.NewMethod.Name),
                                                     BindingFlags.NonPublic | BindingFlags.Static)));
 
                 // MEMO: LocalClass の場合、null 側の分岐に入ることは無いが、共通化のためにこの部分をそのまま使えるのであれば使う。
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
-                var label27 = default(Label);
-                gen.Eval(_ => _.St(label27).As(il.DefineLabel()));
+                var label = default(Label);
+                gen.Eval(_ => _.St(label).As(il.DefineLabel()));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Brtrue_S, label27));
+                gen.Eval(_ => il.Emit(SRE::OpCodes.Brtrue_S, label));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldnull));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldftn, targetMethod));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, invokeForLocal));
+                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, delegateConstructor));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Stsfld, cacheField));
-                gen.Eval(_ => il.MarkLabel(label27));
+                gen.Eval(_ => il.MarkLabel(label));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
                 for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
                 {
@@ -88,18 +97,18 @@ namespace Urasandesu.NAnonym.DI
                             throw new NotSupportedException();
                     }
                 }
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, method4));
+                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, invokeForLocal));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(cachedMethodName)).As(dynamicMethod.CreateDelegate(_.X(targetMethodInfo.DelegateType))));
+                gen.Eval(_ => _.St(_.X(cachedMethodFieldName)).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType))));
             }
             gen.Eval(_ => _.EndIf());
-            var invokeForInvoke = targetMethodInfo.DelegateType.GetMethod(
+            var invokeForInvoke = injectionMethod.DelegateType.GetMethod(
                                                 "Invoke",
                                                 BindingFlags.Public | BindingFlags.Instance,
                                                 null,
                                                 parameterTypes,
                                                 null);
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodName)), _.X(invokeForInvoke), _.Ld(_.X(targetMethodInfo.OldMethod.ParameterNames())))));
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodFieldName)), _.X(invokeForInvoke), _.Ld(_.X(injectionMethod.OldMethod.ParameterNames())))));
         }
     }
 }

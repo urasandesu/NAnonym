@@ -1,50 +1,25 @@
-﻿using System;
-using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+﻿using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    abstract class GlobalMethodInjectionBuilder
+    class GlobalMethodInjectionBuilder : MethodInjectionBuilder
     {
-        protected readonly TargetMethodInfo targetMethodInfo;
-        public GlobalMethodInjectionBuilder(TargetMethodInfo targetMethodInfo)
+        public new GlobalMethodInjectionDefiner ParentDefiner { get { return (GlobalMethodInjectionDefiner)base.ParentDefiner; } }
+        public GlobalMethodInjectionBuilder(GlobalMethodInjectionDefiner parentDefiner)
+            : base(parentDefiner)
         {
-            this.targetMethodInfo = targetMethodInfo;
         }
 
-        public static GlobalMethodInjectionBuilder Create(TargetMethodInfo targetMethodInfo)
+        public override void Construct()
         {
-            if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
-            {
-                return new GlobalAnonymousInstanceMethodInjectionBuilder(targetMethodInfo);
-            }
-            else if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
-            {
-                return new GlobalAnonymousStaticMethodInjectionBuilder(targetMethodInfo);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public TypeDefinition TBaseTypeDef { get; set; }
-        public MethodDefinition NewMethod { get; set; }
-        public FieldDefinition CachedMethodDef { get; set; }
-        public FieldDefinition CachedSettingDef { get; set; }
-
-        public void Construct()
-        {
-            var methodBodyInjection = GetMethodBodyInjection();
-            NewMethod.Body.InitLocals = true;
-            NewMethod.ExpressBody(
+            ParentDefiner.MethodInterface.Body.InitLocals = true;
+            ParentDefiner.MethodInterface.ExpressBody(
             gen =>
             {
-                methodBodyInjection.Apply(gen);
+                var bodyInjection = new GlobalMethodBodyInjection(gen, this);
+                bodyInjection.Apply();
             });
         }
-
-        protected abstract DependencyMethodBodyInjection GetMethodBodyInjection();
     }
 }

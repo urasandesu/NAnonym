@@ -7,20 +7,20 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalReplaceMethodInjectionDefiner : GlobalMethodInjectionDefiner
     {
-        public GlobalReplaceMethodInjectionDefiner(TargetMethodInfo targetMethodInfo)
-            : base(targetMethodInfo)
+        public GlobalReplaceMethodInjectionDefiner(GlobalMethodInjection parent, TargetMethodInfo injectionMethod)
+            : base(parent, injectionMethod)
         {
         }
 
-        public override MethodDefinition DefineMethod(TypeDefinition tbaseTypeDef)
+        protected override MethodDefinition GetMethodInterface()
         {
-            var oldMethodDef = tbaseTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(targetMethodInfo.OldMethod));
+            var oldMethodDef = Parent.ConstructorInjection.DeclaringTypeDef.Methods.FirstOrDefault(_methodDef => _methodDef.Equivalent(InjectionMethod.OldMethod));
             string oldMethodName = oldMethodDef.Name;
             oldMethodDef.Name = "__" + oldMethodDef.Name;
 
             var newMethod = oldMethodDef.DuplicateWithoutBody();
             newMethod.Name = oldMethodName;
-            tbaseTypeDef.Methods.Add(newMethod);
+            Parent.ConstructorInjection.DeclaringTypeDef.Methods.Add(newMethod);
 
             return newMethod;
         }

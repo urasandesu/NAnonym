@@ -1,36 +1,46 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
+using MC = Mono.Cecil;
+using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
-    abstract class GlobalMethodInjectionDefiner
+    class GlobalMethodInjectionDefiner : MethodInjectionDefiner
     {
-        protected readonly TargetMethodInfo targetMethodInfo;
-        public GlobalMethodInjectionDefiner(TargetMethodInfo targetMethodInfo)
+        public new GlobalMethodInjection Parent { get { return (GlobalMethodInjection)base.Parent; } }
+        public FieldDefinition CachedMethodField { get; private set; }
+        public FieldDefinition CachedSettingField { get; private set; }
+        public MethodDefinition MethodInterface { get; private set; }
+
+        public GlobalMethodInjectionDefiner(GlobalMethodInjection parent, TargetMethodInfo injectionMethod)
+            : base(parent, injectionMethod)
         {
-            this.targetMethodInfo = targetMethodInfo;
+            anonymousStaticMethodCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(injectionMethod.NewMethod);
         }
 
-        public static GlobalMethodInjectionDefiner Create(TargetMethodInfo targetMethodInfo)
+        public static GlobalMethodInjectionDefiner GetInstance(GlobalMethodInjection parent, TargetMethodInfo injectionMethod)
         {
-            if (targetMethodInfo.Mode == SetupModes.Override)
+            if (injectionMethod.Mode == SetupModes.Override)
             {
                 throw new NotImplementedException();
             }
-            else if (targetMethodInfo.Mode == SetupModes.Implement)
+            else if (injectionMethod.Mode == SetupModes.Implement)
             {
                 throw new NotImplementedException();
             }
-            else if (targetMethodInfo.Mode == SetupModes.Replace)
+            else if (injectionMethod.Mode == SetupModes.Replace)
             {
-                return new GlobalReplaceMethodInjectionDefiner(targetMethodInfo);
+                return new GlobalReplaceMethodInjectionDefiner(parent, injectionMethod);
             }
-            else if (targetMethodInfo.Mode == SetupModes.Before)
+            else if (injectionMethod.Mode == SetupModes.Before)
             {
                 throw new NotImplementedException();
             }
-            else if (targetMethodInfo.Mode == SetupModes.After)
+            else if (injectionMethod.Mode == SetupModes.After)
             {
                 throw new NotImplementedException();
             }
@@ -40,6 +50,44 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
         }
 
-        public abstract MethodDefinition DefineMethod(TypeDefinition tbaseTypeDef);
+        public override void Create()
+        {
+            CachedMethodField = new FieldDefinition(
+                                        GlobalClass.CacheFieldPrefix + "Method" + Parent.IncreaseMethodFieldSequence(),
+                                        MC::FieldAttributes.Private,
+                                        Parent.ConstructorInjection.DeclaringTypeDef.Module.Import(InjectionMethod.DelegateType));
+            Parent.ConstructorInjection.DeclaringTypeDef.Fields.Add(CachedMethodField);
+
+            CachedSettingField = Parent.ConstructorInjection.DeclaringTypeDef.Fields.FirstOrDefault(
+                field => field.FieldType.Resolve().GetFullName() == InjectionMethod.NewMethod.DeclaringType.FullName);
+
+            MethodInterface = GetMethodInterface();
+        }
+
+        protected virtual MethodDefinition GetMethodInterface()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string CachedMethodFieldName
+        {
+            get { return CachedMethodField.Name; }
+        }
+
+        public override string CachedSettingFieldName
+        {
+            get { return CachedSettingField.Name; }
+        }
+
+        public override Type OwnerType
+        {
+            get { return Parent.ConstructorInjection.DeclaringType; }
+        }
+
+        readonly FieldInfo anonymousStaticMethodCacheField;
+        public override FieldInfo AnonymousStaticMethodCacheField
+        {
+            get { return anonymousStaticMethodCacheField; }
+        }
     }
 }

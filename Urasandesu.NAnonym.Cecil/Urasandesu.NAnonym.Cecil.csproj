@@ -58,8 +58,6 @@
     <Compile Include="DI\DIAssemblySetup.cs" />
     <Compile Include="DI\DIAssemblySetupCollection.cs" />
     <Compile Include="DI\DIConfigurationSection.cs" />
-    <Compile Include="DI\GlobalAnonymousInstanceMethodInjectionBuilder.cs" />
-    <Compile Include="DI\GlobalAnonymousStaticMethodInjectionBuilder.cs" />
     <Compile Include="DI\GlobalClass.cs" />
     <Compile Include="DI\GlobalConstructorBodyInjection.cs" />
     <Compile Include="DI\GlobalConstructorBodyInjectionBuilder.cs" />
@@ -69,6 +67,9 @@
     <Compile Include="DI\GlobalConstructorInjectionDefiner.cs" />
     <Compile Include="DI\GlobalField.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
+    <Compile Include="DI\GlobalMethodBodyInjection.cs" />
+    <Compile Include="DI\GlobalMethodBodyInjectionBuilder.cs" />
+    <Compile Include="DI\GlobalMethodBodyInjectionDefiner.cs" />
     <Compile Include="DI\GlobalMethodInjection.cs" />
     <Compile Include="DI\GlobalMethodInjectionBuilder.cs" />
     <Compile Include="DI\GlobalMethodInjectionDefiner.cs" />

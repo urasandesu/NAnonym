@@ -11,6 +11,7 @@ using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -137,18 +138,11 @@ namespace Urasandesu.NAnonym.DI
             }
 
 
-            var fieldsForDeclaringType = new Dictionary<Type, FieldBuilder>();
-
-            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, TargetFieldInfoSet, fieldsForDeclaringType);
+            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, TargetFieldInfoSet);
             constructorInjection.Apply();
 
-
-            // 最終的には constructorInjection を食わせる。
-            var methodInjection = new LocalMethodInjection(localClassTypeBuilder, fieldsForDeclaringType);
-            foreach (var targetMethodInfo in TargetMethodInfoSet)
-            {
-                methodInjection.Apply(targetMethodInfo);
-            }
+            var methodInjection = new LocalMethodInjection(constructorInjection, TargetMethodInfoSet);
+            methodInjection.Apply();
 
             createdType = localClassTypeBuilder.CreateType();
             //localClassAssemblyBuilder.Save("LocalClasses.dll");

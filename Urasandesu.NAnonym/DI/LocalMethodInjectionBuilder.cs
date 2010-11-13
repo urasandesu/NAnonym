@@ -1,51 +1,27 @@
-﻿using System;
+﻿using System.Linq;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
-    abstract class LocalMethodInjectionBuilder
+    class LocalMethodInjectionBuilder : MethodInjectionBuilder
     {
-        protected readonly TargetMethodInfo targetMethodInfo;
-        public LocalMethodInjectionBuilder(TargetMethodInfo targetMethodInfo)
+        public new LocalMethodInjectionDefiner ParentDefiner { get { return (LocalMethodInjectionDefiner)base.ParentDefiner; } }
+        public LocalMethodInjectionBuilder(LocalMethodInjectionDefiner parentDefiner)
+            : base(parentDefiner)
         {
-            this.targetMethodInfo = targetMethodInfo;
         }
 
-        public static LocalMethodInjectionBuilder Create(TargetMethodInfo targetMethodInfo)
+        public override void Construct()
         {
-            if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
-            {
-                return new LocalAnonymousInstanceMethodInjectionBuilder(targetMethodInfo);
-            }
-            else if ((targetMethodInfo.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
-            {
-                return new LocalAnonymousStaticMethodInjectionBuilder(targetMethodInfo);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public TypeBuilder LocalClassTypeBuilder { get; set; }
-        public FieldBuilder CachedSettingBuilder { get; set; }
-        public MethodBuilder MethodBuilder { get; set; }
-        public FieldBuilder CachedMethodBuilder { get; set; }
-        public ParameterBuilder[] ParameterBuilders { get; set; }
-
-        public void Construct()
-        {
-            var methodBodyInjection = GetMethodBodyInjection();
-            MethodBuilder.ExpressBody(
+            ParentDefiner.MethodInterface.ExpressBody(
             gen =>
             {
-                methodBodyInjection.Apply(gen);
+                var bodyInjection = new LocalMethodBodyInjection(gen, this);
+                bodyInjection.Apply();
             },
-            ParameterBuilders,
-            new FieldBuilder[] { CachedMethodBuilder });
+            ParentDefiner.MethodParameters.ToArray(),
+            new FieldBuilder[] { ParentDefiner.CachedMethodField });
         }
-
-        protected abstract DependencyMethodBodyInjection GetMethodBodyInjection();
     }
 }

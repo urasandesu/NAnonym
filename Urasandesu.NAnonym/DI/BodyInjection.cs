@@ -9,11 +9,11 @@ namespace Urasandesu.NAnonym.DI
     abstract class BodyInjection
     {
         public ExpressiveMethodBodyGenerator Gen { get; private set; }
-        public InjectionBuilder Builder { get; private set; }
-        public BodyInjection(ExpressiveMethodBodyGenerator gen, InjectionBuilder builder)
+        public InjectionBuilder ParentBuilder { get; private set; }
+        public BodyInjection(ExpressiveMethodBodyGenerator gen, InjectionBuilder parentBuilder)
         {
             Gen = gen;
-            Builder = builder;
+            ParentBuilder = parentBuilder;
         }
 
         public abstract void Apply();

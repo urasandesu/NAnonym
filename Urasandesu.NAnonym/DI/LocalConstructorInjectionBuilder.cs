@@ -16,22 +16,22 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorInjectionBuilder : ConstructorInjectionBuilder
     {
-        public new LocalConstructorInjectionDefiner Definer { get { return (LocalConstructorInjectionDefiner)base.Definer; } }
-        public LocalConstructorInjectionBuilder(LocalConstructorInjectionDefiner definer)
-            : base(definer)
+        public new LocalConstructorInjectionDefiner ParentDefiner { get { return (LocalConstructorInjectionDefiner)base.ParentDefiner; } }
+        public LocalConstructorInjectionBuilder(LocalConstructorInjectionDefiner parentDefiner)
+            : base(parentDefiner)
         {
         }
 
         public override void Construct()
         {
-            Definer.LocalClassConstructorBuilder.ExpressBody(
+            ParentDefiner.LocalClassConstructorBuilder.ExpressBody(
             gen =>
             {
                 var bodyInjection = new LocalConstructorBodyInjection(gen, this);
                 bodyInjection.Apply();
                 gen.Eval(_ => _.Base());
             },
-            new FieldBuilder[] { Definer.CachedConstructBuilder }.Concat(Definer.Injection.FieldsForDeclaringType.Values).ToArray());
+            new FieldBuilder[] { ParentDefiner.CachedConstructBuilder }.Concat(ParentDefiner.Parent.FieldsForDeclaringType.Values).ToArray());
         }
     }
 }

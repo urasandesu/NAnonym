@@ -15,12 +15,11 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public GlobalConstructorInjection(
             TypeDefinition declaringTypeDef,
-            HashSet<TargetFieldInfo> fieldSet,
-            Dictionary<Type, FieldDefinition> fieldsForDeclaringType)
+            HashSet<TargetFieldInfo> fieldSet)
             : base(fieldSet)
         {
             DeclaringTypeDef = declaringTypeDef;
-            FieldsForDeclaringType = fieldsForDeclaringType;
+            FieldsForDeclaringType = new Dictionary<Type,FieldDefinition>();
             declaringType = DeclaringTypeDef.ToType();
         }
 

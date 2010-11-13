@@ -16,35 +16,35 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorInjectionDefiner : ConstructorInjectionDefiner
     {
-        public new LocalConstructorInjection Injection { get { return (LocalConstructorInjection)base.Injection; } }
+        public new LocalConstructorInjection Parent { get { return (LocalConstructorInjection)base.Parent; } }
         public FieldBuilder CachedConstructBuilder { get; private set; }
         public ConstructorBuilder LocalClassConstructorBuilder { get; private set; }
 
-        public LocalConstructorInjectionDefiner(LocalConstructorInjection injection)
-            : base(injection)
+        public LocalConstructorInjectionDefiner(LocalConstructorInjection parent)
+            : base(parent)
         {
         }
 
         public override void Create()
         {
             // ↓ここの処理は Injection.TargetFieldInfoSet がある場合だけで良い。
-            CachedConstructBuilder = Injection.DeclaringTypeBuilder.DefineField(
+            CachedConstructBuilder = Parent.DeclaringTypeBuilder.DefineField(
                 LocalClass.CacheFieldPrefix + "Construct", typeof(Action), FieldAttributes.Private | FieldAttributes.Static);
 
             int targetFieldDeclaringTypeIndex = 0;
-            foreach (var targetFieldInfo in Injection.FieldSet)
+            foreach (var targetFieldInfo in Parent.FieldSet)
             {
                 var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                if (!Injection.FieldsForDeclaringType.ContainsKey(targetField.DeclaringType))
+                if (!Parent.FieldsForDeclaringType.ContainsKey(targetField.DeclaringType))
                 {
-                    var cachedTargetFieldDeclaringTypeBuilder = Injection.DeclaringTypeBuilder.DefineField(
+                    var cachedTargetFieldDeclaringTypeBuilder = Parent.DeclaringTypeBuilder.DefineField(
                             LocalClass.CacheFieldPrefix + "TargetFieldDeclaringType" + targetFieldDeclaringTypeIndex++, targetField.DeclaringType, FieldAttributes.Private);
-                    Injection.FieldsForDeclaringType.Add(targetField.DeclaringType, cachedTargetFieldDeclaringTypeBuilder);
+                    Parent.FieldsForDeclaringType.Add(targetField.DeclaringType, cachedTargetFieldDeclaringTypeBuilder);
                     InitializedDeclaringTypeConstructor.Add(targetField.DeclaringType, false);
                 }
             }
 
-            LocalClassConstructorBuilder = Injection.DeclaringTypeBuilder.DefineConstructor(
+            LocalClassConstructorBuilder = Parent.DeclaringTypeBuilder.DefineConstructor(
                                                     MethodAttributes.Public |
                                                     MethodAttributes.HideBySig |
                                                     MethodAttributes.SpecialName |

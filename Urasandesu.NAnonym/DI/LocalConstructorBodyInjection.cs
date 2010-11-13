@@ -8,9 +8,9 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorBodyInjection : ConstructorBodyInjection
     {
-        public new LocalConstructorInjectionBuilder Builder { get { return (LocalConstructorInjectionBuilder)base.Builder; } }
-        public LocalConstructorBodyInjection(ExpressiveMethodBodyGenerator gen, LocalConstructorInjectionBuilder builder)
-            : base(gen, builder)
+        public new LocalConstructorInjectionBuilder ParentBuilder { get { return (LocalConstructorInjectionBuilder)base.ParentBuilder; } }
+        public LocalConstructorBodyInjection(ExpressiveMethodBodyGenerator gen, LocalConstructorInjectionBuilder parentBuilder)
+            : base(gen, parentBuilder)
         {
         }
     }

@@ -6,24 +6,24 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalImplementMethodInjectionDefiner : LocalMethodInjectionDefiner
     {
-        public LocalImplementMethodInjectionDefiner(TargetMethodInfo targetMethodInfo)
-            : base(targetMethodInfo)
+        public LocalImplementMethodInjectionDefiner(LocalMethodInjection parent, TargetMethodInfo injectionMethod)
+            : base(parent, injectionMethod)
         {
         }
 
-        public const MethodAttributes Implement = MethodAttributes.Public |
-                                                  MethodAttributes.HideBySig |
-                                                  MethodAttributes.NewSlot |
-                                                  MethodAttributes.Virtual |
-                                                  MethodAttributes.Final;
-
-        public override MethodBuilder DefineMethod(TypeBuilder localClassTypeBuilder)
+        protected override MethodBuilder GetMethodInterface()
         {
-            var oldMethod = targetMethodInfo.OldMethod;
+            const MethodAttributes implement = MethodAttributes.Public |
+                                               MethodAttributes.HideBySig |
+                                               MethodAttributes.NewSlot |
+                                               MethodAttributes.Virtual |
+                                               MethodAttributes.Final;
+            var oldMethod = InjectionMethod.OldMethod;
             var name = oldMethod.Name;
             var returnType = oldMethod.ReturnType;
             var parameterTypes = oldMethod.ParameterTypes();
-            return localClassTypeBuilder.DefineMethod(name, Implement, CallingConventions.HasThis, returnType, parameterTypes);
+            return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
+                name, implement, CallingConventions.HasThis, returnType, parameterTypes);
         }
     }
 }

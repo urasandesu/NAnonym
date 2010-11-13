@@ -7,32 +7,32 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorInjectionDefiner : ConstructorInjectionDefiner
     {
-        public new GlobalConstructorInjection Injection { get { return (GlobalConstructorInjection)base.Injection; } }
+        public new GlobalConstructorInjection Parent { get { return (GlobalConstructorInjection)base.Parent; } }
         public FieldDefinition CachedConstructDef { get; private set; }
 
-        public GlobalConstructorInjectionDefiner(GlobalConstructorInjection injection)
-            : base(injection)
+        public GlobalConstructorInjectionDefiner(GlobalConstructorInjection parent)
+            : base(parent)
         {
         }
 
         public override void Create()
         {
             CachedConstructDef = new FieldDefinition(
-                    GlobalClass.CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, Injection.DeclaringTypeDef.Module.Import(typeof(Action)));
-            Injection.DeclaringTypeDef.Fields.Add(CachedConstructDef);
+                    GlobalClass.CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, Parent.DeclaringTypeDef.Module.Import(typeof(Action)));
+            Parent.DeclaringTypeDef.Fields.Add(CachedConstructDef);
 
             int targetFieldDeclaringTypeIndex = 0;
-            foreach (var targetFieldInfo in Injection.FieldSet)
+            foreach (var targetFieldInfo in Parent.FieldSet)
             {
                 var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                if (!Injection.FieldsForDeclaringType.ContainsKey(targetField.DeclaringType))
+                if (!Parent.FieldsForDeclaringType.ContainsKey(targetField.DeclaringType))
                 {
                     var fieldForDeclaringType = new FieldDefinition(
                             GlobalClass.CacheFieldPrefix + "FieldForDeclaringType" + targetFieldDeclaringTypeIndex++,
-                            MC::FieldAttributes.Private, Injection.DeclaringTypeDef.Module.Import(targetField.DeclaringType));
-                    Injection.DeclaringTypeDef.Fields.Add(fieldForDeclaringType);
+                            MC::FieldAttributes.Private, Parent.DeclaringTypeDef.Module.Import(targetField.DeclaringType));
+                    Parent.DeclaringTypeDef.Fields.Add(fieldForDeclaringType);
 
-                    Injection.FieldsForDeclaringType.Add(targetField.DeclaringType, fieldForDeclaringType);
+                    Parent.FieldsForDeclaringType.Add(targetField.DeclaringType, fieldForDeclaringType);
                     InitializedDeclaringTypeConstructor.Add(targetField.DeclaringType, false);
                 }
             }

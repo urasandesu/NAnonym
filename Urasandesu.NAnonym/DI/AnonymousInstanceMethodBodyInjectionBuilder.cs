@@ -9,25 +9,33 @@ using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
 using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class AnonymousInstanceMethodBodyInjection : DependencyMethodBodyInjection
+    class AnonymousInstanceMethodBodyInjectionBuilder : MethodBodyInjectionBuilder
     {
-        protected readonly string cachedSettingName;
-        protected readonly Type ownerType;
-        public AnonymousInstanceMethodBodyInjection(TargetMethodInfo targetMethodInfo, string cachedMethodName, string cachedSettingName, Type ownerType)
-            : base(targetMethodInfo, cachedMethodName)
+        public AnonymousInstanceMethodBodyInjectionBuilder(MethodBodyInjectionDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
         {
-            this.cachedSettingName = cachedSettingName;
-            this.ownerType = ownerType;
         }
 
-        public override void Apply(ExpressiveMethodBodyGenerator gen)
+        public override void Construct()
         {
-            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodName)) == null));
+            var bodyDefiner = ParentBodyDefiner.ParentBody;
+            var definer = bodyDefiner.ParentBuilder.ParentDefiner;
+
+            var injectionMethod = definer.InjectionMethod;
+            var gen = bodyDefiner.Gen;
+            var ownerType = definer.OwnerType;
+            var cachedMethodFieldName = definer.CachedMethodFieldName;
+            var cachedSettingFieldName = definer.CachedSettingFieldName;
+            var returnType = definer.ReturnType;
+            var parameterTypes = definer.ParameterTypes;
+
+            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodFieldName)) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
                 gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
@@ -40,12 +48,12 @@ namespace Urasandesu.NAnonym.DI
 
                 var cacheField = default(FieldInfo);
                 gen.Eval(_ => _.St(cacheField).As(_.X(ownerType).GetField(
-                                                        _.X(cachedSettingName),
+                                                        _.X(cachedSettingFieldName),
                                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
                 var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.St(targetMethod).As(_.X(targetMethodInfo.NewMethod.DeclaringType).GetMethod(
-                                                        _.X(targetMethodInfo.NewMethod.Name),
+                gen.Eval(_ => _.St(targetMethod).As(_.X(injectionMethod.NewMethod.DeclaringType).GetMethod(
+                                                        _.X(injectionMethod.NewMethod.Name),
                                                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)));
 
 
@@ -75,16 +83,16 @@ namespace Urasandesu.NAnonym.DI
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(cachedMethodName)).As(dynamicMethod.CreateDelegate(_.X(targetMethodInfo.DelegateType), _.This())));
+                gen.Eval(_ => _.St(_.X(cachedMethodFieldName)).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType), _.This())));
             }
             gen.Eval(_ => _.EndIf());
-            var invoke = targetMethodInfo.DelegateType.GetMethod(
+            var invoke = injectionMethod.DelegateType.GetMethod(
                                                         "Invoke",
                                                         BindingFlags.Public | BindingFlags.Instance,
                                                         null,
                                                         parameterTypes,
                                                         null);
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodName)), _.X(invoke), _.Ld(_.X(targetMethodInfo.OldMethod.ParameterNames())))));
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodFieldName)), _.X(invoke), _.Ld(_.X(injectionMethod.OldMethod.ParameterNames())))));
         }
     }
 }

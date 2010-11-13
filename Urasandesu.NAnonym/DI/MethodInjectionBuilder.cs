@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class ConstructorInjectionBuilder : InjectionBuilder
+    class MethodInjectionBuilder : InjectionBuilder
     {
-        public new ConstructorInjectionDefiner ParentDefiner { get { return (ConstructorInjectionDefiner)base.ParentDefiner; } }
-        public ConstructorInjectionBuilder(ConstructorInjectionDefiner parentDefiner)
+        public new MethodInjectionDefiner ParentDefiner { get { return (MethodInjectionDefiner)base.ParentDefiner; } }
+        public MethodInjectionBuilder(MethodInjectionDefiner parentDefiner)
             : base(parentDefiner)
         {
         }
