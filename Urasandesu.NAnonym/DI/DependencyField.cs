@@ -11,18 +11,18 @@ namespace Urasandesu.NAnonym.DI
     public abstract class DependencyField
     {
         DependencyClass @class;
-        LambdaExpression reference;
-        Type type;
-        public DependencyField(DependencyClass @class, LambdaExpression reference, Type type)
+        LambdaExpression fieldReference;
+        Type fieldType;
+        public DependencyField(DependencyClass @class, LambdaExpression fieldReference, Type fieldType)
         {
             this.@class = @class;
-            this.reference = reference;
-            this.type = type;
+            this.fieldReference = fieldReference;
+            this.fieldType = fieldType;
         }
 
-        protected void As(LambdaExpression exp)
+        protected void As(LambdaExpression initializer)
         {
-            @class.TargetFieldInfoSet.Add(new TargetFieldInfo(reference, exp, type));
+            @class.FieldSet.Add(new InjectionFieldInfo(fieldReference, initializer, fieldType));
         }
     }
 }

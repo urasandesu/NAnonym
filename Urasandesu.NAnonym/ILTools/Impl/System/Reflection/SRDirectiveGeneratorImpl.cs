@@ -25,6 +25,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         public SRDirectiveGeneratorImpl(OpCode opcode, string str) : base(opcode, str) { }
         public SRDirectiveGeneratorImpl(OpCode opcode, Type cls) : base(opcode, cls) { }
         public SRDirectiveGeneratorImpl(OpCode opcode, IConstructorDeclaration constructorDecl) : base(opcode, constructorDecl) { }
+        public SRDirectiveGeneratorImpl(OpCode opcode, IMethodDeclaration methodDecl) : base(opcode, methodDecl) { }
         public SRDirectiveGeneratorImpl(OpCode opcode, IParameterDeclaration parameterDecl) : base(opcode, parameterDecl) { }
         public SRDirectiveGeneratorImpl(OpCode opcode, IFieldDeclaration fieldDecl) : base(opcode, fieldDecl) { }
         public SRDirectiveGeneratorImpl(OpCode opcode, IPortableScopeItem scopeItem) : base(opcode, scopeItem) { }

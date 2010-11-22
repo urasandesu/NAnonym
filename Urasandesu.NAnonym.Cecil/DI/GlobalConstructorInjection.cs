@@ -15,7 +15,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public GlobalConstructorInjection(
             TypeDefinition declaringTypeDef,
-            HashSet<TargetFieldInfo> fieldSet)
+            HashSet<InjectionFieldInfo> fieldSet)
             : base(fieldSet)
         {
             DeclaringTypeDef = declaringTypeDef;

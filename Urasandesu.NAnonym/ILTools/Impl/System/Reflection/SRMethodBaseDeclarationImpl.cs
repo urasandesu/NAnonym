@@ -16,6 +16,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.methodBase = methodBase;
         }
 
+        public MethodBase MethodBase { get { return (MethodBase)base.MemberInfo; } }
+
         #region IMethodBaseDeclaration メンバ
 
         public IMethodBodyDeclaration Body

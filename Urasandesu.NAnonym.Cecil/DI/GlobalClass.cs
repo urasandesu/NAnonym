@@ -26,8 +26,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
         protected internal abstract string CodeBase { get; }
         protected internal abstract string Location { get; }
 
-        public GlobalFieldInt Field(Expression<Func<int>> reference) { return new GlobalFieldInt(this, reference); }
-        public GlobalField<T> Field<T>(Expression<Func<T>> reference) { return new GlobalField<T>(this, reference); }
+        public GlobalFieldInt Field(Expression<Func<int>> methodReference) { return new GlobalFieldInt(this, methodReference); }
+        public GlobalField<T> Field<T>(Expression<Func<T>> methodReference) { return new GlobalField<T>(this, methodReference); }
     }
 
     public class GlobalClass<TBase> : GlobalClass
@@ -44,74 +44,74 @@ namespace Urasandesu.NAnonym.Cecil.DI
             return null;
         }
 
-        public GlobalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> reference)
+        public GlobalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase,TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalFunc<TBase,TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> reference)
+        public GlobalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalFunc<TBase, T, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> reference)
+        public GlobalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalFunc<TBase, T1, T2, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> reference)
+        public GlobalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, T3, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> reference)
+        public GlobalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, T3, T4, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
-        public GlobalAction<TBase> Method(Expression<ActionReference<TBase>> reference)
+        public GlobalAction<TBase> Method(Expression<ActionReference<TBase>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAction<TBase>(this, source);
         }
 
-        public GlobalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> reference)
+        public GlobalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAction<TBase, T>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> reference)
+        public GlobalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAction<TBase, T1, T2>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> reference)
+        public GlobalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2, T3>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAction<TBase, T1, T2, T3>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> reference)
+        public GlobalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2, T3, T4>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAction<TBase, T1, T2, T3, T4>(this, source);
         }
 
 
@@ -120,16 +120,18 @@ namespace Urasandesu.NAnonym.Cecil.DI
         protected override void OnLoad(DependencyClass modified)
         {
             // MEMO: ここで modified に来るのは、OnSetup() の戻り値なので、ここでは特に使う必要はない。
-            var tbaseModuleDef = ModuleDefinition.ReadModule(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new ReaderParameters() { ReadSymbols = true });
-            var tbaseTypeDef = tbaseModuleDef.GetType(typeof(TBase).FullName);
+            var localPath = new Uri(typeof(TBase).Assembly.CodeBase).LocalPath;
 
-            var constructorInjection = new GlobalConstructorInjection(tbaseTypeDef, TargetFieldInfoSet);
+            var globalClassModuleDef = ModuleDefinition.ReadModule(localPath, new ReaderParameters() { ReadSymbols = true });
+            var globalClassTypeDef = globalClassModuleDef.GetType(typeof(TBase).FullName);
+
+            var constructorInjection = new GlobalConstructorInjection(globalClassTypeDef, FieldSet);
             constructorInjection.Apply();
 
-            var methodInjection = new GlobalMethodInjection(constructorInjection, TargetMethodInfoSet);
+            var methodInjection = new GlobalMethodInjection(constructorInjection, MethodSet);
             methodInjection.Apply();
 
-            tbaseModuleDef.Write(new Uri(typeof(TBase).Assembly.CodeBase).LocalPath, new WriterParameters() { WriteSymbols = true });
+            globalClassModuleDef.Write(localPath, new WriterParameters() { WriteSymbols = true });
         }
 
         protected internal override string CodeBase

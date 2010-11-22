@@ -14,11 +14,19 @@ namespace Urasandesu.NAnonym.Cecil.DI
         public static MethodBodyInjectionBuilder GetInstance(GlobalMethodBodyInjectionDefiner parentBodyDefiner)
         {
             var injectionMethod = parentBodyDefiner.ParentBody.ParentBuilder.ParentDefiner.InjectionMethod;
-            if ((injectionMethod.NewMethodType & NewMethodType.AnonymousInstance) == NewMethodType.AnonymousInstance)
+            if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousInstanceWithBase) == MethodBodyInjectionBuilderType.AnonymousInstanceWithBase)
+            {
+                return new AnonymousInstanceMethodBodyInjectionBuilderWithBase(parentBodyDefiner);
+            }
+            else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousInstance) == MethodBodyInjectionBuilderType.AnonymousInstance)
             {
                 return new AnonymousInstanceMethodBodyInjectionBuilder(parentBodyDefiner);
             }
-            else if ((injectionMethod.NewMethodType & NewMethodType.AnonymousStatic) == NewMethodType.AnonymousStatic)
+            else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousStaticWithBase) == MethodBodyInjectionBuilderType.AnonymousStaticWithBase)
+            {
+                return new AnonymousStaticMethodBodyInjectionBuilderWithBase(parentBodyDefiner);
+            }
+            else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousStatic) == MethodBodyInjectionBuilderType.AnonymousStatic)
             {
                 return new AnonymousStaticMethodBodyInjectionBuilder(parentBodyDefiner);
             }

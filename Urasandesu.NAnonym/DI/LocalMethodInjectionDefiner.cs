@@ -18,18 +18,18 @@ namespace Urasandesu.NAnonym.DI
     class LocalMethodInjectionDefiner : MethodInjectionDefiner
     {
         public new LocalMethodInjection Parent { get { return (LocalMethodInjection)base.Parent; } }
-        public FieldBuilder CachedMethodField { get; private set; }
-        public FieldBuilder CachedSettingField { get; private set; }
+        public FieldBuilder CachedMethod { get; private set; }
+        public FieldBuilder CachedSetting { get; private set; }
         public MethodBuilder MethodInterface { get; private set; }
         public ReadOnlyCollection<ParameterBuilder> MethodParameters { get; private set; }
 
-        protected LocalMethodInjectionDefiner(LocalMethodInjection parent, TargetMethodInfo injectionMethod)
+        protected LocalMethodInjectionDefiner(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
-            anonymousStaticMethodCacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(injectionMethod.NewMethod);
+            anonymousStaticMethodCache = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(injectionMethod.Destination);
         }
 
-        public static LocalMethodInjectionDefiner GetInstance(LocalMethodInjection parent, TargetMethodInfo injectionMethod)
+        public static LocalMethodInjectionDefiner GetInstance(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
         {
             if (injectionMethod.Mode == SetupModes.Override)
             {
@@ -47,18 +47,18 @@ namespace Urasandesu.NAnonym.DI
 
         public override void Create()
         {
-            CachedMethodField = Parent.ConstructorInjection.DeclaringTypeBuilder.DefineField(
-                LocalClass.CacheFieldPrefix + "Method" + Parent.IncreaseMethodFieldSequence(), InjectionMethod.DelegateType, FieldAttributes.Private);
+            CachedMethod = Parent.ConstructorInjection.DeclaringTypeBuilder.DefineField(
+                LocalClass.CacheFieldPrefix + "Method" + Parent.IncreaseMethodCacheSequence(), InjectionMethod.DelegateType, FieldAttributes.Private);
 
-            CachedSettingField = Parent.ConstructorInjection.FieldsForDeclaringType.ContainsKey(InjectionMethod.NewMethod.DeclaringType) ?
-                                            Parent.ConstructorInjection.FieldsForDeclaringType[InjectionMethod.NewMethod.DeclaringType] :
+            CachedSetting = Parent.ConstructorInjection.FieldsForDeclaringType.ContainsKey(InjectionMethod.Destination.DeclaringType) ?
+                                            Parent.ConstructorInjection.FieldsForDeclaringType[InjectionMethod.Destination.DeclaringType] :
                                             default(FieldBuilder);
 
             MethodInterface = GetMethodInterface();
 
             int parameterPosition = 1;
             var methodParameters = new List<ParameterBuilder>();
-            foreach (var parameterName in InjectionMethod.OldMethod.ParameterNames())
+            foreach (var parameterName in InjectionMethod.Source.ParameterNames())
             {
                 methodParameters.Add(MethodInterface.DefineParameter(parameterPosition++, ParameterAttributes.In, parameterName));
             }
@@ -70,14 +70,14 @@ namespace Urasandesu.NAnonym.DI
             throw new NotImplementedException();
         }
 
-        public override string CachedMethodFieldName
+        public override string CachedMethodName
         {
-            get { return CachedMethodField.Name; }
+            get { return CachedMethod.Name; }
         }
 
-        public override string CachedSettingFieldName
+        public override string CachedSettingName
         {
-            get { return CachedSettingField.Name; }
+            get { return CachedSetting.Name; }
         }
 
         public override Type OwnerType
@@ -85,10 +85,10 @@ namespace Urasandesu.NAnonym.DI
             get { return Parent.ConstructorInjection.DeclaringType; }
         }
 
-        readonly FieldInfo anonymousStaticMethodCacheField;
-        public override FieldInfo AnonymousStaticMethodCacheField
+        readonly FieldInfo anonymousStaticMethodCache;
+        public override FieldInfo AnonymousStaticMethodCache
         {
-            get { return anonymousStaticMethodCacheField; }
+            get { return anonymousStaticMethodCache; }
         }
     }
 }

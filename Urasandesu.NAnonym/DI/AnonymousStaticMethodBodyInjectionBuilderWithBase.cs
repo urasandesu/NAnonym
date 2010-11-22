@@ -15,9 +15,9 @@ using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class AnonymousStaticMethodBodyInjectionBuilder : MethodBodyInjectionBuilder
+    class AnonymousStaticMethodBodyInjectionBuilderWithBase : MethodBodyInjectionBuilder
     {
-        public AnonymousStaticMethodBodyInjectionBuilder(MethodBodyInjectionDefiner parentBodyDefiner)
+        public AnonymousStaticMethodBodyInjectionBuilderWithBase(MethodBodyInjectionDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }
@@ -33,11 +33,16 @@ namespace Urasandesu.NAnonym.DI
             var anonymousStaticMethodCache = definer.AnonymousStaticMethodCache;
             var returnType = definer.ReturnType;
             var parameterTypes = definer.ParameterTypes;
+            var baseMethod = definer.BaseMethod;
 
             gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodName)) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod("dynamicMethod", _.X(returnType), _.X(parameterTypes), true)));
+                gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
+                                                            "dynamicMethod",
+                                                            _.X(returnType),
+                                                            _.X(parameterTypes),
+                                                            true)));
 
                 var delegateConstructor = default(ConstructorInfo);
                 var invokeForLocal = default(MethodInfo);
@@ -93,6 +98,9 @@ namespace Urasandesu.NAnonym.DI
                         case 3:
                             gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
                             break;
+                        case 4:
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)4));
+                            break;
                         default:
                             throw new NotSupportedException();
                     }
@@ -103,12 +111,24 @@ namespace Urasandesu.NAnonym.DI
             }
             gen.Eval(_ => _.EndIf());
             var invokeForInvoke = injectionMethod.DelegateType.GetMethod(
-                                                "Invoke",
-                                                BindingFlags.Public | BindingFlags.Instance,
-                                                null,
-                                                parameterTypes,
-                                                null);
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodName)), _.X(invokeForInvoke), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                                                    "Invoke",
+                                                    BindingFlags.Public | BindingFlags.Instance,
+                                                    null,
+                                                    parameterTypes,
+                                                    null);
+            var delegateForBaseConstructor = parameterTypes[0].GetConstructor(
+                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                    null,
+                                                    new Type[] 
+                                                    { 
+                                                        typeof(Object), 
+                                                        typeof(IntPtr) 
+                                                    }, null);
+
+            var delegateForBase = default(object);
+            gen.Eval(_ => _.St(delegateForBase).As(_.New(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
+            var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(injectionMethod.Source.ParameterNames()).ToArray();
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodName)), _.X(invokeForInvoke), _.Ld(_.X(variableNames)))));
         }
     }
 }

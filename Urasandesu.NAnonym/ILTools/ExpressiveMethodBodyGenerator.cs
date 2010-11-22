@@ -276,7 +276,9 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (expressible.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
                     else if (expressible.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
                     else if (expressible.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
+                    else if (expressible.IsNew(exp.Method)) EvalNew(methodGen, exp, state);
                     else if (expressible.IsInvoke(exp.Method)) EvalInvoke(methodGen, exp, state);
+                    else if (expressible.IsFtn(exp.Method)) EvalFtn(methodGen, exp, state);
                     else if (expressible.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
                     else if (expressible.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
                     else if (expressible.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
@@ -368,6 +370,22 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
         }
 
+        static void EvalNew(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp.Arguments[1], state);
+            if (0 < state.ExtractInfoStack.Count)
+            {
+                throw new NotImplementedException();
+            }
+            EvalExpression(methodGen, exp.Arguments[0], state);
+            if (0 < state.ExtractInfoStack.Count)
+            {
+                var extractInfo = state.ExtractInfoStack.Pop();
+                var constructor = (ConstructorInfo)extractInfo.Value;
+                methodGen.Body.ILOperator.Emit(OpCodes.Newobj, constructor);
+            }
+        }
+
         static void EvalInvoke(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             EvalExpression(methodGen, exp.Arguments[0], state);
@@ -386,6 +404,26 @@ namespace Urasandesu.NAnonym.ILTools
                 var extractInfo = state.ExtractInfoStack.Pop();
                 var method = (MethodInfo)extractInfo.Value;
                 methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, method);
+            }
+        }
+
+        static void EvalFtn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            if (1 < exp.Arguments.Count)
+            {
+                EvalExpression(methodGen, exp.Arguments[0], state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
+            if (0 < state.ExtractInfoStack.Count)
+            {
+                var extractInfo = state.ExtractInfoStack.Pop();
+                var methodDecl = (IMethodDeclaration)extractInfo.Value;
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodDecl);
             }
         }
 

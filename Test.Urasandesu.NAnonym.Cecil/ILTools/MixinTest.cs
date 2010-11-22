@@ -15,6 +15,7 @@ using SR = System.Reflection;
 using Urasandesu.NAnonym.Cecil.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -129,6 +130,14 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                     null
                 );
             Assert.AreEquivalent(dynamicMethodCtorC, dynamicMethodCtorR, (x, y) => x.Equivalent(y));
+        }
+
+        [Test]
+        public void EquivalentTest1()
+        {
+            var funcC = typeof(Func<int, int>).ToTypeRef();
+            var funcR = typeof(Func<int, int>);
+            Assert.AreEquivalent(funcC, funcR, (x, y) => x.Equivalent(y));
         }
     }
 }

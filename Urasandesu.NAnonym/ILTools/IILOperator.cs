@@ -27,6 +27,7 @@ namespace Urasandesu.NAnonym.ILTools
         void Emit(OpCode opcode, string str);
         void Emit(OpCode opcode, Type cls);
         void Emit(OpCode opcode, IConstructorDeclaration constructorDecl);
+        void Emit(OpCode opcode, IMethodDeclaration methodDecl);
         void Emit(OpCode opcode, IParameterDeclaration parameterDecl);
         void Emit(OpCode opcode, IFieldDeclaration fieldDecl);
         void Emit(OpCode opcode, IPortableScopeItem scopeItem);

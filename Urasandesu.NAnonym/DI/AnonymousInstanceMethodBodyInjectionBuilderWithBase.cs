@@ -15,9 +15,9 @@ using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class AnonymousInstanceMethodBodyInjectionBuilder : MethodBodyInjectionBuilder
+    class AnonymousInstanceMethodBodyInjectionBuilderWithBase : MethodBodyInjectionBuilder
     {
-        public AnonymousInstanceMethodBodyInjectionBuilder(MethodBodyInjectionDefiner parentBodyDefiner)
+        public AnonymousInstanceMethodBodyInjectionBuilderWithBase(MethodBodyInjectionDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }
@@ -34,6 +34,7 @@ namespace Urasandesu.NAnonym.DI
             var cachedSettingFieldName = definer.CachedSettingName;
             var returnType = definer.ReturnType;
             var parameterTypes = definer.ParameterTypes;
+            var baseMethod = definer.BaseMethod;
 
             gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodFieldName)) == null));
             {
@@ -77,6 +78,9 @@ namespace Urasandesu.NAnonym.DI
                         case 3:
                             gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)4));
                             break;
+                        case 4:
+                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)5));
+                            break;
                         default:
                             throw new NotSupportedException();
                     }
@@ -92,7 +96,19 @@ namespace Urasandesu.NAnonym.DI
                                                         null,
                                                         parameterTypes,
                                                         null);
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodFieldName)), _.X(invoke), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+            var delegateForBaseConstructor = parameterTypes[0].GetConstructor(
+                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                                    null,
+                                                    new Type[] 
+                                                    { 
+                                                        typeof(Object), 
+                                                        typeof(IntPtr) 
+                                                    }, null);
+
+            var delegateForBase = default(object);
+            gen.Eval(_ => _.St(delegateForBase).As(_.New(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
+            var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(injectionMethod.Source.ParameterNames()).ToArray();
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodFieldName)), _.X(invoke), _.Ld(_.X(variableNames)))));
         }
     }
 }

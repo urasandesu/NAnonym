@@ -47,8 +47,11 @@
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
     <Compile Include="DI\ActionReference.cs" />
+    <Compile Include="DI\ActionWithBase.cs" />
     <Compile Include="DI\AnonymousInstanceMethodBodyInjectionBuilder.cs" />
+    <Compile Include="DI\AnonymousInstanceMethodBodyInjectionBuilderWithBase.cs" />
     <Compile Include="DI\AnonymousStaticMethodBodyInjectionBuilder.cs" />
+    <Compile Include="DI\AnonymousStaticMethodBodyInjectionBuilderWithBase.cs" />
     <Compile Include="DI\BodyInjection.cs" />
     <Compile Include="DI\BodyInjectionBuilder.cs" />
     <Compile Include="DI\BodyInjectionDefiner.cs" />
@@ -62,6 +65,7 @@
     <Compile Include="DI\DependencyField.cs" />
     <Compile Include="DI\DependencyMethod.cs" />
     <Compile Include="DI\FuncReference.cs" />
+    <Compile Include="DI\FuncWithBase.cs" />
     <Compile Include="DI\Injection.cs" />
     <Compile Include="DI\InjectionBuilder.cs" />
     <Compile Include="DI\InjectionDefiner.cs" />
@@ -85,11 +89,11 @@
     <Compile Include="DI\MethodInjection.cs" />
     <Compile Include="DI\MethodInjectionBuilder.cs" />
     <Compile Include="DI\MethodInjectionDefiner.cs" />
-    <Compile Include="DI\NewMethodType.cs" />
+    <Compile Include="DI\MethodBodyInjectionBuilderType.cs" />
     <Compile Include="DI\SetupMode.cs" />
     <Compile Include="DI\SetupModes.cs" />
-    <Compile Include="DI\TargetFieldInfo.cs" />
-    <Compile Include="DI\TargetMethodInfo.cs" />
+    <Compile Include="DI\InjectionFieldInfo.cs" />
+    <Compile Include="DI\InjectionMethodInfo.cs" />
     <Compile Include="ILTools\ManuallyDeserializable.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />

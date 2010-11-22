@@ -19,8 +19,8 @@ namespace Urasandesu.NAnonym.DI
     public abstract class LocalClass : DependencyClass
     {
         public static readonly string CacheFieldPrefix = "UND$<>0__Cached";
-        public LocalFieldInt Field(Expression<Func<int>> reference) { return new LocalFieldInt(this, reference); }
-        public LocalField<T> Field<T>(Expression<Func<T>> reference) { return new LocalField<T>(this, reference); }
+        public LocalFieldInt Field(Expression<Func<int>> methodReference) { return new LocalFieldInt(this, methodReference); }
+        public LocalField<T> Field<T>(Expression<Func<T>> methodReference) { return new LocalField<T>(this, methodReference); }
     }
 
     public sealed class LocalClass<TBase> : LocalClass
@@ -40,74 +40,74 @@ namespace Urasandesu.NAnonym.DI
             return null;
         }
 
-        public LocalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> reference)
+        public LocalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalFunc<TBase, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, TResult>(this, source);
         }
 
-        public LocalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> reference)
+        public LocalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalFunc<TBase, T, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T, TResult>(this, source);
         }
 
-        public LocalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> reference)
+        public LocalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalFunc<TBase, T1, T2, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, TResult>(this, source);
         }
 
-        public LocalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> reference)
+        public LocalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalFunc<TBase, T1, T2, T3, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
-        public LocalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> reference)
+        public LocalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalFunc<TBase, T1, T2, T3, T4, TResult>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
-        public LocalAction<TBase> Method(Expression<ActionReference<TBase>> reference)
+        public LocalAction<TBase> Method(Expression<ActionReference<TBase>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalAction<TBase>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase>(this, source);
         }
 
-        public LocalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> reference)
+        public LocalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalAction<TBase, T>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T>(this, source);
         }
 
-        public LocalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> reference)
+        public LocalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalAction<TBase, T1, T2>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2>(this, source);
         }
 
-        public LocalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> reference)
+        public LocalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalAction<TBase, T1, T2, T3>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2, T3>(this, source);
         }
 
-        public LocalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> reference)
+        public LocalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
         {
-            var method = DependencyUtil.ExtractMethod(reference);
-            var oldMethod = typeof(TBase).GetMethod(method);
-            return new LocalAction<TBase, T1, T2, T3, T4>(this, oldMethod);
+            var method = DependencyUtil.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new LocalAction<TBase, T1, T2, T3, T4>(this, source);
         }
 
 
@@ -138,10 +138,10 @@ namespace Urasandesu.NAnonym.DI
             }
 
 
-            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, TargetFieldInfoSet);
+            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, FieldSet);
             constructorInjection.Apply();
 
-            var methodInjection = new LocalMethodInjection(constructorInjection, TargetMethodInfoSet);
+            var methodInjection = new LocalMethodInjection(constructorInjection, MethodSet);
             methodInjection.Apply();
 
             createdType = localClassTypeBuilder.CreateType();

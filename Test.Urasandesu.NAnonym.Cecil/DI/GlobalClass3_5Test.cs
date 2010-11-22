@@ -9,13 +9,35 @@ using Test.Urasandesu.NAnonym.Etc;
 namespace Test.Urasandesu.NAnonym.Cecil.DI
 {
     [TestFixture]
-    public class GlobalClass3_2Test
+    public class GlobalClass3_5Test
     {
-        static GlobalClass3_2Test()
+        static GlobalClass3_5Test()
         {
             DependencyUtil.RollbackGlobal();
 
-            DependencyUtil.RegisterGlobal<GlobalClass3_2>();
+            DependencyUtil.RegisterGlobal<GlobalClass3_5>();
+            DependencyUtil.LoadGlobal();
+        }
+
+        [Test]
+        public void AddTest01()
+        {
+            var class3 = new Class3();
+
+            Assert.AreEqual(2, class3.Add(1, 1));
+            Assert.AreEqual(3, class3.Add(1, 1));
+            Assert.AreEqual(4, class3.Add(1, 1));
+        }
+    }
+
+    [TestFixture]
+    public class GlobalClass3_6Test
+    {
+        static GlobalClass3_6Test()
+        {
+            DependencyUtil.RollbackGlobal();
+
+            DependencyUtil.RegisterGlobal<GlobalClass3_6>();
             DependencyUtil.LoadGlobal();
         }
 
@@ -25,30 +47,6 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             var class3 = new Class3();
 
             Assert.AreEqual(4, class3.Add(1, 1));
-            Assert.AreEqual(6, class3.Add(1, 1));
-            Assert.AreEqual(8, class3.Add(1, 1));
-        }
-    }
-
-    [TestFixture]
-    public class GlobalClass3_7Test
-    {
-        static GlobalClass3_7Test()
-        {
-            DependencyUtil.RollbackGlobal();
-
-            DependencyUtil.RegisterGlobal<GlobalClass3_7>();
-            DependencyUtil.LoadGlobal();
-        }
-
-        [Test]
-        public void AddTest01()
-        {
-            var class3 = new Class3();
-
-            Assert.AreEqual(6, class3.Add(1, 1));
-            Assert.AreEqual(10, class3.Add(1, 1));
-            Assert.AreEqual(14, class3.Add(1, 1));
         }
     }
 }

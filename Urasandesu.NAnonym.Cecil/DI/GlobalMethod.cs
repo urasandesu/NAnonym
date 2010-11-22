@@ -1,171 +1,159 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using Urasandesu.NAnonym.ILTools;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using Urasandesu.NAnonym.Linq;
-using System.Linq.Expressions;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using SR = System.Reflection;
-using MC = Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools;
-using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym.DI;
-
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     public abstract class GlobalMethod
     {
         readonly GlobalClass globalClass;
-        readonly MethodInfo oldMethod;
+        readonly MethodInfo source;
 
-        public GlobalMethod(GlobalClass globalClass, MethodInfo oldMethod)
+        public GlobalMethod(GlobalClass globalClass, MethodInfo source)
         {
             this.globalClass = globalClass;
-            this.oldMethod = oldMethod;
+            this.source = source;
         }
 
         public GlobalClass IsReplacedBy(Delegate @delegate)
         {
-            globalClass.TargetMethodInfoSet.Add(new TargetMethodInfo(SetupModes.Replace, oldMethod, @delegate.Method, @delegate.GetType()));
+            globalClass.MethodSet.Add(new InjectionMethodInfo(SetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
             return globalClass;
         }
     }
 
     public class GlobalFunc<TBase, TResult> : GlobalMethod
     {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<TResult> newFunc)
+        public GlobalClass<TBase> IsReplacedBy(Func<TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newFunc);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
     
     public class GlobalFunc<TBase, T, TResult> : GlobalMethod
     {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T, TResult> newFunc)
+        public GlobalClass<TBase> IsReplacedBy(Func<T, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newFunc);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalFunc<TBase, T1, T2, TResult> : GlobalMethod
     {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, TResult> newFunc)
+        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newFunc);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+        }
+
+        public GlobalClass<TBase> IsReplacedBy(FuncWithBase<T1, T2, TResult> destination)
+        {
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalFunc<TBase, T1, T2, T3, TResult> : GlobalMethod
     {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, TResult> newFunc)
+        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newFunc);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalFunc<TBase, T1, T2, T3, T4, TResult> : GlobalMethod
     {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, T4, TResult> newFunc)
+        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, T4, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newFunc);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalAction<TBase> : GlobalMethod
     {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action newAction)
+        public GlobalClass<TBase> IsReplacedBy(Action destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newAction);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalAction<TBase, T> : GlobalMethod
     {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T> newAction)
+        public GlobalClass<TBase> IsReplacedBy(Action<T> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newAction);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalAction<TBase, T1, T2> : GlobalMethod
     {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2> newAction)
+        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newAction);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalAction<TBase, T1, T2, T3> : GlobalMethod
     {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3> newAction)
+        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newAction);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 
     public class GlobalAction<TBase, T1, T2, T3, T4> : GlobalMethod
     {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo oldMethod)
-            : base(globalClass, oldMethod)
+        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3, T4> newAction)
+        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3, T4> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)newAction);
+            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
     }
 }

@@ -52,6 +52,7 @@
     <Compile Include="GlobalClass3_2.cs" />
     <Compile Include="GlobalClass3_3.cs" />
     <Compile Include="GlobalClass3_4.cs" />
+    <Compile Include="GlobalClass3_5.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

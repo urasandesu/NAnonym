@@ -13,7 +13,10 @@ namespace Urasandesu.NAnonym.ILTools
         readonly MethodInfo DupAddOneInfo;
         readonly MethodInfo AddOneDupInfo;
         readonly MethodInfo SubOneDupInfo;
+        readonly MethodInfo NewInfo;
         readonly MethodInfo InvokeInfo;
+        readonly MethodInfo FtnInfo1;
+        readonly MethodInfo FtnInfo2;
         readonly MethodInfo IfInfo;
         readonly MethodInfo EndIfInfo;
         readonly MethodInfo EndInfo;
@@ -34,7 +37,10 @@ namespace Urasandesu.NAnonym.ILTools
             DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
             AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
             SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
-            InvokeInfo = TypeSavable.GetMethodInfo<object, MethodInfo, object[], object>(() => Invoke);    
+            NewInfo = TypeSavable.GetMethodInfo<ConstructorInfo, object, object>(() => New);
+            InvokeInfo = TypeSavable.GetMethodInfo<object, MethodInfo, object[], object>(() => Invoke);
+            FtnInfo1 = TypeSavable.GetMethodInfo<IMethodDeclaration, object>(() => Ftn);
+            FtnInfo2 = TypeSavable.GetMethodInfo<object, IMethodDeclaration, object>(() => Ftn);
             IfInfo = TypeSavable.GetMethodInfo<bool>(() => If);
             EndIfInfo = TypeSavable.GetMethodInfo(() => EndIf);
             EndInfo = TypeSavable.GetMethodInfo(() => End);
@@ -95,9 +101,19 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
+        public bool IsNew(MethodInfo target)
+        {
+            return NewInfo.Equivalent(target);
+        }
+
         public bool IsInvoke(MethodInfo target)
         {
             return target == InvokeInfo;
+        }
+
+        public bool IsFtn(MethodInfo target)
+        {
+            return FtnInfo1.Equivalent(target) || FtnInfo2.Equivalent(target);
         }
 
         public bool IsIf(MethodInfo target)
@@ -173,7 +189,22 @@ namespace Urasandesu.NAnonym.ILTools
             return default(T);
         }
 
+        public object New(ConstructorInfo constructor, object parameter)
+        {
+            return null;
+        }
+
         public object Invoke(object variable, MethodInfo method, object[] parameters)
+        {
+            return null;
+        }
+
+        public object Ftn(object variable, IMethodDeclaration methodDecl)
+        {
+            return null;
+        }
+
+        public object Ftn(IMethodDeclaration methodDecl)
         {
             return null;
         }

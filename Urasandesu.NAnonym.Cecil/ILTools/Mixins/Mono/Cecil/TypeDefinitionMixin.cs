@@ -492,15 +492,5 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
             var destination = new TypeDefinition(source.Namespace, source.Name, source.Attributes, source.BaseType);
             return destination;
         }
-
-        public static string GetFullName(this TypeDefinition source)
-        {
-            return source.FullName.Replace("/", "+");
-        }
-
-        public static string GetAssemblyQualifiedName(this TypeDefinition source)
-        {
-            return source.FullName + ", " + source.Module.Assembly.Name.FullName;
-        }
     }
 }

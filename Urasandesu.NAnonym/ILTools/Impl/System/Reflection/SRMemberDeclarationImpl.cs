@@ -15,6 +15,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.memberInfo = memberInfo;
         }
 
+        public MemberInfo MemberInfo { get { return memberInfo; } }
+
         #region IMemberDeclaration メンバ
 
         public object Source { get { throw new NotImplementedException(); } }

@@ -163,6 +163,12 @@ namespace Urasandesu.NAnonym.ILTools
             directives.Add(new SRDirectiveGeneratorImpl(opcode, constructorDecl));
         }
 
+        public void Emit(OpCode opcode, IMethodDeclaration methodDecl)
+        {
+            ilGenerator.Emit(opcode.ToClr(), ((SRMethodDeclarationImpl)methodDecl).MethodInfo);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, methodDecl));
+        }
+
         public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
         {
             ilGenerator.Emit(opcode.ToClr(), ((SRParameterDeclarationImpl)parameterDecl).Position);

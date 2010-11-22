@@ -60,6 +60,7 @@
     <Compile Include="DI\GlobalClass3_2Test.cs" />
     <Compile Include="DI\GlobalClass3_3Test.cs" />
     <Compile Include="DI\GlobalClass3_4Test.cs" />
+    <Compile Include="DI\GlobalClass3_5Test.cs" />
     <Compile Include="DI\GlobalClassTest.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="ILTools\MixinTest.cs" />

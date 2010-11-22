@@ -15,6 +15,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.methodInfo = methodInfo;
         }
 
+        public MethodInfo MethodInfo { get { return (MethodInfo)base.MethodBase; } }
+
         #region IMethodDeclaration メンバ
 
         public ITypeDeclaration ReturnType

@@ -20,14 +20,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
             {
                 case MetadataScopeType.AssemblyNameReference:
                     var assemblyNameReference = x.Scope as AssemblyNameReference;
-                    return assemblyNameReference.FullName == y.Assembly.FullName && x.FullName == y.FullName;
+                    return assemblyNameReference.FullName == y.Assembly.FullName && x.GetFullName() == y.FullName;
                 case MetadataScopeType.ModuleDefinition:
                     var moduleDefinition = x.Scope as ModuleDefinition;
-                    return moduleDefinition.Assembly.Name.FullName == y.Assembly.FullName && x.FullName == y.FullName;
+                    return moduleDefinition.Assembly.Name.FullName == y.Assembly.FullName && x.GetFullName() == y.FullName;
                 case MetadataScopeType.ModuleReference:
                 default:
                     var resolvedX = x.Resolve();
-                    return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.FullName.Replace("/", "+") == y.FullName;
+                    return resolvedX.Module.Assembly.Name.FullName == y.Assembly.FullName && resolvedX.GetFullName() == y.FullName;
             }
         }
 
@@ -56,7 +56,28 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
 
         public static Type ToType(this TypeReference source)
         {
-            return Type.GetType(source.Resolve().GetAssemblyQualifiedName());
+            return Type.GetType(source.GetAssemblyQualifiedName());
+        }
+
+        public static string GetFullName(this TypeReference source)
+        {
+            if (source.IsGenericInstance)
+            {
+                var genericSource = (GenericInstanceType)source;
+                return genericSource.FullName.Substring(0, genericSource.FullName.IndexOf('<')) + 
+                    string.Format("[{0}]", string.Join(",", genericSource.GenericArguments.Select(
+                        argType => string.Format("[{0}]", argType.GetAssemblyQualifiedName())).ToArray()));
+            }
+            else
+            {
+                return source.FullName.Replace("/", "+");
+            }
+        }
+
+        public static string GetAssemblyQualifiedName(this TypeReference source)
+        {
+            var resolvedSource = source.Resolve();
+            return resolvedSource.FullName + ", " + resolvedSource.Module.Assembly.Name.FullName;
         }
     }
 }

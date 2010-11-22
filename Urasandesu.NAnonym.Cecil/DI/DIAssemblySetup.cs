@@ -8,6 +8,8 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     public class DIAssemblySetup
     {
+        public const string DebugSymbolExtension = ".pdb";
+
         string codeBase;
         string location;
 
@@ -18,7 +20,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             {
                 codeBase = value;
                 CodeBaseLocalPath = new Uri(codeBase).LocalPath;
-                SymbolCodeBase = codeBase.WithoutExtension() + ".pdb";
+                SymbolCodeBase = codeBase.WithoutExtension() + DebugSymbolExtension;
                 SymbolCodeBaseLocalPath = new Uri(SymbolCodeBase).LocalPath;
             }
         }
@@ -29,7 +31,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
             set
             {
                 location = value;
-                SymbolLocation = location.WithoutExtension() + ".pdb";
+                SymbolLocation = location.WithoutExtension() + DebugSymbolExtension;
             }
         }
 

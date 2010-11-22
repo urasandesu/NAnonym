@@ -7,13 +7,13 @@ namespace Urasandesu.NAnonym.DI
 {
     class ConstructorInjection : Injection
     {
-        public HashSet<TargetFieldInfo> FieldSet { get; private set; }
+        public HashSet<InjectionFieldInfo> FieldSet { get; private set; }
         public virtual Type DeclaringType { get { throw new NotImplementedException(); } }
         public virtual string GetFieldNameForDeclaringType(Type declaringType)
         {
             throw new NotImplementedException();
         }
-        public ConstructorInjection(HashSet<TargetFieldInfo> fieldSet)
+        public ConstructorInjection(HashSet<InjectionFieldInfo> fieldSet)
         {
             FieldSet = fieldSet;
         }

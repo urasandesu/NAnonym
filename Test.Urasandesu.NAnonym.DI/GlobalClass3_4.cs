@@ -36,34 +36,4 @@ namespace Test.Urasandesu.NAnonym.Cecil.DI
             get { return typeof(Class3).Assembly.Location; }
         }
     }
-
-    public class GlobalClass3_5 : GlobalClass
-    {
-        protected override DependencyClass OnRegister()
-        {
-            var class3GlobalClass = new GlobalClass<Class3>();
-            class3GlobalClass.Setup(the =>
-            {
-                var simpleType1 = default(SimpleType1);
-                the.Field(() => simpleType1).As(_ => new SimpleType1());
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
-                (x, y) =>
-                {
-                    int result = simpleType1.Increase() + x + y;
-                    return result;
-                });
-            });
-            return class3GlobalClass;
-        }
-
-        protected override string CodeBase
-        {
-            get { return typeof(Class3).Assembly.CodeBase; }
-        }
-
-        protected override string Location
-        {
-            get { return typeof(Class3).Assembly.Location; }
-        }
-    }
 }

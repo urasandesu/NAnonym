@@ -148,6 +148,14 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             nanonymOperand = constructorDecl;
             clrOperand = ((SRConstructorDeclarationImpl)constructorDecl).ConstructorInfo;
         }
+
+        public SRDirectiveDeclarationImpl(OpCode opcode, IMethodDeclaration methodDecl)
+        {
+            this.opcode = opcode;
+            rawOperand = ((SRMethodDeclarationImpl)methodDecl).MethodInfo;
+            nanonymOperand = methodDecl;
+            clrOperand = ((SRMethodDeclarationImpl)methodDecl).MethodInfo;
+        }
         
         public SRDirectiveDeclarationImpl(OpCode opcode, IParameterDeclaration parameterDecl)
         {

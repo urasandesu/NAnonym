@@ -8,7 +8,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
     class GlobalConstructorInjectionDefiner : ConstructorInjectionDefiner
     {
         public new GlobalConstructorInjection Parent { get { return (GlobalConstructorInjection)base.Parent; } }
-        public FieldDefinition CachedConstructDef { get; private set; }
+        public FieldDefinition CachedConstructor { get; private set; }
 
         public GlobalConstructorInjectionDefiner(GlobalConstructorInjection parent)
             : base(parent)
@@ -17,30 +17,30 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public override void Create()
         {
-            CachedConstructDef = new FieldDefinition(
-                    GlobalClass.CacheFieldPrefix + "Construct", MC::FieldAttributes.Private | MC::FieldAttributes.Static, Parent.DeclaringTypeDef.Module.Import(typeof(Action)));
-            Parent.DeclaringTypeDef.Fields.Add(CachedConstructDef);
+            CachedConstructor = new FieldDefinition(
+                    GlobalClass.CacheFieldPrefix + "Constructor", MC::FieldAttributes.Private | MC::FieldAttributes.Static, Parent.DeclaringTypeDef.Module.Import(typeof(Action)));
+            Parent.DeclaringTypeDef.Fields.Add(CachedConstructor);
 
-            int targetFieldDeclaringTypeIndex = 0;
-            foreach (var targetFieldInfo in Parent.FieldSet)
+            int fieldForDeclaringTypeIndex = 0;
+            foreach (var injectionField in Parent.FieldSet)
             {
-                var targetField = TypeSavable.GetFieldInfo(targetFieldInfo.Reference);
-                if (!Parent.FieldsForDeclaringType.ContainsKey(targetField.DeclaringType))
+                var field = TypeSavable.GetFieldInfo(injectionField.FieldReference);
+                if (!Parent.FieldsForDeclaringType.ContainsKey(field.DeclaringType))
                 {
                     var fieldForDeclaringType = new FieldDefinition(
-                            GlobalClass.CacheFieldPrefix + "FieldForDeclaringType" + targetFieldDeclaringTypeIndex++,
-                            MC::FieldAttributes.Private, Parent.DeclaringTypeDef.Module.Import(targetField.DeclaringType));
+                            GlobalClass.CacheFieldPrefix + "FieldForDeclaringType" + fieldForDeclaringTypeIndex++,
+                            MC::FieldAttributes.Private, Parent.DeclaringTypeDef.Module.Import(field.DeclaringType));
                     Parent.DeclaringTypeDef.Fields.Add(fieldForDeclaringType);
 
-                    Parent.FieldsForDeclaringType.Add(targetField.DeclaringType, fieldForDeclaringType);
-                    InitializedDeclaringTypeConstructor.Add(targetField.DeclaringType, false);
+                    Parent.FieldsForDeclaringType.Add(field.DeclaringType, fieldForDeclaringType);
+                    InitializedDeclaringTypeConstructor.Add(field.DeclaringType, false);
                 }
             }
         }
 
-        public override string CachedConstructName
+        public override string CachedConstructorName
         {
-            get { return CachedConstructDef.Name; }
+            get { return CachedConstructor.Name; }
         }
     }
 }

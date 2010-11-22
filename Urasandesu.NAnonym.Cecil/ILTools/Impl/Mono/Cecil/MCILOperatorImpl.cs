@@ -169,6 +169,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             il.Emit(opcode.ToCecil(), ((MCConstructorDeclarationImpl)constructorDecl).ConstructorRef);
         }
 
+        public void Emit(UNI::OpCode opcode, UNI::IMethodDeclaration methodDecl)
+        {
+            il.Emit(opcode.ToCecil(), ((MCMethodDeclarationImpl)methodDecl).MethodDef);
+        }
+
         public void Emit(UNI::OpCode opcode, UNI::IParameterDeclaration parameterDecl)
         {
             il.Emit(opcode.ToCecil(), ((MCParameterGeneratorImpl)parameterDecl).ParameterDef);

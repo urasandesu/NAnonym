@@ -10,6 +10,7 @@ using Urasandesu.NAnonym.ILTools;
 using UNI = Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System.Collections.Generic;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools
 {

@@ -10,12 +10,12 @@ namespace Urasandesu.NAnonym.DI
         public new LocalConstructorInjection ConstructorInjection { get { return (LocalConstructorInjection)base.ConstructorInjection; } }
         public LocalMethodInjection(
             LocalConstructorInjection constructorInjection,
-            HashSet<TargetMethodInfo> methodSet)
+            HashSet<InjectionMethodInfo> methodSet)
             : base(constructorInjection, methodSet)
         {
         }
 
-        protected override void ApplyContent(TargetMethodInfo injectionMethod)
+        protected override void ApplyContent(InjectionMethodInfo injectionMethod)
         {
             var definer = LocalMethodInjectionDefiner.GetInstance(this, injectionMethod);
             definer.Create();

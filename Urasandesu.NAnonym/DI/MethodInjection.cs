@@ -8,14 +8,14 @@ namespace Urasandesu.NAnonym.DI
     class MethodInjection : Injection
     {
         public ConstructorInjection ConstructorInjection { get; private set; }
-        public HashSet<TargetMethodInfo> MethodSet { get; private set; }
-        int methodFieldSequence = 0;
-        public int IncreaseMethodFieldSequence()
+        public HashSet<InjectionMethodInfo> MethodSet { get; private set; }
+        int methodCacheSequence = 0;
+        public int IncreaseMethodCacheSequence()
         {
-            return methodFieldSequence++;
+            return methodCacheSequence++;
         }
-        protected int MethodFieldSequence { get { return methodFieldSequence; } }
-        public MethodInjection(ConstructorInjection constructorInjection, HashSet<TargetMethodInfo> methodSet)
+        protected int MethodCacheSequence { get { return methodCacheSequence; } }
+        public MethodInjection(ConstructorInjection constructorInjection, HashSet<InjectionMethodInfo> methodSet)
         {
             ConstructorInjection = constructorInjection;
             MethodSet = methodSet;
@@ -29,7 +29,7 @@ namespace Urasandesu.NAnonym.DI
             }
         }
 
-        protected virtual void ApplyContent(TargetMethodInfo injectionMethod)
+        protected virtual void ApplyContent(InjectionMethodInfo injectionMethod)
         {
             throw new NotImplementedException();
         }

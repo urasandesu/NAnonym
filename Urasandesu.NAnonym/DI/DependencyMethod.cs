@@ -7,17 +7,17 @@ namespace Urasandesu.NAnonym.DI
     public abstract class DependencyMethod
     {
         readonly DependencyClass @class;
-        readonly MethodInfo oldMethod;
+        readonly MethodInfo source;
 
-        public DependencyMethod(DependencyClass @class, MethodInfo oldMethod)
+        public DependencyMethod(DependencyClass @class, MethodInfo source)
         {
             this.@class = @class;
-            this.oldMethod = oldMethod;
+            this.source = source;
         }
 
         public DependencyClass IsImplementedBy(Delegate @delegate)
         {
-            @class.TargetMethodInfoSet.Add(new TargetMethodInfo(SetupModes.Implement, oldMethod, @delegate.Method, @delegate.GetType()));
+            @class.MethodSet.Add(new InjectionMethodInfo(SetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
     }

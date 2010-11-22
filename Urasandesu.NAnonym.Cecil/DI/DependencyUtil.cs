@@ -17,8 +17,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
     // MEMO: GlobalClass、LocalClass で使うユーティリティクラス的な存在になる？
     public class DependencyUtil : UND::DependencyUtil
     {
-        // TODO: このクラスに限らず、ユーザーに見せるクラスは「ある名前空間をインポートしたら重複してしまう」ことが無いようにする。
-        // TODO: 同じ機能を持たせる場合は、継承して使えるようにする。
         protected DependencyUtil()
             : base()
         {
@@ -27,26 +25,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
         static HashSet<GlobalClass> classSet = new HashSet<GlobalClass>();
         static AppDomain newDomain;
 
-        static HashSet<DIAssemblySetup> assemblySetupSet;
-
-
-        //public static void BeginEdit()
-        //{
-        //    var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
-        //    if (File.Exists(config.AssemblySetupSetPath))
-        //    {
-        //        CancelEdit();
-        //    }
-        //}
+        static HashSet<DIAssemblySetup> setupSet;
 
         public static void RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
             // ここで Inject したのは完全な書き換えが可能になる。DLL の場所を記憶しておく必要あり。
-            // TODO: GAC に登録されているものは無理げ。厳密名を持ってる Assembly も無理げ。
-            // TODO: 遅延署名される Assembly には対応できないと使えない。調査の必要あり。
             // ShadowCopyFiles を "true" にしているのは、デバッグ実行途中で無理やり止めた場合に Unload できないことがあったため。
-            // TODO: Rollback 機能。
-            // TODO: Setup 情報は一通りコピーして、ShadowCopyFiles だけ true にする方向で。
             var info = new AppDomainSetup();
             info.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
             info.ShadowCopyFiles = "true";
@@ -54,25 +38,25 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var classType = typeof(TGlobalClassType);
             var @class = (GlobalClass)newDomain.CreateInstanceAndUnwrap(classType.Assembly.FullName, classType.FullName);
             classSet.Add(@class);
-            if (assemblySetupSet == null)
+            if (setupSet == null)
             {
-                assemblySetupSet = new HashSet<DIAssemblySetup>();
+                setupSet = new HashSet<DIAssemblySetup>();
             }
-            assemblySetupSet.Add(new DIAssemblySetup(@class.CodeBase, @class.Location));
+            setupSet.Add(new DIAssemblySetup(@class.CodeBase, @class.Location));
             @class.Register();
         }
 
         public static void LoadGlobal()
         {
             var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
-            if (!File.Exists(config.AssemblySetupSetPath) && assemblySetupSet != null)
+            if (!File.Exists(config.AssemblySetupSetPath) && setupSet != null)
             {
                 if (!Directory.Exists(config.BackupDirectoryName))
                 {
                     Directory.CreateDirectory(config.BackupDirectoryName);
                 }
 
-                foreach (var assemblySetup in assemblySetupSet)
+                foreach (var assemblySetup in setupSet)
                 {
                     File.Copy(
                         assemblySetup.CodeBaseLocalPath, 
@@ -85,12 +69,12 @@ namespace Urasandesu.NAnonym.Cecil.DI
                         true);
                 }
 
-                using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (var setupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    var assemblySetupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
-                    var assemblySetupCollection = new DIAssemblySetupCollection();
-                    assemblySetupCollection.AssemblySetupList = assemblySetupSet.ToArray();
-                    assemblySetupSetSerializer.Serialize(assemblySetupSetStream, assemblySetupCollection);
+                    var setupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
+                    var setupCollection = new DIAssemblySetupCollection();
+                    setupCollection.AssemblySetupList = setupSet.ToArray();
+                    setupSetSerializer.Serialize(setupSetStream, setupCollection);
                 }
             }
 
@@ -107,14 +91,14 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var config = (DIConfigurationSection)ConfigurationManager.GetSection(DIConfigurationSection.Name);
             if (File.Exists(config.AssemblySetupSetPath))
             {
-                using (var assemblySetupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var setupSetStream = new FileStream(config.AssemblySetupSetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    var assemblySetupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
-                    var assemblySetupCollection = (DIAssemblySetupCollection)assemblySetupSetSerializer.Deserialize(assemblySetupSetStream);
-                    assemblySetupSet = new HashSet<DIAssemblySetup>(assemblySetupCollection.AssemblySetupList);
+                    var setupSetSerializer = new XmlSerializer(typeof(DIAssemblySetupCollection));
+                    var setupCollection = (DIAssemblySetupCollection)setupSetSerializer.Deserialize(setupSetStream);
+                    setupSet = new HashSet<DIAssemblySetup>(setupCollection.AssemblySetupList);
                 }
 
-                foreach (var assemblySetup in assemblySetupSet)
+                foreach (var assemblySetup in setupSet)
                 {
                     File.Copy(
                         Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)), 
@@ -127,7 +111,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
                         true);
                 }
 
-                assemblySetupSet = null;
+                setupSet = null;
                 File.Delete(config.AssemblySetupSetPath);
             }
         }

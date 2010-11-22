@@ -6,7 +6,7 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalImplementMethodInjectionDefiner : LocalMethodInjectionDefiner
     {
-        public LocalImplementMethodInjectionDefiner(LocalMethodInjection parent, TargetMethodInfo injectionMethod)
+        public LocalImplementMethodInjectionDefiner(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
         }
@@ -18,10 +18,10 @@ namespace Urasandesu.NAnonym.DI
                                                MethodAttributes.NewSlot |
                                                MethodAttributes.Virtual |
                                                MethodAttributes.Final;
-            var oldMethod = InjectionMethod.OldMethod;
-            var name = oldMethod.Name;
-            var returnType = oldMethod.ReturnType;
-            var parameterTypes = oldMethod.ParameterTypes();
+            var source = InjectionMethod.Source;
+            var name = source.Name;
+            var returnType = source.ReturnType;
+            var parameterTypes = source.ParameterTypes();
             return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
                 name, implement, CallingConventions.HasThis, returnType, parameterTypes);
         }

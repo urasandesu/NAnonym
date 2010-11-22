@@ -3,28 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
     class MethodInjectionDefiner : InjectionDefiner
     {
         public new MethodInjection Parent { get { return (MethodInjection)base.Parent; } }
-        public TargetMethodInfo InjectionMethod { get; private set; }
-        public virtual string CachedMethodFieldName { get { throw new NotImplementedException(); } }
-        public virtual string CachedSettingFieldName { get { throw new NotImplementedException(); } }
+        public InjectionMethodInfo InjectionMethod { get; private set; }
+
+        public virtual string CachedMethodName { get { throw new NotImplementedException(); } }
+        public virtual string CachedSettingName { get { throw new NotImplementedException(); } }
         public virtual Type OwnerType { get { throw new NotImplementedException(); } }
-        public virtual FieldInfo AnonymousStaticMethodCacheField { get { throw new NotImplementedException(); } }
-
-        public virtual Type ReturnType { get { return InjectionMethod.OldMethod.ReturnType; } }
-
+        public virtual FieldInfo AnonymousStaticMethodCache { get { throw new NotImplementedException(); } }
+        public virtual Type ReturnType { get { return InjectionMethod.Source.ReturnType; } }
         readonly Type[] parameterTypes;
         public virtual Type[] ParameterTypes { get { return parameterTypes; } }
+        public virtual IMethodDeclaration BaseMethod { get { throw new NotImplementedException(); } }
 
-        public MethodInjectionDefiner(MethodInjection parent, TargetMethodInfo injectionMethod)
+        public MethodInjectionDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent)
         {
             InjectionMethod = injectionMethod;
-            parameterTypes = InjectionMethod.OldMethod.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+            parameterTypes = InjectionMethod.Destination.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
         }
 
         public override void Create()

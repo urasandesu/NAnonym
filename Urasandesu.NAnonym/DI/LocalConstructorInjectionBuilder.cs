@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Linq.Expressions;
+﻿using System.Linq;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools;
-using SR = System.Reflection;
-using SRE = System.Reflection.Emit;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
@@ -31,7 +21,7 @@ namespace Urasandesu.NAnonym.DI
                 bodyInjection.Apply();
                 gen.Eval(_ => _.Base());
             },
-            new FieldBuilder[] { ParentDefiner.CachedConstructBuilder }.Concat(ParentDefiner.Parent.FieldsForDeclaringType.Values).ToArray());
+            new FieldBuilder[] { ParentDefiner.CachedConstructor }.Concat(ParentDefiner.Parent.FieldsForDeclaringType.Values).ToArray());
         }
     }
 }
