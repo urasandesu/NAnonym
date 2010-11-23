@@ -105,6 +105,31 @@ namespace Test.Urasandesu.NAnonym.ILTools
         }
 
 
+
+
+        [Test]
+        public void Test4()
+        {
+            var sample3LocalClass = new LocalClass<Sample3>();
+            sample3LocalClass.Setup(
+            the =>
+            {
+                the.Method<int, int, int>(_ => _.Add).IsOverridedBy(
+                (base_Add, x, y) =>
+                {
+                    return base_Add(x, y) + x + y;
+                });
+            });
+
+            DependencyUtil.RegisterLocal(sample3LocalClass);
+            DependencyUtil.LoadLocal();
+
+            var sample3 = sample3LocalClass.New();
+
+            Assert.AreEqual(4, sample3.Add(1, 1));
+        }
+
+
         //[Test]
         //public void Hoge()
         //{

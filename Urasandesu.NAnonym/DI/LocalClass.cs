@@ -134,7 +134,7 @@ namespace Urasandesu.NAnonym.DI
             }
             else
             {
-                throw new NotImplementedException();
+                localClassTypeBuilder.SetParent(typeof(TBase));
             }
 
 

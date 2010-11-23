@@ -20,5 +20,11 @@ namespace Urasandesu.NAnonym.DI
             @class.MethodSet.Add(new InjectionMethodInfo(SetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
+
+        public DependencyClass IsOverridedBy(Delegate @delegate)
+        {
+            @class.MethodSet.Add(new InjectionMethodInfo(SetupModes.Override, source, @delegate.Method, @delegate.GetType()));
+            return @class;
+        }
     }
 }

@@ -83,6 +83,7 @@
     <Compile Include="DI\LocalMethodInjection.cs" />
     <Compile Include="DI\LocalMethodInjectionBuilder.cs" />
     <Compile Include="DI\LocalMethodInjectionDefiner.cs" />
+    <Compile Include="DI\LocalOverrideMethodInjectionDefiner.cs" />
     <Compile Include="DI\MethodBodyInjection.cs" />
     <Compile Include="DI\MethodBodyInjectionBuilder.cs" />
     <Compile Include="DI\MethodBodyInjectionDefiner.cs" />

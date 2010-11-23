@@ -49,6 +49,11 @@ namespace Urasandesu.NAnonym.DI
         {
             return (LocalClass<TBase>)IsImplementedBy((Delegate)destination);
         }
+
+        public LocalClass<TBase> IsOverridedBy(FuncWithBase<T1, T2, TResult> destination)
+        {
+            return (LocalClass<TBase>)IsOverridedBy((Delegate)destination);
+        }
     }
 
     public class LocalFunc<TBase, T1, T2, T3, TResult> : LocalMethod

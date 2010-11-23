@@ -16,9 +16,17 @@ namespace Urasandesu.NAnonym.DI
         public static MethodBodyInjectionBuilder GetInstance(LocalMethodBodyInjectionDefiner parentBodyDefiner)
         {
             var injectionMethod = parentBodyDefiner.ParentBody.ParentBuilder.ParentDefiner.InjectionMethod;
-            if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousInstance) == MethodBodyInjectionBuilderType.AnonymousInstance)
+            if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousInstanceWithBase) == MethodBodyInjectionBuilderType.AnonymousInstanceWithBase)
+            {
+                return new AnonymousInstanceMethodBodyInjectionBuilderWithBase(parentBodyDefiner);
+            }
+            else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousInstance) == MethodBodyInjectionBuilderType.AnonymousInstance)
             {
                 return new AnonymousInstanceMethodBodyInjectionBuilder(parentBodyDefiner);
+            }
+            else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousStaticWithBase) == MethodBodyInjectionBuilderType.AnonymousStaticWithBase)
+            {
+                return new AnonymousStaticMethodBodyInjectionBuilderWithBase(parentBodyDefiner);
             }
             else if ((injectionMethod.DestinationType & MethodBodyInjectionBuilderType.AnonymousStatic) == MethodBodyInjectionBuilderType.AnonymousStatic)
             {

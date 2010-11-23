@@ -1,5 +1,5 @@
 // TODO: ソースファイル全てに Copyright を記述。
-// TODO: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
+// TODO: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
@@ -12,8 +12,8 @@
 
 
 
-// DOING: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（LocalClass）。
 
+// DOING: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
 
 
 
@@ -56,3 +56,4 @@
 // DONE: LocalClass、GlobalClass のコンストラクト処理を共通化。
 // DONE: コンストラクト処理共通化で作成した枠組みを使い、メソッド注入処理を再共通化。
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（GlobalClass）。
+// DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（LocalClass）。

@@ -33,7 +33,7 @@ namespace Urasandesu.NAnonym.DI
         {
             if (injectionMethod.Mode == SetupModes.Override)
             {
-                throw new NotImplementedException();
+                return new LocalOverrideMethodInjectionDefiner(parent, injectionMethod);
             }
             else if (injectionMethod.Mode == SetupModes.Implement)
             {
