@@ -3,32 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     class SRMemberDeclarationImpl : ManuallyDeserializable, IMemberDeclaration
     {
-        readonly MemberInfo memberInfo;
+        readonly object source;
+
         public SRMemberDeclarationImpl(MemberInfo memberInfo)
             : base(true)
         {
-            this.memberInfo = memberInfo;
+            this.source = memberInfo;
         }
 
-        public MemberInfo MemberInfo { get { return memberInfo; } }
+        internal MemberInfo Source { get { return (MemberInfo)((IMemberDeclaration)this).Source; } }
 
-        #region IMemberDeclaration メンバ
-
-        public object Source { get { throw new NotImplementedException(); } }
+        object IMemberDeclaration.Source { get { return source; } }
 
         public string Name
         {
-            get { return memberInfo.Name; }
+            get { return Source.Name; }
         }
 
-        #endregion
-
-        protected override void OnDeserializedManually(global::System.Runtime.Serialization.StreamingContext context)
+        protected override void OnDeserializedManually(StreamingContext context)
         {
             throw new NotImplementedException();
         }

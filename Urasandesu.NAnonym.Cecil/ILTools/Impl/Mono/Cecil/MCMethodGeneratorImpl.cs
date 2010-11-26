@@ -93,6 +93,21 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             base.OnDeserializedManually(context);
             Initialize(MethodDef);
         }
+
+        #region IMethodBaseGenerator メンバ
+
+
+        public IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IParameterGenerator AddParameter(int position, System.Reflection.ParameterAttributes attributes, string parameterName)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 
     enum ILEmitMode

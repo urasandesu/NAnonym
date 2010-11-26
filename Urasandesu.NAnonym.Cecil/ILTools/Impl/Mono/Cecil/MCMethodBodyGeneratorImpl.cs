@@ -46,5 +46,15 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { return directives; }
         }
+
+        #region IMethodBodyGenerator メンバ
+
+
+        public ILocalGenerator AddLocal(ILocalGenerator localGen)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

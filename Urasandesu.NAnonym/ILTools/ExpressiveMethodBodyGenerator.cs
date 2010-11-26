@@ -1051,5 +1051,30 @@ namespace Urasandesu.NAnonym.ILTools
 
             return dummyMethod.Body.Directives;
         }
+
+        #region IMethodBodyGenerator ÉÅÉìÉo
+
+
+        public ILocalGenerator AddLocal(string name, Type localType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ILocalGenerator AddLocal(Type localType)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IMethodBodyGenerator ÉÅÉìÉo
+
+
+        public ILocalGenerator AddLocal(ILocalGenerator localGen)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

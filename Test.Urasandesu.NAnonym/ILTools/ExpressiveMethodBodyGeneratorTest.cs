@@ -362,5 +362,71 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 Assert.AreEqual("Parameter = aiueo, FieldValue = 10", message);
             });
         }
+
+
+
+        [Test]
+        public void EmitTest07()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(tempFileName));
+                var tempAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(tempAssemblyName, AssemblyBuilderAccess.Run);
+                var tempModule = tempAssemblyBuilder.DefineDynamicModule(tempAssemblyName.Name);
+
+                var emitTest07TypeGen = tempModule.AddType(tempModule.Name + "." + MethodBase.GetCurrentMethod().Name);
+                emitTest07TypeGen.AddInterfaceImplementation(typeof(ISample2));
+
+                int fieldValue = default(int);
+
+                var fieldValueFieldGen = emitTest07TypeGen.AddField(TypeSavable.GetName(() => fieldValue), typeof(int), FieldAttributes.Private);
+
+                var ctorConstructorGen = 
+                    emitTest07TypeGen.AddConstructor(
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.SpecialName |
+                        SR::MethodAttributes.RTSpecialName,
+                        CallingConventions.Standard,
+                        new Type[] { });
+                ctorConstructorGen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                    gen.Eval(_ => _.St(fieldValue).As(10));
+                });
+
+
+                var sample2 = default(ISample2);
+
+                var executeMethodGen = 
+                    emitTest07TypeGen.AddMethod(
+                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        SR::MethodAttributes.Public |
+                        SR::MethodAttributes.HideBySig |
+                        SR::MethodAttributes.NewSlot |
+                        SR::MethodAttributes.Virtual |
+                        SR::MethodAttributes.Final,
+                        CallingConventions.HasThis,
+                        typeof(string),
+                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                var valueParameterGen = executeMethodGen.AddParameter(1, ParameterAttributes.In, valueParameterName);
+                executeMethodGen.ExpressBody(
+                gen =>
+                {
+                    var stringBuilder = default(StringBuilder);
+                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(_.X(valueParameterName)), fieldValue));
+                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                });
+
+                var emitTest07 = emitTest07TypeGen.CreateType();
+                var instance = (ISample2)Activator.CreateInstance(emitTest07);
+
+                string message = instance.Print("aiueo");
+                Assert.AreEqual("Parameter = aiueo, FieldValue = 10", message);
+            });
+        }
     }
 }

@@ -14,5 +14,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             this.fieldBuilder = fieldBuilder;
         }
+
+        internal FieldBuilder FieldBuilder { get { return (FieldBuilder)base.FieldInfo; } }
+
     }
 }

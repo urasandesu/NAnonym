@@ -13,6 +13,7 @@
 
 
 
+// DOING: Urasandesu.NAnonym.ILTools 以下の共通 I/F を拡張。Field や Parameter へのアクセス方法を統一。
 // DOING: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
 
 

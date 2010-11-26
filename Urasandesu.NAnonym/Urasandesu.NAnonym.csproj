@@ -95,6 +95,8 @@
     <Compile Include="DI\SetupModes.cs" />
     <Compile Include="DI\InjectionFieldInfo.cs" />
     <Compile Include="DI\InjectionMethodInfo.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
     <Compile Include="ILTools\ManuallyDeserializable.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />
@@ -159,6 +161,7 @@
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\ConstructorBuilderMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\Reflection\Emit\ModuleBuilderMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\Emit\OpCodeMixin.cs" />
     <Compile Include="ILTools\StoreExpressible.cs" />
     <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />

@@ -12,13 +12,13 @@ namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit
     {
         public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(dynamicMethod));
+            var gen = new ExpressiveMethodBodyGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod));
             gen.ExpressBodyEnd(expression);
         }
 
         public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression, ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(dynamicMethod, parameterBuilders));
+            var gen = new ExpressiveMethodBodyGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod, parameterBuilders));
             gen.ExpressBodyEnd(expression);
         }
     }

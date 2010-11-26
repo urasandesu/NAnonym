@@ -42,5 +42,15 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                 Initialize(memberRef);
             }
         }
+
+        #region IMemberDeclaration メンバ
+
+
+        public object Source
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }

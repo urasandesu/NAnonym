@@ -7,7 +7,7 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
-    public static partial class MethodInfoMixin
+    public static class MethodInfoMixin
     {
         public static BindingFlags ExportBinding(this MethodInfo methodInfo)
         {

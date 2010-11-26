@@ -68,5 +68,30 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         }
 
         #endregion
+
+        #region ITypeGenerator メンバ
+
+
+        public IMethodBaseGenerator AddMethod(string name, System.Reflection.MethodAttributes attributes, System.Reflection.CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITypeGenerator AddInterfaceImplementation(Type interfaceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IConstructorGenerator AddConstructor(System.Reflection.MethodAttributes attributes, System.Reflection.CallingConventions callingConvention, Type[] parameterTypes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Type CreateType()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

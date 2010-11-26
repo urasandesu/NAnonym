@@ -9,38 +9,32 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
-    class SRMethodGeneratorImpl : SRMethodDeclarationImpl, IMethodGenerator, ISRMethodBaseGenerator
+    class SRDynamicMethodGeneratorImpl : SRMethodDeclarationImpl, IMethodGenerator, ISRMethodBaseGenerator
     {
         SRMethodBaseGeneratorImpl methodBaseGen;
 
-        public SRMethodGeneratorImpl(MethodBuilder methodBuilder)
-            : this(methodBuilder, new ParameterBuilder[] { }, new FieldBuilder[] { })
+        public SRDynamicMethodGeneratorImpl(DynamicMethod dynamicMethod)
+            : this(dynamicMethod, new ParameterBuilder[] { }, new FieldBuilder[] { })
         {
         }
 
-        public SRMethodGeneratorImpl(MethodBuilder methodBuilder, ParameterBuilder[] parameterBuilders)
-            : this(methodBuilder, parameterBuilders, new FieldBuilder[] { })
+        public SRDynamicMethodGeneratorImpl(DynamicMethod dynamicMethod, ParameterBuilder[] parameterBuilders)
+            : this(dynamicMethod, parameterBuilders, new FieldBuilder[] { })
         {
         }
 
-        public SRMethodGeneratorImpl(MethodBuilder methodBuilder, FieldBuilder[] fieldBuilders)
-            : this(methodBuilder, new ParameterBuilder[] { }, fieldBuilders)
+        public SRDynamicMethodGeneratorImpl(DynamicMethod dynamicMethod, FieldBuilder[] fieldBuilders)
+            : this(dynamicMethod, new ParameterBuilder[] { }, fieldBuilders)
         {
         }
 
-        public SRMethodGeneratorImpl(MethodBuilder methodBuilder, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
-            : base(methodBuilder)
+        public SRDynamicMethodGeneratorImpl(DynamicMethod dynamicMethod, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
+            : base(dynamicMethod)
         {
-            methodBaseGen = new SRMethodBaseGeneratorImpl(this, methodBuilder, parameterBuilders, fieldBuilders);
+            this.methodBaseGen = new SRMethodBaseGeneratorImpl(this, dynamicMethod, parameterBuilders, fieldBuilders);
         }
 
-        public SRMethodGeneratorImpl(ITypeGenerator declaringTypeGen, MethodBuilder methodBuilder)
-            : base(methodBuilder)
-        {
-            methodBaseGen = new SRMethodBaseGeneratorImpl(declaringTypeGen, this, methodBuilder);
-        }
-
-        internal new MethodBuilder Source { get { return (MethodBuilder)base.Source; } }
+        internal new DynamicMethod Source { get { return (DynamicMethod)base.Source; } }
 
         public new ITypeGenerator ReturnType
         {

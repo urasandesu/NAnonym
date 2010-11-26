@@ -10,31 +10,13 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     sealed class SRMethodBodyGeneratorImpl : SRMethodBodyDeclarationImpl, IMethodBodyGenerator
     {
-        // TODO: SR ～、MC ～ がメンバに持つ変数の型は、無理にインターフェースにする必要はない。
-
-        ConstructorBuilder constructorBuilder;
-        DynamicMethod dynamicMethod;
-        MethodBuilder methodBuilder;
         SRILOperatorImpl il;
 
         ReadOnlyCollection<ILocalGenerator> readonlyLocalGens;
-        
-        public SRMethodBodyGeneratorImpl(ConstructorBuilder constructorBuilder)
-        {
-            this.constructorBuilder = constructorBuilder;
-            Initialize(new SRILOperatorImpl(constructorBuilder.GetILGenerator(), this));
-        }
 
-        public SRMethodBodyGeneratorImpl(DynamicMethod dynamicMethod)
+        public SRMethodBodyGeneratorImpl(ISRMethodBaseGenerator methodBodyGen)
         {
-            this.dynamicMethod = dynamicMethod;
-            Initialize(new SRILOperatorImpl(dynamicMethod.GetILGenerator(), this));
-        }
-
-        public SRMethodBodyGeneratorImpl(MethodBuilder methodBuilder)
-        {
-            this.methodBuilder = methodBuilder;
-            Initialize(new SRILOperatorImpl(methodBuilder.GetILGenerator(), this));
+            Initialize(new SRILOperatorImpl(methodBodyGen.GetILGenerator(), this));
         }
 
         void Initialize(SRILOperatorImpl il)
@@ -58,5 +40,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         internal List<SRLocalGeneratorImpl> LocalGens { get; private set; }
+
+        public ILocalGenerator AddLocal(ILocalGenerator localGen)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

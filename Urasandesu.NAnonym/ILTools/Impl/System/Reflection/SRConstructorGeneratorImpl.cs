@@ -6,19 +6,14 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.ObjectModel;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     // NOTE: Method や Constructor は Declaration と Generator が一段離れるイメージ。
-    sealed class SRConstructorGeneratorImpl : SRConstructorDeclarationImpl, IConstructorGenerator
+    sealed class SRConstructorGeneratorImpl : SRConstructorDeclarationImpl, IConstructorGenerator, ISRMethodBaseGenerator
     {
-        readonly ConstructorBuilder constructorBuilder;
-
-        readonly IMethodBodyGenerator bodyGen;
-        readonly ITypeGenerator declaringTypeGen;
-
-        List<ParameterBuilder> parameterBuilders;
-        ReadOnlyCollection<IParameterGenerator> parameters;
+        SRMethodBaseGeneratorImpl methodGen;
 
         public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder)
             : this(constructorBuilder, new ParameterBuilder[] { }, new FieldBuilder[] { })
@@ -38,44 +33,61 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         public SRConstructorGeneratorImpl(ConstructorBuilder constructorBuilder, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
             : base(constructorBuilder)
         {
-            this.constructorBuilder = constructorBuilder;
-            bodyGen = new SRMethodBodyGeneratorImpl(constructorBuilder);
-            this.parameterBuilders = new List<ParameterBuilder>(parameterBuilders);
-            parameters = new ReadOnlyCollection<IParameterGenerator>(
-                this.parameterBuilders.TransformEnumerateOnly(parameterBuilder => (IParameterGenerator)new SRParameterGeneratorImpl(parameterBuilder)));
-            var declaringTypeBuilder = constructorBuilder.DeclaringType as TypeBuilder;
-            declaringTypeGen = declaringTypeBuilder == null ? null : new SRTypeGeneratorImpl(declaringTypeBuilder, fieldBuilders);
+            this.methodGen = new SRMethodBaseGeneratorImpl(this, constructorBuilder, parameterBuilders, fieldBuilders);
         }
+
+        public SRConstructorGeneratorImpl(ITypeGenerator declaringTypeGen, ConstructorBuilder constructorBuilder)
+            : base(constructorBuilder)
+        {
+            this.methodGen = new SRMethodBaseGeneratorImpl(declaringTypeGen, this, constructorBuilder);
+        }
+
+        internal new ConstructorBuilder Source { get { return (ConstructorBuilder)base.Source; } }
 
         public new IMethodBodyGenerator Body
         {
-            get { return bodyGen; }
+            get { return methodGen.Body; }
         }
-
-        #region IMethodBaseGenerator メンバ
 
         public new ReadOnlyCollection<IParameterGenerator> Parameters
         {
-            get { return parameters; }
+            get { return methodGen.Parameters; }
         }
 
         public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
         {
-            throw new NotImplementedException();
+            return methodGen.AddPortableScopeItem(fieldInfo);
         }
 
         public new ITypeGenerator DeclaringType
         {
-            get { return declaringTypeGen; }
+            get { return methodGen.DeclaringType; }
         }
 
         public IMethodBaseGenerator CreateInstance(string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
-            throw new NotImplementedException();
+            return methodGen.CreateInstance(name, attributes, returnType, parameterTypes);
         }
 
-        #endregion
+        public IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression)
+        {
+            methodGen.ExpressBody(bodyExpression);
+            return this;
+        }
+
+        public IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName)
+        {
+            return methodGen.AddParameter(position, attributes, parameterName);
+        }
+
+        public ILGenerator GetILGenerator()
+        {
+            return Source.GetILGenerator();
+        }
+
+        public ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
+        {
+            return Source.DefineParameter(position, attributes, parameterName);
+        }
     }
-
-
 }
