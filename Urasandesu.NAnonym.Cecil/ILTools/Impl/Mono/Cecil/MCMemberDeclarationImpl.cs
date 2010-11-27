@@ -5,11 +5,12 @@ using System.Text;
 using Mono.Cecil;
 using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCMemberDeclarationImpl : UN::ILTools.ManuallyDeserializable, UN::ILTools.IMemberDeclaration
+    class MCMemberDeclarationImpl : UNI::ManuallyDeserializable, UNI::IMemberDeclaration
     {
         [NonSerialized]
         MemberReference memberRef;
@@ -25,14 +26,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.memberRef = memberRef;
         }
 
-        #region IMemberDeclaration メンバ
-
         public string Name
         {
             get { return memberRef.Name; }
         }
-
-        #endregion
 
         protected override void OnDeserializedManually(StreamingContext context)
         {
@@ -43,14 +40,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             }
         }
 
-        #region IMemberDeclaration メンバ
-
-
         public object Source
         {
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
     }
 }

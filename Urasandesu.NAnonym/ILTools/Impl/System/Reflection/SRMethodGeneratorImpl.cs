@@ -92,5 +92,15 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             return Source.DefineParameter(position, attributes, parameterName);
         }
+
+        #region IMethodBaseGenerator メンバ
+
+
+        public PortableScope CarryPortableScope()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

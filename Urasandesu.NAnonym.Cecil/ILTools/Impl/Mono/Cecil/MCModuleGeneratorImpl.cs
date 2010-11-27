@@ -27,8 +27,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.moduleDef = moduleDef;
         }
 
-        #region IModuleGenerator メンバ
-
         public new IAssemblyGenerator Assembly
         {
             get { return base.Assembly as IAssemblyGenerator; }
@@ -43,8 +41,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             moduleDef.Types.Add(typeDef);
             return new MCTypeGeneratorImpl(typeDef);
         }
-
-        #endregion
 
         protected override void OnDeserializedManually(StreamingContext context)
         {

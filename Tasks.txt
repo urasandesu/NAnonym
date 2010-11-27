@@ -1,3 +1,4 @@
+// TODO: Mixin 定義名前空間を合併。
 // TODO: ソースファイル全てに Copyright を記述。
 // TODO: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
@@ -13,7 +14,6 @@
 
 
 
-// DOING: Urasandesu.NAnonym.ILTools 以下の共通 I/F を拡張。Field や Parameter へのアクセス方法を統一。
 // DOING: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
 
 
@@ -58,3 +58,4 @@
 // DONE: コンストラクト処理共通化で作成した枠組みを使い、メソッド注入処理を再共通化。
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（GlobalClass）。
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（LocalClass）。
+// DONE: Urasandesu.NAnonym.ILTools 以下の共通 I/F を拡張。Field や Parameter へのアクセス方法を統一。

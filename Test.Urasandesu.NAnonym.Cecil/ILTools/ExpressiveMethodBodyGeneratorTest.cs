@@ -1178,5 +1178,71 @@ Parameter[1] = IntPtr method
                 return testInfo;
             }));
         }
+
+
+
+
+        [Test]
+        public void EmitTest22()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyNameDef =
+                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef =
+                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var emitTest22Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest22");
+
+                var ctorGen = 
+                    emitTest22Gen.AddConstructor(
+                        SR::MethodAttributes.Public | 
+                        SR::MethodAttributes.HideBySig | 
+                        SR::MethodAttributes.SpecialName | 
+                        SR::MethodAttributes.RTSpecialName, 
+                        CallingConventions.HasThis, 
+                        Type.EmptyTypes);
+                ctorGen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+                var action2SameDomain1Gen = 
+                    emitTest22Gen.AddMethod(
+                        "Action2SameDomain1", 
+                        SR::MethodAttributes.Public | 
+                        SR::MethodAttributes.HideBySig, 
+                        typeof(void), 
+                        Type.EmptyTypes);
+                int i = 10;
+                double d = 10.0d;
+                action2SameDomain1Gen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => TestHelper.ThrowException(i * (int)d));
+                });
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+                var emitTest22 = assembly.GetType(emitTest22Gen.FullName);
+                var instance = Activator.CreateInstance(emitTest22);
+                var action2SameDomain1 = emitTest22.GetMethod(action2SameDomain1Gen.Name);
+                var scope = action2SameDomain1Gen.CarryPortableScope();
+                scope.SetValue(() => i, i);
+                scope.SetValue(() => d, d);
+                scope.DockWith(instance);
+                try
+                {
+                    action2SameDomain1.Invoke(instance, null);
+                    Assert.Fail();
+                }
+                catch (Exception e)
+                {
+                    Assert.AreEqual("100", e.InnerException.Message);
+                }
+            });
+        }
     }
 }

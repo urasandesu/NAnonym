@@ -93,18 +93,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             base.OnDeserializedManually(context);
         }
 
-        #region ITypeDeclaration メンバ
-
-
         public IFieldDeclaration[] GetFields(BindingFlags attr)
         {
             return typeDef.GetFields(attr).Select(fieldDef => (IFieldDeclaration)(MCFieldGeneratorImpl)fieldDef).ToArray();
         }
-
-        #endregion
-
-        #region ITypeDeclaration メンバ
-
 
         public IFieldDeclaration GetField(string name, BindingFlags bindingAttr)
         {
@@ -112,17 +104,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return fieldDef == null ? null : new MCFieldGeneratorImpl(fieldDef);
         }
 
-        #endregion
-
-        #region ITypeDeclaration メンバ
-
-
         public ReadOnlyCollection<IFieldDeclaration> Fields
         {
             get { return fields; }
         }
 
-        #endregion
     }
 
 }

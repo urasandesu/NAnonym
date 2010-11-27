@@ -104,5 +104,10 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             parameterBuilders.Add(parameterBuilder);
             return parameterGen;
         }
+
+        public PortableScope CarryPortableScope()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

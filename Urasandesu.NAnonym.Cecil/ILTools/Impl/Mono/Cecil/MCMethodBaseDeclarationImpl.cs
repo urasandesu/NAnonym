@@ -9,12 +9,13 @@ using System.Runtime.Serialization;
 using MC = Mono.Cecil;
 using System.Reflection;
 using Mono.Cecil.Cil;
-using Urasandesu.NAnonym.ILTools;
+using UNI = Urasandesu.NAnonym.ILTools;
+using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCMethodBaseDeclarationImpl : MCMemberDeclarationImpl, IMethodBaseDeclaration
+    class MCMethodBaseDeclarationImpl : MCMemberDeclarationImpl, UNI::IMethodBaseDeclaration
     {
         [NonSerialized]
         MethodReference methodRef;
@@ -25,12 +26,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         MC::MethodAttributes methodAttr;
         string[] parameterTypeFullNames;
 
-        ITypeDeclaration declaringTypeDecl;
+        UNI::ITypeDeclaration declaringTypeDecl;
 
         [NonSerialized]
-        IMethodBodyDeclaration bodyDecl;
+        UNI::IMethodBodyDeclaration bodyDecl;
         [NonSerialized]
-        ReadOnlyCollection<IParameterDeclaration> parameters;
+        ReadOnlyCollection<UNI::IParameterDeclaration> parameters;
 
         public MCMethodBaseDeclarationImpl(MethodReference methodRef)
             : base(methodRef)
@@ -53,70 +54,37 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             parameterTypeFullNames = methodDef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
             bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body, mode, target);
             declaringTypeDecl = new MCTypeGeneratorImpl(methodRef.DeclaringType.Resolve());
-            parameters = new ReadOnlyCollection<IParameterDeclaration>(
-                methodRef.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
+            parameters = new ReadOnlyCollection<UNI::IParameterDeclaration>(
+                methodRef.Parameters.TransformEnumerateOnly(parameter => (UNI::IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
         }
 
-        #region IMethodBaseDeclaration メンバ
 
-        public IMethodBodyDeclaration Body
+        public UNI::IMethodBodyDeclaration Body
         {
             get { return bodyDecl; }
         }
 
-        public ITypeDeclaration DeclaringType
+        public UNI::ITypeDeclaration DeclaringType
         {
             get { return declaringTypeDecl; }
         }
 
-        public ReadOnlyCollection<IParameterDeclaration> Parameters
+        public ReadOnlyCollection<UNI::IParameterDeclaration> Parameters
         {
             get { return parameters; }
         }
 
-        public IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value)
+        public UNI::IPortableScopeItem NewPortableScopeItem(UNI::PortableScopeItemRawData itemRawData, object value)
         {
             var fieldDef = MethodDef.DeclaringType.Fields.First(field => field.Name == itemRawData.FieldName);
             var variableDef = MethodDef.Body.Variables.First(variable => variable.Index == itemRawData.LocalIndex);
             return new MCPortableScopeItemImpl(itemRawData, value, fieldDef, variableDef);
         }
 
-        #endregion
 
         internal MethodDefinition MethodDef { get { return methodDef; } }
-        protected IMethodBodyDeclaration BodyDecl { get { return bodyDecl; } }
-        protected ITypeDeclaration DeclaringTypeDecl { get { return declaringTypeDecl; } }
-
-        //[OnDeserialized]
-        //internal new void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        var declaringTypeGen = (MCTypeGeneratorImpl)this.declaringTypeDecl;
-        //        declaringTypeGen.OnDeserialized(context);
-        //        var typeDef = (TypeDefinition)declaringTypeGen;
-        //        Initialize(typeDef.Methods.First(
-        //            method =>
-        //                method.Name == methodName &&
-        //                method.Attributes == methodAttr &&
-        //                method.Parameters.Select(parameter => parameter.ParameterType.FullName).Equivalent(parameterTypeFullNames)));
-        //        base.OnDeserialized(new StreamingContext(context.State, methodRef));
-        //    }
-        //}
-
-        //public override void OnDeserialization(object sender)
-        //{
-        //    var declaringTypeGen = (MCTypeGeneratorImpl)this.declaringTypeDecl;
-        //    var typeDef = (TypeDefinition)declaringTypeGen;
-        //    var methodDef = typeDef.Methods.First(
-        //        method =>
-        //            method.Name == methodName &&
-        //            method.Attributes == methodAttr &&
-        //            method.Parameters.Select(parameter => parameter.ParameterType.FullName).Equivalent(parameterTypeFullNames)); 
-        //    Initialize(methodDef);
-        //    base.OnDeserialization(methodDef);
-        //}
+        protected UNI::IMethodBodyDeclaration BodyDecl { get { return bodyDecl; } }
+        protected UNI::ITypeDeclaration DeclaringTypeDecl { get { return declaringTypeDecl; } }
 
         protected override void OnDeserializedManually(StreamingContext context)
         {

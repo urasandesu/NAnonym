@@ -7,22 +7,24 @@ using SR = System.Reflection;
 using MC = Mono.Cecil;
 using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
-using Urasandesu.NAnonym.ILTools;
+using UNI = Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System.Reflection;
+
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    sealed class MCTypeGeneratorImpl : MCTypeDeclarationImpl, ITypeGenerator
+    sealed class MCTypeGeneratorImpl : MCTypeDeclarationImpl, UNI::ITypeGenerator
     {
         [NonSerialized]
-        ReadOnlyCollection<IFieldGenerator> fields;
+        ReadOnlyCollection<UNI::IFieldGenerator> fields;
 
         public MCTypeGeneratorImpl(TypeDefinition typeDef)
             : base(typeDef)
         {
-            fields = new ReadOnlyCollection<IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (IFieldGenerator)fieldDecl));
+            fields = new ReadOnlyCollection<UNI::IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (UNI::IFieldGenerator)fieldDecl));
         }
 
         internal new TypeDefinition TypeDef
@@ -30,16 +32,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return base.TypeDef; }
         }
 
-        public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
+        public UNI::IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)
         {
             var fieldDef = new FieldDefinition(fieldName, (MC::FieldAttributes)attributes, TypeDef.Module.Import(type));
             TypeDef.Fields.Add(fieldDef);
             return (MCFieldGeneratorImpl)fieldDef;
         }
 
-        #region ITypeGenerator メンバ
-
-        public IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        public UNI::IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
             var methodDef = new MethodDefinition(name, (MethodAttributes)attributes, TypeDef.Module.Import(returnType));
             TypeDef.Methods.Add(methodDef);
@@ -47,51 +47,38 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCMethodGeneratorImpl(methodDef);
         }
 
-        #endregion
-
-        #region ITypeGenerator メンバ
-
-
-        public new ReadOnlyCollection<IFieldGenerator> Fields
+        public new ReadOnlyCollection<UNI::IFieldGenerator> Fields
         {
             get { return fields; }
         }
 
-        #endregion
-
-        #region ITypeGenerator メンバ
-
-
-        public new IModuleGenerator Module
+        public new UNI::IModuleGenerator Module
         {
-            get { return base.Module as IModuleGenerator; }
+            get { return base.Module as UNI::IModuleGenerator; }
         }
 
-        #endregion
-
-        #region ITypeGenerator メンバ
-
-
-        public IMethodBaseGenerator AddMethod(string name, System.Reflection.MethodAttributes attributes, System.Reflection.CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
+        public UNI::IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
         {
             throw new NotImplementedException();
         }
 
-        public ITypeGenerator AddInterfaceImplementation(Type interfaceType)
+        public UNI::ITypeGenerator AddInterfaceImplementation(Type interfaceType)
         {
             throw new NotImplementedException();
         }
 
-        public IConstructorGenerator AddConstructor(System.Reflection.MethodAttributes attributes, System.Reflection.CallingConventions callingConvention, Type[] parameterTypes)
+        public UNI::IConstructorGenerator AddConstructor(SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type[] parameterTypes)
         {
-            throw new NotImplementedException();
+            var constructorDef = new MethodDefinition(".ctor", (MethodAttributes)attributes, TypeDef.Module.Import(typeof(void)));
+            //constructorDef.CallingConvention = callingConvention.ToCecil();   // TODO: うまく動いてなさそう？
+            parameterTypes.Select(parameterType => new ParameterDefinition(TypeDef.Module.Import(parameterType))).AddRangeTo(constructorDef.Parameters);
+            TypeDef.Methods.Add(constructorDef);
+            return new MCConstructorGeneratorImpl(constructorDef);
         }
 
         public Type CreateType()
         {
             throw new NotImplementedException();
         }
-
-        #endregion
     }
 }

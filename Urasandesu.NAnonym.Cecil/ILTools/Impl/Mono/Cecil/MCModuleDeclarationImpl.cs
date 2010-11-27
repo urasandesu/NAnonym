@@ -31,14 +31,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             assemblyGen = new MCAssemblyGeneratorImpl(((ModuleDefinition)moduleRef).Assembly);
         }
 
-        #region IModuleDeclaration メンバ
-
         public UNI::IAssemblyDeclaration Assembly
         {
             get { return assemblyGen; }
         }
-
-        #endregion
 
         internal ModuleReference ModuleRef { get { return moduleRef; } }
         protected string ModuleName { get { return moduleName; } }

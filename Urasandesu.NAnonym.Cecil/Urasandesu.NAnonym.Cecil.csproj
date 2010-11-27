@@ -78,10 +78,12 @@
     <Compile Include="DI\GlobalReplaceMethodInjectionDefiner.cs" />
     <Compile Include="DI\SetupModes.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\IILProcessor.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\ILEmitMode.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\InsertBeforeILProcessor.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCAssemblyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCConstructorGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCDirectiveDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCDirectiveGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCFieldDeclarationImpl.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="ILTools\Impl\Mono\Cecil\MCLocalGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMemberDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBaseDeclarationImpl.cs" />
+    <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBaseGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodBodyGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\MCMethodDeclarationImpl.cs" />
@@ -123,6 +126,7 @@
     <Compile Include="ILTools\Mixins\Mono\Cecil\TypeDefinitionMixin.cs" />
     <Compile Include="ILTools\Mixins\Mono\Cecil\TypeReferenceMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Collections\Generic\IEnumerableMixin.cs" />
+    <Compile Include="ILTools\Mixins\System\Reflection\CallingConventionsMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\MethodAttributesMixin.cs" />
     <Compile Include="ILTools\Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="ILTools\Mixins\System\TypeMixin.cs" />

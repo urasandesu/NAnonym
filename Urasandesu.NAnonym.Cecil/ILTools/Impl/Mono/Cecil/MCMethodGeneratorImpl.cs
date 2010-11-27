@@ -12,27 +12,28 @@ using Urasandesu.NAnonym.Linq;
 using System.Reflection;
 using SR = System.Reflection;
 using System.Runtime.Serialization;
-using Urasandesu.NAnonym.ILTools;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    sealed class MCMethodGeneratorImpl : MCMethodDeclarationImpl, IMethodGenerator
+    sealed class MCMethodGeneratorImpl : MCMethodDeclarationImpl, UNI::IMethodGenerator
     {
+        MCMethodBaseGeneratorImpl methodBaseGen;
         [NonSerialized]
-        ITypeGenerator returnTypeGen;
-        [NonSerialized]
-        ReadOnlyCollection<IParameterGenerator> parameters;
+        UNI::ITypeGenerator returnTypeGen;
 
         public MCMethodGeneratorImpl(MethodDefinition methodDef)
             : base(methodDef)
         {
+            methodBaseGen = new MCMethodBaseGeneratorImpl(methodDef);
             Initialize(methodDef);
         }
 
         public MCMethodGeneratorImpl(MethodDefinition methodDef, ILEmitMode mode, Instruction target)
             : base(methodDef, mode, target)
         {
+            methodBaseGen = new MCMethodBaseGeneratorImpl(methodDef, mode, target);
             Initialize(methodDef);
         }
 
@@ -40,53 +41,37 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var returnTypeDef = methodDef.ReturnType.Resolve();
             returnTypeGen = new MCTypeGeneratorImpl(returnTypeDef);
-            // TODO: 反変がサポートされるようになったら修正する。
-            parameters = new ReadOnlyCollection<IParameterGenerator>(
-                base.Parameters.TransformEnumerateOnly(paramter => (IParameterGenerator)paramter));
         }
 
-        #region IMethodGenerator メンバ
-
-        public new ITypeGenerator ReturnType
+        public new UNI::ITypeGenerator ReturnType
         {
             get { return returnTypeGen; }
         }
 
-        #endregion
-
-        #region IMethodBaseGenerator メンバ
-
-        public new IMethodBodyGenerator Body
+        public new UNI::IMethodBodyGenerator Body
         {
-            get { return (IMethodBodyGenerator)BodyDecl; }
+            get { return methodBaseGen.Body; }
         }
 
-        public new ITypeGenerator DeclaringType
+        public new UNI::ITypeGenerator DeclaringType
         {
-            get { return (ITypeGenerator)DeclaringTypeDecl; }
+            get { return methodBaseGen.DeclaringType; }
         }
 
-        public new ReadOnlyCollection<IParameterGenerator> Parameters
+        public new ReadOnlyCollection<UNI::IParameterGenerator> Parameters
         {
-            get { return parameters; }
+            get { return methodBaseGen.Parameters; }
         }
 
-        public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
+        public UNI::IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
         {
-            var variableDef = new VariableDefinition(fieldInfo.Name, MethodDef.Module.Import(fieldInfo.FieldType));
-            MethodDef.Body.Variables.Add(variableDef);
-            var itemRawData = new PortableScopeItemRawData(this, variableDef.Name, variableDef.Index);
-            var fieldDef = new FieldDefinition(itemRawData.FieldName, MC::FieldAttributes.Private | MC::FieldAttributes.SpecialName, MethodDef.Module.Import(fieldInfo.FieldType));
-            MethodDef.DeclaringType.Fields.Add(fieldDef);
-            return new MCPortableScopeItemImpl(itemRawData, fieldDef, variableDef);
+            return methodBaseGen.AddPortableScopeItem(fieldInfo);
         }
 
-        public IMethodBaseGenerator CreateInstance(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        public UNI::IMethodBaseGenerator CreateInstance(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
 
         protected override void OnDeserializedManually(StreamingContext context)
         {
@@ -94,26 +79,20 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             Initialize(MethodDef);
         }
 
-        #region IMethodBaseGenerator メンバ
+        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ExpressiveMethodBodyGenerator> bodyExpression)
+        {
+            methodBaseGen.ExpressBody(bodyExpression);
+            return this;
+        }
 
-
-        public IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression)
+        public UNI::IParameterGenerator AddParameter(int position, SR::ParameterAttributes attributes, string parameterName)
         {
             throw new NotImplementedException();
         }
 
-        public IParameterGenerator AddParameter(int position, System.Reflection.ParameterAttributes attributes, string parameterName)
+        public UNI::PortableScope CarryPortableScope()
         {
-            throw new NotImplementedException();
+            return methodBaseGen.CarryPortableScope();
         }
-
-        #endregion
-    }
-
-    enum ILEmitMode
-    {
-        Normal,
-        InsertBefore,
-        InsertAfter,
     }
 }

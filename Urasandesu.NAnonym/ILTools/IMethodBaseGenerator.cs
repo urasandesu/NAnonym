@@ -12,6 +12,7 @@ namespace Urasandesu.NAnonym.ILTools
         IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
         IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression);
         IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName);
+        PortableScope CarryPortableScope();
     }
 
 }

@@ -8,12 +8,13 @@ using MCC = Mono.Cecil.Cil;
 using System.Collections.ObjectModel;
 using Urasandesu.NAnonym.Linq;
 using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.ILTools;
 using Mono.Cecil.Cil;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
-    sealed class MCMethodBodyGeneratorImpl : MCMethodBodyDeclarationImpl, UN::ILTools.IMethodBodyGenerator
+    sealed class MCMethodBodyGeneratorImpl : MCMethodBodyDeclarationImpl, UNI::IMethodBodyGenerator
     {
         readonly MCC::MethodBody bodyDef;
         readonly ReadOnlyCollection<ILocalGenerator> locals;
@@ -47,14 +48,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return directives; }
         }
 
-        #region IMethodBodyGenerator メンバ
-
-
         public ILocalGenerator AddLocal(ILocalGenerator localGen)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
     }
 }

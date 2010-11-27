@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Mono.Cecil;
-using UN = Urasandesu.NAnonym;
 using Mono.Cecil.Cil;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCMethodDeclarationImpl : MCMethodBaseDeclarationImpl, UN::ILTools.IMethodDeclaration
+    class MCMethodDeclarationImpl : MCMethodBaseDeclarationImpl, UNI::IMethodDeclaration
     {
         public MCMethodDeclarationImpl(MethodReference methodRef)
             : base(methodRef)
@@ -21,13 +18,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
         }
 
-        #region IMethodDeclaration メンバ
-
-        public UN::ILTools.ITypeDeclaration ReturnType
+        public UNI::ITypeDeclaration ReturnType
         {
             get { return new MCTypeDeclarationImpl(MethodDef.ReturnType); }
         }
-
-        #endregion
     }
 }
