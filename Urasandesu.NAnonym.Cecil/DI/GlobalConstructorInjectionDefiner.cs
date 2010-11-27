@@ -2,13 +2,17 @@
 using Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 using MC = Mono.Cecil;
+using UNI = Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorInjectionDefiner : ConstructorInjectionDefiner
     {
         public new GlobalConstructorInjection Parent { get { return (GlobalConstructorInjection)base.Parent; } }
-        public FieldDefinition CachedConstructor { get; private set; }
+        //// これも一段上に上げられる。
+        ////public FieldDefinition CachedConstructor { get; private set; }
+        //public UNI::IFieldGenerator CachedConstructor { get; private set; }
 
         public GlobalConstructorInjectionDefiner(GlobalConstructorInjection parent)
             : base(parent)
@@ -17,9 +21,10 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public override void Create()
         {
-            CachedConstructor = new FieldDefinition(
+            var cachedConstructorDef = new FieldDefinition(
                     GlobalClass.CacheFieldPrefix + "Constructor", MC::FieldAttributes.Private | MC::FieldAttributes.Static, Parent.DeclaringTypeDef.Module.Import(typeof(Action)));
-            Parent.DeclaringTypeDef.Fields.Add(CachedConstructor);
+            Parent.DeclaringTypeDef.Fields.Add(cachedConstructorDef);
+            cachedConstructor = new MCFieldGeneratorImpl(cachedConstructorDef);
 
             int fieldForDeclaringTypeIndex = 0;
             foreach (var injectionField in Parent.FieldSet)
@@ -38,9 +43,16 @@ namespace Urasandesu.NAnonym.Cecil.DI
             }
         }
 
-        public override string CachedConstructorName
+        UNI::IFieldGenerator cachedConstructor;
+        public override UNI::IFieldGenerator CachedConstructor
         {
-            get { return CachedConstructor.Name; }
+            get { return cachedConstructor; }
         }
+
+        //// これは必要なくなる
+        //public override string CachedConstructorName
+        //{
+        //    get { return CachedConstructor.Name; }
+        //}
     }
 }

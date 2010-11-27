@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection.Emit;
-using SR = System.Reflection;
-using System.Reflection;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
+using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -39,7 +38,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return fieldGen;
         }
 
-        public IMethodBaseGenerator AddMethod(string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        public IMethodGenerator AddMethod(string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
             var methodBuilder = Source.DefineMethod(name, attributes, returnType, parameterTypes);
             return new SRMethodGeneratorImpl(methodBuilder);
@@ -82,11 +81,17 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return Source.CreateType();
         }
 
-        public IMethodBaseGenerator AddMethod(string name, MethodAttributes attributes, CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
+        public IMethodGenerator AddMethod(string name, MethodAttributes attributes, CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
         {
             var methodBuilder = Source.DefineMethod(name, attributes, callingConvention, returnType, parameterTypes);
             var methodGen = new SRMethodGeneratorImpl(this, methodBuilder);
             return methodGen;
+        }
+
+        public ITypeGenerator SetParent(Type parentType)
+        {
+            Source.SetParent(parentType);
+            return this;
         }
     }
 }

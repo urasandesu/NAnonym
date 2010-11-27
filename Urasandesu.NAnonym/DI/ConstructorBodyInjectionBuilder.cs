@@ -29,7 +29,7 @@ namespace Urasandesu.NAnonym.DI
             var injectionDefiner = bodyInjection.ParentBuilder.ParentDefiner;
             var injection = injectionDefiner.Parent;
 
-            gen.Eval(_ => _.If(_.Ld(_.X(injectionDefiner.CachedConstructorName)) == null));
+            gen.Eval(_ => _.If(_.Ld(_.X(injectionDefiner.CachedConstructor.Name)) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
                 gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
@@ -78,10 +78,10 @@ namespace Urasandesu.NAnonym.DI
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, actualTargetField));
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(injectionDefiner.CachedConstructorName)).As(dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                gen.Eval(_ => _.St(_.X(injectionDefiner.CachedConstructor.Name)).As(dynamicMethod.CreateDelegate(typeof(Action), _.This())));
             }
             gen.Eval(_ => _.EndIf());
-            gen.Eval(_ => _.Ld<Action>(_.X(injectionDefiner.CachedConstructorName)).Invoke());
+            gen.Eval(_ => _.Ld<Action>(_.X(injectionDefiner.CachedConstructor.Name)).Invoke());
         }
     }
 }

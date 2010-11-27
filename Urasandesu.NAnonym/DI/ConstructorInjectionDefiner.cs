@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -9,7 +10,8 @@ namespace Urasandesu.NAnonym.DI
     {
         public new ConstructorInjection Parent { get { return (ConstructorInjection)base.Parent; } }
         public Dictionary<Type, bool> InitializedDeclaringTypeConstructor { get; private set; }
-        public virtual string CachedConstructorName { get { throw new NotImplementedException(); } }
+        public virtual IFieldGenerator CachedConstructor { get { throw new NotImplementedException(); } }
+        public virtual IConstructorGenerator NewConstructor { get { throw new NotImplementedException(); } }
 
         public ConstructorInjectionDefiner(ConstructorInjection parent)
             : base(parent)

@@ -19,9 +19,7 @@ namespace Urasandesu.NAnonym.DI
             {
                 var bodyInjection = new LocalMethodBodyInjection(gen, this);
                 bodyInjection.Apply();
-            },
-            ParentDefiner.MethodParameters.ToArray(),
-            new FieldBuilder[] { ParentDefiner.CachedMethod });
+            });
         }
     }
 }

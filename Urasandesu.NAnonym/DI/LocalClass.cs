@@ -127,24 +127,25 @@ namespace Urasandesu.NAnonym.DI
             localClassAssemblyName.Version = new Version(1, 0, 0, 0);
             var localClassAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(localClassAssemblyName, AssemblyBuilderAccess.RunAndSave);
             var localClassModuleBuilder = localClassAssemblyBuilder.DefineDynamicModule("LocalClasses", "LocalClasses.dll");
-            var localClassTypeBuilder = localClassModuleBuilder.DefineType("LocalClasses.LocalClassType");
+            var localClassTypeGen = localClassModuleBuilder.AddType("LocalClasses.LocalClassType");
             if (typeof(TBase).IsInterface)
             {
-                localClassTypeBuilder.AddInterfaceImplementation(typeof(TBase));
+                localClassTypeGen.AddInterfaceImplementation(typeof(TBase));
             }
             else
             {
-                localClassTypeBuilder.SetParent(typeof(TBase));
+                localClassTypeGen.SetParent(typeof(TBase));
             }
+            
 
 
-            var constructorInjection = new LocalConstructorInjection(localClassTypeBuilder, FieldSet);
+            var constructorInjection = new LocalConstructorInjection(localClassTypeGen, FieldSet);
             constructorInjection.Apply();
 
             var methodInjection = new LocalMethodInjection(constructorInjection, MethodSet);
             methodInjection.Apply();
 
-            createdType = localClassTypeBuilder.CreateType();
+            createdType = localClassTypeGen.CreateType();
             //localClassAssemblyBuilder.Save("LocalClasses.dll");
         }
 

@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -14,14 +16,13 @@ namespace Urasandesu.NAnonym.DI
 
         public override void Construct()
         {
-            ParentDefiner.LocalClassConstructorBuilder.ExpressBody(
+            ParentDefiner.NewConstructor.ExpressBody(
             gen =>
             {
                 var bodyInjection = new LocalConstructorBodyInjection(gen, this);
                 bodyInjection.Apply();
                 gen.Eval(_ => _.Base());
-            },
-            new FieldBuilder[] { ParentDefiner.CachedConstructor }.Concat(ParentDefiner.Parent.FieldsForDeclaringType.Values).ToArray());
+            });
         }
     }
 }

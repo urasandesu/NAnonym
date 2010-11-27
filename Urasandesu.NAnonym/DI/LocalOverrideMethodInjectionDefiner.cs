@@ -13,7 +13,8 @@ namespace Urasandesu.NAnonym.DI
         {
         }
 
-        protected override MethodBuilder GetMethodInterface()
+        protected override IMethodGenerator GetMethodInterface()
+        //protected override MethodBuilder GetMethodInterface()
         {
             const MethodAttributes @override = MethodAttributes.Public |
                                                MethodAttributes.HideBySig |
@@ -23,8 +24,10 @@ namespace Urasandesu.NAnonym.DI
             var returnType = source.ReturnType;
             var parameterTypes = source.ParameterTypes();
             baseMethod = new SRMethodDeclarationImpl(source);
-            return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
+            return Parent.ConstructorInjection.DeclaringTypeGenerator.AddMethod(
                 name, @override, CallingConventions.HasThis, returnType, parameterTypes);
+            //return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
+            //    name, @override, CallingConventions.HasThis, returnType, parameterTypes);
         }
 
         IMethodDeclaration baseMethod;

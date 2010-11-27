@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -11,7 +12,8 @@ namespace Urasandesu.NAnonym.DI
         {
         }
 
-        protected override MethodBuilder GetMethodInterface()
+        protected override IMethodGenerator GetMethodInterface()
+        //protected override MethodBuilder GetMethodInterface()
         {
             const MethodAttributes implement = MethodAttributes.Public |
                                                MethodAttributes.HideBySig |
@@ -22,8 +24,10 @@ namespace Urasandesu.NAnonym.DI
             var name = source.Name;
             var returnType = source.ReturnType;
             var parameterTypes = source.ParameterTypes();
-            return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
+            return Parent.ConstructorInjection.DeclaringTypeGenerator.AddMethod(
                 name, implement, CallingConventions.HasThis, returnType, parameterTypes);
+            //return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
+            //    name, implement, CallingConventions.HasThis, returnType, parameterTypes);
         }
     }
 }

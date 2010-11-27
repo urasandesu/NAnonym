@@ -18,10 +18,10 @@ namespace Urasandesu.NAnonym.DI
     class LocalMethodInjectionDefiner : MethodInjectionDefiner
     {
         public new LocalMethodInjection Parent { get { return (LocalMethodInjection)base.Parent; } }
-        public FieldBuilder CachedMethod { get; private set; }
-        public FieldBuilder CachedSetting { get; private set; }
-        public MethodBuilder MethodInterface { get; private set; }
-        public ReadOnlyCollection<ParameterBuilder> MethodParameters { get; private set; }
+        public IFieldGenerator CachedMethod { get; private set; }
+        public IFieldGenerator CachedSetting { get; private set; }
+        public IMethodBaseGenerator MethodInterface { get; private set; }
+        public ReadOnlyCollection<IParameterGenerator> MethodParameters { get; private set; }
 
         protected LocalMethodInjectionDefiner(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
@@ -47,25 +47,25 @@ namespace Urasandesu.NAnonym.DI
 
         public override void Create()
         {
-            CachedMethod = Parent.ConstructorInjection.DeclaringTypeBuilder.DefineField(
+            CachedMethod = Parent.ConstructorInjection.DeclaringTypeGenerator.AddField(
                 LocalClass.CacheFieldPrefix + "Method" + Parent.IncreaseMethodCacheSequence(), InjectionMethod.DelegateType, FieldAttributes.Private);
 
             CachedSetting = Parent.ConstructorInjection.FieldsForDeclaringType.ContainsKey(InjectionMethod.Destination.DeclaringType) ?
                                             Parent.ConstructorInjection.FieldsForDeclaringType[InjectionMethod.Destination.DeclaringType] :
-                                            default(FieldBuilder);
+                                            default(IFieldGenerator);
 
             MethodInterface = GetMethodInterface();
 
             int parameterPosition = 1;
-            var methodParameters = new List<ParameterBuilder>();
+            var methodParameters = new List<IParameterGenerator>();
             foreach (var parameterName in InjectionMethod.Source.ParameterNames())
             {
-                methodParameters.Add(MethodInterface.DefineParameter(parameterPosition++, ParameterAttributes.In, parameterName));
+                methodParameters.Add(MethodInterface.AddParameter(parameterPosition++, ParameterAttributes.In, parameterName));
             }
-            MethodParameters = new ReadOnlyCollection<ParameterBuilder>(methodParameters);
+            MethodParameters = new ReadOnlyCollection<IParameterGenerator>(methodParameters);
         }
 
-        protected virtual MethodBuilder GetMethodInterface()
+        protected virtual IMethodGenerator GetMethodInterface()
         {
             throw new NotImplementedException();
         }

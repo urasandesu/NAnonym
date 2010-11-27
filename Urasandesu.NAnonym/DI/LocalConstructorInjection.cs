@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorInjection : ConstructorInjection
     {
-        public TypeBuilder DeclaringTypeBuilder { get; private set; }
-        public Dictionary<Type, FieldBuilder> FieldsForDeclaringType { get; private set; }
+        public ITypeGenerator DeclaringTypeGenerator { get; private set; }
+        public Dictionary<Type, IFieldGenerator> FieldsForDeclaringType { get; private set; }
 
         public LocalConstructorInjection(
-            TypeBuilder declaringTypeBuilder,
+            ITypeGenerator declaringTypeGenerator,
             HashSet<InjectionFieldInfo> fieldSet)
             : base(fieldSet)
         {
-            DeclaringTypeBuilder = declaringTypeBuilder;
-            FieldsForDeclaringType = new Dictionary<Type,FieldBuilder>();
+            DeclaringTypeGenerator = declaringTypeGenerator;
+            FieldsForDeclaringType = new Dictionary<Type, IFieldGenerator>();
         }
 
         protected override void ApplyContent()
@@ -29,7 +30,7 @@ namespace Urasandesu.NAnonym.DI
 
         public override Type DeclaringType
         {
-            get { return DeclaringTypeBuilder; }
+            get { return (Type)DeclaringTypeGenerator.Source; }
         }
 
         public override string GetFieldNameForDeclaringType(Type declaringType)
