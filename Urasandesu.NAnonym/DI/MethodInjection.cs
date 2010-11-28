@@ -5,16 +5,15 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class MethodInjection : Injection
+    abstract class MethodInjection : Injection
     {
         public ConstructorInjection ConstructorInjection { get; private set; }
         public HashSet<InjectionMethodInfo> MethodSet { get; private set; }
-        int methodCacheSequence = 0;
         public int IncreaseMethodCacheSequence()
         {
-            return methodCacheSequence++;
+            return MethodCacheSequence++;
         }
-        protected int MethodCacheSequence { get { return methodCacheSequence; } }
+        protected int MethodCacheSequence { get; private set; }
         public MethodInjection(ConstructorInjection constructorInjection, HashSet<InjectionMethodInfo> methodSet)
         {
             ConstructorInjection = constructorInjection;
@@ -25,13 +24,15 @@ namespace Urasandesu.NAnonym.DI
         {
             foreach (var injectionMethod in MethodSet)
             {
-                ApplyContent(injectionMethod);
+                var definer = GetMethodDefiner(this, injectionMethod);
+                definer.Create();
+
+                var builder = GetMethodBuilder(definer);
+                builder.Construct();
             }
         }
 
-        protected virtual void ApplyContent(InjectionMethodInfo injectionMethod)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract MethodInjectionDefiner GetMethodDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod);
+        protected abstract MethodInjectionBuilder GetMethodBuilder(MethodInjectionDefiner parentDefiner);        
     }
 }

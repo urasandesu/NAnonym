@@ -1,23 +1,47 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Urasandesu.NAnonym.DI;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalMethodInjection : MethodInjection
     {
-        public new GlobalConstructorInjection ConstructorInjection { get { return (GlobalConstructorInjection)base.ConstructorInjection; } }
-        public GlobalMethodInjection(GlobalConstructorInjection constructorInjection, HashSet<InjectionMethodInfo> methodSet)
+        public GlobalMethodInjection(ConstructorInjection constructorInjection, HashSet<InjectionMethodInfo> methodSet)
             : base(constructorInjection, methodSet)
         {
         }
 
-        protected override void ApplyContent(InjectionMethodInfo injectionMethod)
+        protected override MethodInjectionDefiner GetMethodDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
         {
-            var definer = GlobalMethodInjectionDefiner.GetInstance(this, injectionMethod);
-            definer.Create();
+            if (injectionMethod.Mode == SetupModes.Override)
+            {
+                throw new NotImplementedException();
+            }
+            else if (injectionMethod.Mode == SetupModes.Implement)
+            {
+                throw new NotImplementedException();
+            }
+            else if (injectionMethod.Mode == SetupModes.Replace)
+            {
+                return new GlobalReplaceMethodInjectionDefiner(parent, injectionMethod);
+            }
+            else if (injectionMethod.Mode == SetupModes.Before)
+            {
+                throw new NotImplementedException();
+            }
+            else if (injectionMethod.Mode == SetupModes.After)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
 
-            var builder = new GlobalMethodInjectionBuilder(definer);
-            builder.Construct();
+        protected override MethodInjectionBuilder GetMethodBuilder(MethodInjectionDefiner parentDefiner)
+        {
+            return new GlobalMethodInjectionBuilder(parentDefiner);
         }
     }
 }

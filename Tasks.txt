@@ -14,7 +14,6 @@
 
 
 
-// DOING: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
 
 
 
@@ -59,3 +58,4 @@
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（GlobalClass）。
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（LocalClass）。
 // DONE: Urasandesu.NAnonym.ILTools 以下の共通 I/F を拡張。Field や Parameter へのアクセス方法を統一。
+// DONE: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。

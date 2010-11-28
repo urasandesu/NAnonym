@@ -7,21 +7,30 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalMethodInjection : MethodInjection
     {
-        public new LocalConstructorInjection ConstructorInjection { get { return (LocalConstructorInjection)base.ConstructorInjection; } }
-        public LocalMethodInjection(
-            LocalConstructorInjection constructorInjection,
-            HashSet<InjectionMethodInfo> methodSet)
+        public LocalMethodInjection(ConstructorInjection constructorInjection, HashSet<InjectionMethodInfo> methodSet)
             : base(constructorInjection, methodSet)
         {
         }
 
-        protected override void ApplyContent(InjectionMethodInfo injectionMethod)
+        protected override MethodInjectionDefiner GetMethodDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
         {
-            var definer = LocalMethodInjectionDefiner.GetInstance(this, injectionMethod);
-            definer.Create();
+            if (injectionMethod.Mode == SetupModes.Override)
+            {
+                return new LocalOverrideMethodInjectionDefiner(parent, injectionMethod);
+            }
+            else if (injectionMethod.Mode == SetupModes.Implement)
+            {
+                return new LocalImplementMethodInjectionDefiner(parent, injectionMethod);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
 
-            var builder = new LocalMethodInjectionBuilder(definer);
-            builder.Construct();
+        protected override MethodInjectionBuilder GetMethodBuilder(MethodInjectionDefiner parentDefiner)
+        {
+            return new LocalMethodInjectionBuilder(parentDefiner);
         }
     }
 }

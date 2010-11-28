@@ -5,19 +5,14 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalMethodBodyInjection : MethodBodyInjection
     {
-        public new GlobalMethodInjectionBuilder ParentBuilder { get { return (GlobalMethodInjectionBuilder)base.ParentBuilder; } }
-        public GlobalMethodBodyInjection(ExpressiveMethodBodyGenerator gen, GlobalMethodInjectionBuilder parentBuilder)
+        public GlobalMethodBodyInjection(ExpressiveMethodBodyGenerator gen, MethodInjectionBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
         }
 
-        public override void Apply()
+        protected override MethodBodyInjectionDefiner GetMethodBodyDefiner(MethodBodyInjection parentBody)
         {
-            var bodyDefiner = new GlobalMethodBodyInjectionDefiner(this);
-            bodyDefiner.Create();
-
-            var bodyBuilder = GlobalMethodBodyInjectionBuilder.GetInstance(bodyDefiner);
-            bodyBuilder.Construct();
+            return new GlobalMethodBodyInjectionDefiner(parentBody);
         }
     }
 }

@@ -5,17 +5,12 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class MethodBodyInjectionBuilder : BodyInjectionBuilder
+    abstract class MethodBodyInjectionBuilder : BodyInjectionBuilder
     {
         public new MethodBodyInjectionDefiner ParentBodyDefiner { get { return (MethodBodyInjectionDefiner)base.ParentBodyDefiner; } }
         protected MethodBodyInjectionBuilder(MethodBodyInjectionDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
-        }
-
-        public override void Construct()
-        {
-            throw new NotImplementedException();
         }
     }
 }

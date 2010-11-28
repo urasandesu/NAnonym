@@ -8,13 +8,12 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalOverrideMethodInjectionDefiner : LocalMethodInjectionDefiner
     {
-        public LocalOverrideMethodInjectionDefiner(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
+        public LocalOverrideMethodInjectionDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
         }
 
         protected override IMethodGenerator GetMethodInterface()
-        //protected override MethodBuilder GetMethodInterface()
         {
             const MethodAttributes @override = MethodAttributes.Public |
                                                MethodAttributes.HideBySig |
@@ -26,8 +25,6 @@ namespace Urasandesu.NAnonym.DI
             baseMethod = new SRMethodDeclarationImpl(source);
             return Parent.ConstructorInjection.DeclaringTypeGenerator.AddMethod(
                 name, @override, CallingConventions.HasThis, returnType, parameterTypes);
-            //return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
-            //    name, @override, CallingConventions.HasThis, returnType, parameterTypes);
         }
 
         IMethodDeclaration baseMethod;

@@ -7,7 +7,7 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalImplementMethodInjectionDefiner : LocalMethodInjectionDefiner
     {
-        public LocalImplementMethodInjectionDefiner(LocalMethodInjection parent, InjectionMethodInfo injectionMethod)
+        public LocalImplementMethodInjectionDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
         }
@@ -28,6 +28,11 @@ namespace Urasandesu.NAnonym.DI
                 name, implement, CallingConventions.HasThis, returnType, parameterTypes);
             //return Parent.ConstructorInjection.DeclaringTypeBuilder.DefineMethod(
             //    name, implement, CallingConventions.HasThis, returnType, parameterTypes);
+        }
+
+        public override IMethodDeclaration BaseMethod
+        {
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

@@ -78,7 +78,6 @@
     <Compile Include="DI\LocalField.cs" />
     <Compile Include="DI\LocalImplementMethodInjectionDefiner.cs" />
     <Compile Include="DI\LocalMethodBodyInjection.cs" />
-    <Compile Include="DI\LocalMethodBodyInjectionBuilder.cs" />
     <Compile Include="DI\LocalMethodBodyInjectionDefiner.cs" />
     <Compile Include="DI\LocalMethodInjection.cs" />
     <Compile Include="DI\LocalMethodInjectionBuilder.cs" />

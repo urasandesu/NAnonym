@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Linq.Expressions;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools;
-using SR = System.Reflection;
-using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.Mixins.System;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
-using System.Collections.ObjectModel;
+using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
@@ -29,13 +21,13 @@ namespace Urasandesu.NAnonym.DI
 
             var injectionMethod = definer.InjectionMethod;
             var gen = bodyDefiner.Gen;
-            var cachedMethodName = definer.CachedMethodName;
+            var cachedMethod = definer.CachedMethod;
             var anonymousStaticMethodCache = definer.AnonymousStaticMethodCache;
-            var returnType = definer.ReturnType;
+            var returnType = injectionMethod.Source.ReturnType;
             var parameterTypes = definer.ParameterTypes;
             var baseMethod = definer.BaseMethod;
 
-            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethodName)) == null));
+            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethod.Name)) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
                 gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
@@ -107,7 +99,7 @@ namespace Urasandesu.NAnonym.DI
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, invokeForLocal));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(cachedMethodName)).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType))));
+                gen.Eval(_ => _.St(_.X(cachedMethod.Name)).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType))));
             }
             gen.Eval(_ => _.EndIf());
             var invokeForInvoke = injectionMethod.DelegateType.GetMethod(
@@ -128,7 +120,7 @@ namespace Urasandesu.NAnonym.DI
             var delegateForBase = default(object);
             gen.Eval(_ => _.St(delegateForBase).As(_.New(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
             var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(injectionMethod.Source.ParameterNames()).ToArray();
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethodName)), _.X(invokeForInvoke), _.Ld(_.X(variableNames)))));
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethod.Name)), _.X(invokeForInvoke), _.Ld(_.X(variableNames)))));
         }
     }
 }

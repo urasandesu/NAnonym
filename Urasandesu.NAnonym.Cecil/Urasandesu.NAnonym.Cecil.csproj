@@ -68,7 +68,6 @@
     <Compile Include="DI\GlobalField.cs" />
     <Compile Include="DI\GlobalMethod.cs" />
     <Compile Include="DI\GlobalMethodBodyInjection.cs" />
-    <Compile Include="DI\GlobalMethodBodyInjectionBuilder.cs" />
     <Compile Include="DI\GlobalMethodBodyInjectionDefiner.cs" />
     <Compile Include="DI\GlobalMethodInjection.cs" />
     <Compile Include="DI\GlobalMethodInjectionBuilder.cs" />

@@ -8,7 +8,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalReplaceMethodInjectionDefiner : GlobalMethodInjectionDefiner
     {
-        public GlobalReplaceMethodInjectionDefiner(GlobalMethodInjection parent, InjectionMethodInfo injectionMethod)
+        public GlobalReplaceMethodInjectionDefiner(MethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
         }

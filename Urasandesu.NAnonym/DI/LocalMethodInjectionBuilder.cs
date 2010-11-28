@@ -6,8 +6,7 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalMethodInjectionBuilder : MethodInjectionBuilder
     {
-        public new LocalMethodInjectionDefiner ParentDefiner { get { return (LocalMethodInjectionDefiner)base.ParentDefiner; } }
-        public LocalMethodInjectionBuilder(LocalMethodInjectionDefiner parentDefiner)
+        public LocalMethodInjectionBuilder(MethodInjectionDefiner parentDefiner)
             : base(parentDefiner)
         {
         }
