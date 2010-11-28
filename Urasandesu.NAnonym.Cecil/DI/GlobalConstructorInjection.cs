@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorInjection : ConstructorInjection
     {
-        public TypeDefinition DeclaringTypeDef { get; private set; }
-        public Dictionary<Type, FieldDefinition> FieldsForDeclaringType { get; private set; }
+        public UNI::ITypeGenerator DeclaringTypeGenerator { get; private set; }
+        public Dictionary<Type, UNI::IFieldGenerator> FieldsForDeclaringType { get; private set; }
 
         readonly Type declaringType;
 
         public GlobalConstructorInjection(
-            TypeDefinition declaringTypeDef,
+            UNI::ITypeGenerator declaringTypeGen,
             HashSet<InjectionFieldInfo> fieldSet)
             : base(fieldSet)
         {
-            DeclaringTypeDef = declaringTypeDef;
-            FieldsForDeclaringType = new Dictionary<Type,FieldDefinition>();
-            declaringType = DeclaringTypeDef.ToType();
+            DeclaringTypeGenerator = declaringTypeGen;
+            FieldsForDeclaringType = new Dictionary<Type, UNI::IFieldGenerator>();
+            declaringType = DeclaringTypeGenerator.Source;
         }
 
         protected override void ApplyContent()

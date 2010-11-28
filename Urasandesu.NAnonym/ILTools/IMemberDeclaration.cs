@@ -1,6 +1,3 @@
-using System;
-//using Mono.Cecil;
-using System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {

@@ -11,10 +11,9 @@ namespace Urasandesu.NAnonym.ILTools
         ITypeDeclaration BaseType { get; }
         IModuleDeclaration Module { get; }
         ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        //IFieldDeclaration GetField(string name, BindingFlags bindingAttr);
-        //IFieldDeclaration[] GetFields(BindingFlags attr);
+        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
+        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
         IConstructorDeclaration GetConstructor(Type[] types);
-
+        new Type Source { get; }
     }
-
 }

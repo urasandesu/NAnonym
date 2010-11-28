@@ -19,7 +19,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             methodBaseGen = new MCMethodBaseGeneratorImpl(constructorDef);
         }
 
-        #region IMethodBaseGenerator メンバ
 
         public new UNI::IMethodBodyGenerator Body
         {
@@ -56,7 +55,5 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             return methodBaseGen.CarryPortableScope();
         }
-
-        #endregion
     }
 }

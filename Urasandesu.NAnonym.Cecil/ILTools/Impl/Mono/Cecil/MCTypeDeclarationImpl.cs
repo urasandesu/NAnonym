@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Cecil;
-using SR = System.Reflection;
-using System.Runtime.Serialization;
-using System.Reflection;
-using Urasandesu.NAnonym.Linq;
-using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Linq;
+using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -30,6 +28,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         IModuleDeclaration moduleDecl;
 
         [NonSerialized]
+        ReadOnlyCollection<IConstructorDeclaration> constructors;
+
+        [NonSerialized]
+        ReadOnlyCollection<IMethodDeclaration> methods;
+
+        int lastMethodsCount = -1;
+
+        [NonSerialized]
         ReadOnlyCollection<IFieldDeclaration> fields;
         
         public MCTypeDeclarationImpl(TypeReference typeRef)
@@ -46,6 +52,28 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             moduleDecl = new MCModuleGeneratorImpl(typeRef.Module);
             baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType);
             fields = new ReadOnlyCollection<IFieldDeclaration>(typeDef.Fields.TransformEnumerateOnly(fieldDef => (IFieldDeclaration)new MCFieldGeneratorImpl(fieldDef)));
+            InitializeMembers(this);
+        }
+
+        void InitializeMembers(MCTypeDeclarationImpl that)
+        {
+            if (lastMethodsCount < 0)
+            {
+                that.constructors = new ReadOnlyCollection<IConstructorDeclaration>(new IConstructorDeclaration[] { });
+                that.methods = new ReadOnlyCollection<IMethodDeclaration>(new IMethodDeclaration[] { });
+                lastMethodsCount = 0;
+            }
+
+            if (lastMethodsCount != typeDef.Methods.Count)
+            {
+                var constructors = typeDef.Methods.Where(methodDef => methodDef.Name == ".ctor").ToArray();
+                that.constructors = new ReadOnlyCollection<IConstructorDeclaration>(
+                    constructors.TransformEnumerateOnly(constructorDef => (IConstructorDeclaration)new MCConstructorGeneratorImpl(constructorDef)));
+
+                var methods = typeDef.Methods.Where(methodDef => methodDef.Name != ".ctor").ToArray();
+                that.methods = new ReadOnlyCollection<IMethodDeclaration>(
+                    methods.TransformEnumerateOnly(methodDef => (IMethodDeclaration)new MCMethodGeneratorImpl(methodDef)));
+            }
         }
 
         public string FullName
@@ -109,6 +137,27 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return fields; }
         }
 
-    }
+        public ReadOnlyCollection<IConstructorDeclaration> Constructors
+        {
+            get
+            {
+                InitializeMembers(this);
+                return constructors;
+            }
+        }
 
+        public ReadOnlyCollection<IMethodDeclaration> Methods
+        {
+            get 
+            {
+                InitializeMembers(this);
+                return methods;
+            }
+        }
+
+        public new Type Source
+        {
+            get { return typeDef.ToType(); }
+        }
+    }
 }

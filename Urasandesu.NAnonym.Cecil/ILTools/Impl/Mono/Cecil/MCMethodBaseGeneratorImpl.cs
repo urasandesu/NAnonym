@@ -60,6 +60,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ExpressiveMethodBodyGenerator> bodyExpression)
         {
+            MethodDef.Body.InitLocals = true;
             var gen = new UNI::ExpressiveMethodBodyGenerator(this);
             bodyExpression(gen);
             if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)

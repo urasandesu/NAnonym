@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Cecil;
 using System.Collections.ObjectModel;
-using Urasandesu.NAnonym.Linq;
+using System.Linq;
 using System.Runtime.Serialization;
-using MC = Mono.Cecil;
-using System.Reflection;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Urasandesu.NAnonym.Linq;
+using MC = Mono.Cecil;
 using UNI = Urasandesu.NAnonym.ILTools;
-using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {

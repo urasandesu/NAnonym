@@ -16,24 +16,22 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.fieldInfo = fieldInfo;
         }
 
-        #region IMemberDeclaration メンバ
-
         string IMemberDeclaration.Name
         {
             get { return fieldInfo.Name; }
         }
-
-        #endregion
-
-        #region IDeserializableManually メンバ
 
         void IManuallyDeserializable.OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
-
         internal FieldInfo FieldInfo { get { return fieldInfo; } }
+
+        public Type FieldType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
     }
 }

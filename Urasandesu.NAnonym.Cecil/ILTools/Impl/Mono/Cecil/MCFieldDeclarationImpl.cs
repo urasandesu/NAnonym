@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Mono.Cecil;
-using UN = Urasandesu.NAnonym;
+using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
-    class MCFieldDeclarationImpl : MCMemberDeclarationImpl, UN::ILTools.IFieldDeclaration
+    class MCFieldDeclarationImpl : MCMemberDeclarationImpl, UNI::IFieldDeclaration
     {
         readonly FieldReference fieldRef;
         public MCFieldDeclarationImpl(FieldReference fieldRef)
@@ -17,5 +15,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         }
 
         internal FieldReference FieldRef { get { return fieldRef; } }
+
+        public Type FieldType
+        {
+            get { return fieldRef.FieldType.ToType(); }
+        }
     }
 }

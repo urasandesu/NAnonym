@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.Serialization;
-using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -45,8 +43,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             var m_moduleField = typeBuilderType.GetField("m_module", BindingFlags.NonPublic | BindingFlags.Instance);
             return m_moduleField == null ? default(ModuleBuilder) : (ModuleBuilder)m_moduleField.GetValue(type);
         }
-
-        internal new Type Source { get { return (Type)base.Source; } }
         
 
         public string FullName
@@ -88,6 +84,36 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         public ReadOnlyCollection<IFieldDeclaration> Fields
         {
             get { return fields; }
+        }
+
+        #endregion
+
+        #region ITypeDeclaration メンバ
+
+
+        public ReadOnlyCollection<IConstructorDeclaration> Constructors
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region ITypeDeclaration メンバ
+
+
+        public ReadOnlyCollection<IMethodDeclaration> Methods
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region ITypeDeclaration メンバ
+
+
+        public new Type Source
+        {
+            get { return (Type)base.Source; }
         }
 
         #endregion

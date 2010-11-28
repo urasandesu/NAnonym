@@ -123,9 +123,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
             var localPath = new Uri(typeof(TBase).Assembly.CodeBase).LocalPath;
 
             var globalClassModuleDef = ModuleDefinition.ReadModule(localPath, new ReaderParameters() { ReadSymbols = true });
-            var globalClassTypeDef = globalClassModuleDef.GetType(typeof(TBase).FullName);
+            var globalClassTypeGen = globalClassModuleDef.ReadType(typeof(TBase).FullName);
 
-            var constructorInjection = new GlobalConstructorInjection(globalClassTypeDef, FieldSet);
+            var constructorInjection = new GlobalConstructorInjection(globalClassTypeGen, FieldSet);
             constructorInjection.Apply();
 
             var methodInjection = new GlobalMethodInjection(constructorInjection, MethodSet);

@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
-using MC = Mono.Cecil;
+using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
-using Urasandesu.NAnonym.ILTools;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalMethodInjectionDefiner : MethodInjectionDefiner
     {
         public new GlobalMethodInjection Parent { get { return (GlobalMethodInjection)base.Parent; } }
-        public FieldDefinition CachedMethod { get; private set; }
-        public FieldDefinition CachedSetting { get; private set; }
-        public MethodDefinition MethodInterface { get; private set; }
+        public UNI::IFieldGenerator CachedMethod { get; private set; }
+        public UNI::IFieldGenerator CachedSetting { get; private set; }
+        public UNI::IMethodGenerator MethodInterface { get; private set; }
 
         public GlobalMethodInjectionDefiner(GlobalMethodInjection parent, InjectionMethodInfo injectionMethod)
             : base(parent, injectionMethod)
@@ -53,19 +53,19 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public override void Create()
         {
-            CachedMethod = new FieldDefinition(
+            CachedMethod = Parent.ConstructorInjection.DeclaringTypeGenerator.AddField(
                                         GlobalClass.CacheFieldPrefix + "Method" + Parent.IncreaseMethodCacheSequence(),
-                                        MC::FieldAttributes.Private,
-                                        Parent.ConstructorInjection.DeclaringTypeDef.Module.Import(InjectionMethod.DelegateType));
-            Parent.ConstructorInjection.DeclaringTypeDef.Fields.Add(CachedMethod);
+                                        InjectionMethod.DelegateType, 
+                                        SR::FieldAttributes.Private);
 
-            CachedSetting = Parent.ConstructorInjection.DeclaringTypeDef.Fields.FirstOrDefault(
-                fieldDef => fieldDef.FieldType.Resolve().GetFullName() == InjectionMethod.Destination.DeclaringType.FullName);
+            var declaringTypeDef = ((MCTypeGeneratorImpl)Parent.ConstructorInjection.DeclaringTypeGenerator).TypeDef;
+            CachedSetting = new MCFieldGeneratorImpl(declaringTypeDef.Fields.FirstOrDefault(
+                fieldDef => fieldDef.FieldType.Resolve().GetFullName() == InjectionMethod.Destination.DeclaringType.FullName));
 
             MethodInterface = GetMethodInterface();
         }
 
-        protected virtual MethodDefinition GetMethodInterface()
+        protected virtual UNI::IMethodGenerator GetMethodInterface()
         {
             throw new NotImplementedException();
         }

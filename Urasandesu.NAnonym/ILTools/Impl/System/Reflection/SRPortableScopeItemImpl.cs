@@ -21,8 +21,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        #region IPortableScopeItem メンバ
-
         public object Value
         {
             get
@@ -40,28 +38,15 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region ILocalDeclaration メンバ
-
         public string Name
         {
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region IDeserializableManually メンバ
-
         public void OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region ILocalDeclaration メンバ
-
 
         public ITypeDeclaration Type
         {
@@ -73,6 +58,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
+        public Type FieldType
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

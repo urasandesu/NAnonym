@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 
@@ -14,8 +14,9 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public override void Construct()
         {
-            foreach (var constructorDef in ParentDefiner.Parent.DeclaringTypeDef.Methods.Where(methodDef => methodDef.Name == ".ctor"))
+            foreach (var constructorGen in ParentDefiner.Parent.DeclaringTypeGenerator.Constructors)
             {
+                var constructorDef = ((MCConstructorGeneratorImpl)constructorGen).MethodDef;
                 var firstInstruction = constructorDef.Body.Instructions[0];
                 constructorDef.ExpressBodyBefore(
                 gen =>

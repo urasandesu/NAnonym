@@ -13,7 +13,6 @@ namespace Urasandesu.NAnonym.Cecil.DI
 
         public override void Construct()
         {
-            ParentDefiner.MethodInterface.Body.InitLocals = true;
             ParentDefiner.MethodInterface.ExpressBody(
             gen =>
             {

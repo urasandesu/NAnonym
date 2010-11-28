@@ -76,11 +76,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return constructorGen;
         }
 
-        public Type CreateType()
-        {
-            return Source.CreateType();
-        }
-
         public IMethodGenerator AddMethod(string name, MethodAttributes attributes, CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
         {
             var methodBuilder = Source.DefineMethod(name, attributes, callingConvention, returnType, parameterTypes);
@@ -92,6 +87,21 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             Source.SetParent(parentType);
             return this;
+        }
+
+        public new ReadOnlyCollection<IConstructorGenerator> Constructors
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public new ReadOnlyCollection<IMethodGenerator> Methods
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public IMethodGenerator AddMethod(IMethodGenerator methodGen)
+        {
+            throw new NotImplementedException();
         }
     }
 }

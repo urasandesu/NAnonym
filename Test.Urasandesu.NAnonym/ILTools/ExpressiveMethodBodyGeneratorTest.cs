@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Urasandesu.NAnonym;
 using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -421,7 +423,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 });
 
-                var emitTest07 = emitTest07TypeGen.CreateType();
+                var emitTest07 = ((SRTypeGeneratorImpl)emitTest07TypeGen).Source.CreateType();
                 var instance = (ISample2)Activator.CreateInstance(emitTest07);
 
                 string message = instance.Print("aiueo");

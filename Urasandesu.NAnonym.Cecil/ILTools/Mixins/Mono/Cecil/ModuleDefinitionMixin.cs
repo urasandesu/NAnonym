@@ -28,5 +28,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil
 
             return new MCTypeGeneratorImpl(typeDef);
         }
+
+        public static ITypeGenerator ReadType(this ModuleDefinition moduleDef, string fullName)
+        {
+            return new MCTypeGeneratorImpl(moduleDef.GetType(fullName));
+        }
     }
 }

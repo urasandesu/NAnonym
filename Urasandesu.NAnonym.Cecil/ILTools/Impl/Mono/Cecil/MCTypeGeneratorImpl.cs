@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Cecil;
-using SR = System.Reflection;
-using MC = Mono.Cecil;
-using System.Runtime.Serialization;
-using UN = Urasandesu.NAnonym;
-using UNI = Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Linq;
 using System.Collections.ObjectModel;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System.Reflection;
+using System.Linq;
+using Mono.Cecil;
+using Urasandesu.NAnonym.Linq;
+using MC = Mono.Cecil;
+using SR = System.Reflection;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
@@ -21,10 +16,18 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         [NonSerialized]
         ReadOnlyCollection<UNI::IFieldGenerator> fields;
 
+        [NonSerialized]
+        ReadOnlyCollection<UNI::IConstructorGenerator> constructors;
+
+        [NonSerialized]
+        ReadOnlyCollection<UNI::IMethodGenerator> methods;
+
         public MCTypeGeneratorImpl(TypeDefinition typeDef)
             : base(typeDef)
         {
             fields = new ReadOnlyCollection<UNI::IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (UNI::IFieldGenerator)fieldDecl));
+            constructors = new ReadOnlyCollection<UNI::IConstructorGenerator>(base.Constructors.TransformEnumerateOnly(constructorDecl => (UNI::IConstructorGenerator)constructorDecl));
+            methods = new ReadOnlyCollection<UNI::IMethodGenerator>(base.Methods.TransformEnumerateOnly(methodDecl => (UNI::IMethodGenerator)methodDecl));
         }
 
         internal new TypeDefinition TypeDef
@@ -39,7 +42,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return (MCFieldGeneratorImpl)fieldDef;
         }
 
-        public UNI::IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
+        public UNI::IMethodGenerator AddMethod(string name, SR::MethodAttributes attributes, Type returnType, Type[] parameterTypes)
         {
             var methodDef = new MethodDefinition(name, (MethodAttributes)attributes, TypeDef.Module.Import(returnType));
             TypeDef.Methods.Add(methodDef);
@@ -57,7 +60,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return base.Module as UNI::IModuleGenerator; }
         }
 
-        public UNI::IMethodBaseGenerator AddMethod(string name, SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
+        public UNI::IMethodGenerator AddMethod(string name, SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type returnType, Type[] parameterTypes)
         {
             throw new NotImplementedException();
         }
@@ -76,7 +79,22 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCConstructorGeneratorImpl(constructorDef);
         }
 
-        public Type CreateType()
+        public UNI::ITypeGenerator SetParent(Type parentType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public new ReadOnlyCollection<UNI::IConstructorGenerator> Constructors
+        {
+            get { return constructors; }
+        }
+
+        public new ReadOnlyCollection<UNI::IMethodGenerator> Methods
+        {
+            get { return methods; }
+        }
+
+        public UNI::IMethodGenerator AddMethod(UNI::IMethodGenerator methodGen)
         {
             throw new NotImplementedException();
         }

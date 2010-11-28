@@ -7,14 +7,15 @@ using MC = Mono.Cecil;
 using Mono.Cecil.Cil;
 using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCPortableScopeItemImpl : UN::ILTools.ManuallyDeserializable, UN::ILTools.IPortableScopeItem
+    class MCPortableScopeItemImpl : UNI::ManuallyDeserializable, UNI::IPortableScopeItem
     {
-        UN::ILTools.PortableScopeItemRawData itemRawData;
+        UNI::PortableScopeItemRawData itemRawData;
 
         [NonSerialized]
         internal FieldDefinition fieldDef;
@@ -24,13 +25,13 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         string variableTypeFullName;
         int variableIndex;
 
-        public MCPortableScopeItemImpl(UN::ILTools.PortableScopeItemRawData itemRawData, FieldDefinition fieldDef, VariableDefinition variableDef)
+        public MCPortableScopeItemImpl(UNI::PortableScopeItemRawData itemRawData, FieldDefinition fieldDef, VariableDefinition variableDef)
             : this(itemRawData, default(object), fieldDef, variableDef)
         {
         }
 
         // NOTE: 構築中はこちら。まだ実体化してないので、GlobalAssemblyResolver.Resolve できない。
-        public MCPortableScopeItemImpl(UN::ILTools.PortableScopeItemRawData itemRawData, object value, FieldDefinition fieldDef, VariableDefinition variableDef)
+        public MCPortableScopeItemImpl(UNI::PortableScopeItemRawData itemRawData, object value, FieldDefinition fieldDef, VariableDefinition variableDef)
             : base(true)
         {
             this.itemRawData = itemRawData;
@@ -48,8 +49,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         internal FieldDefinition FieldDef { get { return fieldDef; } }
 
-        #region IPortableScopeItem メンバ
-
         public object Value { get; set; }
 
         public object Source
@@ -62,25 +61,17 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return itemRawData.LocalName; }
         }
 
-        #endregion
-
-        #region ILocalDeclaration メンバ
-
         string ILocalDeclaration.Name
         {
             get { throw new NotImplementedException(); }
         }
-
-        #endregion
-
-        #region IMemberDeclaration メンバ
 
         string IMemberDeclaration.Name
         {
             get { throw new NotImplementedException(); }
         }
 
-        public UN::ILTools.ITypeDeclaration Type
+        public UNI::ITypeDeclaration Type
         {
             get { throw new NotImplementedException(); }
         }
@@ -89,28 +80,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { throw new NotImplementedException(); }
         }
-
-        #endregion
-
-
-        //[OnDeserialized]
-        //internal void OnDeserialized(StreamingContext context)
-        //{
-        //    if (!deserialized)
-        //    {
-        //        deserialized = true;
-        //        throw new NotImplementedException();
-        //    }
-        //}
-
-        //#region IDeserializationCallback メンバ
-
-        //public void OnDeserialization(object sender)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //#endregion
 
         protected override void OnDeserializedManually(StreamingContext context)
         {
@@ -129,6 +98,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public Type FieldType
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }
