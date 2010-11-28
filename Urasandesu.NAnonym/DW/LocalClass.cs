@@ -141,11 +141,11 @@ namespace Urasandesu.NAnonym.DW
             
 
 
-            var constructorInjection = new LocalConstructorInjection(localClassTypeGen, FieldSet);
-            constructorInjection.Apply();
+            var constructorWeaver = new LocalConstructorWeaver(localClassTypeGen, FieldSet);
+            constructorWeaver.Apply();
 
-            var methodInjection = new LocalMethodInjection(constructorInjection, MethodSet);
-            methodInjection.Apply();
+            var methodWeaver = new LocalMethodWeaver(constructorWeaver, MethodSet);
+            methodWeaver.Apply();
 
             createdType = ((SRTypeGeneratorImpl)localClassTypeGen).Source.CreateType();
             //localClassAssemblyBuilder.Save("LocalClasses.dll");

@@ -12,13 +12,13 @@ namespace Urasandesu.NAnonym.DW
     {
         DependencyClass modified;
 
-        internal HashSet<InjectionFieldInfo> FieldSet { get; private set; }
-        internal HashSet<InjectionMethodInfo> MethodSet { get; private set; }
+        internal HashSet<WeaveFieldInfo> FieldSet { get; private set; }
+        internal HashSet<WeaveMethodInfo> MethodSet { get; private set; }
 
         public DependencyClass()
         {
-            FieldSet = new HashSet<InjectionFieldInfo>();
-            MethodSet = new HashSet<InjectionMethodInfo>();
+            FieldSet = new HashSet<WeaveFieldInfo>();
+            MethodSet = new HashSet<WeaveMethodInfo>();
         }
 
         internal void Register()

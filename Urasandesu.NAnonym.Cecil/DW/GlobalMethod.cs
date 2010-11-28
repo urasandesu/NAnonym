@@ -17,7 +17,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         public GlobalClass IsReplacedBy(Delegate @delegate)
         {
-            globalClass.MethodSet.Add(new InjectionMethodInfo(SetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
+            globalClass.MethodSet.Add(new WeaveMethodInfo(SetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
             return globalClass;
         }
     }

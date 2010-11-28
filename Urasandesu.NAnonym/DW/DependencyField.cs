@@ -22,7 +22,7 @@ namespace Urasandesu.NAnonym.DW
 
         protected void As(LambdaExpression initializer)
         {
-            @class.FieldSet.Add(new InjectionFieldInfo(fieldReference, initializer, fieldType));
+            @class.FieldSet.Add(new WeaveFieldInfo(fieldReference, initializer, fieldType));
         }
     }
 }

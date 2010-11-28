@@ -125,11 +125,11 @@ namespace Urasandesu.NAnonym.Cecil.DW
             var globalClassModuleDef = ModuleDefinition.ReadModule(localPath, new ReaderParameters() { ReadSymbols = true });
             var globalClassTypeGen = globalClassModuleDef.ReadType(typeof(TBase).FullName);
 
-            var constructorInjection = new GlobalConstructorInjection(globalClassTypeGen, FieldSet);
-            constructorInjection.Apply();
+            var constructorWeaver = new GlobalConstructorWeaver(globalClassTypeGen, FieldSet);
+            constructorWeaver.Apply();
 
-            var methodInjection = new GlobalMethodInjection(constructorInjection, MethodSet);
-            methodInjection.Apply();
+            var methodWeaver = new GlobalMethodWeaver(constructorWeaver, MethodSet);
+            methodWeaver.Apply();
 
             globalClassModuleDef.Write(localPath, new WriterParameters() { WriteSymbols = true });
         }
