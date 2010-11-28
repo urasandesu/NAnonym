@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class ConstructorBodyInjectionDefiner : BodyInjectionDefiner
+    abstract class ConstructorBodyInjectionDefiner : BodyInjectionDefiner
     {
         public new ConstructorBodyInjection ParentBody { get { return (ConstructorBodyInjection)base.ParentBody; } }
         public ConstructorBodyInjectionDefiner(ConstructorBodyInjection parentBody)
@@ -13,8 +13,6 @@ namespace Urasandesu.NAnonym.DI
         {
         }
 
-        public override void Create()
-        {
-        }
+        public abstract override void Create();
     }
 }

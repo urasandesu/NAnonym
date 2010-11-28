@@ -5,10 +5,19 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorBodyInjection : ConstructorBodyInjection
     {
-        public new GlobalConstructorInjectionBuilder ParentBuilder { get { return (GlobalConstructorInjectionBuilder)base.ParentBuilder; } }
-        public GlobalConstructorBodyInjection(ExpressiveMethodBodyGenerator gen, GlobalConstructorInjectionBuilder parentBuilder)
+        public GlobalConstructorBodyInjection(ExpressiveMethodBodyGenerator gen, ConstructorInjectionBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
+        }
+
+        protected override ConstructorBodyInjectionDefiner GetBodyDefiner(ConstructorBodyInjection parentBody)
+        {
+            return new GlobalConstructorBodyInjectionDefiner(parentBody);
+        }
+
+        protected override ConstructorBodyInjectionBuilder GetBodyBuilder(ConstructorBodyInjectionDefiner parentBodyDefiner)
+        {
+            return new GlobalConstructorBodyInjectionBuilder(parentBodyDefiner);
         }
     }
 }

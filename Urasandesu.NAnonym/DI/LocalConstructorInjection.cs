@@ -7,35 +7,19 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorInjection : ConstructorInjection
     {
-        public ITypeGenerator DeclaringTypeGenerator { get; private set; }
-        public Dictionary<Type, IFieldGenerator> FieldsForDeclaringType { get; private set; }
-
-        public LocalConstructorInjection(
-            ITypeGenerator declaringTypeGenerator,
-            HashSet<InjectionFieldInfo> fieldSet)
-            : base(fieldSet)
+        public LocalConstructorInjection(ITypeGenerator declaringTypeGenerator, HashSet<InjectionFieldInfo> fieldSet)
+            : base(declaringTypeGenerator, fieldSet)
         {
-            DeclaringTypeGenerator = declaringTypeGenerator;
-            FieldsForDeclaringType = new Dictionary<Type, IFieldGenerator>();
         }
 
-        protected override void ApplyContent()
+        protected override ConstructorInjectionDefiner GetConstructorDefiner(ConstructorInjection parent)
         {
-            var definer = new LocalConstructorInjectionDefiner(this);
-            definer.Create();
-
-            var builder = new LocalConstructorInjectionBuilder(definer);
-            builder.Construct();
+            return new LocalConstructorInjectionDefiner(parent);
         }
 
-        public override Type DeclaringType
+        protected override ConstructorInjectionBuilder GetConstructorBuilder(ConstructorInjectionDefiner parentDefiner)
         {
-            get { return (Type)DeclaringTypeGenerator.Source; }
-        }
-
-        public override string GetFieldNameForDeclaringType(Type declaringType)
-        {
-            return FieldsForDeclaringType[declaringType].Name;
+            return new LocalConstructorInjectionBuilder(parentDefiner);
         }
     }
 }

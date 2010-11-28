@@ -6,8 +6,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorInjectionBuilder : ConstructorInjectionBuilder
     {
-        public new GlobalConstructorInjectionDefiner ParentDefiner { get { return (GlobalConstructorInjectionDefiner)base.ParentDefiner; } }
-        public GlobalConstructorInjectionBuilder(GlobalConstructorInjectionDefiner parentDefiner)
+        public GlobalConstructorInjectionBuilder(ConstructorInjectionDefiner parentDefiner)
             : base(parentDefiner)
         {
         }

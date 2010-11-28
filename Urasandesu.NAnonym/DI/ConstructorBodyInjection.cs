@@ -6,7 +6,7 @@ using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class ConstructorBodyInjection : BodyInjection
+    abstract class ConstructorBodyInjection : BodyInjection
     {
         public new ConstructorInjectionBuilder ParentBuilder { get { return (ConstructorInjectionBuilder)base.ParentBuilder; } }
         public ConstructorBodyInjection(ExpressiveMethodBodyGenerator gen, ConstructorInjectionBuilder parentBuilder)
@@ -16,11 +16,14 @@ namespace Urasandesu.NAnonym.DI
 
         public override void Apply()
         {
-            var bodyInjectionDefiner = new ConstructorBodyInjectionDefiner(this);
-            bodyInjectionDefiner.Create();
+            var bodyDefiner = GetBodyDefiner(this);
+            bodyDefiner.Create();
 
-            var bodyInjectionBuilder = new ConstructorBodyInjectionBuilder(bodyInjectionDefiner);
-            bodyInjectionBuilder.Construct();
+            var bodyBuilder = GetBodyBuilder(bodyDefiner);
+            bodyBuilder.Construct();
         }
+
+        protected abstract ConstructorBodyInjectionDefiner GetBodyDefiner(ConstructorBodyInjection parentBody);
+        protected abstract ConstructorBodyInjectionBuilder GetBodyBuilder(ConstructorBodyInjectionDefiner parentBodyDefiner);
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class ConstructorInjectionBuilder : InjectionBuilder
+    abstract class ConstructorInjectionBuilder : InjectionBuilder
     {
         public new ConstructorInjectionDefiner ParentDefiner { get { return (ConstructorInjectionDefiner)base.ParentDefiner; } }
         public ConstructorInjectionBuilder(ConstructorInjectionDefiner parentDefiner)
@@ -13,9 +13,6 @@ namespace Urasandesu.NAnonym.DI
         {
         }
 
-        public override void Construct()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract override void Construct();
     }
 }

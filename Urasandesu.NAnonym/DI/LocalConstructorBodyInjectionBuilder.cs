@@ -7,8 +7,7 @@ namespace Urasandesu.NAnonym.DI
 {
     class LocalConstructorBodyInjectionBuilder : ConstructorBodyInjectionBuilder
     {
-        public new LocalConstructorBodyInjectionDefiner ParentBodyDefiner { get { return (LocalConstructorBodyInjectionDefiner)base.ParentBodyDefiner; } }
-        public LocalConstructorBodyInjectionBuilder(LocalConstructorBodyInjectionDefiner parentBodyDefiner)
+        public LocalConstructorBodyInjectionBuilder(ConstructorBodyInjectionDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }

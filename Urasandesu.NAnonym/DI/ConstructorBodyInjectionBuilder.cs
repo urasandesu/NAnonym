@@ -14,7 +14,7 @@ using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DI
 {
-    class ConstructorBodyInjectionBuilder : BodyInjectionBuilder
+    abstract class ConstructorBodyInjectionBuilder : BodyInjectionBuilder
     {
         public new ConstructorBodyInjectionDefiner ParentBodyDefiner { get { return (ConstructorBodyInjectionDefiner)base.ParentBodyDefiner; } }
         public ConstructorBodyInjectionBuilder(ConstructorBodyInjectionDefiner parentBodyDefiner)

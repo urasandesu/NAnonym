@@ -7,9 +7,7 @@ namespace Urasandesu.NAnonym.Cecil.DI
 {
     class GlobalConstructorInjectionDefiner : ConstructorInjectionDefiner
     {
-        public new GlobalConstructorInjection Parent { get { return (GlobalConstructorInjection)base.Parent; } }
-
-        public GlobalConstructorInjectionDefiner(GlobalConstructorInjection parent)
+        public GlobalConstructorInjectionDefiner(ConstructorInjection parent)
             : base(parent)
         {
         }
@@ -39,6 +37,11 @@ namespace Urasandesu.NAnonym.Cecil.DI
         public override UNI::IFieldGenerator CachedConstructor
         {
             get { return cachedConstructor; }
+        }
+
+        public override UNI::IConstructorGenerator NewConstructor
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }
