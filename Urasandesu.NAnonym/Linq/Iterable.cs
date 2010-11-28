@@ -28,12 +28,6 @@ namespace Urasandesu.NAnonym.Linq
         }
 
 
-        /// <summary>
-        /// シーケンスに指定された処理を適用する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="source">入力シーケンス。</param>
-        /// <param name="action">適用する処理。</param>
         public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
         {
             foreach (var item in source.Select((item, index) => new { Item = item, Index = index }))
@@ -52,13 +46,6 @@ namespace Urasandesu.NAnonym.Linq
         }
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する差リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second には含まれていないが、返される要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれ、返されたシーケンスからは削除される要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの要素の差リストが格納されているシーケンス。</returns>
         public static IEnumerable<TSource> Negate<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
@@ -66,14 +53,6 @@ namespace Urasandesu.NAnonym.Linq
         }
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する差リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second には含まれていないが、返される要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれ、返されたシーケンスからは削除される要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの要素の差リストが格納されているシーケンス。</returns>
         public static IEnumerable<TSource> Negate<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
@@ -93,13 +72,6 @@ namespace Urasandesu.NAnonym.Linq
 
         
         
-        /// <summary>
-        /// 要素の重複が可能なリストに対する和リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">和リストの最初のセットを形成する要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">和リストの 2 番目のセットを形成する一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <returns>2 つの入力シーケンスの要素 (2 番目のセットの重複する要素は除く) を格納している IEnumerable&lt;T&gt;。</returns>
         public static IEnumerable<TSource> Replenish<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
@@ -108,14 +80,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する和リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">和リストの最初のセットを形成する要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">和リストの 2 番目のセットを形成する一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
-        /// <returns>2 つの入力シーケンスの要素 (2 番目のセットの重複する要素は除く) を格納している IEnumerable&lt;T&gt;。</returns>
         public static IEnumerable<TSource> Replenish<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
@@ -135,14 +99,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
         
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="merger">両方のシーケンスに含まれる値を、どのようにしてマージするかの処理。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> Cross<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, Func<TSource, TSource, TSource> merger)
         {
@@ -151,15 +107,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="merger">両方のシーケンスに含まれる値を、どのようにしてマージするかの処理。</param>
-        /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> Cross<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer, 
             Func<TSource, TSource, TSource> merger)
@@ -180,14 +127,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// 両方のシーケンスに含まれる値については、デフォルトで最初のシーケンスの値が利用される。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> CrossLeft<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
@@ -196,15 +135,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// 両方のシーケンスに含まれる値については、デフォルトで最初のシーケンスの値が利用される。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> CrossLeft<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
@@ -213,14 +143,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// 両方のシーケンスに含まれる値については、デフォルトで second のシーケンスの値が利用される。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> CrossRight<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
@@ -229,15 +151,6 @@ namespace Urasandesu.NAnonym.Linq
 
 
 
-        /// <summary>
-        /// 要素の重複が可能なリストに対する積リストを生成する。
-        /// 両方のシーケンスに含まれる値については、デフォルトで second のシーケンスの値が利用される。
-        /// </summary>
-        /// <typeparam name="TSource">入力シーケンスの要素の型。</typeparam>
-        /// <param name="first">second にも含まれる、返されるの要素を含む IEnumerable&lt;T&gt;。重複が有効なリスト。</param>
-        /// <param name="second">最初のシーケンスにも含まれる、返される一意の要素を含む IEnumerable&lt;T&gt;。</param>
-        /// <param name="comparer">値を比較する IEqualityComparer&lt;T&gt;。</param>
-        /// <returns>2 つのシーケンスの積リストを構成する要素が格納されているシーケンス。</returns>
         public static IEnumerable<TSource> CrossRight<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {

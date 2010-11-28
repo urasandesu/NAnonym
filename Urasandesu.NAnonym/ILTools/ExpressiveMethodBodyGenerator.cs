@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
@@ -72,8 +72,8 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.Type != typeof(void) && !state.ProhibitsLastAutoPop)
             {
-                // NOTE: void ‚Å‚Í‚È‚¢‚Æ‚¢‚¤‚±‚Æ‚Í•]‰¿ƒXƒ^ƒbƒN‚Éî•ñ‚ªc‚Á‚Ä‚¢‚é‚Æ‚¢‚¤‚±‚ÆB
-                //       pop ‚·‚é‚Ì‚ÍAŠî–{“I‚É 1 ‰ñ‚Ì Emit(Expression<Action<ExpressiveILProcessor>>) ‚ÅŠ®Œ‹‚·‚é‚æ‚¤‚É‚µ‚½‚¢‚½‚ßB
+                // NOTE: void ã§ã¯ãªã„ã¨ã„ã†ã“ã¨ã¯è©•ä¾¡ã‚¹ã‚¿ãƒƒã‚¯ã«æƒ…å ±ãŒæ®‹ã£ã¦ã„ã‚‹ã¨ã„ã†ã“ã¨ã€‚
+                //       pop ã™ã‚‹ã®ã¯ã€åŸºæœ¬çš„ã« 1 å›ã® Emit(Expression<Action<ExpressiveILProcessor>>) ã§å®Œçµã™ã‚‹ã‚ˆã†ã«ã—ãŸã„ãŸã‚ã€‚
                 methodGen.Body.ILOperator.Emit(OpCodes.Pop);
             }
         }
@@ -207,7 +207,7 @@ namespace Urasandesu.NAnonym.ILTools
             EvalExpression(methodGen, exp.Left, state);
             EvalExpression(methodGen, exp.Right, state);
 
-            // TODO: ?? ‰‰Zq‚Æ‚©‰‰Zq‚ÌƒI[ƒo[ƒ[ƒh‚Æ‚©B
+            // TODO: ?? æ¼”ç®—å­ã¨ã‹æ¼”ç®—å­ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ã¨ã‹ã€‚
             if (exp.Conversion != null) throw new NotImplementedException();
             if (exp.Method != null) throw new NotImplementedException();
 
@@ -260,7 +260,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         static void EvalMethodCall(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
-            // •]‰¿‚Ì‡”Ô‚ÍAObject -> Arguments -> MethodB
+            // è©•ä¾¡ã®é †ç•ªã¯ã€Object -> Arguments -> Methodã€‚
             if (exp.Object == null)
             {
                 // static method call
@@ -312,7 +312,7 @@ namespace Urasandesu.NAnonym.ILTools
                     }
                     if (exp.Object.Type.IsValueType)
                     {
-                        // NOTE: ’lŒ^‚Ìƒƒ\ƒbƒh‚ğŒÄ‚Ño‚·‚É‚ÍAƒAƒhƒŒƒX‚Ö‚Ì•ÏŠ·‚ª•K—vB
+                        // NOTE: å€¤å‹ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã™ã«ã¯ã€ã‚¢ãƒ‰ãƒ¬ã‚¹ã¸ã®å¤‰æ›ãŒå¿…è¦ã€‚
                         var local = methodGen.Body.ILOperator.AddLocal(exp.Object.Type);
                         methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
                         methodGen.Body.ILOperator.Emit(OpCodes.Ldloca, local);
@@ -633,7 +633,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else if ((ni = exp.Value as int?) != null)
             {
-                // HACK: _S ‚ª•t‚­–½—ß‚Í’Z‚¢Œ`®B-127 ` 128 ˆÈŠO‚ÍÅ“K‰»‚ª•K—vB
+                // HACK: _S ãŒä»˜ãå‘½ä»¤ã¯çŸ­ã„å½¢å¼ã€‚-127 ï½ 128 ä»¥å¤–ã¯æœ€é©åŒ–ãŒå¿…è¦ã€‚
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(int)ni);
             }
             else if ((nd = exp.Value as double?) != null)
@@ -675,7 +675,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else
             {
-                // TODO: exp.Value ‚ªƒIƒuƒWƒFƒNƒgŒ^‚Ìê‡‚Í‚Ç‚¤‚·‚é‚Ì‚¾H
+                // TODO: exp.Value ãŒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå‹ã®å ´åˆã¯ã©ã†ã™ã‚‹ã®ã ï¼Ÿ
                 throw new NotImplementedException();
             }
         }
@@ -703,12 +703,12 @@ namespace Urasandesu.NAnonym.ILTools
                     }
                     else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
                     {
-                        // TODO: implicit operator ‚â explicit operator ‚ÌÀ‘•B
+                        // TODO: implicit operator ã‚„ explicit operator ã®å®Ÿè£…ã€‚
                         methodGen.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
                     }
                     else
                     {
-                        // TODO: implicit operator ‚â explicit operator ‚ÌÀ‘•B
+                        // TODO: implicit operator ã‚„ explicit operator ã®å®Ÿè£…ã€‚
                         methodGen.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
                     }
                     break;
@@ -738,7 +738,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         static void EvalLambda(IMethodBaseGenerator methodGen, LambdaExpression exp, EvalState state)
         {
-            // TODO: DynamicMethod Ä‹A‚µ‚Äì‚é‚±‚Æ‚É‚È‚éBèŠÔ‚È‚Ì‚ÅŒã‰ñ‚µB
+            // TODO: DynamicMethod å†å¸°ã—ã¦ä½œã‚‹ã“ã¨ã«ãªã‚‹ã€‚æ‰‹é–“ãªã®ã§å¾Œå›ã—ã€‚
             EvalExpression(methodGen, exp.Body, state);
         }
 
@@ -748,11 +748,11 @@ namespace Urasandesu.NAnonym.ILTools
             var propertyInfo = default(PropertyInfo);
             if ((fieldInfo = exp.Member as FieldInfo) != null)
             {
-                // •]‰¿‚Ì—Dæ‡‚ÍA
-                // 1. Addloc ‚Åƒ[ƒJƒ‹•Ï”‚Æ‚µ‚Ä’Ç‰Á‚µ‚½‚Ìi–¼‘Oˆø‚«j
-                // 2. ƒƒ\ƒbƒh‚Ìˆø”i–¼‘Oˆø‚«j
-                // 3. ’è‹`‚Ég‚Á‚½•Ï”‚»‚Ì‚à‚Ì
-                // 4. ‚»‚Ì‘¼
+                // è©•ä¾¡ã®å„ªå…ˆé †ã¯ã€
+                // 1. Addloc ã§ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã¨ã—ã¦è¿½åŠ ã—ãŸã®ï¼ˆåå‰å¼•ãï¼‰
+                // 2. ãƒ¡ã‚½ãƒƒãƒ‰ã®å¼•æ•°ï¼ˆåå‰å¼•ãï¼‰
+                // 3. å®šç¾©æ™‚ã«ä½¿ã£ãŸå¤‰æ•°ãã®ã‚‚ã®
+                // 4. ãã®ä»–
                 var localGen = default(ILocalGenerator);
                 var parameterGen = default(IParameterGenerator);
                 var fieldGen = default(IFieldGenerator);
@@ -772,7 +772,7 @@ namespace Urasandesu.NAnonym.ILTools
                 }
                 else if ((portable = exp.Expression as ConstantExpression) != null)
                 {
-                    // NOTE: “¯‚¶–¼‘O‚Ì•Ï”‚ğ Addloc ‚³‚ê‚é‚Æ‚â‚Á‚©‚¢B‹[—“I‚Éƒ[ƒJƒ‹•Ï”‚Æ‚µ‚Ä‚à’è‹`‚·‚é‚±‚Æ‚ğŒŸ“¢’†B
+                    // NOTE: åŒã˜åå‰ã®å¤‰æ•°ã‚’ Addloc ã•ã‚Œã‚‹ã¨ã‚„ã£ã‹ã„ã€‚æ“¬ä¼¼çš„ã«ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã¨ã—ã¦ã‚‚å®šç¾©ã™ã‚‹ã“ã¨ã‚’æ¤œè¨ä¸­ã€‚
                     var item = methodGen.AddPortableScopeItem(fieldInfo);
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
@@ -816,8 +816,8 @@ namespace Urasandesu.NAnonym.ILTools
             methodGen.Body.ILOperator.Emit(OpCodes.Newobj, exp.Constructor);
             if (exp.Members != null)
             {
-                //// g‚í‚È‚­‚Ä‚à\’z‚Í–â‘è‚È‚­‚Å‚«‚»‚¤H
-                //// ¨ “½–¼Œ^‚Ì‰Šú‰»‚Å‚ÍŒ©‚½–Ú‚ÆˆÙ‚È‚èAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìˆø”‚Åİ’è‚·‚é‚æ‚¤•ÏX‚³‚ê‚Ä‚¢‚éB
+                //// ä½¿ã‚ãªãã¦ã‚‚æ§‹ç¯‰ã¯å•é¡Œãªãã§ããã†ï¼Ÿ
+                //// â†’ åŒ¿åå‹ã®åˆæœŸåŒ–ã§ã¯è¦‹ãŸç›®ã¨ç•°ãªã‚Šã€ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®å¼•æ•°ã§è¨­å®šã™ã‚‹ã‚ˆã†å¤‰æ›´ã•ã‚Œã¦ã„ã‚‹ã€‚
                 //var variable = new VariableDefinition(methodDef.Module.Import(exp.Constructor.DeclaringType));
                 //Direct.Emit(MC::Cil.OpCodes.Stloc, variable);
                 //foreach (var member in exp.Members)
@@ -874,7 +874,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        #region IMethodBodyGenerator ƒƒ“ƒo
+        #region IMethodBodyGenerator ãƒ¡ãƒ³ãƒ
 
         public IILOperator ILOperator { get { return methodGen.Body.ILOperator; } }
 
@@ -890,7 +890,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         #endregion
 
-        #region IMethodBodyDeclaration ƒƒ“ƒo
+        #region IMethodBodyDeclaration ãƒ¡ãƒ³ãƒ
 
         ReadOnlyCollection<ILocalDeclaration> IMethodBodyDeclaration.Locals
         {
@@ -1052,7 +1052,7 @@ namespace Urasandesu.NAnonym.ILTools
             return dummyMethod.Body.Directives;
         }
 
-        #region IMethodBodyGenerator ƒƒ“ƒo
+        #region IMethodBodyGenerator ãƒ¡ãƒ³ãƒ
 
 
         public ILocalGenerator AddLocal(string name, Type localType)
@@ -1067,7 +1067,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         #endregion
 
-        #region IMethodBodyGenerator ƒƒ“ƒo
+        #region IMethodBodyGenerator ãƒ¡ãƒ³ãƒ
 
 
         public ILocalGenerator AddLocal(ILocalGenerator localGen)

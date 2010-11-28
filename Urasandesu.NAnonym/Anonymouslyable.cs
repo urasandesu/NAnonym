@@ -15,13 +15,6 @@ namespace Urasandesu.NAnonym
 {
     public static class Anonymouslyable
     {
-        /// <summary>
-        /// 指定された情報を引数に取る処理を生成する。
-        /// </summary>
-        /// <typeparam name="T">引数の型。</typeparam>
-        /// <param name="obj">引数の型のオブジェクト。</param>
-        /// <param name="action">指定された情報を引数に取る処理。</param>
-        /// <returns>指定された情報を引数に取る処理。</returns>
         public static Action<T> CreateAction<T>(T obj, Action<T> action)
         {
             return action;
@@ -29,15 +22,6 @@ namespace Urasandesu.NAnonym
 
 
 
-        /// <summary>
-        /// 指定された情報を引数に取る処理を生成する。
-        /// </summary>
-        /// <typeparam name="T1">第1引数の型。</typeparam>
-        /// <typeparam name="T2">第2引数の型。</typeparam>
-        /// <param name="arg1">第1引数の型のオブジェクト。</param>
-        /// <param name="arg2">第2引数の型のオブジェクト。</param>
-        /// <param name="action">指定された情報を引数に取る処理。</param>
-        /// <returns>指定された情報を引数に取る処理。</returns>
         public static Action<T1, T2> CreateAction<T1, T2>(T1 arg1, T2 arg2, Action<T1, T2> action)
         {
             return action;
@@ -45,13 +29,6 @@ namespace Urasandesu.NAnonym
 
 
 
-        /// <summary>
-        /// 指定された情報を引数に取り、結果を返す処理を生成する。
-        /// </summary>
-        /// <typeparam name="TResult">結果の型。</typeparam>
-        /// <param name="result">結果の型のオブジェクト。</param>
-        /// <param name="func">指定された情報を引数に取り、結果を返す処理。</param>
-        /// <returns>指定された情報を引数に取り、結果を返す処理。</returns>
         public static Func<TResult> CreateFunc<TResult>(TResult result, Func<TResult> func)
         {
             return func;
@@ -59,15 +36,6 @@ namespace Urasandesu.NAnonym
 
 
 
-        /// <summary>
-        /// 指定された情報を引数に取り、結果を返す処理を生成する。
-        /// </summary>
-        /// <typeparam name="T">引数の型。</typeparam>
-        /// <typeparam name="TResult">結果の型。</typeparam>
-        /// <param name="obj">引数の型のオブジェクト。</param>
-        /// <param name="result">結果の型のオブジェクト。</param>
-        /// <param name="func">指定された情報を引数に取り、結果を返す処理。</param>
-        /// <returns>指定された情報を引数に取り、結果を返す処理。</returns>
         public static Func<T, TResult> CreateFunc<T, TResult>(T obj, TResult result, Func<T, TResult> func)
         {
             return func;
@@ -75,17 +43,6 @@ namespace Urasandesu.NAnonym
 
 
 
-        /// <summary>
-        /// 指定された情報を引数に取り、結果を返す処理を生成する。
-        /// </summary>
-        /// <typeparam name="T1">第1引数の型。</typeparam>
-        /// <typeparam name="T2">第2引数の型。</typeparam>
-        /// <typeparam name="TResult">結果の型。</typeparam>
-        /// <param name="arg1">第1引数の型のオブジェクト。</param>
-        /// <param name="arg2">第2引数の型のオブジェクト。</param>
-        /// <param name="result">結果の型のオブジェクト。</param>
-        /// <param name="func">指定された情報を引数に取り、結果を返す処理。</param>
-        /// <returns>指定された情報を引数に取り、結果を返す処理。</returns>
         public static Func<T1, T2, TResult> CreateFunc<T1, T2, TResult>(T1 arg1, T2 arg2, TResult result, Func<T1, T2, TResult> func)
         {
             return func;
@@ -174,41 +131,32 @@ namespace Urasandesu.NAnonym
                 yield return _obj;
         }
 
-        public static IEnumerable<T> Recursion<T>(this T obj, Func<T, IEnumerable<T>> nextChildren) 
+        public static IEnumerable<TComposite> Recursion<TComposite>(this TComposite source, Func<TComposite, IEnumerable<TComposite>> nextComposites)
         {
-            //if (nextChildren == null) throw new ArgumentNullException("nextChildren");
-            //if (obj == null) yield break;
-
-            foreach (var child in nextChildren(obj))
+            foreach (var composite in nextComposites(source))
             {
-                yield return child;
+                yield return composite;
 
-                foreach (var childchild in Recursion(child, nextChildren))
+                foreach (var grandComposite in Recursion(composite, nextComposites))
                 {
-                    yield return childchild;
+                    yield return grandComposite;
                 }
             }
         }
 
-        public static IEnumerable<TChild> Recursion<T, TChild>(
-            this T obj, Func<T, IEnumerable<T>> nextSibling, Func<T, IEnumerable<TChild>> nextChildren)
-            //where T : class
-            //where TChild : class
+        public static IEnumerable<TContent> Recursion<TComposite, TContent>(
+            this TComposite source, Func<TComposite, IEnumerable<TComposite>> nextComposites, Func<TComposite, IEnumerable<TContent>> nextContents)
         {
-            //if (nextChildren == null) throw new ArgumentNullException("nextChildren");
-            //if (nextSibling == null) throw new ArgumentNullException("nextSibling");
-            //if (obj == null) yield break;
-
-            foreach (var sibling in nextSibling(obj))
+            foreach (var content in nextContents(source))
             {
-                foreach (var child in nextChildren(sibling))
-                {
-                    yield return child;
+                yield return content;
+            }
 
-                    foreach (var childchild in Recursion(sibling, nextSibling, nextChildren))
-                    {
-                        yield return childchild;
-                    }
+            foreach (var composite in nextComposites(source))
+            {
+                foreach (var grandContent in Recursion(composite, nextComposites, nextContents))
+                {
+                    yield return grandContent;
                 }
             }
         }
