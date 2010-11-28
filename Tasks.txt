@@ -1,5 +1,3 @@
-// TODO: ソースファイル全てに Copyright を記述。
-// TODO: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
@@ -13,6 +11,7 @@
 
 
 
+// DOING: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 
 
 
@@ -60,3 +59,4 @@
 // DONE: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
 // DONE: Mixin 定義名前空間を合併。
 // DONE: DI → DW に名前変更。
+// DONE: ソースファイル全てに Copyright を記述。
