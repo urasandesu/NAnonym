@@ -17,8 +17,8 @@ using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.ILTools.Impl;
 using UN = Urasandesu.NAnonym;
 using UNI = Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil.Cil;
+using Urasandesu.NAnonym.Cecil.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil.Cil;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {

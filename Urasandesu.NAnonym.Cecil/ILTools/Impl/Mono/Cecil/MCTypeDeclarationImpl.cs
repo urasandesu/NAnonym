@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 using SR = System.Reflection;

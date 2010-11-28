@@ -1,4 +1,3 @@
-// TODO: DI → DW に名前変更。
 // TODO: ソースファイル全てに Copyright を記述。
 // TODO: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
@@ -14,7 +13,7 @@
 
 
 
-// DOING: Mixin 定義名前空間を合併。
+// DOING: DI → DW に名前変更。
 
 
 
@@ -60,3 +59,4 @@
 // DONE: 置き換え前のメソッドにアクセス可能なオーバーロードの用意（LocalClass）。
 // DONE: Urasandesu.NAnonym.ILTools 以下の共通 I/F を拡張。Field や Parameter へのアクセス方法を統一。
 // DONE: LocalClass の作成、GlobalClass の生成について、Urasandesu.NAnonym.ILTools 以下の共通 I/F を利用するよう設計変更。
+// DONE: Mixin 定義名前空間を合併。

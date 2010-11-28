@@ -1,6 +1,6 @@
 ﻿using System;
 using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil

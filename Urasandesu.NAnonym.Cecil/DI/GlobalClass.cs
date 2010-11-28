@@ -15,7 +15,7 @@ using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DI
 {

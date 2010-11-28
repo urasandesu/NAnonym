@@ -5,8 +5,8 @@ using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using MCC = Mono.Cecil.Cil;
 using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil.Cil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil.Cil;
 
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil

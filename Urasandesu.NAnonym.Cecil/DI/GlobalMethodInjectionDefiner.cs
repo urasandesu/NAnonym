@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;

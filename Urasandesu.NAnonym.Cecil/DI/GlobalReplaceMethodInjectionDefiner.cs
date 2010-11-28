@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DI;
 using UNI = Urasandesu.NAnonym.ILTools;
 

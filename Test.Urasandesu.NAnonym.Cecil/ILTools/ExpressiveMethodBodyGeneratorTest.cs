@@ -19,8 +19,8 @@ using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System;
-using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.System;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
