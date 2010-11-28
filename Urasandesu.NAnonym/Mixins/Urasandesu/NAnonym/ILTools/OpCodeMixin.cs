@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SRE = System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
 
-namespace Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 {
     public static class OpCodeMixin
     {

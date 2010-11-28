@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System
 {

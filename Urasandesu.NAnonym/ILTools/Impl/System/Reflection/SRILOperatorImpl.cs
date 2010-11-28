@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools

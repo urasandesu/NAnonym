@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DI
 {

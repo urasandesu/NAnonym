@@ -11,7 +11,7 @@ using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using System.Collections.Generic;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.ILTools
 {

@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.ILTools

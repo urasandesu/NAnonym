@@ -8,7 +8,7 @@ using Test.Urasandesu.NAnonym.Etc;
 using Urasandesu.NAnonym;
 using Urasandesu.NAnonym.Mixins.System;
 
-namespace Test.Urasandesu.NAnonym.ILTools
+namespace Test.Urasandesu.NAnonym
 {
     [TestFixture]
     public class MixinTest

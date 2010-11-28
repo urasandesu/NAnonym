@@ -10,9 +10,9 @@ using SR = System.Reflection;
 using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
-using Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
 using System.Collections.ObjectModel;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.DI

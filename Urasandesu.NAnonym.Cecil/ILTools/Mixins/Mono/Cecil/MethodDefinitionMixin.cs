@@ -8,7 +8,7 @@ using Urasandesu.NAnonym.Cecil.ILTools.Mixins.System.Collections.Generic;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil.Cil;
 using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools.Mixins.Mono.Cecil;
 using Mono.Cecil.Cil;

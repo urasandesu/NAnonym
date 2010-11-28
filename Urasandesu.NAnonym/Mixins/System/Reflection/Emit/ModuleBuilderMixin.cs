@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-using Urasandesu.NAnonym.ILTools.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools;
 
-namespace Urasandesu.NAnonym.ILTools.Mixins.System.Reflection.Emit
+namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
 {
     public static class ModuleBuilderMixin
     {
