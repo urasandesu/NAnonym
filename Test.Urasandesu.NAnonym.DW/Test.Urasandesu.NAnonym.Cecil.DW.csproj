@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{025E6B0E-AF6A-41DC-A12C-F99791969F61}</ProjectGuid>
+    <ProjectGuid>{90F44336-2079-44AD-9470-397730316906}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test.Urasandesu.NAnonym.Cecil</RootNamespace>
-    <AssemblyName>Test.Urasandesu.NAnonym.Cecil</AssemblyName>
+    <RootNamespace>Test.Urasandesu.NAnonym.Cecil.DW</RootNamespace>
+    <AssemblyName>Test.Urasandesu.NAnonym.Cecil.DW</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,15 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\bin\Release\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\symbols\pdb\bin\Release\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.5.2.9222, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -56,23 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DW\GlobalClass3_1Test.cs" />
-    <Compile Include="DW\GlobalClass3_2Test.cs" />
-    <Compile Include="DW\GlobalClass3_3Test.cs" />
-    <Compile Include="DW\GlobalClass3_4Test.cs" />
-    <Compile Include="DW\GlobalClass3_5Test.cs" />
-    <Compile Include="DW\GlobalClassTest.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
-    <Compile Include="MixinTest.cs" />
-    <Compile Include="ILTools\NewDomainTestInfoWithScope.cs" />
-    <Compile Include="ILTools\PortableScopeTest.cs" />
+    <Compile Include="GlobalClass1.cs" />
+    <Compile Include="GlobalClass2.cs" />
+    <Compile Include="GlobalClass3_1.cs" />
+    <Compile Include="GlobalClass3_2.cs" />
+    <Compile Include="GlobalClass3_3.cs" />
+    <Compile Include="GlobalClass3_4.cs" />
+    <Compile Include="GlobalClass3_5.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Test.Urasandesu.NAnonym.DW\Test.Urasandesu.NAnonym.Cecil.DW.csproj">
-      <Project>{90F44336-2079-44AD-9470-397730316906}</Project>
-      <Name>Test.Urasandesu.NAnonym.Cecil.DW</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Test.Urasandesu.NAnonym.Etc\Test.Urasandesu.NAnonym.Etc.csproj">
       <Project>{E5F91EA1-A3AE-4D1D-A9F9-00AEA41CCA1A}</Project>
       <Name>Test.Urasandesu.NAnonym.Etc</Name>
@@ -81,17 +64,10 @@
       <Project>{2D460EE3-61D7-4726-8AF5-135352408DCB}</Project>
       <Name>Urasandesu.NAnonym.Cecil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Urasandesu.NAnonym.Test\Urasandesu.NAnonym.Test.csproj">
-      <Project>{D4CD63AA-80F7-4F2E-BBDA-267B26FF6483}</Project>
-      <Name>Urasandesu.NAnonym.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
       <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
       <Name>Urasandesu.NAnonym</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -101,7 +77,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)Tools\Urasandesu.NAnonym.Test.Preprocessor.exe" "$(TargetDir)GlobalSetupInfoSet.xml"</PostBuildEvent>
-  </PropertyGroup>
 </Project>
