@@ -1,17 +1,21 @@
-// TODO: LocalClass で匿名メソッドが static メソッドとして展開される場合について、処理を簡単化。
+// TODO: IsOverridedBy 全実装。
+// TODO: IsImplementedBy 全実装。
+// TODO: IsReplacedBy 全実装。
+// TODO: IsRunAfter 全実装。
+// TODO: IsRunBefore 全実装。
+// TODO: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
+// ------------ できれば 2010 年中にここまで・・・ --------------
+// TODO: EMBG 機能拡張。デバッグ機能強化。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
-// TODO: GlobalClass で、同じ Assembly への書き込みは 1 度で済ませるよう修正。
 // TODO: 変更の積み重ねについて、変更する側でバージョン管理できるよう修正（変更される側だと安全性は高まるが、使い勝手が格段に落ちるため）。
-// TODO: SetupMode.Override 実装。
-// TODO: LocalClassAssembly キャッシュ機構追加。
 // TODO: static メソッドの SetupMode.Replace 実装。
 // TODO: 遅延署名される Assembly には対応できないと使えない。調査の必要あり。
 
 
 
 
-// DOING: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
+// DOING: 書込処理効率アップ。(Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 
 
 
@@ -60,3 +64,4 @@
 // DONE: Mixin 定義名前空間を合併。
 // DONE: DI → DW に名前変更。
 // DONE: ソースファイル全てに Copyright を記述。
+// DONE: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。

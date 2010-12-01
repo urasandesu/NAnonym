@@ -35,13 +35,16 @@ using System.Text;
 using NUnit.Framework;
 using Urasandesu.NAnonym.Cecil.DW;
 using Test.Urasandesu.NAnonym.Etc;
+using Urasandesu.NAnonym.Test;
+using Assert = Urasandesu.NAnonym.Test.Assert;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DW
 {
-    [TestFixture]
-    public class GlobalClass3_1Test
+    [NewDomainTestFixture]
+    public class GlobalClass3_1Test : NewDomainTestBase
     {
-        static GlobalClass3_1Test()
+        [NewDomainTestFixtureSetUp]
+        public void TestFixtureSetUp()
         {
             DependencyUtil.RollbackGlobal();
 
@@ -49,7 +52,8 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             DependencyUtil.LoadGlobal();
         }
 
-        [Test]
+
+        [NewDomainTest]
         public void AddTest01()
         {
             var class3 = new Class3();

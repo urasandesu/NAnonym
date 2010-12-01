@@ -102,6 +102,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)Tools\Urasandesu.NAnonym.Test.Preprocessor.exe" "$(TargetDir)GlobalSetupInfoSet.xml"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)Tools\Urasandesu.NAnonym.Test.Preprocessor.exe" "$(TargetDir)AssemblySetupSet.xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>
