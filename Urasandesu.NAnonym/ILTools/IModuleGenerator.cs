@@ -30,6 +30,7 @@
 
 using System;
 using SR = System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -37,6 +38,7 @@ namespace Urasandesu.NAnonym.ILTools
     {
         new IAssemblyGenerator Assembly { get; }
         ITypeGenerator AddType(string fullName, SR::TypeAttributes attr, Type parent);
+        new ReadOnlyCollection<ITypeGenerator> Types { get; }
     }
 
 }

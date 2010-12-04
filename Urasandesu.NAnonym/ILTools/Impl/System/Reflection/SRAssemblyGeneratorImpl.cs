@@ -48,8 +48,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.assemblyBuilder = assemblyBuilder;
         }
 
-        #region IAssemblyGenerator メンバ
-
         public IAssemblyGenerator CreateInstance(AssemblyName name)
         {
             var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
@@ -62,7 +60,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return new SRModuleGeneratorImple(moduleBuilder);
         }
 
-        #endregion
+        public new IModuleGenerator Module
+        {
+            get { throw new NotImplementedException(); }
+        }
+
     }
 }
 

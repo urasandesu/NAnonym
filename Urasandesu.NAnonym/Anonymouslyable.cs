@@ -30,7 +30,6 @@
 
 using System;
 using System.Collections.Generic;
-//using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.CodeDom;
@@ -155,9 +154,9 @@ namespace Urasandesu.NAnonym
             }
         }
 
-        public static IEnumerable<T> Enumerate<T>(this T obj, Func<T, T> next, Predicate<T> breaking)
+        public static IEnumerable<T> Enumerate<T>(this T obj, Func<T, T> next, Predicate<T> breaker)
         {
-            for (T _obj = next(obj); !breaking(_obj); _obj = next(_obj))
+            for (T _obj = next(obj); !breaker(_obj); _obj = next(_obj))
                 yield return _obj;
         }
 
@@ -191,15 +190,9 @@ namespace Urasandesu.NAnonym
             }
         }
 
-        /*
-        public static TypeRef<T> GetTypeRef<T>(this T obj)
-        {
-            return new TypeRef<T>();
-        }*/
-
         public static bool IsDefault<T>(this T obj)
         {
-            return obj.EqualsNullable(default(T));
+            return obj.NullableEquals(default(T));
         }
 
         public static int GetHashCodeNoBoxing<T>(this T obj)
@@ -207,17 +200,17 @@ namespace Urasandesu.NAnonym
             return EqualityComparer<T>.Default.GetHashCode(obj);
         }
 
-        public static int GetHashCodeOrDefault<T>(this T obj)
+        public static int NullableGetHashCode<T>(this T obj)
         {
             return obj.IsDefault() ? 0 : obj.GetHashCodeNoBoxing();
         }
 
-        public static bool EqualsNullable<T>(this T that, T obj)
+        public static bool NullableEquals<T>(this T that, T obj)
         {
             return EqualityComparer<T>.Default.Equals(that, obj);
         }
 
-        public static bool EqualsNullable<T>(this T that, object obj)
+        public static bool NullableEquals<T>(this T that, object obj)
         {
             if (that.IsDefault() && obj == null)
             {
@@ -229,11 +222,11 @@ namespace Urasandesu.NAnonym
             }
             else
             {
-                return that.EqualsNullable((T)obj);
+                return that.NullableEquals((T)obj);
             }
         }
 
-        public static bool EqualsNullable<T, TTarget>(this T that, object obj, Func<T, TTarget> selector)
+        public static bool NullableEquals<T, TTarget>(this T that, object obj, Func<T, TTarget> selector)
         {
             Required.NotDefault(selector, () => selector);
 
@@ -260,7 +253,7 @@ namespace Urasandesu.NAnonym
                 }
                 else
                 {
-                    return thatTarget.EqualsNullable(objTarget);
+                    return thatTarget.NullableEquals(objTarget);
                 }
             }
         }

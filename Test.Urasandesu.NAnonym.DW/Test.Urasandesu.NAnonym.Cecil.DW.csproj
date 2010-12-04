@@ -48,11 +48,7 @@
   <ItemGroup>
     <Compile Include="GlobalClass1.cs" />
     <Compile Include="GlobalClass2.cs" />
-    <Compile Include="GlobalClass3_1.cs" />
-    <Compile Include="GlobalClass3_2.cs" />
-    <Compile Include="GlobalClass3_3.cs" />
-    <Compile Include="GlobalClass3_4.cs" />
-    <Compile Include="GlobalClass3_5.cs" />
+    <Compile Include="GlobalClass3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

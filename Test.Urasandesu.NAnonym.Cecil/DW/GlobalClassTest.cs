@@ -46,16 +46,23 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         [NewDomainTestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            DependencyUtil.RollbackGlobal();
+            DWUtil.RevertGlobal();
 
-            DependencyUtil.RegisterGlobal<GlobalClass1>();
-            DependencyUtil.RegisterGlobal<GlobalClass2>();
-            DependencyUtil.LoadGlobal();
+            DWUtil.RegisterGlobal<GlobalClass1>();
+            DWUtil.RegisterGlobal<GlobalClass2>();
+            DWUtil.RegisterGlobal<GlobalClass3_1>();
+            DWUtil.RegisterGlobal<GlobalClass3_2>();
+            DWUtil.RegisterGlobal<GlobalClass3_3>();
+            DWUtil.RegisterGlobal<GlobalClass3_4>();
+            DWUtil.RegisterGlobal<GlobalClass3_5>();
+            DWUtil.RegisterGlobal<GlobalClass3_6>();
+            DWUtil.RegisterGlobal<GlobalClass3_7>();
+            DWUtil.LoadGlobal();
         }
 
 
         [NewDomainTest]
-        public void PrintTest01()
+        public void PrintTest12()
         {
             var class1 = new Class1();
             var class2 = new Class2();
@@ -74,6 +81,79 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
                 value +
                 "Modified suffix at Class2.Print",
                 class2.Print(value));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_1()
+        {
+            var class3 = new Class3_1();
+
+            Assert.AreEqual(4, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_2()
+        {
+            var class3 = new Class3_2();
+
+            Assert.AreEqual(4, class3.Add(1, 1));
+            Assert.AreEqual(6, class3.Add(1, 1));
+            Assert.AreEqual(8, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_3()
+        {
+            var class3 = new Class3_3();
+
+            Assert.AreEqual(2, class3.Add(1, 1));
+            Assert.AreEqual(4, class3.Add(1, 1));
+            Assert.AreEqual(6, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_4()
+        {
+            var class3 = new Class3_4();
+
+            Assert.AreEqual(2, class3.Add(1, 1));
+            Assert.AreEqual(4, class3.Add(1, 1));
+            Assert.AreEqual(6, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_5()
+        {
+            var class3 = new Class3_5();
+
+            Assert.AreEqual(2, class3.Add(1, 1));
+            Assert.AreEqual(3, class3.Add(1, 1));
+            Assert.AreEqual(4, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_6()
+        {
+            var class3 = new Class3_6();
+
+            Assert.AreEqual(4, class3.Add(1, 1));
+        }
+
+
+        [NewDomainTest]
+        public void AddTest3_7()
+        {
+            var class3 = new Class3_7();
+
+            Assert.AreEqual(6, class3.Add(1, 1));
+            Assert.AreEqual(10, class3.Add(1, 1));
+            Assert.AreEqual(14, class3.Add(1, 1));
         }
     }
 }

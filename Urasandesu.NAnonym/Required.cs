@@ -100,7 +100,7 @@ namespace Urasandesu.NAnonym
 
         public static T MustBeSet<T>(T value, T requiredValue, Expression<Func<T>> paramNameProvider)
         {
-            if (!value.EqualsNullable(requiredValue))
+            if (!value.NullableEquals(requiredValue))
             {
                 throw new ArgumentException(string.Format("Value must be set {0}", requiredValue), TypeSavable.GetName(paramNameProvider));
             }

@@ -55,7 +55,7 @@ namespace Test.Urasandesu.NAnonym.DW
         [SetUp]
         public void SetUp()
         {
-            DependencyUtil.RollbackLocal();
+            DWUtil.RevertLocal();
         }
 
         [Test]
@@ -72,8 +72,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DependencyUtil.RegisterLocal(sample2LocalClass);
-            DependencyUtil.LoadLocal();
+            DWUtil.RegisterLocal(sample2LocalClass);
+            DWUtil.LoadLocal();
 
             var sample2 = sample2LocalClass.New();
 
@@ -97,8 +97,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DependencyUtil.RegisterLocal(sample3LocalClass);
-            DependencyUtil.LoadLocal();
+            DWUtil.RegisterLocal(sample3LocalClass);
+            DWUtil.LoadLocal();
 
             var sample3 = sample3LocalClass.New();
 
@@ -124,8 +124,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DependencyUtil.RegisterLocal(sample3LocalClass);
-            DependencyUtil.LoadLocal();
+            DWUtil.RegisterLocal(sample3LocalClass);
+            DWUtil.LoadLocal();
 
             var sample3 = sample3LocalClass.New();
 
@@ -151,8 +151,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DependencyUtil.RegisterLocal(sample3LocalClass);
-            DependencyUtil.LoadLocal();
+            DWUtil.RegisterLocal(sample3LocalClass);
+            DWUtil.LoadLocal();
 
             var sample3 = sample3LocalClass.New();
 

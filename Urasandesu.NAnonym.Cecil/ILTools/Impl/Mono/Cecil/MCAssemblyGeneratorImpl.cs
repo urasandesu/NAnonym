@@ -48,8 +48,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
         }
 
-        #region IAssemblyGenerator メンバ
-
         public UNI::IModuleGenerator AddModule(string name)
         {
             var moduleDef = ModuleDefinition.CreateModule(name, ModuleKind.Dll);
@@ -64,7 +62,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCAssemblyGeneratorImpl(assemblyDef);
         }
 
-        #endregion
+        public new UNI::IModuleGenerator Module
+        {
+            get { return (MCModuleGeneratorImpl)base.Module; }
+        }
+
     }
 }
 

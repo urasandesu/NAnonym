@@ -57,7 +57,6 @@ namespace Urasandesu.NAnonym.Linq
             }
         }
 
-
         public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
         {
             foreach (var item in source.Select((item, index) => new { Item = item, Index = index }))
@@ -66,15 +65,38 @@ namespace Urasandesu.NAnonym.Linq
             }
         }
 
-        public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> proc)
+        public static void ForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicateWithAction)
         {
             foreach (var item in source.Select((item, index) => new { Item = item, Index = index }))
             {
-                if (!proc(item.Item, item.Index)) 
+                if (!predicateWithAction(item.Item, item.Index)) 
                     break;
             }
         }
 
+        public static void NullableForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
+        {
+            if (source == null) return;
+            source.ForEach(action);
+        }
+
+        public static void NullableForEach<TSource>(this IEnumerable<TSource> source, Predicate<TSource> predicate)
+        {
+            if (source == null) return;
+            source.ForEach(predicate);
+        }
+
+        public static void NullableForEach<TSource>(this IEnumerable<TSource> source, Action<TSource, int> action)
+        {
+            if (source == null) return;
+            source.ForEach(action);
+        }
+
+        public static void NullableForEach<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicateWithAction)
+        {
+            if (source == null) return;
+            source.ForEach(predicateWithAction);
+        }
 
         public static IEnumerable<TSource> Negate<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -396,7 +418,7 @@ namespace Urasandesu.NAnonym.Linq
 
         public static int GetAggregatedHashCodeOrDefault<T>(this IEnumerable<T> source)
         {
-            return source.Aggregate(0, (accumelate, next) => accumelate ^ next.GetHashCodeOrDefault());
+            return source.Aggregate(0, (accumelate, next) => accumelate ^ next.NullableGetHashCode());
         }
 
 
@@ -491,18 +513,16 @@ namespace Urasandesu.NAnonym.Linq
             return new DelegateComparer<T>(DelegateComparer<T>.ToNullableComparerDsc(comparer));
         }
 
-
-        
-        
-        
         public static List<T> CreateList<T>(T obj)
         {
             return new List<T>();
         }
 
-
-        
-
+        public static void NullableClear<T>(this ICollection<T> source)
+        {
+            if (source == null) return;
+            source.Clear();
+        }
     }
 }
 

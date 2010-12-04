@@ -43,7 +43,7 @@ using Urasandesu.NAnonym.ILTools;
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCPortableScopeItemImpl : UNI::ManuallyDeserializable, UNI::IPortableScopeItem
+    class MCPortableScopeItemImpl : UN::ManuallyDeserializable, UNI::IPortableScopeItem
     {
         UNI::PortableScopeItemRawData itemRawData;
 

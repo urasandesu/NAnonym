@@ -1,5 +1,5 @@
 /* 
- * File: DependencyUtil.cs
+ * File: DWUtil.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -41,39 +41,43 @@ using Mono.Cecil.Cil;
 using UND = Urasandesu.NAnonym.DW;
 using System.Xml.Serialization;
 using System.Configuration;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    // MEMO: GlobalClass、LocalClass で使うユーティリティクラス的な存在になる？
-    public class DependencyUtil : UND::DependencyUtil
+    public class DWUtil : UND::DWUtil
     {
-        protected DependencyUtil()
+        protected DWUtil()
             : base()
         {
         }
 
-        static HashSet<GlobalClass> classSet = new HashSet<GlobalClass>();
-        static AppDomain newDomain;
-
+        static DependencyClassCache classCache;
+        static AppDomain dwDomain;
         static HashSet<DWAssemblySetup> setupSet;
 
         public static void RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
-            // ここで Inject したのは完全な書き換えが可能になる。DLL の場所を記憶しておく必要あり。
-            // ShadowCopyFiles を "true" にしているのは、デバッグ実行途中で無理やり止めた場合に Unload できないことがあったため。
-            var info = new AppDomainSetup();
-            info.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
-            info.ShadowCopyFiles = "true";
-            newDomain = AppDomain.CreateDomain("NewDomain", null, info);
-            var classType = typeof(TGlobalClassType);
-            var @class = (GlobalClass)newDomain.CreateInstanceAndUnwrap(classType.Assembly.FullName, classType.FullName);
-            classSet.Add(@class);
             if (setupSet == null)
             {
                 setupSet = new HashSet<DWAssemblySetup>();
             }
-            setupSet.Add(new DWAssemblySetup(@class.CodeBase, @class.Location));
-            @class.Register();
+
+            if (classCache == null)
+            {
+                if (dwDomain == null)
+                {
+                    var info = new AppDomainSetup();
+                    info.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
+                    info.ShadowCopyFiles = "true";
+                    dwDomain = AppDomain.CreateDomain("Dependency Weaving Domain", null, info);
+                }
+
+                var classCacheType = typeof(DependencyClassCache);
+                classCache = (DependencyClassCache)dwDomain.CreateInstanceAndUnwrap(classCacheType.Assembly.FullName, classCacheType.FullName);
+            }
+
+            setupSet.Add(classCache.RegisterGlobal<TGlobalClassType>());
         }
 
         public static void LoadGlobal()
@@ -89,13 +93,13 @@ namespace Urasandesu.NAnonym.Cecil.DW
                 foreach (var assemblySetup in setupSet)
                 {
                     File.Copy(
-                        assemblySetup.CodeBaseLocalPath, 
-                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)), 
+                        assemblySetup.CodeBaseLocalPath,
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)),
                         true);
 
                     File.Copy(
-                        assemblySetup.SymbolCodeBaseLocalPath, 
-                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)), 
+                        assemblySetup.SymbolCodeBaseLocalPath,
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)),
                         true);
                 }
 
@@ -108,16 +112,18 @@ namespace Urasandesu.NAnonym.Cecil.DW
                 }
             }
 
-            foreach (var @class in classSet)
-            {
-                @class.Load();
-            }
-            AppDomain.Unload(newDomain);
+            classCache.LoadGlobal();
+            classCache = null;
+            dwDomain.NullableUnload();
+            dwDomain = null;
         }
 
-        public static void RollbackGlobal()
+        public static void RevertGlobal()
         {
-            // HACK: setupInfoSet って上書きしちゃっていいのかな？
+            classCache = null;
+            dwDomain.NullableUnload();
+            dwDomain = null;
+
             var config = (DWConfigurationSection)ConfigurationManager.GetSection(DWConfigurationSection.Name);
             if (File.Exists(config.AssemblySetupSetPath))
             {

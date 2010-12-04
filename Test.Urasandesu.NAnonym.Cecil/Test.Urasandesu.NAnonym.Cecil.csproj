@@ -56,11 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DW\GlobalClass3_1Test.cs" />
-    <Compile Include="DW\GlobalClass3_2Test.cs" />
-    <Compile Include="DW\GlobalClass3_3Test.cs" />
-    <Compile Include="DW\GlobalClass3_4Test.cs" />
-    <Compile Include="DW\GlobalClass3_5Test.cs" />
     <Compile Include="DW\GlobalClassTest.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
     <Compile Include="MixinTest.cs" />

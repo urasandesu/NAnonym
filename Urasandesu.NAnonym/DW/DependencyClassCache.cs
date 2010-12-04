@@ -1,5 +1,5 @@
-/* 
- * File: GlobalClass3_4.cs
+﻿/* 
+ * File: DependencyClassCache.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,45 +26,17 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Urasandesu.NAnonym.DW;
-using Urasandesu.NAnonym.Cecil.DW;
-using Test.Urasandesu.NAnonym.Etc;
+using System.Reflection.Emit;
 
-namespace Test.Urasandesu.NAnonym.Cecil.DW
+namespace Urasandesu.NAnonym.DW
 {
-    public class GlobalClass3_4 : GlobalClass
+    class DependencyClassCache : MarshalByRefObject
     {
-        int value = 0;
-        protected override DependencyClass OnRegister()
-        {
-            var class3GlobalClass = new GlobalClass<Class3>();
-            class3GlobalClass.Setup(the =>
-            {
-                the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
-                (x, y) =>
-                {
-                    return value += x + y;
-                });
-            });
-            return class3GlobalClass;
-        }
-
-        protected override string CodeBase
-        {
-            get { return typeof(Class3).Assembly.CodeBase; }
-        }
-
-        protected override string Location
-        {
-            get { return typeof(Class3).Assembly.Location; }
-        }
     }
 }
-

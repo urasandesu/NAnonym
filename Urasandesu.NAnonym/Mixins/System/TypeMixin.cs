@@ -35,7 +35,7 @@ using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System
 {
-    public static partial class TypeMixin
+    public static class TypeMixin
     {
         public static MethodInfo GetMethod(this Type type, MethodInfo methodInfo)
         {
@@ -73,6 +73,17 @@ namespace Urasandesu.NAnonym.Mixins.System
                 return target.Name == source.Name &&
                        target.IsGenericType &&
                        target.GetGenericArguments().Length == source.GetGenericArguments().Length;
+            }
+        }
+    }
+
+    public static class AppDomainMixin
+    {
+        public static void NullableUnload(this AppDomain domain)
+        {
+            if (domain != null)
+            {
+                AppDomain.Unload(domain);
             }
         }
     }

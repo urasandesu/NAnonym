@@ -95,12 +95,12 @@ namespace Urasandesu.NAnonym.DW
 
         public override bool Equals(object obj)
         {
-            return this.EqualsNullable(obj, that => that.Source);
+            return this.NullableEquals(obj, that => that.Source);
         }
 
         public override int GetHashCode()
         {
-            return Source.GetHashCodeOrDefault();
+            return Source.NullableGetHashCode();
         }
     }
 }

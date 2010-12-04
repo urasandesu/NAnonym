@@ -65,16 +65,16 @@ namespace Urasandesu.NAnonym.DW
             return null;
         }
 
-        internal void Load()
+        internal void Load(IAssemblyGenerator assemblyGen)
         {
-            OnLoad(modified);
+            OnLoad(assemblyGen);
             if (modified != null)
             {
-                modified.Load();
+                modified.Load(assemblyGen);
             }
         }
 
-        protected virtual void OnLoad(DependencyClass modified)
+        protected virtual void OnLoad(IAssemblyGenerator assemblyGen)
         {
         }
     }

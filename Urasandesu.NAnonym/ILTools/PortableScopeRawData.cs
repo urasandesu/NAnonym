@@ -88,8 +88,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public override int GetHashCode()
         {
-            int typeFullNameHashCode = TypeAssemblyQualifiedName.GetHashCodeOrDefault();
-            int methodNameHashCode = MethodName.GetHashCodeOrDefault();
+            int typeFullNameHashCode = TypeAssemblyQualifiedName.NullableGetHashCode();
+            int methodNameHashCode = MethodName.NullableGetHashCode();
             int parameterTypeFullNamesHashCode = ParameterTypeFullNames.GetAggregatedHashCodeOrDefault();
 
             return typeFullNameHashCode ^ methodNameHashCode ^ parameterTypeFullNamesHashCode;

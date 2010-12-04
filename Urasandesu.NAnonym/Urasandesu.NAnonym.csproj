@@ -62,6 +62,7 @@
     <Compile Include="DW\ConstructorWeaveBuilder.cs" />
     <Compile Include="DW\ConstructorWeaveDefiner.cs" />
     <Compile Include="DW\DependencyClass.cs" />
+    <Compile Include="DW\DependencyClassCache.cs" />
     <Compile Include="DW\DependencyField.cs" />
     <Compile Include="DW\DependencyMethod.cs" />
     <Compile Include="DW\FuncReference.cs" />
@@ -96,14 +97,14 @@
     <Compile Include="DW\WeaveMethodInfo.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
-    <Compile Include="ILTools\ManuallyDeserializable.cs" />
+    <Compile Include="ManuallyDeserializable.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />
     <Compile Include="ILTools\IConstructorDeclaration.cs" />
     <Compile Include="ILTools\IConstructorGenerator.cs" />
-    <Compile Include="ILTools\IManuallyDeserializable.cs" />
+    <Compile Include="IManuallyDeserializable.cs" />
     <Compile Include="ILTools\IDirectiveDeclaration.cs" />
     <Compile Include="ILTools\IDirectiveGenerator.cs" />
     <Compile Include="ILTools\IEventDeclaration.cs" />
@@ -174,7 +175,7 @@
     <Compile Include="ILTools\PortableScopeAttribute.cs" />
     <Compile Include="ILTools\PortableScopeRawData.cs" />
     <Compile Include="ILTools\TypeAnalyzer.cs" />
-    <Compile Include="DW\DependencyUtil.cs" />
+    <Compile Include="DW\DWUtil.cs" />
     <Compile Include="Linq\DelegateComparer.cs" />
     <Compile Include="Linq\DelegateEqualityComparer.cs" />
     <Compile Include="Linq\IEqualityComparer.cs" />

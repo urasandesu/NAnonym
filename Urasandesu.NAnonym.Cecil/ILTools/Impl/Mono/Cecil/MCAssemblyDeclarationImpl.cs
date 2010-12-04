@@ -36,15 +36,19 @@ using Mono.Cecil;
 using System.Runtime.Serialization;
 using System.IO;
 using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCAssemblyDeclarationImpl : UN::ILTools.ManuallyDeserializable, UN::ILTools.IAssemblyDeclaration
+    class MCAssemblyDeclarationImpl : UN::ManuallyDeserializable, UNI::IAssemblyDeclaration
     {
         [NonSerialized]
         AssemblyDefinition assemblyDef;
         string assemblyFullName;
+
+        UNI::IModuleGenerator moduleGen;
+
 
         public MCAssemblyDeclarationImpl(AssemblyDefinition assemblyDef)
             : base(true)
@@ -56,6 +60,8 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             this.assemblyDef = assemblyDef;
             assemblyFullName = assemblyDef.FullName;
+
+            moduleGen = new MCModuleGeneratorImpl(assemblyDef.MainModule, this);
         }
 
         internal AssemblyDefinition AssemblyDef { get { return assemblyDef; } }
@@ -66,6 +72,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             var assemblyDef = GlobalAssemblyResolver.Instance.Resolve(assemblyFullName);
             Initialize(assemblyDef);
         }
+
+        public UNI::IModuleDeclaration Module
+        {
+            get { return moduleGen; }
+        }
+
     }
 }
 

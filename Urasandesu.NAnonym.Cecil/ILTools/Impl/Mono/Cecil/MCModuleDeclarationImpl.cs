@@ -36,46 +36,87 @@ using Mono.Cecil;
 using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
 using UNI = Urasandesu.NAnonym.ILTools;
+using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCModuleDeclarationImpl : UNI::ManuallyDeserializable, UNI::IModuleDeclaration
+    class MCModuleDeclarationImpl : UN::ManuallyDeserializable, UNI::IModuleDeclaration
     {
         [NonSerialized]
-        ModuleReference moduleRef;
+        ModuleDefinition moduleDef;
         string moduleName;
 
-        UNI::IAssemblyGenerator assemblyGen;
+        UNI::IAssemblyDeclaration assemblyDecl;
 
+        int lastTypesCount = -1;
+
+        ReadOnlyCollection<UNI::ITypeDeclaration> types;
+
+        // HACK: Cecil については、トップダウンで構築する場合は、上位オブジェクトを入れる引数を持つオーバーロード、ボトムアップで構築する場合は、そのオブジェクトのみのオーバーロードで統一できそう。
         public MCModuleDeclarationImpl(ModuleReference moduleRef)
-            : base(true)
+            : this(moduleRef, null)
         {
-            Initialize(moduleRef);
         }
 
-        void Initialize(ModuleReference moduleRef)
+        public MCModuleDeclarationImpl(ModuleReference moduleRef, UNI::IAssemblyDeclaration assemblyDecl)
+            : base(true)
         {
-            this.moduleRef = moduleRef;
+            Initialize(moduleRef, assemblyDecl);
+        }
+
+        void Initialize(ModuleReference moduleRef, UNI::IAssemblyDeclaration assemblyDecl)
+        {
+            this.moduleDef = (ModuleDefinition)moduleRef;
             moduleName = moduleRef.Name;
-            assemblyGen = new MCAssemblyGeneratorImpl(((ModuleDefinition)moduleRef).Assembly);
+            this.assemblyDecl = assemblyDecl != null ? assemblyDecl : new MCAssemblyGeneratorImpl(((ModuleDefinition)moduleRef).Assembly);
+            InitializeMembersIfNecessary(this);
+            this.types = new ReadOnlyCollection<UNI::ITypeDeclaration>(
+                ((ModuleDefinition)moduleRef).Types.TransformEnumerateOnly(typeDef => (UNI::ITypeDeclaration)new MCTypeGeneratorImpl(typeDef, this)));
+        }
+
+        void InitializeMembersIfNecessary(MCModuleDeclarationImpl @this)
+        {
+            if (lastTypesCount < 0)
+            {
+                @this.types = new ReadOnlyCollection<UNI::ITypeDeclaration>(new UNI::ITypeDeclaration[] { });
+                lastTypesCount = 0;
+            }
+
+            if (lastTypesCount !=  moduleDef.Types.Count)
+            {
+                var types = moduleDef.Types.Where(typeDef => typeDef.Name != "<Module>").ToArray();
+                @this.types = new ReadOnlyCollection<UNI::ITypeDeclaration>(
+                    types.TransformEnumerateOnly(typeDef => (UNI::ITypeDeclaration)new MCTypeGeneratorImpl(typeDef, this)));
+            }
         }
 
         public UNI::IAssemblyDeclaration Assembly
         {
-            get { return assemblyGen; }
+            get { return assemblyDecl; }
         }
 
-        internal ModuleReference ModuleRef { get { return moduleRef; } }
+        internal ModuleDefinition ModuleDef { get { return moduleDef; } }
         protected string ModuleName { get { return moduleName; } }
 
         protected override void OnDeserializedManually(StreamingContext context)
         {
-            var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyGen;
+            var assemblyDecl = (MCAssemblyDeclarationImpl)this.assemblyDecl;
             assemblyDecl.OnDeserialized(context);
             var assemblyDef = assemblyDecl.AssemblyDef;
-            Initialize(assemblyDef.Modules.First(module => module.Name == moduleName));
+            Initialize(assemblyDef.Modules.First(module => module.Name == moduleName), assemblyDecl);
         }
+
+        public ReadOnlyCollection<UNI::ITypeDeclaration> Types
+        {
+            get 
+            {
+                InitializeMembersIfNecessary(this);
+                return types; 
+            }
+        }
+
     }
 }
 

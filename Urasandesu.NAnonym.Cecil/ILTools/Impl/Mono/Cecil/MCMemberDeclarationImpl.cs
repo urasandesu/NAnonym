@@ -40,7 +40,7 @@ using UNI = Urasandesu.NAnonym.ILTools;
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
     [Serializable]
-    class MCMemberDeclarationImpl : UNI::ManuallyDeserializable, UNI::IMemberDeclaration
+    class MCMemberDeclarationImpl : UN::ManuallyDeserializable, UNI::IMemberDeclaration
     {
         [NonSerialized]
         MemberReference memberRef;

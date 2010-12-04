@@ -54,7 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DW\DependencyUtil.cs" />
+    <Compile Include="DW\DependencyClassCache.cs" />
+    <Compile Include="DW\DWUtil.cs" />
     <Compile Include="DW\DWAssemblySetup.cs" />
     <Compile Include="DW\DWAssemblySetupCollection.cs" />
     <Compile Include="DW\DWConfigurationSection.cs" />

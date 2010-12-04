@@ -1,5 +1,5 @@
-/* 
- * File: IManuallyDeserializable.cs
+﻿/* 
+ * File: Class3.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,15 +26,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
-using System.Runtime.Serialization;
-namespace Urasandesu.NAnonym.ILTools
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Test.Urasandesu.NAnonym.Etc
 {
-    public interface IManuallyDeserializable
+    public class SimpleType1
     {
-        void OnDeserialized(StreamingContext context);
+        int value;
+        public int Increase()
+        {
+            return value++;
+        }
     }
 }
-

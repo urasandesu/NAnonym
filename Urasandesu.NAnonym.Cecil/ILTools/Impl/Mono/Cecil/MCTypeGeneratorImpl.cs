@@ -60,6 +60,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             methods = new ReadOnlyCollection<UNI::IMethodGenerator>(base.Methods.TransformEnumerateOnly(methodDecl => (UNI::IMethodGenerator)methodDecl));
         }
 
+        public MCTypeGeneratorImpl(TypeDefinition typeDef, UNI::IModuleDeclaration moduleDecl)
+            : base(typeDef, moduleDecl)
+        {
+            fields = new ReadOnlyCollection<UNI::IFieldGenerator>(base.Fields.TransformEnumerateOnly(fieldDecl => (UNI::IFieldGenerator)fieldDecl));
+            constructors = new ReadOnlyCollection<UNI::IConstructorGenerator>(base.Constructors.TransformEnumerateOnly(constructorDecl => (UNI::IConstructorGenerator)constructorDecl));
+            methods = new ReadOnlyCollection<UNI::IMethodGenerator>(base.Methods.TransformEnumerateOnly(methodDecl => (UNI::IMethodGenerator)methodDecl));
+        }
+
         internal new TypeDefinition TypeDef
         {
             get { return base.TypeDef; }

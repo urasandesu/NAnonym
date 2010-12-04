@@ -32,6 +32,7 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public interface IAssemblyDeclaration : IManuallyDeserializable
     {
+        IModuleDeclaration Module { get; }
     }
 
 }

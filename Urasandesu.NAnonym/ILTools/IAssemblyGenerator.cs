@@ -35,6 +35,7 @@ namespace Urasandesu.NAnonym.ILTools
     {
         IAssemblyGenerator CreateInstance(AssemblyName name);
         IModuleGenerator AddModule(string name);
+        new IModuleGenerator Module { get; }
     }
 
 }

@@ -62,23 +62,21 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return m_assemblyBuilder == null ? default(AssemblyBuilder) : (AssemblyBuilder)m_assemblyBuilder.GetValue(module);
         }
 
-        #region IModuleDeclaration メンバ
-
         public IAssemblyDeclaration Assembly
         {
             get { return assemblyDecl; }
         }
-
-        #endregion
-
-        #region IDeserializableManually メンバ
 
         public void OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        public ReadOnlyCollection<ITypeDeclaration> Types
+        {
+            get { throw new NotImplementedException(); }
+        }
+
     }
 }
 

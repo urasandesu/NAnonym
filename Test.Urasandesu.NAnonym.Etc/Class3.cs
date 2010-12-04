@@ -35,7 +35,7 @@ using System.Text;
 
 namespace Test.Urasandesu.NAnonym.Etc
 {
-    public class Class3
+    public class Class3_1
     {
         public int Add(int x, int y)
         {
@@ -43,12 +43,51 @@ namespace Test.Urasandesu.NAnonym.Etc
         }
     }
 
-    public class SimpleType1
+    public class Class3_2
     {
-        int value;
-        public int Increase()
+        public int Add(int x, int y)
         {
-            return value++;
+            return x + y;
+        }
+    }
+
+    public class Class3_3
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+    }
+
+    public class Class3_4
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+    }
+
+    public class Class3_5
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+    }
+
+    public class Class3_6
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+    }
+
+    public class Class3_7
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
         }
     }
 }

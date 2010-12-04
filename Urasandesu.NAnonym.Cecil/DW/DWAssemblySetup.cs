@@ -33,15 +33,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    public class DWAssemblySetup
+    [Serializable]
+    public class DWAssemblySetup : ManuallyDeserializable
     {
         public const string DebugSymbolExtension = ".pdb";
 
         string codeBase;
         string location;
+
+        [NonSerialized]
+        string symbolCodeBase;
+
+        [NonSerialized]
+        string symbolLocation;
+
+        [NonSerialized]
+        string codeBaseLocalPath;
+
+        [NonSerialized]
+        string symbolCodeBaseLocalPath;
+
 
         public string CodeBase
         {
@@ -49,9 +64,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
             set
             {
                 codeBase = value;
-                CodeBaseLocalPath = new Uri(codeBase).LocalPath;
-                SymbolCodeBase = codeBase.WithoutExtension() + DebugSymbolExtension;
-                SymbolCodeBaseLocalPath = new Uri(SymbolCodeBase).LocalPath;
+                codeBaseLocalPath = codeBase.ToLocalPath();
+                symbolCodeBase = codeBase.WithoutExtension() + DebugSymbolExtension;
+                symbolCodeBaseLocalPath = SymbolCodeBase.ToLocalPath();
             }
         }
 
@@ -61,27 +76,29 @@ namespace Urasandesu.NAnonym.Cecil.DW
             set
             {
                 location = value;
-                SymbolLocation = location.WithoutExtension() + DebugSymbolExtension;
+                symbolLocation = location.WithoutExtension() + DebugSymbolExtension;
             }
         }
 
         [XmlIgnore]
-        public string SymbolCodeBase { get; private set; }
+        public string SymbolCodeBase { get { return symbolCodeBase; } }
 
         [XmlIgnore]
-        public string SymbolLocation { get; private set; }
+        public string SymbolLocation { get { return symbolLocation; } }
 
         [XmlIgnore]
-        public string CodeBaseLocalPath { get; private set; }
+        public string CodeBaseLocalPath { get { return codeBaseLocalPath; } }
 
         [XmlIgnore]
-        public string SymbolCodeBaseLocalPath { get; private set; }
+        public string SymbolCodeBaseLocalPath { get { return symbolCodeBaseLocalPath; } }
 
         public DWAssemblySetup()
+            : base(true)
         {
         }
 
         public DWAssemblySetup(string codeBase, string location)
+            : this()
         {
             CodeBase = codeBase;
             Location = location;
@@ -101,7 +118,13 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         public override int GetHashCode()
         {
-            return CodeBase.GetHashCodeOrDefault() ^ Location.GetHashCodeOrDefault();
+            return CodeBase.NullableGetHashCode() ^ Location.NullableGetHashCode();
+        }
+
+        protected override void OnDeserializedManually(StreamingContext context)
+        {
+            CodeBase = codeBase;
+            Location = location;
         }
     }
 }

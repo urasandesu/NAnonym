@@ -1,5 +1,5 @@
 /* 
- * File: DependencyUtil.cs
+ * File: DWUtil.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,19 +26,20 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DW
 {
-    public class DependencyUtil
+    public class DWUtil
     {
-        protected DependencyUtil()
+        protected DWUtil()
         {
         }
 
@@ -52,13 +53,14 @@ namespace Urasandesu.NAnonym.DW
 
         public static void LoadLocal()
         {
+            var assembly = default(IAssemblyGenerator);
             foreach (var @class in classSet)
             {
-                @class.Load();
+                @class.Load(assembly);
             }
         }
 
-        public static void RollbackLocal()
+        public static void RevertLocal()
         {
             classSet.Clear();
         }

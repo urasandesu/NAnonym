@@ -26,13 +26,15 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+
+using System.Collections.ObjectModel;
 namespace Urasandesu.NAnonym.ILTools
 {
     public interface IModuleDeclaration : IManuallyDeserializable
     {
         IAssemblyDeclaration Assembly { get; }
+        ReadOnlyCollection<ITypeDeclaration> Types { get; }
     }
 
 }

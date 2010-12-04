@@ -35,7 +35,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Threading;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym
 {
     [Serializable]
     public abstract class ManuallyDeserializable : IManuallyDeserializable

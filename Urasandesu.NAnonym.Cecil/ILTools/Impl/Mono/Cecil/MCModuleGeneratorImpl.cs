@@ -37,6 +37,8 @@ using System.Runtime.Serialization;
 using UN = Urasandesu.NAnonym;
 using Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
+using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -46,8 +48,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         [NonSerialized]
         ModuleDefinition moduleDef;
 
+        ReadOnlyCollection<ITypeGenerator> types;
+
         public MCModuleGeneratorImpl(ModuleDefinition moduleDef)
             : base(moduleDef)
+        {
+            Initialize(moduleDef);
+        }
+
+        public MCModuleGeneratorImpl(ModuleDefinition moduleDef, IAssemblyDeclaration assemblyDecl)
+            : base(moduleDef, assemblyDecl)
         {
             Initialize(moduleDef);
         }
@@ -55,6 +65,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         void Initialize(ModuleDefinition moduleDef)
         {
             this.moduleDef = moduleDef;
+            types = new ReadOnlyCollection<ITypeGenerator>(base.Types.TransformEnumerateOnly(typeDecl => (ITypeGenerator)typeDecl));
         }
 
         public new IAssemblyGenerator Assembly
@@ -75,7 +86,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         protected override void OnDeserializedManually(StreamingContext context)
         {
             base.OnDeserializedManually(context);
-            Initialize((ModuleDefinition)ModuleRef);
+            Initialize(ModuleDef);
+        }
+
+        public new ReadOnlyCollection<ITypeGenerator> Types
+        {
+            get { return types; }
         }
     }
 }

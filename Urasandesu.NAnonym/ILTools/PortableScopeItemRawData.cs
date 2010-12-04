@@ -162,7 +162,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
             // HACK: このクラスは Immutable なので HashCode はキャッシュ可能。
             int rawDataHashCode = RawData.GetHashCode();
-            int localNameHashCode = LocalName.GetHashCodeOrDefault();
+            int localNameHashCode = LocalName.NullableGetHashCode();
 
             return rawDataHashCode ^ localNameHashCode;
         }

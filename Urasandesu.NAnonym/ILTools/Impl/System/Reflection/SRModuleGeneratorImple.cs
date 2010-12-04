@@ -48,8 +48,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.moduleBuilder = moduleBuilder;
         }
 
-        #region IModuleGenerator メンバ
-
         public new IAssemblyGenerator Assembly
         {
             get { return base.Assembly as IAssemblyGenerator; }
@@ -61,7 +59,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return new SRTypeGeneratorImpl(typeBuilder);
         }
 
-        #endregion
+        public new ReadOnlyCollection<ITypeGenerator> Types
+        {
+            get { throw new NotImplementedException(); }
+        }
+
     }
 }
 

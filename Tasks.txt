@@ -15,7 +15,7 @@
 
 
 
-// DOING: 書込処理効率アップ。(Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
+// DOING: 書込処理効率アップ。LocalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 
 
 
@@ -65,3 +65,4 @@
 // DONE: DI → DW に名前変更。
 // DONE: ソースファイル全てに Copyright を記述。
 // DONE: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
+// DONE: 書込処理効率アップ。GlobalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。

@@ -47,14 +47,15 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.assembly = assembly;
         }
 
-        #region IDeserializableManually メンバ
-
         public void OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        public IModuleDeclaration Module
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

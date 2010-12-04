@@ -69,39 +69,44 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         ReadOnlyCollection<IFieldDeclaration> fields;
         
         public MCTypeDeclarationImpl(TypeReference typeRef)
-            : base(typeRef)
+            : this(typeRef, null)
         {
-            Initialize(typeRef);
         }
 
-        void Initialize(TypeReference typeRef)
+        public MCTypeDeclarationImpl(TypeReference typeRef, IModuleDeclaration moduleDecl)
+            : base(typeRef)
+        {
+            Initialize(typeRef, moduleDecl);
+        }
+
+        void Initialize(TypeReference typeRef, IModuleDeclaration moduleDecl)
         {
             this.typeRef = typeRef;
             typeDef = typeRef.Resolve();
             typeFullName = typeDef.FullName;
-            moduleDecl = new MCModuleGeneratorImpl(typeRef.Module);
-            baseTypeDecl = typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType);
+            this.moduleDecl = moduleDecl != null ? moduleDecl : new MCModuleGeneratorImpl(typeRef.Module);
+            baseTypeDecl = typeDef.BaseType == null || typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType, moduleDecl);
             fields = new ReadOnlyCollection<IFieldDeclaration>(typeDef.Fields.TransformEnumerateOnly(fieldDef => (IFieldDeclaration)new MCFieldGeneratorImpl(fieldDef)));
-            InitializeMembers(this);
+            InitializeMembersIfNecessary(this);
         }
 
-        void InitializeMembers(MCTypeDeclarationImpl that)
+        void InitializeMembersIfNecessary(MCTypeDeclarationImpl @this)
         {
             if (lastMethodsCount < 0)
             {
-                that.constructors = new ReadOnlyCollection<IConstructorDeclaration>(new IConstructorDeclaration[] { });
-                that.methods = new ReadOnlyCollection<IMethodDeclaration>(new IMethodDeclaration[] { });
+                @this.constructors = new ReadOnlyCollection<IConstructorDeclaration>(new IConstructorDeclaration[] { });
+                @this.methods = new ReadOnlyCollection<IMethodDeclaration>(new IMethodDeclaration[] { });
                 lastMethodsCount = 0;
             }
 
             if (lastMethodsCount != typeDef.Methods.Count)
             {
                 var constructors = typeDef.Methods.Where(methodDef => methodDef.Name == ".ctor").ToArray();
-                that.constructors = new ReadOnlyCollection<IConstructorDeclaration>(
+                @this.constructors = new ReadOnlyCollection<IConstructorDeclaration>(
                     constructors.TransformEnumerateOnly(constructorDef => (IConstructorDeclaration)new MCConstructorGeneratorImpl(constructorDef)));
 
                 var methods = typeDef.Methods.Where(methodDef => methodDef.Name != ".ctor").ToArray();
-                that.methods = new ReadOnlyCollection<IMethodDeclaration>(
+                @this.methods = new ReadOnlyCollection<IMethodDeclaration>(
                     methods.TransformEnumerateOnly(methodDef => (IMethodDeclaration)new MCMethodGeneratorImpl(methodDef)));
             }
         }
@@ -145,9 +150,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             var moduleDecl = (MCModuleDeclarationImpl)this.moduleDecl;
             moduleDecl.OnDeserialized(context);
-            var moduleDef = (ModuleDefinition)moduleDecl.ModuleRef;
+            var moduleDef = moduleDecl.ModuleDef;
             var typeDef = moduleDef.Types.First(type => type.FullName == typeFullName);
-            Initialize(typeDef);
+            Initialize(typeDef, moduleDecl);
             base.OnDeserializedManually(context);
         }
 
@@ -171,7 +176,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get
             {
-                InitializeMembers(this);
+                InitializeMembersIfNecessary(this);
                 return constructors;
             }
         }
@@ -180,7 +185,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get 
             {
-                InitializeMembers(this);
+                InitializeMembersIfNecessary(this);
                 return methods;
             }
         }

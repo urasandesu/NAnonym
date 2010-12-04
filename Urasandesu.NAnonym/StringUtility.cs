@@ -129,6 +129,11 @@ namespace Urasandesu.NAnonym
             return dateTime;
         }
 
+        public static string ToLocalPath(this string uriString)
+        {
+            return new Uri(uriString).LocalPath;
+        }
+
         public static string WithoutExtension(this string fileFullPathOrUri)
         {
             int extensionStartIndex = 0;
