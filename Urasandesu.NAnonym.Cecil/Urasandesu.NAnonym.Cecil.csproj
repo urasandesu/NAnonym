@@ -60,6 +60,7 @@
     <Compile Include="DW\DWAssemblySetupCollection.cs" />
     <Compile Include="DW\DWConfigurationSection.cs" />
     <Compile Include="DW\GlobalClass.cs" />
+    <Compile Include="DW\GlobalClassLoadParameter.cs" />
     <Compile Include="DW\GlobalConstructorBodyWeaver.cs" />
     <Compile Include="DW\GlobalConstructorBodyWeaveBuilder.cs" />
     <Compile Include="DW\GlobalConstructorBodyWeaveDefiner.cs" />

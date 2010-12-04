@@ -1,5 +1,5 @@
-/* 
- * File: IModuleGenerator.cs
+﻿/* 
+ * File: GlobalClassLoadParameter.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,21 +26,18 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using SR = System.Reflection;
-using System.Collections.ObjectModel;
 
-namespace Urasandesu.NAnonym.ILTools
+using Urasandesu.NAnonym.DW;
+using Urasandesu.NAnonym.ILTools;
+
+namespace Urasandesu.NAnonym.Cecil.DW
 {
-    public interface IModuleGenerator : IModuleDeclaration
+    public class GlobalClassLoadParameter : DependencyClassLoadParameter
     {
-        new IAssemblyGenerator Assembly { get; }
-        ITypeGenerator AddType(string fullName);
-        ITypeGenerator AddType(string fullName, SR::TypeAttributes attr, Type parent);
-        new ReadOnlyCollection<ITypeGenerator> Types { get; }
-
+        public GlobalClassLoadParameter(IAssemblyGenerator assemblyGen)
+            : base(assemblyGen)
+        {
+        }
     }
-
 }

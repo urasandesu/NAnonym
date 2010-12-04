@@ -43,26 +43,26 @@ namespace Urasandesu.NAnonym.DW
         {
         }
 
-        static HashSet<LocalClass> classSet = new HashSet<LocalClass>();
+        static DependencyClassCache classCache;
 
         public static void RegisterLocal(LocalClass localClass)
         {
-            classSet.Add(localClass);
-            localClass.Register();
+            if (classCache == null)
+            {
+                classCache = new DependencyClassCache();
+            }
+            classCache.RegisterLocal(localClass);
         }
 
         public static void LoadLocal()
         {
-            var assembly = default(IAssemblyGenerator);
-            foreach (var @class in classSet)
-            {
-                @class.Load(assembly);
-            }
+            classCache.LoadLocal();
+            classCache = null;
         }
 
         public static void RevertLocal()
         {
-            classSet.Clear();
+            classCache = null;
         }
 
         

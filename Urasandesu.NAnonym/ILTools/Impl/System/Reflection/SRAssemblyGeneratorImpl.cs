@@ -42,10 +42,20 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     class SRAssemblyGeneratorImpl : SRAssemblyDeclarationImpl, IAssemblyGenerator
     {
         AssemblyBuilder assemblyBuilder;
+
+        IModuleGenerator moduleGen;
+
         public SRAssemblyGeneratorImpl(AssemblyBuilder assemblyBuilder)
             : base(assemblyBuilder)
         {
             this.assemblyBuilder = assemblyBuilder;
+        }
+
+        public SRAssemblyGeneratorImpl(AssemblyBuilder assemblyBuilder, ModuleBuilder moduleBuilder)
+            : base(assemblyBuilder)
+        {
+            this.assemblyBuilder = assemblyBuilder;
+            this.moduleGen = new SRModuleGeneratorImple(moduleBuilder);
         }
 
         public IAssemblyGenerator CreateInstance(AssemblyName name)
@@ -56,13 +66,15 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public IModuleGenerator AddModule(string name)
         {
+            Required.Default(moduleGen, () => moduleGen);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(name);
-            return new SRModuleGeneratorImple(moduleBuilder);
+            moduleGen = new SRModuleGeneratorImple(moduleBuilder);
+            return moduleGen;
         }
 
         public new IModuleGenerator Module
         {
-            get { throw new NotImplementedException(); }
+            get { return moduleGen; }
         }
 
     }

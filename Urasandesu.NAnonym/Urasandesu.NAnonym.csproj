@@ -67,6 +67,7 @@
     <Compile Include="DW\DependencyMethod.cs" />
     <Compile Include="DW\FuncReference.cs" />
     <Compile Include="DW\FuncWithBase.cs" />
+    <Compile Include="DW\LocalClassLoadParameter.cs" />
     <Compile Include="DW\Weaver.cs" />
     <Compile Include="DW\WeaveBuilder.cs" />
     <Compile Include="DW\WeaveDefiner.cs" />

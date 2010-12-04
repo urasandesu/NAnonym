@@ -41,11 +41,16 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     class SRModuleGeneratorImple : SRModuleDeclarationImpl, IModuleGenerator
     {
+        List<ITypeGenerator> listTypes;
+        ReadOnlyCollection<ITypeGenerator> types;
+
         ModuleBuilder moduleBuilder;
         public SRModuleGeneratorImple(ModuleBuilder moduleBuilder)
             : base(moduleBuilder)
         {
             this.moduleBuilder = moduleBuilder;
+            listTypes = new List<ITypeGenerator>();
+            types = new ReadOnlyCollection<ITypeGenerator>(listTypes);
         }
 
         public new IAssemblyGenerator Assembly
@@ -56,14 +61,21 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         public ITypeGenerator AddType(string fullName, TypeAttributes attr, Type parent)
         {
             var typeBuilder = moduleBuilder.DefineType(fullName, attr, parent);
-            return new SRTypeGeneratorImpl(typeBuilder);
+            var typeGen = new SRTypeGeneratorImpl(typeBuilder);
+            listTypes.Add(typeGen);
+            return typeGen;
         }
 
         public new ReadOnlyCollection<ITypeGenerator> Types
         {
-            get { throw new NotImplementedException(); }
+            get { return types; }
         }
 
+        public ITypeGenerator AddType(string fullName)
+        {
+            var typeBuilder = moduleBuilder.DefineType(fullName);
+            return new SRTypeGeneratorImpl(typeBuilder);
+        }
     }
 }
 

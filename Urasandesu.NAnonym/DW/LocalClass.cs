@@ -47,12 +47,20 @@ using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
-
     public abstract class LocalClass : DependencyClass
     {
         public static readonly string CacheFieldPrefix = "UND$<>0__Cached";
+        public static readonly string ClassNamePrefix = "UND$<>0__LocalClass";
         public LocalFieldInt Field(Expression<Func<int>> methodReference) { return new LocalFieldInt(this, methodReference); }
         public LocalField<T> Field<T>(Expression<Func<T>> methodReference) { return new LocalField<T>(this, methodReference); }
+        protected sealed override void OnLoad(DependencyClassLoadParameter parameter)
+        {
+            OnLoadLocal((LocalClassLoadParameter)parameter);
+        }
+
+        protected virtual void OnLoadLocal(LocalClassLoadParameter parameter)
+        {
+        }
     }
 
     public sealed class LocalClass<TBase> : LocalClass
@@ -153,13 +161,9 @@ namespace Urasandesu.NAnonym.DW
             throw new NotImplementedException();
         }
 
-        protected override void OnLoad(IAssemblyGenerator assemblyGen)
+        protected override void OnLoadLocal(LocalClassLoadParameter parameter)
         {
-            var localClassAssemblyName = new AssemblyName("LocalClasses");
-            localClassAssemblyName.Version = new Version(1, 0, 0, 0);
-            var localClassAssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(localClassAssemblyName, AssemblyBuilderAccess.RunAndSave);
-            var localClassModuleBuilder = localClassAssemblyBuilder.DefineDynamicModule("LocalClasses", "LocalClasses.dll");
-            var localClassTypeGen = localClassModuleBuilder.AddType("LocalClasses.LocalClassType");
+            var localClassTypeGen = parameter.Assembly.Module.AddType("LocalClasses." + ClassNamePrefix + parameter.IncreaseClassNameSequence());
             if (typeof(TBase).IsInterface)
             {
                 localClassTypeGen.AddInterfaceImplementation(typeof(TBase));
@@ -168,8 +172,6 @@ namespace Urasandesu.NAnonym.DW
             {
                 localClassTypeGen.SetParent(typeof(TBase));
             }
-            
-
 
             var constructorWeaver = new LocalConstructorWeaver(localClassTypeGen, FieldSet);
             constructorWeaver.Apply();
@@ -178,7 +180,6 @@ namespace Urasandesu.NAnonym.DW
             methodWeaver.Apply();
 
             createdType = ((SRTypeGeneratorImpl)localClassTypeGen).Source.CreateType();
-            //localClassAssemblyBuilder.Save("LocalClasses.dll");
         }
 
         

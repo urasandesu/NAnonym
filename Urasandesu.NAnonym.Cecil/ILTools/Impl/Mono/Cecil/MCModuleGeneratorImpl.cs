@@ -93,6 +93,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { return types; }
         }
+
+        public ITypeGenerator AddType(string fullName)
+        {
+            return AddType(fullName, 
+                SR::TypeAttributes.Public | 
+                SR::TypeAttributes.AutoClass | 
+                SR::TypeAttributes.AnsiClass | 
+                SR::TypeAttributes.BeforeFieldInit, 
+                typeof(object));
+        }
     }
 }
 

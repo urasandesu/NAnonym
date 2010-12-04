@@ -61,8 +61,8 @@ namespace Test.Urasandesu.NAnonym.DW
         [Test]
         public void Test1()
         {
-            var sample2LocalClass = new LocalClass<ISample2>();
-            sample2LocalClass.Setup(
+            var sample2LocalClass1 = new LocalClass<ISample2>();
+            sample2LocalClass1.Setup(
             the =>
             {
                 the.Method<string, string>(_ => _.Print).IsImplementedBy(
@@ -72,12 +72,26 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DWUtil.RegisterLocal(sample2LocalClass);
+            var sample2LocalClass2 = new LocalClass<ISample2>();
+            sample2LocalClass2.Setup(
+            the =>
+            {
+                the.Method<string, string>(_ => _.Print).IsImplementedBy(
+                value =>
+                {
+                    return value + " Hello, World!!";
+                });
+            });
+
+            DWUtil.RegisterLocal(sample2LocalClass1);
+            DWUtil.RegisterLocal(sample2LocalClass2);
             DWUtil.LoadLocal();
 
-            var sample2 = sample2LocalClass.New();
+            var sample21 = sample2LocalClass1.New();
+            Assert.AreEqual("aiueoaiueoaiueo", sample21.Print("aiueo"));
 
-            Assert.AreEqual("aiueoaiueoaiueo", sample2.Print("aiueo"));
+            var sample22 = sample2LocalClass2.New();
+            Assert.AreEqual("aiueo Hello, World!!", sample22.Print("aiueo"));
         }
 
 

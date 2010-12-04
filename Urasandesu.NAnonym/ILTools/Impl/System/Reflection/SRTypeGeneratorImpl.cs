@@ -57,7 +57,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             this.fieldBuilders = new List<FieldBuilder>(fieldBuilders);
             listFields = new List<IFieldGenerator>();
             listFields.AddRange(fieldBuilders.Select(fieldBuilder => (IFieldGenerator)new SRFieldGeneratorImpl(fieldBuilder)));
-            fields = new ReadOnlyCollection<IFieldGenerator>(listFields.TransformEnumerateOnly(fieldGen => (IFieldGenerator)fieldGen));
+            fields = new ReadOnlyCollection<IFieldGenerator>(listFields);
         }
 
         public IFieldGenerator AddField(string fieldName, Type type, SR::FieldAttributes attributes)

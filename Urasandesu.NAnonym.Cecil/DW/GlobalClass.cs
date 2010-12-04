@@ -58,6 +58,14 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         public GlobalFieldInt Field(Expression<Func<int>> methodReference) { return new GlobalFieldInt(this, methodReference); }
         public GlobalField<T> Field<T>(Expression<Func<T>> methodReference) { return new GlobalField<T>(this, methodReference); }
+        protected sealed override void OnLoad(DependencyClassLoadParameter parameter)
+        {
+            OnLoadGlobal((GlobalClassLoadParameter)parameter);
+        }
+
+        protected virtual void OnLoadGlobal(GlobalClassLoadParameter parameter)
+        {
+        }
     }
 
     public class GlobalClass<TBase> : GlobalClass
@@ -147,9 +155,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
 
 
-        protected override void OnLoad(IAssemblyGenerator assemblyGen)
+        protected override void OnLoadGlobal(GlobalClassLoadParameter parameter)
         {
-            var globalClassTypeGen = assemblyGen.Module.Types.FirstOrDefault(typeGen => typeGen.AssemblyQualifiedName == typeof(TBase).AssemblyQualifiedName);
+            var globalClassTypeGen = parameter.Assembly.Module.Types.FirstOrDefault(typeGen => typeGen.AssemblyQualifiedName == typeof(TBase).AssemblyQualifiedName);
 
             var constructorWeaver = new GlobalConstructorWeaver(globalClassTypeGen, FieldSet);
             constructorWeaver.Apply();

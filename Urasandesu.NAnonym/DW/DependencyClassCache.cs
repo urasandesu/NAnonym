@@ -33,10 +33,41 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
     class DependencyClassCache : MarshalByRefObject
     {
+        List<LocalClass> classList = new List<LocalClass>();
+        LocalClassLoadParameter parameter;
+
+        public void RegisterLocal(LocalClass localClass)
+        {
+            classList.Add(localClass);
+
+            if (parameter == null)
+            {
+                var assemblyName = new AssemblyName("LocalClasses");
+                assemblyName.Version = new Version(1, 0, 0, 0);
+                var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+                var moduleBuilder = assemblyBuilder.DefineDynamicModule("LocalClasses", "LocalClasses.dll");
+                parameter = new LocalClassLoadParameter(new SRAssemblyGeneratorImpl(assemblyBuilder, moduleBuilder));
+            }
+
+            localClass.Register();
+        }
+
+        public void LoadLocal()
+        {
+            foreach (var localClass in classList)
+            {
+                localClass.Load(parameter);
+            }
+
+            // 保存する場合はここで行う。
+            //((SRAssemblyGeneratorImpl)assemblyGen).Source.Save("LocalClasses.dll");
+        }
     }
 }

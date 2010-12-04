@@ -30,27 +30,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Globalization;
-using System.IO;
 using Mono.Cecil;
-using Urasandesu.NAnonym.Linq;
-using Mono.Cecil.Cil;
-using UND = Urasandesu.NAnonym.DW;
-using System.Xml.Serialization;
-using System.Configuration;
-using Urasandesu.NAnonym.Mixins.System;
-using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
+using Urasandesu.NAnonym.ILTools;
+using UND = Urasandesu.NAnonym.DW;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
     class DependencyClassCache : UND::DependencyClassCache
     {
         List<Tuple2<DWAssemblySetup, GlobalClass>> setupClassList = new List<Tuple2<DWAssemblySetup, GlobalClass>>();
-        Dictionary<DWAssemblySetup, IAssemblyGenerator> setupAssemblyGenDictionary = new Dictionary<DWAssemblySetup, IAssemblyGenerator>();
+        Dictionary<DWAssemblySetup, GlobalClassLoadParameter> setupAssemblyGenDictionary = new Dictionary<DWAssemblySetup, GlobalClassLoadParameter>();
 
         public DWAssemblySetup RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
@@ -62,7 +52,8 @@ namespace Urasandesu.NAnonym.Cecil.DW
             if (!setupAssemblyGenDictionary.ContainsKey(assemblySetup))
             {
                 var assemblyDef = AssemblyDefinition.ReadAssembly(assemblySetup.CodeBaseLocalPath, new ReaderParameters() { ReadSymbols = true });
-                setupAssemblyGenDictionary.Add(assemblySetup, new MCAssemblyGeneratorImpl(assemblyDef));
+                var assemblyGen =  new MCAssemblyGeneratorImpl(assemblyDef);
+                setupAssemblyGenDictionary.Add(assemblySetup, new GlobalClassLoadParameter(assemblyGen));
             }
 
             globalClass.Register();
@@ -82,9 +73,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
             foreach (var setupAssemblyGenPair in setupAssemblyGenDictionary)
             {
                 var assemblySetup = setupAssemblyGenPair.Key;
-                var assemblyGen = setupAssemblyGenPair.Value;
+                var parameter = setupAssemblyGenPair.Value;
 
-                ((MCAssemblyGeneratorImpl)assemblyGen).AssemblyDef.Write(assemblySetup.CodeBaseLocalPath, new WriterParameters() { WriteSymbols = true });
+                ((MCAssemblyGeneratorImpl)parameter.Assembly).AssemblyDef.Write(assemblySetup.CodeBaseLocalPath, new WriterParameters() { WriteSymbols = true });
             }
         }
     }
