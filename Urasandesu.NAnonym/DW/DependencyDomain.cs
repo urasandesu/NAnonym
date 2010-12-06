@@ -1,5 +1,5 @@
-/* 
- * File: SetupModes.cs
+﻿/* 
+ * File: DependencyDomain.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,21 +26,11 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym.DW
 {
-    public class SetupModes
+    public abstract class DependencyDomain
     {
-        protected SetupModes() { }
-
-        public static readonly SetupMode Override = new SetupMode();
-        public static readonly SetupMode Implement = new SetupMode();
+        protected DependencyDomain() { }
     }
 }
-

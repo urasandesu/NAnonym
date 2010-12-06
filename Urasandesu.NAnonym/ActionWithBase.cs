@@ -1,5 +1,5 @@
 /* 
- * File: LocalMethodWeaver.cs
+ * File: ActionWithBase.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -33,35 +33,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym
 {
-    class LocalMethodWeaver : MethodWeaver
-    {
-        public LocalMethodWeaver(ConstructorWeaver constructorWeaver, HashSet<WeaveMethodInfo> methodSet)
-            : base(constructorWeaver, methodSet)
-        {
-        }
-
-        protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
-        {
-            if (injectionMethod.Mode == LocalSetupModes.Override)
-            {
-                return new LocalOverrideMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else if (injectionMethod.Mode == LocalSetupModes.Implement)
-            {
-                return new LocalImplementMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        protected override MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner)
-        {
-            return new LocalMethodWeaveBuilder(parentDefiner);
-        }
-    }
+    public delegate void ActionWithBase(Action baseAction);
+    public delegate void ActionWithBase<T>(Action<T> baseAction, T arg);
+    public delegate void ActionWithBase<T1, T2>(Action<T1, T2> baseAction, T1 arg1, T2 arg2);
+    public delegate void ActionWithBase<T1, T2, T3>(Action<T1, T2, T3> baseAction, T1 arg1, T2 arg2, T3 arg3);
+    public delegate void ActionWithBase<T1, T2, T3, T4>(Action<T1, T2, T3, T4> baseAction, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }
 

@@ -1,5 +1,5 @@
 ﻿/* 
- * File: DependencyClassCache.cs
+ * File: GlobalCache.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -37,12 +37,12 @@ using UND = Urasandesu.NAnonym.DW;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class DependencyClassCache : UND::DependencyClassCache
+    class GlobalCache : UND::DependencyCache
     {
         List<Tuple2<DWAssemblySetup, GlobalClass>> setupClassList = new List<Tuple2<DWAssemblySetup, GlobalClass>>();
         Dictionary<DWAssemblySetup, GlobalClassLoadParameter> setupAssemblyGenDictionary = new Dictionary<DWAssemblySetup, GlobalClassLoadParameter>();
 
-        public DWAssemblySetup RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
+        public DWAssemblySetup Register<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
             var globalClass = (GlobalClass)Activator.CreateInstance<TGlobalClassType>();
             var assemblySetup = new DWAssemblySetup(globalClass.CodeBase, globalClass.Location);
@@ -60,7 +60,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
             return assemblySetup;
         }
 
-        public void LoadGlobal()
+        public void Load()
         {
             foreach (var setupClassTuple in setupClassList)
             {

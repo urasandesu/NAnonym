@@ -1,5 +1,5 @@
 /* 
- * File: LocalMethodWeaver.cs
+ * File: LocalDomain.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,41 +26,33 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalMethodWeaver : MethodWeaver
+    public class LocalDomain : DependencyDomain
     {
-        public LocalMethodWeaver(ConstructorWeaver constructorWeaver, HashSet<WeaveMethodInfo> methodSet)
-            : base(constructorWeaver, methodSet)
+        protected LocalDomain() { }
+
+        static LocalCache cache;
+
+        public static void Register(LocalClass localClass)
         {
+            if (cache == null)
+            {
+                cache = new LocalCache();
+            }
+            cache.Register(localClass);
         }
 
-        protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+        public static void Load()
         {
-            if (injectionMethod.Mode == LocalSetupModes.Override)
-            {
-                return new LocalOverrideMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else if (injectionMethod.Mode == LocalSetupModes.Implement)
-            {
-                return new LocalImplementMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            cache.Load();
+            cache = null;
         }
 
-        protected override MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner)
+        public static void Revert()
         {
-            return new LocalMethodWeaveBuilder(parentDefiner);
+            cache = null;
         }
     }
 }

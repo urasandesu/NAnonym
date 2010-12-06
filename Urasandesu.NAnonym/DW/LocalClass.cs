@@ -82,70 +82,70 @@ namespace Urasandesu.NAnonym.DW
 
         public LocalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalFunc<TBase, TResult>(this, source);
         }
 
         public LocalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalFunc<TBase, T, TResult>(this, source);
         }
 
         public LocalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalFunc<TBase, T1, T2, TResult>(this, source);
         }
 
         public LocalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
         public LocalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
         public LocalAction<TBase> Method(Expression<ActionReference<TBase>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalAction<TBase>(this, source);
         }
 
         public LocalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalAction<TBase, T>(this, source);
         }
 
         public LocalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalAction<TBase, T1, T2>(this, source);
         }
 
         public LocalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalAction<TBase, T1, T2, T3>(this, source);
         }
 
         public LocalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
         {
-            var method = DWUtil.ExtractMethod(methodReference);
+            var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalAction<TBase, T1, T2, T3, T4>(this, source);
         }
@@ -164,6 +164,7 @@ namespace Urasandesu.NAnonym.DW
         protected override void OnLoadLocal(LocalClassLoadParameter parameter)
         {
             var localClassTypeGen = parameter.Assembly.Module.AddType("LocalClasses." + ClassNamePrefix + parameter.IncreaseClassNameSequence());
+            // TODO: 元の型がどう、というわけではなく WeaveMethodInfo が何をしようとしているか、で型の追加もしくは更新を選択する必要がある。
             if (typeof(TBase).IsInterface)
             {
                 localClassTypeGen.AddInterfaceImplementation(typeof(TBase));

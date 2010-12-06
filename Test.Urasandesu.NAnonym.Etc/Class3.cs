@@ -90,5 +90,18 @@ namespace Test.Urasandesu.NAnonym.Etc
             return x + y;
         }
     }
+
+    public class Class4_1
+    {
+        public int Add(int x, int y)
+        {
+            return x + y;
+        }
+
+        public virtual int Minus(int x, int y)
+        {
+            return x - y;
+        }
+    }
 }
 

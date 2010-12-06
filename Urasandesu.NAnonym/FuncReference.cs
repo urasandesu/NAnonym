@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym
 {
     public delegate Func<TResult> FuncReference<TBase, TResult>(TBase @base);
     public delegate Func<T, TResult> FuncReference<TBase, T, TResult>(TBase @base);

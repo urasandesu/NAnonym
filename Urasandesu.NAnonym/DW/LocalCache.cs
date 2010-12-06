@@ -1,5 +1,5 @@
 ﻿/* 
- * File: DependencyClassCache.cs
+ * File: LocalCache.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,12 +38,12 @@ using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class DependencyClassCache : MarshalByRefObject
+    class LocalCache : DependencyCache
     {
         List<LocalClass> classList = new List<LocalClass>();
         LocalClassLoadParameter parameter;
 
-        public void RegisterLocal(LocalClass localClass)
+        public void Register(LocalClass localClass)
         {
             classList.Add(localClass);
 
@@ -59,7 +59,7 @@ namespace Urasandesu.NAnonym.DW
             localClass.Register();
         }
 
-        public void LoadLocal()
+        public void Load()
         {
             foreach (var localClass in classList)
             {

@@ -1,5 +1,5 @@
-/* 
- * File: LocalMethodWeaver.cs
+﻿/* 
+ * File: DependencyCache.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,42 +26,12 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalMethodWeaver : MethodWeaver
+    abstract class DependencyCache : MarshalByRefObject
     {
-        public LocalMethodWeaver(ConstructorWeaver constructorWeaver, HashSet<WeaveMethodInfo> methodSet)
-            : base(constructorWeaver, methodSet)
-        {
-        }
-
-        protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
-        {
-            if (injectionMethod.Mode == LocalSetupModes.Override)
-            {
-                return new LocalOverrideMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else if (injectionMethod.Mode == LocalSetupModes.Implement)
-            {
-                return new LocalImplementMethodWeaveDefiner(parent, injectionMethod);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        protected override MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner)
-        {
-            return new LocalMethodWeaveBuilder(parentDefiner);
-        }
     }
 }
-

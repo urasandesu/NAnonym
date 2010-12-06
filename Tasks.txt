@@ -1,4 +1,3 @@
-// TODO: IsOverridedBy 全実装。
 // TODO: IsImplementedBy 全実装。
 // TODO: IsReplacedBy 全実装。
 // TODO: IsRunAfter 全実装。
@@ -14,6 +13,7 @@
 
 
 
+// DOING: IsOverridedBy 全実装。
 
 
 

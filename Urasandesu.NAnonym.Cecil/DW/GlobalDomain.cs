@@ -1,5 +1,5 @@
 /* 
- * File: DWUtil.cs
+ * File: GlobalDomain.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -30,40 +30,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Globalization;
-using System.IO;
-using Mono.Cecil;
-using Urasandesu.NAnonym.Linq;
-using Mono.Cecil.Cil;
-using UND = Urasandesu.NAnonym.DW;
-using System.Xml.Serialization;
 using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
 using Urasandesu.NAnonym.Mixins.System;
+using UND = Urasandesu.NAnonym.DW;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    public class DWUtil : UND::DWUtil
+    public class GlobalDomain : UND::DependencyDomain
     {
-        protected DWUtil()
+        protected GlobalDomain()
             : base()
         {
         }
 
-        static DependencyClassCache classCache;
+        static GlobalCache cache;
         static AppDomain dwDomain;
         static HashSet<DWAssemblySetup> setupSet;
 
-        public static void RegisterGlobal<TGlobalClassType>() where TGlobalClassType : GlobalClass
+        public static void Register<TGlobalClassType>() where TGlobalClassType : GlobalClass
         {
             if (setupSet == null)
             {
                 setupSet = new HashSet<DWAssemblySetup>();
             }
 
-            if (classCache == null)
+            if (cache == null)
             {
                 if (dwDomain == null)
                 {
@@ -73,14 +67,14 @@ namespace Urasandesu.NAnonym.Cecil.DW
                     dwDomain = AppDomain.CreateDomain("Dependency Weaving Domain", null, info);
                 }
 
-                var classCacheType = typeof(DependencyClassCache);
-                classCache = (DependencyClassCache)dwDomain.CreateInstanceAndUnwrap(classCacheType.Assembly.FullName, classCacheType.FullName);
+                var cacheType = typeof(GlobalCache);
+                cache = (GlobalCache)dwDomain.CreateInstanceAndUnwrap(cacheType.Assembly.FullName, cacheType.FullName);
             }
 
-            setupSet.Add(classCache.RegisterGlobal<TGlobalClassType>());
+            setupSet.Add(cache.Register<TGlobalClassType>());
         }
 
-        public static void LoadGlobal()
+        public static void Load()
         {
             var config = (DWConfigurationSection)ConfigurationManager.GetSection(DWConfigurationSection.Name);
             if (!File.Exists(config.AssemblySetupSetPath) && setupSet != null)
@@ -112,15 +106,15 @@ namespace Urasandesu.NAnonym.Cecil.DW
                 }
             }
 
-            classCache.LoadGlobal();
-            classCache = null;
+            cache.Load();
+            cache = null;
             dwDomain.NullableUnload();
             dwDomain = null;
         }
 
-        public static void RevertGlobal()
+        public static void Revert()
         {
-            classCache = null;
+            cache = null;
             dwDomain.NullableUnload();
             dwDomain = null;
 

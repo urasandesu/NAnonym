@@ -55,7 +55,7 @@ namespace Test.Urasandesu.NAnonym.DW
         [SetUp]
         public void SetUp()
         {
-            DWUtil.RevertLocal();
+            LocalDomain.Revert();
         }
 
         [Test]
@@ -83,9 +83,9 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DWUtil.RegisterLocal(sample2LocalClass1);
-            DWUtil.RegisterLocal(sample2LocalClass2);
-            DWUtil.LoadLocal();
+            LocalDomain.Register(sample2LocalClass1);
+            LocalDomain.Register(sample2LocalClass2);
+            LocalDomain.Load();
 
             var sample21 = sample2LocalClass1.New();
             Assert.AreEqual("aiueoaiueoaiueo", sample21.Print("aiueo"));
@@ -111,8 +111,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DWUtil.RegisterLocal(sample3LocalClass);
-            DWUtil.LoadLocal();
+            LocalDomain.Register(sample3LocalClass);
+            LocalDomain.Load();
 
             var sample3 = sample3LocalClass.New();
 
@@ -138,8 +138,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DWUtil.RegisterLocal(sample3LocalClass);
-            DWUtil.LoadLocal();
+            LocalDomain.Register(sample3LocalClass);
+            LocalDomain.Load();
 
             var sample3 = sample3LocalClass.New();
 
@@ -165,8 +165,8 @@ namespace Test.Urasandesu.NAnonym.DW
                 });
             });
 
-            DWUtil.RegisterLocal(sample3LocalClass);
-            DWUtil.LoadLocal();
+            LocalDomain.Register(sample3LocalClass);
+            LocalDomain.Load();
 
             var sample3 = sample3LocalClass.New();
 

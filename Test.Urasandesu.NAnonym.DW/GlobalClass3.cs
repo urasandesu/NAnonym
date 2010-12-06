@@ -239,4 +239,37 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             get { return typeof(Class3_7).Assembly.Location; }
         }
     }
+
+    //public class GlobalClass4_1 : GlobalClass
+    //{
+    //    protected override DependencyClass OnRegister()
+    //    {
+    //        var globalClass4Class = new GlobalClass<Class4_1>();
+    //        globalClass4Class.Setup(the =>
+    //        {
+    //            the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+    //            (x, y) =>
+    //            {
+    //                return x - y;
+    //            });
+
+    //            the.Method<int, int, int>(_ => _.Minus).IsOverridedBy(
+    //            (x, y) =>
+    //            {
+    //                return x + y;
+    //            });
+    //        });
+    //        return globalClass4Class;
+    //    }
+
+    //    protected override string CodeBase
+    //    {
+    //        get { return typeof(Class4_1).Assembly.CodeBase; }
+    //    }
+
+    //    protected override string Location
+    //    {
+    //        get { return typeof(Class4_1).Assembly.Location; }
+    //    }
+    //}
 }

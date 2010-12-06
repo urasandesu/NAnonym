@@ -45,9 +45,15 @@ namespace Urasandesu.NAnonym.Cecil.DW
             this.source = source;
         }
 
+        //public GlobalClass IsOverridedBy(Delegate @delegate)
+        //{
+        //    globalClass.MethodSet.Add(new WeaveMethodInfo(SetupModes.Override, source, @delegate.Method, @delegate.GetType()));
+        //    return globalClass;
+        //}
+
         public GlobalClass IsReplacedBy(Delegate @delegate)
         {
-            globalClass.MethodSet.Add(new WeaveMethodInfo(SetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
+            globalClass.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
             return globalClass;
         }
     }
@@ -94,6 +100,11 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
             return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
         }
+
+        //public GlobalClass<TBase> IsOverridedBy(Func<T1, T2, TResult> destination)
+        //{
+        //    return (GlobalClass<TBase>)IsOverridedBy((Delegate)destination);
+        //}
     }
 
     public class GlobalFunc<TBase, T1, T2, T3, TResult> : GlobalMethod

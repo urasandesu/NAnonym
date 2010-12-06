@@ -1,5 +1,5 @@
 /* 
- * File: ActionReference.cs
+ * File: LocalSetupModes.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -35,10 +35,11 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.DW
 {
-    public delegate Action ActionReference<TBase>(TBase @base);
-    public delegate Action<T> ActionReference<TBase, T>(TBase @base);
-    public delegate Action<T1, T2> ActionReference<TBase, T1, T2>(TBase @base);
-    public delegate Action<T1, T2, T3> ActionReference<TBase, T1, T2, T3>(TBase @base);
-    public delegate Action<T1, T2, T3, T4> ActionReference<TBase, T1, T2, T3, T4>(TBase @base);
+    class LocalSetupModes : DependencySetupModes
+    {
+        protected LocalSetupModes() { }
+        public static readonly SetupMode Override = new SetupMode();
+        public static readonly SetupMode Implement = new SetupMode();
+    }
 }
 

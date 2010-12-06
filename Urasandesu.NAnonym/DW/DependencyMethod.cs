@@ -47,13 +47,13 @@ namespace Urasandesu.NAnonym.DW
 
         public DependencyClass IsImplementedBy(Delegate @delegate)
         {
-            @class.MethodSet.Add(new WeaveMethodInfo(SetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
+            @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
 
         public DependencyClass IsOverridedBy(Delegate @delegate)
         {
-            @class.MethodSet.Add(new WeaveMethodInfo(SetupModes.Override, source, @delegate.Method, @delegate.GetType()));
+            @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Override, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
     }

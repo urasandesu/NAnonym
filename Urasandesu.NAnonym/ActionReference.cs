@@ -1,5 +1,5 @@
 /* 
- * File: FuncWithBase.cs
+ * File: ActionReference.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -33,12 +33,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym
 {
-    public delegate TResult FuncWithBase<TResult>(Func<TResult> baseFunc);
-    public delegate TResult FuncWithBase<T, TResult>(Func<T, TResult> baseFunc, T arg);
-    public delegate TResult FuncWithBase<T1, T2, TResult>(Func<T1, T2, TResult> baseFunc, T1 arg1, T2 arg2);
-    public delegate TResult FuncWithBase<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> baseFunc, T1 arg1, T2 arg2, T3 arg3);
-    public delegate TResult FuncWithBase<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> baseFunc, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    public delegate Action ActionReference<TBase>(TBase @base);
+    public delegate Action<T> ActionReference<TBase, T>(TBase @base);
+    public delegate Action<T1, T2> ActionReference<TBase, T1, T2>(TBase @base);
+    public delegate Action<T1, T2, T3> ActionReference<TBase, T1, T2, T3>(TBase @base);
+    public delegate Action<T1, T2, T3, T4> ActionReference<TBase, T1, T2, T3, T4>(TBase @base);
 }
 

@@ -358,6 +358,64 @@ namespace Urasandesu.NAnonym
         
         
         
+        public static MethodInfo ExtractMethod<TBase, TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+
+
+
+
+
+        public static MethodInfo ExtractMethod<TBase>(Expression<ActionReference<TBase>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T>(Expression<ActionReference<TBase, T>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
+        {
+            return GetMethodInfo((LambdaExpression)methodReference);
+        }
+
+        
+        
+        
         
         
         public static string GetName<T>(Expression<Func<T>> nameProvider)

@@ -43,23 +43,23 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
         {
-            if (injectionMethod.Mode == SetupModes.Override)
-            {
-                throw new NotImplementedException();
-            }
-            else if (injectionMethod.Mode == SetupModes.Implement)
-            {
-                throw new NotImplementedException();
-            }
-            else if (injectionMethod.Mode == SetupModes.Replace)
+            //if (injectionMethod.Mode == SetupModes.Override)
+            //{
+            //    throw new NotImplementedException();
+            //}
+            //else if (injectionMethod.Mode == SetupModes.Implement)
+            //{
+            //    throw new NotImplementedException();
+            //}
+            if (injectionMethod.Mode == GlobalSetupModes.Replace)
             {
                 return new GlobalReplaceMethodWeaveDefiner(parent, injectionMethod);
             }
-            else if (injectionMethod.Mode == SetupModes.Before)
+            else if (injectionMethod.Mode == GlobalSetupModes.Before)
             {
                 throw new NotImplementedException();
             }
-            else if (injectionMethod.Mode == SetupModes.After)
+            else if (injectionMethod.Mode == GlobalSetupModes.After)
             {
                 throw new NotImplementedException();
             }

@@ -1,5 +1,5 @@
 /* 
- * File: ActionWithBase.cs
+ * File: GlobalSetupModes.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,19 +26,20 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+using Urasandesu.NAnonym.DW;
+using UND = Urasandesu.NAnonym.DW;
+
+namespace Urasandesu.NAnonym.Cecil.DW
 {
-    public delegate void ActionWithBase(Action baseAction);
-    public delegate void ActionWithBase<T>(Action<T> baseAction, T arg);
-    public delegate void ActionWithBase<T1, T2>(Action<T1, T2> baseAction, T1 arg1, T2 arg2);
-    public delegate void ActionWithBase<T1, T2, T3>(Action<T1, T2, T3> baseAction, T1 arg1, T2 arg2, T3 arg3);
-    public delegate void ActionWithBase<T1, T2, T3, T4>(Action<T1, T2, T3, T4> baseAction, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    class GlobalSetupModes : UND::DependencySetupModes
+    {
+        protected GlobalSetupModes() : base() { }
+
+        public static readonly SetupMode Replace = new SetupMode();
+        public static readonly SetupMode Before = new SetupMode();
+        public static readonly SetupMode After = new SetupMode();
+    }
 }
 

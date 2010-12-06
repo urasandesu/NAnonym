@@ -46,8 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymouslyable.cs" />
-    <Compile Include="DW\ActionReference.cs" />
-    <Compile Include="DW\ActionWithBase.cs" />
+    <Compile Include="ActionReference.cs" />
+    <Compile Include="ActionWithBase.cs" />
     <Compile Include="DW\AnonymousInstanceMethodBodyWeaveBuilder.cs" />
     <Compile Include="DW\AnonymousInstanceMethodBodyWeaveBuilderWithBase.cs" />
     <Compile Include="DW\AnonymousStaticMethodBodyWeaveBuilder.cs" />
@@ -61,12 +61,15 @@
     <Compile Include="DW\ConstructorWeaver.cs" />
     <Compile Include="DW\ConstructorWeaveBuilder.cs" />
     <Compile Include="DW\ConstructorWeaveDefiner.cs" />
+    <Compile Include="DW\DependencyCache.cs" />
     <Compile Include="DW\DependencyClass.cs" />
-    <Compile Include="DW\DependencyClassCache.cs" />
+    <Compile Include="DW\DependencyDomain.cs" />
+    <Compile Include="DW\DependencySetupModes.cs" />
+    <Compile Include="DW\LocalCache.cs" />
     <Compile Include="DW\DependencyField.cs" />
     <Compile Include="DW\DependencyMethod.cs" />
-    <Compile Include="DW\FuncReference.cs" />
-    <Compile Include="DW\FuncWithBase.cs" />
+    <Compile Include="FuncReference.cs" />
+    <Compile Include="FuncWithBase.cs" />
     <Compile Include="DW\LocalClassLoadParameter.cs" />
     <Compile Include="DW\Weaver.cs" />
     <Compile Include="DW\WeaveBuilder.cs" />
@@ -93,7 +96,7 @@
     <Compile Include="DW\MethodWeaveDefiner.cs" />
     <Compile Include="DW\MethodBodyWeaveBuilderType.cs" />
     <Compile Include="DW\SetupMode.cs" />
-    <Compile Include="DW\SetupModes.cs" />
+    <Compile Include="DW\LocalSetupModes.cs" />
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
@@ -176,7 +179,7 @@
     <Compile Include="ILTools\PortableScopeAttribute.cs" />
     <Compile Include="ILTools\PortableScopeRawData.cs" />
     <Compile Include="ILTools\TypeAnalyzer.cs" />
-    <Compile Include="DW\DWUtil.cs" />
+    <Compile Include="DW\LocalDomain.cs" />
     <Compile Include="Linq\DelegateComparer.cs" />
     <Compile Include="Linq\DelegateEqualityComparer.cs" />
     <Compile Include="Linq\IEqualityComparer.cs" />

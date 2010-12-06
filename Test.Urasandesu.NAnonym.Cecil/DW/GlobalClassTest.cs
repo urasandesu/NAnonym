@@ -46,23 +46,24 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         [NewDomainTestFixtureSetUp]
         public void TestFixtureSetUp()
         {
-            DWUtil.RevertGlobal();
+            GlobalDomain.Revert();
 
-            DWUtil.RegisterGlobal<GlobalClass1>();
-            DWUtil.RegisterGlobal<GlobalClass2>();
-            DWUtil.RegisterGlobal<GlobalClass3_1>();
-            DWUtil.RegisterGlobal<GlobalClass3_2>();
-            DWUtil.RegisterGlobal<GlobalClass3_3>();
-            DWUtil.RegisterGlobal<GlobalClass3_4>();
-            DWUtil.RegisterGlobal<GlobalClass3_5>();
-            DWUtil.RegisterGlobal<GlobalClass3_6>();
-            DWUtil.RegisterGlobal<GlobalClass3_7>();
-            DWUtil.LoadGlobal();
+            GlobalDomain.Register<GlobalClass1>();
+            GlobalDomain.Register<GlobalClass2>();
+            GlobalDomain.Register<GlobalClass3_1>();
+            GlobalDomain.Register<GlobalClass3_2>();
+            GlobalDomain.Register<GlobalClass3_3>();
+            GlobalDomain.Register<GlobalClass3_4>();
+            GlobalDomain.Register<GlobalClass3_5>();
+            GlobalDomain.Register<GlobalClass3_6>();
+            GlobalDomain.Register<GlobalClass3_7>();
+            //DWUtil.RegisterGlobal<GlobalClass4_1>();
+            GlobalDomain.Load();
         }
 
 
         [NewDomainTest]
-        public void PrintTest12()
+        public void Class1Class2Test()
         {
             var class1 = new Class1();
             var class2 = new Class2();
@@ -85,7 +86,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_1()
+        public void Class3_1Test()
         {
             var class3 = new Class3_1();
 
@@ -94,7 +95,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_2()
+        public void Class3_2Test()
         {
             var class3 = new Class3_2();
 
@@ -105,7 +106,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_3()
+        public void Class3_3Test()
         {
             var class3 = new Class3_3();
 
@@ -116,7 +117,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_4()
+        public void Class3_4Test()
         {
             var class3 = new Class3_4();
 
@@ -127,7 +128,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_5()
+        public void Class3_5Test()
         {
             var class3 = new Class3_5();
 
@@ -138,7 +139,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_6()
+        public void Class3_6Test()
         {
             var class3 = new Class3_6();
 
@@ -147,7 +148,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
 
 
         [NewDomainTest]
-        public void AddTest3_7()
+        public void Class3_7Test()
         {
             var class3 = new Class3_7();
 
@@ -155,6 +156,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             Assert.AreEqual(10, class3.Add(1, 1));
             Assert.AreEqual(14, class3.Add(1, 1));
         }
+
+
+        //[NewDomainTest]
+        //public void Class4_1Test()
+        //{
+        //    var class4 = new Class4_1();
+
+        //    Assert.AreEqual(2, class4.Add(4, 2));
+        //    Assert.AreEqual(4, class4.Minus(2, 2));
+        //}
     }
 }
 
