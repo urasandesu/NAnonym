@@ -37,7 +37,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
     {
         protected GlobalSetupModes() : base() { }
 
-        public static readonly SetupMode Replace = new SetupMode();
+        public static readonly SetupMode Hide = new SetupMode();
         public static readonly SetupMode Before = new SetupMode();
         public static readonly SetupMode After = new SetupMode();
     }

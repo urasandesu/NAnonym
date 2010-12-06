@@ -51,9 +51,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         //    return globalClass;
         //}
 
-        public GlobalClass IsReplacedBy(Delegate @delegate)
+        public GlobalClass IsHiddenBy(Delegate @delegate)
         {
-            globalClass.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Replace, source, @delegate.Method, @delegate.GetType()));
+            globalClass.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Hide, source, @delegate.Method, @delegate.GetType()));
             return globalClass;
         }
     }
@@ -65,9 +65,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(Func<TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
     
@@ -78,9 +78,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T, TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(Func<T, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -91,14 +91,14 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
 
-        public GlobalClass<TBase> IsReplacedBy(FuncWithBase<T1, T2, TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(FuncWithBase<T1, T2, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
 
         //public GlobalClass<TBase> IsOverridedBy(Func<T1, T2, TResult> destination)
@@ -114,9 +114,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, T3, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -127,9 +127,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Func<T1, T2, T3, T4, TResult> destination)
+        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, T3, T4, TResult> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -140,9 +140,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action destination)
+        public GlobalClass<TBase> IsHiddenBy(Action destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -153,9 +153,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T> destination)
+        public GlobalClass<TBase> IsHiddenBy(Action<T> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -166,9 +166,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2> destination)
+        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -179,9 +179,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3> destination)
+        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2, T3> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 
@@ -192,9 +192,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public GlobalClass<TBase> IsReplacedBy(Action<T1, T2, T3, T4> destination)
+        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2, T3, T4> destination)
         {
-            return (GlobalClass<TBase>)IsReplacedBy((Delegate)destination);
+            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
         }
     }
 }

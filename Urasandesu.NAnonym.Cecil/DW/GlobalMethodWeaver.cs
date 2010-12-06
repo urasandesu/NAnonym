@@ -51,9 +51,9 @@ namespace Urasandesu.NAnonym.Cecil.DW
             //{
             //    throw new NotImplementedException();
             //}
-            if (injectionMethod.Mode == GlobalSetupModes.Replace)
+            if (injectionMethod.Mode == GlobalSetupModes.Hide)
             {
-                return new GlobalReplaceMethodWeaveDefiner(parent, injectionMethod);
+                return new GlobalHideMethodWeaveDefiner(parent, injectionMethod);
             }
             else if (injectionMethod.Mode == GlobalSetupModes.Before)
             {

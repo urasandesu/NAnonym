@@ -45,7 +45,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             var class3GlobalClass = new GlobalClass<Class3_1>();
             class3GlobalClass.Setup(the =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (x, y) =>
                 {
                     return x + y + x + y;
@@ -75,7 +75,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
                 int value = 2;
 
                 the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -104,7 +104,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             class3GlobalClass.Setup(the =>
             {
                 the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -133,7 +133,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             class3GlobalClass.Setup(the =>
             {
                 the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -162,7 +162,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             {
                 var simpleType1 = default(SimpleType1);
                 the.Field(() => simpleType1).As(_ => new SimpleType1());
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (x, y) =>
                 {
                     int result = simpleType1.Increase() + x + y;
@@ -190,7 +190,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             var class3GlobalClass = new GlobalClass<Class3_6>();
             class3GlobalClass.Setup(the =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (base_Add, x, y) =>
                 {
                     return base_Add(x, y) + x + y;
@@ -220,7 +220,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
                 int value = 2;
 
                 the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
                 (base_Add, x, y) =>
                 {
                     return value += base_Add(x, y) + x + y;
@@ -247,7 +247,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
     //        var globalClass4Class = new GlobalClass<Class4_1>();
     //        globalClass4Class.Setup(the =>
     //        {
-    //            the.Method<int, int, int>(_ => _.Add).IsReplacedBy(
+    //            the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
     //            (x, y) =>
     //            {
     //                return x - y;

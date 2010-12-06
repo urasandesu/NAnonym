@@ -1,5 +1,5 @@
 /* 
- * File: GlobalReplaceMethodWeaveDefiner.cs
+ * File: GlobalHideMethodWeaveDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System.Linq;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
@@ -36,9 +36,9 @@ using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class GlobalReplaceMethodWeaveDefiner : GlobalMethodWeaveDefiner
+    class GlobalHideMethodWeaveDefiner : GlobalMethodWeaveDefiner
     {
-        public GlobalReplaceMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+        public GlobalHideMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
         }

@@ -41,7 +41,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             var class2GlobalClass = new GlobalClass<Class2>();
             class2GlobalClass.Setup(the =>
             {
-                the.Method<string, string>(_ => _.Print).IsReplacedBy(
+                the.Method<string, string>(_ => _.Print).IsHiddenBy(
                 value =>
                 {
                     return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";

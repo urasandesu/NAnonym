@@ -76,7 +76,7 @@
     <Compile Include="DW\GlobalMethodWeaveDefiner.cs" />
     <Compile Include="DW\GlobalProperty.cs" />
     <Compile Include="DW\GlobalPropertyWeaver.cs" />
-    <Compile Include="DW\GlobalReplaceMethodWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalHideMethodWeaveDefiner.cs" />
     <Compile Include="DW\GlobalSetupModes.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\IILProcessor.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\ILEmitMode.cs" />
