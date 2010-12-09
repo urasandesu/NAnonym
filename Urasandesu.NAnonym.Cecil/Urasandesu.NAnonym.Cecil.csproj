@@ -68,6 +68,8 @@
     <Compile Include="DW\GlobalConstructorWeaveBuilder.cs" />
     <Compile Include="DW\GlobalConstructorWeaveDefiner.cs" />
     <Compile Include="DW\GlobalField.cs" />
+    <Compile Include="DW\GlobalHideAction.cs" />
+    <Compile Include="DW\GlobalHideFunc.cs" />
     <Compile Include="DW\GlobalMethod.cs" />
     <Compile Include="DW\GlobalMethodBodyWeaver.cs" />
     <Compile Include="DW\GlobalMethodBodyWeaveDefiner.cs" />

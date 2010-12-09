@@ -56,8 +56,8 @@ namespace Urasandesu.NAnonym.Cecil.DW
         protected internal abstract string CodeBase { get; }
         protected internal abstract string Location { get; }
 
-        public GlobalFieldInt Field(Expression<Func<int>> methodReference) { return new GlobalFieldInt(this, methodReference); }
-        public GlobalField<T> Field<T>(Expression<Func<T>> methodReference) { return new GlobalField<T>(this, methodReference); }
+        public GlobalFieldInt DefineField(Expression<Func<int>> methodReference) { return new GlobalFieldInt(this, methodReference); }
+        public GlobalField<T> DefineField<T>(Expression<Func<T>> methodReference) { return new GlobalField<T>(this, methodReference); }
         protected sealed override void OnLoad(DependencyClassLoadParameter parameter)
         {
             OnLoadGlobal((GlobalClassLoadParameter)parameter);
@@ -82,74 +82,74 @@ namespace Urasandesu.NAnonym.Cecil.DW
             return null;
         }
 
-        public GlobalFunc<TBase, TResult> Method<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        public GlobalHideFunc<TBase, TResult> HideMethod<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase,TResult>(this, source);
+            return new GlobalHideFunc<TBase,TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T, TResult> Method<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        public GlobalHideFunc<TBase, T, TResult> HideMethod<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T, TResult>(this, source);
+            return new GlobalHideFunc<TBase, T, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, TResult> Method<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
+        public GlobalHideFunc<TBase, T1, T2, TResult> HideMethod<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, TResult>(this, source);
+            return new GlobalHideFunc<TBase, T1, T2, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, T3, TResult> Method<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
+        public GlobalHideFunc<TBase, T1, T2, T3, TResult> HideMethod<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, T3, TResult>(this, source);
+            return new GlobalHideFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
-        public GlobalFunc<TBase, T1, T2, T3, T4, TResult> Method<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
+        public GlobalHideFunc<TBase, T1, T2, T3, T4, TResult> HideMethod<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
+            return new GlobalHideFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
-        public GlobalAction<TBase> Method(Expression<ActionReference<TBase>> methodReference)
+        public GlobalHideAction<TBase> HideMethod(Expression<ActionReference<TBase>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase>(this, source);
+            return new GlobalHideAction<TBase>(this, source);
         }
 
-        public GlobalAction<TBase, T> Method<T>(Expression<ActionReference<TBase, T>> methodReference)
+        public GlobalHideAction<TBase, T> HideMethod<T>(Expression<ActionReference<TBase, T>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T>(this, source);
+            return new GlobalHideAction<TBase, T>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2> Method<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
+        public GlobalHideAction<TBase, T1, T2> HideMethod<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2>(this, source);
+            return new GlobalHideAction<TBase, T1, T2>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2, T3> Method<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
+        public GlobalHideAction<TBase, T1, T2, T3> HideMethod<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2, T3>(this, source);
+            return new GlobalHideAction<TBase, T1, T2, T3>(this, source);
         }
 
-        public GlobalAction<TBase, T1, T2, T3, T4> Method<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
+        public GlobalHideAction<TBase, T1, T2, T3, T4> HideMethod<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
         {
             var method = TypeSavable.ExtractMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
-            return new GlobalAction<TBase, T1, T2, T3, T4>(this, source);
+            return new GlobalHideAction<TBase, T1, T2, T3, T4>(this, source);
         }
 
 

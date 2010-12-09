@@ -68,6 +68,10 @@
     <Compile Include="DW\LocalCache.cs" />
     <Compile Include="DW\DependencyField.cs" />
     <Compile Include="DW\DependencyMethod.cs" />
+    <Compile Include="DW\LocalImplementAction.cs" />
+    <Compile Include="DW\LocalImplementFunc.cs" />
+    <Compile Include="DW\LocalOverrideAction.cs" />
+    <Compile Include="DW\LocalOverrideFunc.cs" />
     <Compile Include="FuncReference.cs" />
     <Compile Include="FuncWithBase.cs" />
     <Compile Include="DW\LocalClassLoadParameter.cs" />

@@ -34,167 +34,17 @@ using Urasandesu.NAnonym.DW;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    public abstract class GlobalMethod
+    public abstract class GlobalMethod : DependencyMethod
     {
-        readonly GlobalClass globalClass;
-        readonly MethodInfo source;
-
         public GlobalMethod(GlobalClass globalClass, MethodInfo source)
-        {
-            this.globalClass = globalClass;
-            this.source = source;
-        }
-
-        //public GlobalClass IsOverridedBy(Delegate @delegate)
-        //{
-        //    globalClass.MethodSet.Add(new WeaveMethodInfo(SetupModes.Override, source, @delegate.Method, @delegate.GetType()));
-        //    return globalClass;
-        //}
-
-        public GlobalClass IsHiddenBy(Delegate @delegate)
-        {
-            globalClass.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Hide, source, @delegate.Method, @delegate.GetType()));
-            return globalClass;
-        }
-    }
-
-    public class GlobalFunc<TBase, TResult> : GlobalMethod
-    {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
             : base(globalClass, source)
         {
         }
 
-        public GlobalClass<TBase> IsHiddenBy(Func<TResult> destination)
+        public DependencyClass HideBy(Delegate @delegate)
         {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-    
-    public class GlobalFunc<TBase, T, TResult> : GlobalMethod
-    {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Func<T, TResult> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalFunc<TBase, T1, T2, TResult> : GlobalMethod
-    {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, TResult> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(FuncWithBase<T1, T2, TResult> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-
-        //public GlobalClass<TBase> IsOverridedBy(Func<T1, T2, TResult> destination)
-        //{
-        //    return (GlobalClass<TBase>)IsOverridedBy((Delegate)destination);
-        //}
-    }
-
-    public class GlobalFunc<TBase, T1, T2, T3, TResult> : GlobalMethod
-    {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, T3, TResult> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalFunc<TBase, T1, T2, T3, T4, TResult> : GlobalMethod
-    {
-        public GlobalFunc(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Func<T1, T2, T3, T4, TResult> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalAction<TBase> : GlobalMethod
-    {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Action destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalAction<TBase, T> : GlobalMethod
-    {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Action<T> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalAction<TBase, T1, T2> : GlobalMethod
-    {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalAction<TBase, T1, T2, T3> : GlobalMethod
-    {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2, T3> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
-        }
-    }
-
-    public class GlobalAction<TBase, T1, T2, T3, T4> : GlobalMethod
-    {
-        public GlobalAction(GlobalClass<TBase> globalClass, MethodInfo source)
-            : base(globalClass, source)
-        {
-        }
-
-        public GlobalClass<TBase> IsHiddenBy(Action<T1, T2, T3, T4> destination)
-        {
-            return (GlobalClass<TBase>)IsHiddenBy((Delegate)destination);
+            @class.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Hide, source, @delegate.Method, @delegate.GetType()));
+            return @class;
         }
     }
 }

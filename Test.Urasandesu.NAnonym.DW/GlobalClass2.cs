@@ -9,14 +9,14 @@
  *  This software is MIT License.
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
+ *  of this software and associated documentation files (o "Software"), to deal
+ *  in o Software without restriction, including without limitation o rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
+ *  copies of o Software, and to permit persons to whom o Software is
+ *  furnished to do so, subject to o following conditions:
  *  
  *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
+ *  all copies or substantial portions of o Software.
  *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -39,9 +39,9 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class2GlobalClass = new GlobalClass<Class2>();
-            class2GlobalClass.Setup(the =>
+            class2GlobalClass.Setup(o =>
             {
-                the.Method<string, string>(_ => _.Print).IsHiddenBy(
+                o.HideMethod<string, string>(_ => _.Print).By(
                 value =>
                 {
                     return "Modified prefix at Class2.Print" + value + "Modified suffix at Class2.Print";

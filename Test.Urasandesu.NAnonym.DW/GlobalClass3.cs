@@ -9,14 +9,14 @@
  *  This software is MIT License.
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
+ *  of this software and associated documentation files (o "Software"), to deal
+ *  in o Software without restriction, including without limitation o rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
+ *  copies of o Software, and to permit persons to whom o Software is
+ *  furnished to do so, subject to o following conditions:
  *  
  *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
+ *  all copies or substantial portions of o Software.
  *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -43,9 +43,9 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_1>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return x + y + x + y;
@@ -70,12 +70,12 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_2>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
                 int value = 2;
 
-                the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.DefineField(() => value).As(value);
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -101,10 +101,10 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         {
             int value = 0;
             var class3GlobalClass = new GlobalClass<Class3_3>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
-                the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.DefineField(() => value).As(value);
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -130,10 +130,10 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_4>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
-                the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.DefineField(() => value).As(value);
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -158,11 +158,11 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_5>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
                 var simpleType1 = default(SimpleType1);
-                the.Field(() => simpleType1).As(_ => new SimpleType1());
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.DefineField(() => simpleType1).As(_ => new SimpleType1());
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     int result = simpleType1.Increase() + x + y;
@@ -188,9 +188,9 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_6>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (base_Add, x, y) =>
                 {
                     return base_Add(x, y) + x + y;
@@ -215,12 +215,12 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         protected override DependencyClass OnRegister()
         {
             var class3GlobalClass = new GlobalClass<Class3_7>();
-            class3GlobalClass.Setup(the =>
+            class3GlobalClass.Setup(o =>
             {
                 int value = 2;
 
-                the.Field(() => value).As(value);
-                the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+                o.DefineField(() => value).As(value);
+                o.HideMethod<int, int, int>(_ => _.Add).By(
                 (base_Add, x, y) =>
                 {
                     return value += base_Add(x, y) + x + y;
@@ -245,15 +245,15 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
     //    protected override DependencyClass OnRegister()
     //    {
     //        var globalClass4Class = new GlobalClass<Class4_1>();
-    //        globalClass4Class.Setup(the =>
+    //        globalClass4Class.Setup(o =>
     //        {
-    //            the.Method<int, int, int>(_ => _.Add).IsHiddenBy(
+    //            o.HideMethod<int, int, int>(_ => _.Add).By(
     //            (x, y) =>
     //            {
     //                return x - y;
     //            });
 
-    //            the.Method<int, int, int>(_ => _.Minus).IsOverridedBy(
+    //            o.HideMethod<int, int, int>(_ => _.Minus).IsOverridedBy(
     //            (x, y) =>
     //            {
     //                return x + y;

@@ -62,10 +62,9 @@ namespace Test.Urasandesu.NAnonym.DW
         public void Test1()
         {
             var sample2LocalClass1 = new LocalClass<ISample2>();
-            sample2LocalClass1.Setup(
-            the =>
+            sample2LocalClass1.Setup(o =>
             {
-                the.Method<string, string>(_ => _.Print).IsImplementedBy(
+                o.ImplementMethod<string, string>(_ => _.Print).By(
                 value =>
                 {
                     return value + value + value;
@@ -73,10 +72,9 @@ namespace Test.Urasandesu.NAnonym.DW
             });
 
             var sample2LocalClass2 = new LocalClass<ISample2>();
-            sample2LocalClass2.Setup(
-            the =>
+            sample2LocalClass2.Setup(o =>
             {
-                the.Method<string, string>(_ => _.Print).IsImplementedBy(
+                o.ImplementMethod<string, string>(_ => _.Print).By(
                 value =>
                 {
                     return value + " Hello, World!!";
@@ -101,10 +99,9 @@ namespace Test.Urasandesu.NAnonym.DW
         public void Test2()
         {
             var sample3LocalClass = new LocalClass<ISample3>();
-            sample3LocalClass.Setup(
-            the =>
+            sample3LocalClass.Setup(o =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
+                o.ImplementMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return x + y;
@@ -126,12 +123,11 @@ namespace Test.Urasandesu.NAnonym.DW
         public void Test3()
         {
             var sample3LocalClass = new LocalClass<ISample3>();
-            sample3LocalClass.Setup(
-            the =>
+            sample3LocalClass.Setup(o =>
             {
-                int value = 0;
-                the.Field(() => value).As(1);
-                the.Method<int, int, int>(_ => _.Add).IsImplementedBy(
+                var value = default(int);
+                o.DefineField(() => value).As(1);
+                o.ImplementMethod<int, int, int>(_ => _.Add).By(
                 (x, y) =>
                 {
                     return value += x + y;
@@ -155,10 +151,9 @@ namespace Test.Urasandesu.NAnonym.DW
         public void Test4()
         {
             var sample3LocalClass = new LocalClass<Sample3>();
-            sample3LocalClass.Setup(
-            the =>
+            sample3LocalClass.Setup(o =>
             {
-                the.Method<int, int, int>(_ => _.Add).IsOverridedBy(
+                o.OverrideMethod<int, int, int>(_ => _.Add).By(
                 (base_Add, x, y) =>
                 {
                     return base_Add(x, y) + x + y;

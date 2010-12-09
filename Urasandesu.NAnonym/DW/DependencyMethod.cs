@@ -36,25 +36,13 @@ namespace Urasandesu.NAnonym.DW
 {
     public abstract class DependencyMethod
     {
-        readonly DependencyClass @class;
-        readonly MethodInfo source;
+        protected readonly DependencyClass @class;
+        protected readonly MethodInfo source;
 
         public DependencyMethod(DependencyClass @class, MethodInfo source)
         {
             this.@class = @class;
             this.source = source;
-        }
-
-        public DependencyClass IsImplementedBy(Delegate @delegate)
-        {
-            @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
-            return @class;
-        }
-
-        public DependencyClass IsOverridedBy(Delegate @delegate)
-        {
-            @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Override, source, @delegate.Method, @delegate.GetType()));
-            return @class;
         }
     }
 }
