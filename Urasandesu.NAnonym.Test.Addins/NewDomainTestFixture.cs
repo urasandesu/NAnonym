@@ -50,8 +50,16 @@ namespace Urasandesu.NAnonym.Test.Addins
             base.tearDownMethods = Reflect.GetMethodsWithAttribute(FixtureType, "Urasandesu.NAnonym.Test.NewDomainTearDownAttribute", true);
             foreach (var methodInfo in FixtureType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (Reflect.HasAttribute(methodInfo, "Urasandesu.NAnonym.Test.NewDomainTestAttribute", true))
-                    Add(new NUnitTestMethod(methodInfo));
+                if (!Reflect.HasAttribute(methodInfo, "Urasandesu.NAnonym.Test.NewDomainTestAttribute", true)) continue;
+
+                var testMethod = new NUnitTestMethod(methodInfo);
+                var ignoreAttribute = Reflect.GetAttribute(methodInfo, "NUnit.Framework.IgnoreAttribute", true);
+                if (ignoreAttribute != null)
+                {
+                    testMethod.RunState = RunState.Ignored;
+                    testMethod.IgnoreReason = NUnitFramework.GetIgnoreReason(ignoreAttribute);
+                }
+                Add(testMethod);
             }
         }
 
