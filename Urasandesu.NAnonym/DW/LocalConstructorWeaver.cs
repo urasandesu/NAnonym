@@ -44,12 +44,12 @@ namespace Urasandesu.NAnonym.DW
 
         protected override ConstructorWeaveDefiner GetConstructorDefiner(ConstructorWeaver parent)
         {
-            return new LocalConstructorWeaveDefiner(parent);
+            return new LocalConstructorDefiner(parent);
         }
 
         protected override ConstructorWeaveBuilder GetConstructorBuilder(ConstructorWeaveDefiner parentDefiner)
         {
-            return new LocalConstructorWeaveBuilder(parentDefiner);
+            return new LocalConstructorBuilder(parentDefiner);
         }
     }
 }

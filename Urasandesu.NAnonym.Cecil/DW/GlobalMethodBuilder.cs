@@ -1,5 +1,5 @@
 /* 
- * File: GlobalMethodBodyWeaveDefiner.cs
+ * File: GlobalMethodBuilder.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,21 +26,28 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DW;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class GlobalMethodBodyWeaveDefiner : MethodBodyWeaveDefiner
+    class GlobalMethodBuilder : MethodWeaveBuilder
     {
-        public GlobalMethodBodyWeaveDefiner(MethodBodyWeaver parentBody)
-            : base(parentBody)
+        public GlobalMethodBuilder(MethodWeaveDefiner parentDefiner)
+            : base(parentDefiner)
         {
         }
 
-        public override void Create()
+        public override void Construct()
         {
+            ParentDefiner.MethodInterface.ExpressBody(
+            gen =>
+            {
+                var bodyWeaver = new GlobalMethodBodyWeaver(gen, this);
+                bodyWeaver.Apply();
+            });
         }
     }
 }

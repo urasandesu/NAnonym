@@ -1,5 +1,5 @@
 /* 
- * File: LocalConstructorBodyWeaveDefiner.cs
+ * File: FuncWithPrev.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,26 +26,19 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym
 {
-    class LocalConstructorBodyWeaveDefiner : ConstructorBodyWeaveDefiner
-    {
-        //public new LocalConstructorBodyWeaver ParentBody { get { return (LocalConstructorBodyWeaver)base.ParentBody; } }
-        public LocalConstructorBodyWeaveDefiner(ConstructorBodyWeaver parentBody)
-            : base(parentBody)
-        {
-        }
-
-        public override void Create()
-        {
-        }
-    }
+    public delegate TResult FuncWithPrev<TResult>(Func<TResult> baseFunc);
+    public delegate TResult FuncWithPrev<T, TResult>(Func<T, TResult> baseFunc, T arg);
+    public delegate TResult FuncWithPrev<T1, T2, TResult>(Func<T1, T2, TResult> baseFunc, T1 arg1, T2 arg2);
+    public delegate TResult FuncWithPrev<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> baseFunc, T1 arg1, T2 arg2, T3 arg3);
+    public delegate TResult FuncWithPrev<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> baseFunc, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }
 

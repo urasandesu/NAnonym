@@ -1,5 +1,5 @@
 /* 
- * File: AnonymousInstanceMethodBodyWeaveBuilderWithBase.cs
+ * File: AnonymInstanceBodyBuilderWithPrev.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq;
@@ -37,9 +37,9 @@ using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class AnonymousInstanceMethodBodyWeaveBuilderWithBase : MethodBodyWeaveBuilder
+    class AnonymInstanceBodyBuilderWithPrev : MethodBodyWeaveBuilder
     {
-        public AnonymousInstanceMethodBodyWeaveBuilderWithBase(MethodBodyWeaveDefiner parentBodyDefiner)
+        public AnonymInstanceBodyBuilderWithPrev(MethodBodyWeaveDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }
@@ -131,6 +131,50 @@ namespace Urasandesu.NAnonym.DW
             gen.Eval(_ => _.St(delegateForBase).As(_.New(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
             var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(injectionMethod.Source.ParameterNames()).ToArray();
             gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethod.Name)), _.X(invoke), _.Ld(_.X(variableNames)))));
+        }
+    }
+
+
+    
+    
+    
+    
+    class AnonymInstanceBodyBuilderWithAlias : MethodBodyWeaveBuilder
+    {
+        public AnonymInstanceBodyBuilderWithAlias(MethodBodyWeaveDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
+        {
+        }
+
+        public override void Construct()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class AnonymInstanceBodyBuilderWithAliasSet : MethodBodyWeaveBuilder
+    {
+        public AnonymInstanceBodyBuilderWithAliasSet(MethodBodyWeaveDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
+        {
+        }
+
+        public override void Construct()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class AnonymInstanceBodyBuilderWithAliasList : MethodBodyWeaveBuilder
+    {
+        public AnonymInstanceBodyBuilderWithAliasList(MethodBodyWeaveDefiner parentBodyDefiner)
+            : base(parentBodyDefiner)
+        {
+        }
+
+        public override void Construct()
+        {
+            throw new NotImplementedException();
         }
     }
 }

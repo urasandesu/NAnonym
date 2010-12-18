@@ -1,5 +1,5 @@
 /* 
- * File: GlobalConstructorWeaveBuilder.cs
+ * File: ActionWithPrev.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,36 +26,19 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
-using Urasandesu.NAnonym.DW;
 
-namespace Urasandesu.NAnonym.Cecil.DW
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Urasandesu.NAnonym
 {
-    class GlobalConstructorWeaveBuilder : ConstructorWeaveBuilder
-    {
-        public GlobalConstructorWeaveBuilder(ConstructorWeaveDefiner parentDefiner)
-            : base(parentDefiner)
-        {
-        }
-
-        public override void Construct()
-        {
-            foreach (var constructorGen in ParentDefiner.Parent.DeclaringTypeGenerator.Constructors)
-            {
-                var constructorDef = ((MCConstructorGeneratorImpl)constructorGen).MethodDef;
-                var firstInstruction = constructorDef.Body.Instructions[0];
-                constructorDef.ExpressBodyBefore(
-                gen =>
-                {
-                    var bodyWeaver = new GlobalConstructorBodyWeaver(gen, this);
-                    bodyWeaver.Apply();
-                },
-                firstInstruction);
-            }
-        }
-    }
+    public delegate void ActionWithPrev(Action baseAction);
+    public delegate void ActionWithPrev<T>(Action<T> baseAction, T arg);
+    public delegate void ActionWithPrev<T1, T2>(Action<T1, T2> baseAction, T1 arg1, T2 arg2);
+    public delegate void ActionWithPrev<T1, T2, T3>(Action<T1, T2, T3> baseAction, T1 arg1, T2 arg2, T3 arg3);
+    public delegate void ActionWithPrev<T1, T2, T3, T4>(Action<T1, T2, T3, T4> baseAction, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }
 

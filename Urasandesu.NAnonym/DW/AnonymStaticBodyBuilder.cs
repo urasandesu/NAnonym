@@ -1,5 +1,5 @@
 /* 
- * File: AnonymousStaticMethodBodyWeaveBuilder.cs
+ * File: AnonymStaticBodyBuilder.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Reflection;
@@ -36,9 +36,9 @@ using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class AnonymousStaticMethodBodyWeaveBuilder : MethodBodyWeaveBuilder
+    class AnonymStaticBodyBuilder : MethodBodyWeaveBuilder
     {
-        public AnonymousStaticMethodBodyWeaveBuilder(MethodBodyWeaveDefiner parentBodyDefiner)
+        public AnonymStaticBodyBuilder(MethodBodyWeaveDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }

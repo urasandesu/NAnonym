@@ -1,5 +1,5 @@
 /* 
- * File: LocalMethodWeaveDefiner.cs
+ * File: LocalMethodDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -37,9 +37,9 @@ using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
-    abstract class LocalMethodWeaveDefiner : MethodWeaveDefiner
+    abstract class LocalMethodDefiner : MethodWeaveDefiner
     {
-        public LocalMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+        public LocalMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
             anonymousStaticMethodCache = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(injectionMethod.Destination);

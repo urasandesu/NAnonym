@@ -46,12 +46,12 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         protected override ConstructorWeaveDefiner GetConstructorDefiner(ConstructorWeaver parent)
         {
-            return new GlobalConstructorWeaveDefiner(parent);
+            return new GlobalConstructorDefiner(parent);
         }
 
         protected override ConstructorWeaveBuilder GetConstructorBuilder(ConstructorWeaveDefiner parentDefiner)
         {
-            return new GlobalConstructorWeaveBuilder(parentDefiner);
+            return new GlobalConstructorBuilder(parentDefiner);
         }
     }
 }

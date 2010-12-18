@@ -40,13 +40,13 @@ namespace Urasandesu.NAnonym.DW
         {
         }
 
-        public DependencyClass ImplementBy(Delegate @delegate)
+        protected DependencyClass ImplementBy(Delegate @delegate)
         {
             @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Implement, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
 
-        public DependencyClass OverridBy(Delegate @delegate)
+        protected DependencyClass OverridBy(Delegate @delegate)
         {
             @class.MethodSet.Add(new WeaveMethodInfo(LocalSetupModes.Override, source, @delegate.Method, @delegate.GetType()));
             return @class;

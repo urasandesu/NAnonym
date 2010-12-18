@@ -1,5 +1,5 @@
 /* 
- * File: LocalConstructorBodyWeaveBuilder.cs
+ * File: GlobalConstructorBodyBuilder.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,18 +26,15 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Urasandesu.NAnonym.DW
+using Urasandesu.NAnonym.DW;
+
+namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class LocalConstructorBodyWeaveBuilder : ConstructorBodyWeaveBuilder
+    class GlobalConstructorBodyBuilder : ConstructorBodyWeaveBuilder
     {
-        public LocalConstructorBodyWeaveBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
+        public GlobalConstructorBodyBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }

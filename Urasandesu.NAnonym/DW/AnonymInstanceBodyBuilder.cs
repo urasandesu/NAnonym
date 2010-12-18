@@ -1,5 +1,5 @@
 /* 
- * File: AnonymousInstanceMethodBodyWeaveBuilder.cs
+ * File: AnonymInstanceBodyBuilder.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq;
@@ -37,9 +37,9 @@ using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class AnonymousInstanceMethodBodyWeaveBuilder : MethodBodyWeaveBuilder
+    class AnonymInstanceBodyBuilder : MethodBodyWeaveBuilder
     {
-        public AnonymousInstanceMethodBodyWeaveBuilder(MethodBodyWeaveDefiner parentBodyDefiner)
+        public AnonymInstanceBodyBuilder(MethodBodyWeaveDefiner parentBodyDefiner)
             : base(parentBodyDefiner)
         {
         }
@@ -81,6 +81,15 @@ namespace Urasandesu.NAnonym.DW
 
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
+                // 例えばこんな感じでどう？
+                //1. gen.EvalEmit(() => il, _ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                //2. gen.EvalEmit(() => il, _ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                // 
+                // 最初に Reflection で書いてたなら、それがそのまま持ってこれたほうがいいんじゃね？
+                // ⇒2. が良さげ。
+                // ⇒この考え方って、MethodInfo だけじゃなく、Type や FieldInfo、PropertyInfo にも言えそう。
+
+
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, cacheField));
                 for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)

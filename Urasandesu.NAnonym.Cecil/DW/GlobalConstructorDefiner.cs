@@ -1,5 +1,5 @@
 /* 
- * File: GlobalConstructorWeaveDefiner.cs
+ * File: GlobalConstructorDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using Urasandesu.NAnonym.DW;
@@ -35,9 +35,9 @@ using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class GlobalConstructorWeaveDefiner : ConstructorWeaveDefiner
+    class GlobalConstructorDefiner : ConstructorWeaveDefiner
     {
-        public GlobalConstructorWeaveDefiner(ConstructorWeaver parent)
+        public GlobalConstructorDefiner(ConstructorWeaver parent)
             : base(parent)
         {
         }

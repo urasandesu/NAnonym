@@ -60,6 +60,10 @@
       <Project>{2D460EE3-61D7-4726-8AF5-135352408DCB}</Project>
       <Name>Urasandesu.NAnonym.Cecil</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Urasandesu.NAnonym.Test\Urasandesu.NAnonym.Test.csproj">
+      <Project>{D4CD63AA-80F7-4F2E-BBDA-267B26FF6483}</Project>
+      <Name>Urasandesu.NAnonym.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
       <Project>{C04A5E86-30E1-4C38-B916-324D000E240E}</Project>
       <Name>Urasandesu.NAnonym</Name>

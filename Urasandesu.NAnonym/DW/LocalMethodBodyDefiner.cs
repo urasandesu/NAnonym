@@ -1,5 +1,5 @@
 /* 
- * File: LocalMethodWeaveBuilder.cs
+ * File: LocalMethodBodyDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,29 +26,24 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
+using System.Text;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalMethodWeaveBuilder : MethodWeaveBuilder
+    class LocalMethodBodyDefiner : MethodBodyWeaveDefiner
     {
-        public LocalMethodWeaveBuilder(MethodWeaveDefiner parentDefiner)
-            : base(parentDefiner)
+        public LocalMethodBodyDefiner(MethodBodyWeaver parentBody)
+            : base(parentBody)
         {
         }
 
-        public override void Construct()
+        public override void Create()
         {
-            ParentDefiner.MethodInterface.ExpressBody(
-            gen =>
-            {
-                var bodyWeaver = new LocalMethodBodyWeaver(gen, this);
-                bodyWeaver.Apply();
-            });
         }
     }
 }

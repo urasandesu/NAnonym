@@ -72,7 +72,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
             return (GlobalClass<TBase>)HideBy((Delegate)destination);
         }
 
-        public GlobalClass<TBase> By(FuncWithBase<T1, T2, TResult> destination)
+        public GlobalClass<TBase> By(FuncWithPrev<T1, T2, TResult> destination)
         {
             return (GlobalClass<TBase>)HideBy((Delegate)destination);
         }

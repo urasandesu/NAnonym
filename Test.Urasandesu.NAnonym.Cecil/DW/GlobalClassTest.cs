@@ -57,7 +57,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             GlobalDomain.Register<GlobalClass3_5>();
             GlobalDomain.Register<GlobalClass3_6>();
             GlobalDomain.Register<GlobalClass3_7>();
-            //DWUtil.RegisterGlobal<GlobalClass4_1>();
+            GlobalDomain.Register<GlobalClass4_1>();
             GlobalDomain.Load();
         }
 
@@ -158,14 +158,18 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        //[NewDomainTest]
-        //public void Class4_1Test()
-        //{
-        //    var class4 = new Class4_1();
+        [NewDomainTest]
+        public void Class4_1Test()
+        {
+            var class4 = new Class4_1();
 
-        //    Assert.AreEqual(2, class4.Add(4, 2));
-        //    Assert.AreEqual(4, class4.Minus(2, 2));
-        //}
+            TestHelper.ClearLog();
+
+            Assert.AreEqual(-10, class4.Inverse(10));
+            Assert.AreEqual(
+@"sourceType = Test.Urasandesu.NAnonym.Etc.Class4_1, sourceMethod = Inverse, n = 10
+sourceType = Test.Urasandesu.NAnonym.Etc.Class4_1, sourceMethod = Inverse, n = 10, result = -10", TestHelper.ReadLogToEnd());
+        }
     }
 }
 

@@ -54,7 +54,7 @@ namespace Test.Urasandesu.NAnonym
         public void CreateActionTest01()
         {
             var item = new { Key = 1, Value = "a" };
-            var action = Anonymouslyable.CreateAction(item, _item =>
+            var action = Anonymable.CreateAction(item, _item =>
             {
                 Assert.AreEqual(1, _item.Key);
                 Assert.AreEqual("a", _item.Value);
@@ -70,7 +70,7 @@ namespace Test.Urasandesu.NAnonym
         {
             var item1 = new { Key = 1, Value = "a" };
             var item2 = new { Key = 2, Value = "b" };
-            var action = Anonymouslyable.CreateAction(item1, item2, (_item1, _item2) =>
+            var action = Anonymable.CreateAction(item1, item2, (_item1, _item2) =>
             {
                 Assert.AreEqual(1, _item1.Key);
                 Assert.AreEqual("a", _item1.Value);
@@ -87,7 +87,7 @@ namespace Test.Urasandesu.NAnonym
         public void CreateFuncTest01()
         {
             var item = new { Key = 1, Value = "a" };
-            var func = Anonymouslyable.CreateFunc(item, () =>
+            var func = Anonymable.CreateFunc(item, () =>
             {
                 return new { Key = 2, Value = "b" };
             });
@@ -103,7 +103,7 @@ namespace Test.Urasandesu.NAnonym
         public void CreateFuncTest02()
         {
             var item = new { Key = 1, Value = "a" };
-            var func = Anonymouslyable.CreateFunc(item, item, _item =>
+            var func = Anonymable.CreateFunc(item, item, _item =>
             {
                 return new { Key = _item.Key + 1, Value = _item.Value + "b" };
             });
@@ -120,7 +120,7 @@ namespace Test.Urasandesu.NAnonym
         {
             var item1 = new { Key = 1, Value = "a" };
             var item2 = new { Key = 2, Value = "b" };
-            var func = Anonymouslyable.CreateFunc(item1, item2, item1, (_item1, _item2) =>
+            var func = Anonymable.CreateFunc(item1, item2, item1, (_item1, _item2) =>
             {
                 return new { Key = _item1.Key + _item2.Key, Value = _item1.Value + _item2.Value };
             });
@@ -157,7 +157,7 @@ namespace Test.Urasandesu.NAnonym
         public void IfNotNullTest01()
         {
             var a = new A() { B = new B() { C = new C() { D = new D() { Value = "      a " } } } };
-            var runner = Anonymouslyable.CreateFunc(a, default(string), 
+            var runner = Anonymable.CreateFunc(a, default(string), 
                 _a => _a.NotDefault(_ => _
                         .B).NotDefault(_ => _
                             .C).NotDefault(_ => _
@@ -174,7 +174,7 @@ namespace Test.Urasandesu.NAnonym
         public void IfNotNullTest02()
         {
             var a = default(A);
-            var runner = Anonymouslyable.CreateFunc(a, default(string),
+            var runner = Anonymable.CreateFunc(a, default(string),
                 _a => _a.NotDefault(_ => _
                         .B).NotDefault(_ => _
                             .C).NotDefault(_ => _
@@ -191,7 +191,7 @@ namespace Test.Urasandesu.NAnonym
         public void IfNotNullTest03()
         {
             var a = new A() { B = new B() { C = new C() { D = null } } };
-            var runner = Anonymouslyable.CreateFunc(a, default(string),
+            var runner = Anonymable.CreateFunc(a, default(string),
                 _a => _a.NotDefault(_ => _
                         .B).NotDefault(_ => _
                             .C).NotDefault(_ => _

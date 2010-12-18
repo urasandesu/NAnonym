@@ -45,12 +45,12 @@ namespace Urasandesu.NAnonym.DW
 
         protected override ConstructorBodyWeaveDefiner GetBodyDefiner(ConstructorBodyWeaver parentBody)
         {
-            return new LocalConstructorBodyWeaveDefiner(parentBody);
+            return new LocalConstructorBodyDefiner(parentBody);
         }
 
         protected override ConstructorBodyWeaveBuilder GetBodyBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
         {
-            return new LocalConstructorBodyWeaveBuilder(parentBodyDefiner);
+            return new LocalConstructorBodyBuilder(parentBodyDefiner);
         }
     }
 }

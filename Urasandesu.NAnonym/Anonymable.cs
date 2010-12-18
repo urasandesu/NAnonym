@@ -1,5 +1,5 @@
 /* 
- * File: Anonymouslyable.cs
+ * File: Anonymable.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym
 {
-    public static class Anonymouslyable
+    public static class Anonymable
     {
         public static Action<T> CreateAction<T>(T obj, Action<T> action)
         {

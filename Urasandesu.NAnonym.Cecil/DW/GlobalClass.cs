@@ -29,23 +29,10 @@
  
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.ILTools;
 using Urasandesu.NAnonym.DW;
 using Urasandesu.NAnonym.Mixins.System;
-using MC = Mono.Cecil;
-using System.Reflection.Emit;
-using SRE = System.Reflection.Emit;
-using UND = Urasandesu.NAnonym.DW;
-using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
-using Urasandesu.NAnonym.ILTools;
-using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
-using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
@@ -53,6 +40,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
     public abstract class GlobalClass : DependencyClass
     {
         public static readonly string CacheFieldPrefix = "UNCD$<>0__Cached";
+        public static readonly string MethodPrefix = "UNCD$<>0__Method";
         protected internal abstract string CodeBase { get; }
         protected internal abstract string Location { get; }
 
@@ -152,6 +140,33 @@ namespace Urasandesu.NAnonym.Cecil.DW
             return new GlobalHideAction<TBase, T1, T2, T3, T4>(this, source);
         }
 
+        public GlobalBeforeFunc<TBase, TResult> BeforeMethod<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        {
+            var method = TypeSavable.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalBeforeFunc<TBase, TResult>(this, source);
+        }
+
+        public GlobalBeforeFunc<TBase, T, TResult> BeforeMethod<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        {
+            var method = TypeSavable.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalBeforeFunc<TBase, T, TResult>(this, source);
+        }
+
+        public GlobalAfterFunc<TBase, TResult> AfterMethod<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        {
+            var method = TypeSavable.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAfterFunc<TBase, TResult>(this, source);
+        }
+
+        public GlobalAfterFunc<TBase, T, TResult> AfterMethod<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        {
+            var method = TypeSavable.ExtractMethod(methodReference);
+            var source = typeof(TBase).GetMethod(method);
+            return new GlobalAfterFunc<TBase, T, TResult>(this, source);
+        }
 
 
 

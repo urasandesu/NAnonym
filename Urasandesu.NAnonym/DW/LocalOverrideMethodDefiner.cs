@@ -1,5 +1,5 @@
 /* 
- * File: LocalMethodBodyWeaveDefiner.cs
+ * File: LocalOverrideMethodDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,24 +26,41 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
+using System.Reflection;
+using System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalMethodBodyWeaveDefiner : MethodBodyWeaveDefiner
+    class LocalOverrideMethodDefiner : LocalMethodDefiner
     {
-        public LocalMethodBodyWeaveDefiner(MethodBodyWeaver parentBody)
-            : base(parentBody)
+        public LocalOverrideMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+            : base(parent, injectionMethod)
         {
         }
 
-        public override void Create()
+        protected override IMethodGenerator GetMethodInterface()
         {
+            const MethodAttributes @override = MethodAttributes.Public |
+                                               MethodAttributes.HideBySig |
+                                               MethodAttributes.Virtual;
+            var source = WeaveMethod.Source;
+            var name = source.Name;
+            var returnType = source.ReturnType;
+            var parameterTypes = source.ParameterTypes();
+            baseMethod = new SRMethodDeclarationImpl(source);
+            return Parent.ConstructorWeaver.DeclaringTypeGenerator.AddMethod(
+                name, @override, CallingConventions.HasThis, returnType, parameterTypes);
+        }
+
+        IMethodDeclaration baseMethod;
+        public override IMethodDeclaration BaseMethod
+        {
+            get { return baseMethod; }
         }
     }
 }

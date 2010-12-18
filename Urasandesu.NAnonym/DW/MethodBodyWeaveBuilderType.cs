@@ -36,17 +36,18 @@ using System.Text;
 namespace Urasandesu.NAnonym.DW
 {
     [Flags]
-    public enum MethodBodyWeaveBuilderType
+    enum MethodBodyWeaveBuilderType
     {
         None = 0,
-        Anonymous = 1,
-        Instance = 2,
-        Static = 4,
-        Base = 8,
-        AnonymousInstance = Anonymous | Instance,
-        AnonymousInstanceWithBase = AnonymousInstance | Base,
-        AnonymousStatic = Anonymous | Static,
-        AnonymousStaticWithBase = AnonymousStatic | Base,
+        Anonym = 1,
+        Instance = Anonym << 1,
+        Static = Instance << 1,
+        Before = Static << 1,
+        After = Before << 1,
+        WithPrev = After << 1,
+        WithAlias = WithPrev << 1,
+        WithAliasSet = WithAlias << 1,
+        WithAliasList = WithAliasSet << 1,
     }
 }
 

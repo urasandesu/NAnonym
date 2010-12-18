@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using Urasandesu.NAnonym.DW;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
@@ -41,27 +42,19 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+        protected override MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo weaveMethod)
         {
-            //if (injectionMethod.Mode == SetupModes.Override)
-            //{
-            //    throw new NotImplementedException();
-            //}
-            //else if (injectionMethod.Mode == SetupModes.Implement)
-            //{
-            //    throw new NotImplementedException();
-            //}
-            if (injectionMethod.Mode == GlobalSetupModes.Hide)
+            if (weaveMethod.Mode == GlobalSetupModes.Hide)
             {
-                return new GlobalHideMethodWeaveDefiner(parent, injectionMethod);
+                return new GlobalHideMethodDefiner(parent, weaveMethod);
             }
-            else if (injectionMethod.Mode == GlobalSetupModes.Before)
+            else if (weaveMethod.Mode == GlobalSetupModes.Before)
             {
-                throw new NotImplementedException();
+                return new GlobalBeforeMethodWeaveDefiner(parent, weaveMethod);
             }
-            else if (injectionMethod.Mode == GlobalSetupModes.After)
+            else if (weaveMethod.Mode == GlobalSetupModes.After)
             {
-                throw new NotImplementedException();
+                return new GlobalAfterMethodWeaveDefiner(parent, weaveMethod);
             }
             else
             {
@@ -71,7 +64,20 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         protected override MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner)
         {
-            return new GlobalMethodWeaveBuilder(parentDefiner);
+            return new GlobalMethodBuilder(parentDefiner);
+        }
+    }
+
+    class GlobalAfterMethodWeaveDefiner : GlobalMethodDefiner
+    {
+        public GlobalAfterMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo weaveMethod)
+            : base(parent, weaveMethod)
+        {
+        }
+
+        protected override UNI::IMethodGenerator GetMethodInterface()
+        {
+            throw new NotImplementedException();
         }
     }
 }

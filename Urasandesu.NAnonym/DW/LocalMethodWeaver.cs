@@ -46,11 +46,11 @@ namespace Urasandesu.NAnonym.DW
         {
             if (injectionMethod.Mode == LocalSetupModes.Override)
             {
-                return new LocalOverrideMethodWeaveDefiner(parent, injectionMethod);
+                return new LocalOverrideMethodDefiner(parent, injectionMethod);
             }
             else if (injectionMethod.Mode == LocalSetupModes.Implement)
             {
-                return new LocalImplementMethodWeaveDefiner(parent, injectionMethod);
+                return new LocalImplementMethodDefiner(parent, injectionMethod);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Urasandesu.NAnonym.DW
 
         protected override MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner)
         {
-            return new LocalMethodWeaveBuilder(parentDefiner);
+            return new LocalMethodBuilder(parentDefiner);
         }
     }
 }

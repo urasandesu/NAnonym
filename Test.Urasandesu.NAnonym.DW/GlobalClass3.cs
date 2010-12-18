@@ -35,6 +35,8 @@ using System.Text;
 using Urasandesu.NAnonym.DW;
 using Urasandesu.NAnonym.Cecil.DW;
 using Test.Urasandesu.NAnonym.Etc;
+using System.IO;
+using Urasandesu.NAnonym.Test;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DW
 {
@@ -240,36 +242,36 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
     }
 
-    //public class GlobalClass4_1 : GlobalClass
-    //{
-    //    protected override DependencyClass OnRegister()
-    //    {
-    //        var globalClass4Class = new GlobalClass<Class4_1>();
-    //        globalClass4Class.Setup(o =>
-    //        {
-    //            o.HideMethod<int, int, int>(_ => _.Add).By(
-    //            (x, y) =>
-    //            {
-    //                return x - y;
-    //            });
+    public class GlobalClass4_1 : GlobalClass
+    {
+        protected override DependencyClass OnRegister()
+        {
+            var globalClass4Class = new GlobalClass<Class4_1>();
+            globalClass4Class.Setup(o =>
+            {
+                o.BeforeMethod<int, int>(_ => _.Inverse).Run(
+                (beforeSource, n) =>
+                {
+                    TestHelper.WriteLog("sourceType = {0}, sourceMethod = {1}, n = {2}", beforeSource.Type, beforeSource.Method, n);
+                });
 
-    //            o.HideMethod<int, int, int>(_ => _.Minus).IsOverridedBy(
-    //            (x, y) =>
-    //            {
-    //                return x + y;
-    //            });
-    //        });
-    //        return globalClass4Class;
-    //    }
+                o.AfterMethod<int, int>(_ => _.Inverse).Run(
+                (afterSource, n, result) =>
+                {
+                    TestHelper.WriteLog("sourceType = {0}, sourceMethod = {1}, n = {2}, result = {3}", afterSource.Type, afterSource.Method, n, result);
+                });
+            });
+            return globalClass4Class;
+        }
 
-    //    protected override string CodeBase
-    //    {
-    //        get { return typeof(Class4_1).Assembly.CodeBase; }
-    //    }
+        protected override string CodeBase
+        {
+            get { return typeof(Class4_1).Assembly.CodeBase; }
+        }
 
-    //    protected override string Location
-    //    {
-    //        get { return typeof(Class4_1).Assembly.Location; }
-    //    }
-    //}
+        protected override string Location
+        {
+            get { return typeof(Class4_1).Assembly.Location; }
+        }
+    }
 }

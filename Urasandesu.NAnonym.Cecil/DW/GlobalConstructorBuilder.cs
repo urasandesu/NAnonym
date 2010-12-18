@@ -1,5 +1,5 @@
 /* 
- * File: GlobalHideMethodWeaveDefiner.cs
+ * File: GlobalConstructorBuilder.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,41 +28,33 @@
  */
 
 
-using System.Linq;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DW;
-using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class GlobalHideMethodWeaveDefiner : GlobalMethodWeaveDefiner
+    class GlobalConstructorBuilder : ConstructorWeaveBuilder
     {
-        public GlobalHideMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
-            : base(parent, injectionMethod)
+        public GlobalConstructorBuilder(ConstructorWeaveDefiner parentDefiner)
+            : base(parentDefiner)
         {
         }
 
-        protected override UNI::IMethodGenerator GetMethodInterface()
+        public override void Construct()
         {
-            var declaringTypeDef = ((MCTypeGeneratorImpl)Parent.ConstructorWeaver.DeclaringTypeGenerator).TypeDef;
-            var source = declaringTypeDef.Methods.FirstOrDefault(methodDef => methodDef.Equivalent(WeaveMethod.Source));
-            string sourceName = source.Name;
-            source.Name = "__" + source.Name;
-            baseMethod = new MCMethodGeneratorImpl(source);
-
-            var destination = source.DuplicateWithoutBody();
-            destination.Name = sourceName;
-            declaringTypeDef.Methods.Add(destination);
-            var destinationGen = new MCMethodGeneratorImpl(destination);
-
-            return destinationGen;
-        }
-
-        UNI::IMethodDeclaration baseMethod;
-        public override UNI::IMethodDeclaration BaseMethod
-        {
-            get { return baseMethod; }
+            foreach (var constructorGen in ParentDefiner.Parent.DeclaringTypeGenerator.Constructors)
+            {
+                var constructorDef = ((MCConstructorGeneratorImpl)constructorGen).MethodDef;
+                var firstInstruction = constructorDef.Body.Instructions[0];
+                constructorDef.ExpressBodyBefore(
+                gen =>
+                {
+                    var bodyWeaver = new GlobalConstructorBodyWeaver(gen, this);
+                    bodyWeaver.Apply();
+                },
+                firstInstruction);
+            }
         }
     }
 }

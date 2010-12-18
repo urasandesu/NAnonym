@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DW\GlobalBeforeMethodWeaveDefiner.cs" />
     <Compile Include="DW\GlobalCache.cs" />
     <Compile Include="DW\GlobalDomain.cs" />
     <Compile Include="DW\DWAssemblySetup.cs" />
@@ -62,23 +63,23 @@
     <Compile Include="DW\GlobalClass.cs" />
     <Compile Include="DW\GlobalClassLoadParameter.cs" />
     <Compile Include="DW\GlobalConstructorBodyWeaver.cs" />
-    <Compile Include="DW\GlobalConstructorBodyWeaveBuilder.cs" />
-    <Compile Include="DW\GlobalConstructorBodyWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalConstructorBodyBuilder.cs" />
+    <Compile Include="DW\GlobalConstructorBodyDefiner.cs" />
     <Compile Include="DW\GlobalConstructorWeaver.cs" />
-    <Compile Include="DW\GlobalConstructorWeaveBuilder.cs" />
-    <Compile Include="DW\GlobalConstructorWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalConstructorBuilder.cs" />
+    <Compile Include="DW\GlobalConstructorDefiner.cs" />
     <Compile Include="DW\GlobalField.cs" />
     <Compile Include="DW\GlobalHideAction.cs" />
     <Compile Include="DW\GlobalHideFunc.cs" />
     <Compile Include="DW\GlobalMethod.cs" />
     <Compile Include="DW\GlobalMethodBodyWeaver.cs" />
-    <Compile Include="DW\GlobalMethodBodyWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalMethodBodyDefiner.cs" />
     <Compile Include="DW\GlobalMethodWeaver.cs" />
-    <Compile Include="DW\GlobalMethodWeaveBuilder.cs" />
-    <Compile Include="DW\GlobalMethodWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalMethodBuilder.cs" />
+    <Compile Include="DW\GlobalMethodDefiner.cs" />
     <Compile Include="DW\GlobalProperty.cs" />
     <Compile Include="DW\GlobalPropertyWeaver.cs" />
-    <Compile Include="DW\GlobalHideMethodWeaveDefiner.cs" />
+    <Compile Include="DW\GlobalHideMethodDefiner.cs" />
     <Compile Include="DW\GlobalSetupModes.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\IILProcessor.cs" />
     <Compile Include="ILTools\Impl\Mono\Cecil\ILEmitMode.cs" />

@@ -130,6 +130,58 @@ namespace Urasandesu.NAnonym.Test
         {
             return value;
         }
+
+        public static void WriteLog(string format, params object[] args)
+        {
+            SimpleLogWriter.Instance.WriteLine(format, args);
+        }
+
+        public static string ReadLogToEnd()
+        {
+            return SimpleLogWriter.Instance.ReadToEnd();
+        }
+
+        public static void ClearLog()
+        {
+            SimpleLogWriter.Instance.Clear();
+        }
+    }
+
+    public class SimpleLogWriter
+    {
+        string logFileName;
+
+        protected SimpleLogWriter()
+        {
+            logFileName = Path.GetFileNameWithoutExtension(FileSystem.GetTempFileName()) + ".log";
+        }
+        
+        static SimpleLogWriter instance = new SimpleLogWriter();
+        
+        public static SimpleLogWriter Instance { get { return instance; } }
+        
+        public void WriteLine(string format, params object[] args)
+        {
+            using (var logFileStream = new FileStream(logFileName, FileMode.Append, FileAccess.Write, FileShare.Read))
+            using (var logStreamWriter = new StreamWriter(logFileStream))
+            {
+                logStreamWriter.WriteLine(format, args);
+            }
+        }
+        
+        public string ReadToEnd()
+        {
+            using (var logFileStream = new FileStream(logFileName, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read))
+            using (var logStreamReader = new StreamReader(logFileStream))
+            {
+                return logStreamReader.ReadToEnd();
+            }
+        }
+        
+        public void Clear()
+        {
+            TestHelper.TryDelete(logFileName);
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 /* 
- * File: GlobalMethodWeaveDefiner.cs
+ * File: GlobalMethodDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq;
@@ -38,12 +38,20 @@ using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using UNI = Urasandesu.NAnonym.ILTools;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using Urasandesu.NAnonym.Linq;
+
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    abstract class GlobalMethodWeaveDefiner : MethodWeaveDefiner
+    abstract class GlobalMethodDefiner : MethodWeaveDefiner
     {
-        public GlobalMethodWeaveDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+        public static readonly string VersionName = "version";
+        public static readonly string AutoNamedAliasPattern = string.Format(@"^{0}(?<{1}>\d+)", Regex.Escape(GlobalClass.MethodPrefix), VersionName);
+        public static readonly Regex AutoNamedAliasRegex = new Regex(AutoNamedAliasPattern, RegexOptions.Compiled);
+
+
+        public GlobalMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
             : base(parent, injectionMethod)
         {
             anonymousStaticMethodCache = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(injectionMethod.Destination);
@@ -63,6 +71,28 @@ namespace Urasandesu.NAnonym.Cecil.DW
             methodInterface = GetMethodInterface();
         }
 
+        protected override UNI::IMethodGenerator GetMethodInterface()
+        {
+            // TODO: エイリアス名が明示的に指定されている場合の処理
+            var declaringTypeDef = ((MCTypeGeneratorImpl)Parent.ConstructorWeaver.DeclaringTypeGenerator).TypeDef;
+            var source = declaringTypeDef.Methods.FirstOrDefault(methodDef => methodDef.Equivalent(WeaveMethod.Source));
+            string sourceName = source.Name;
+            var latestVersion = declaringTypeDef.Methods.
+                                                  Select(methodDef => methodDef.Name).
+                                                  Select(name => AutoNamedAliasRegex.Match(name)).
+                                                  Where(autoNamedAliasMatch => autoNamedAliasMatch.Success).
+                                                  MaxOrDefault(autoNamedAliasMatch => (int?)int.Parse(autoNamedAliasMatch.Groups[VersionName].Value));
+            source.Name = GlobalClass.MethodPrefix + (latestVersion == null ? 0 : latestVersion + 1) + source.Name;
+            baseMethod = new MCMethodGeneratorImpl(source);
+
+            var destination = source.DuplicateWithoutBody();
+            destination.Name = sourceName;
+            declaringTypeDef.Methods.Add(destination);
+            var destinationGen = new MCMethodGeneratorImpl(destination);
+
+            return destinationGen;
+        }
+
         readonly FieldInfo anonymousStaticMethodCache;
         public override FieldInfo AnonymousStaticMethodCache
         {
@@ -74,9 +104,10 @@ namespace Urasandesu.NAnonym.Cecil.DW
             get { throw new NotImplementedException(); }
         }
 
+        UNI::IMethodDeclaration baseMethod;
         public override UNI::IMethodDeclaration BaseMethod
         {
-            get { throw new NotImplementedException(); }
+            get { return baseMethod; }
         }
 
         UNI::IFieldGenerator cachedMethod;

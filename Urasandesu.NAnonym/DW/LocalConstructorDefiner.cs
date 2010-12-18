@@ -1,5 +1,5 @@
 /* 
- * File: LocalConstructorWeaveDefiner.cs
+ * File: LocalConstructorDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq;
@@ -37,9 +37,9 @@ using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalConstructorWeaveDefiner : ConstructorWeaveDefiner
+    class LocalConstructorDefiner : ConstructorWeaveDefiner
     {
-        public LocalConstructorWeaveDefiner(ConstructorWeaver parent)
+        public LocalConstructorDefiner(ConstructorWeaver parent)
             : base(parent)
         {
         }

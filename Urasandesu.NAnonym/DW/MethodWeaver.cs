@@ -52,9 +52,9 @@ namespace Urasandesu.NAnonym.DW
 
         public override void Apply()
         {
-            foreach (var injectionMethod in MethodSet)
+            foreach (var weaveMethod in MethodSet)
             {
-                var definer = GetMethodDefiner(this, injectionMethod);
+                var definer = GetMethodDefiner(this, weaveMethod);
                 definer.Create();
 
                 var builder = GetMethodBuilder(definer);
@@ -62,7 +62,7 @@ namespace Urasandesu.NAnonym.DW
             }
         }
 
-        protected abstract MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod);
+        protected abstract MethodWeaveDefiner GetMethodDefiner(MethodWeaver parent, WeaveMethodInfo weaveMethod);
         protected abstract MethodWeaveBuilder GetMethodBuilder(MethodWeaveDefiner parentDefiner);        
     }
 }

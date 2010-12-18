@@ -93,14 +93,9 @@ namespace Test.Urasandesu.NAnonym.Etc
 
     public class Class4_1
     {
-        public int Add(int x, int y)
+        public int Inverse(int n)
         {
-            return x + y;
-        }
-
-        public virtual int Minus(int x, int y)
-        {
-            return x - y;
+            return -n;
         }
     }
 }

@@ -1,5 +1,5 @@
 /* 
- * File: GlobalMethodWeaveBuilder.cs
+ * File: GlobalHideMethodDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,28 +26,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+
+using System.Linq;
+using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DW;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
-    class GlobalMethodWeaveBuilder : MethodWeaveBuilder
+    class GlobalHideMethodDefiner : GlobalMethodDefiner
     {
-        public GlobalMethodWeaveBuilder(MethodWeaveDefiner parentDefiner)
-            : base(parentDefiner)
+        public GlobalHideMethodDefiner(MethodWeaver parent, WeaveMethodInfo weaveMethod)
+            : base(parent, weaveMethod)
         {
-        }
-
-        public override void Construct()
-        {
-            ParentDefiner.MethodInterface.ExpressBody(
-            gen =>
-            {
-                var bodyWeaver = new GlobalMethodBodyWeaver(gen, this);
-                bodyWeaver.Apply();
-            });
         }
     }
 }

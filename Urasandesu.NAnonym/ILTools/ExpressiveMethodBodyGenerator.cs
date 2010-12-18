@@ -49,26 +49,6 @@ namespace Urasandesu.NAnonym.ILTools
     {
         static readonly Expressible expressible = new Expressible();
         static readonly StoreExpressible storeExpressible = new StoreExpressible();
-        static readonly MethodInfo GetTypeFromHandle = 
-            typeof(Type).GetMethod(
-                                "GetTypeFromHandle",
-                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                                null,
-                                new Type[] 
-                                {
-                                    typeof(RuntimeTypeHandle) 
-                                },
-                                null);
-        static readonly MethodInfo GetMethodFromHandle =
-            typeof(MethodBase).GetMethod(
-                                "GetMethodFromHandle",
-                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-                                null,
-                                new Type[]
-                                {
-                                    typeof(RuntimeMethodHandle)
-                                },
-                                null);
         
         readonly IMethodBaseGenerator methodGen;
         readonly EvalState state;
@@ -689,18 +669,18 @@ namespace Urasandesu.NAnonym.ILTools
             else if ((t = exp.Value as Type) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, t);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, GetTypeFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetTypeFromHandle);
             }
             else if ((mi = exp.Value as MethodInfo) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetMethodFromHandle);
                 methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
             }
             else if ((ci = exp.Value as ConstructorInfo) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, ci);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetMethodFromHandle);
                 methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(ConstructorInfo));
             }
             else

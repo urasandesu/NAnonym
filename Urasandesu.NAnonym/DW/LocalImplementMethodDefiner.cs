@@ -1,5 +1,5 @@
 /* 
- * File: LocalConstructorWeaveBuilder.cs
+ * File: LocalImplementMethodDefiner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,32 +26,40 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System.Linq;
+
+using System.Reflection;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DW
 {
-    class LocalConstructorWeaveBuilder : ConstructorWeaveBuilder
+    class LocalImplementMethodDefiner : LocalMethodDefiner
     {
-        public LocalConstructorWeaveBuilder(ConstructorWeaveDefiner parentDefiner)
-            : base(parentDefiner)
+        public LocalImplementMethodDefiner(MethodWeaver parent, WeaveMethodInfo injectionMethod)
+            : base(parent, injectionMethod)
         {
         }
 
-        public override void Construct()
+        protected override IMethodGenerator GetMethodInterface()
         {
-            ParentDefiner.NewConstructor.ExpressBody(
-            gen =>
-            {
-                var bodyWeaver = new LocalConstructorBodyWeaver(gen, this);
-                bodyWeaver.Apply();
-                gen.Eval(_ => _.Base());
-            });
+            const MethodAttributes implement = MethodAttributes.Public |
+                                               MethodAttributes.HideBySig |
+                                               MethodAttributes.NewSlot |
+                                               MethodAttributes.Virtual |
+                                               MethodAttributes.Final;
+            var source = WeaveMethod.Source;
+            var name = source.Name;
+            var returnType = source.ReturnType;
+            var parameterTypes = source.ParameterTypes();
+            return Parent.ConstructorWeaver.DeclaringTypeGenerator.AddMethod(
+                name, implement, CallingConventions.HasThis, returnType, parameterTypes);
+        }
+
+        public override IMethodDeclaration BaseMethod
+        {
+            get { throw new System.NotImplementedException(); }
         }
     }
 }

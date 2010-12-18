@@ -42,7 +42,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         protected override MethodBodyWeaveDefiner GetMethodBodyDefiner(MethodBodyWeaver parentBody)
         {
-            return new GlobalMethodBodyWeaveDefiner(parentBody);
+            return new GlobalMethodBodyDefiner(parentBody);
         }
     }
 }

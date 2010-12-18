@@ -38,6 +38,27 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public sealed class Expressible
     {
+        public static readonly MethodInfo GetTypeFromHandle =
+            typeof(Type).GetMethod(
+                                "GetTypeFromHandle",
+                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                                null,
+                                new Type[] 
+                                {
+                                    typeof(RuntimeTypeHandle) 
+                                },
+                                null);
+        public static readonly MethodInfo GetMethodFromHandle =
+            typeof(MethodBase).GetMethod(
+                                "GetMethodFromHandle",
+                                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+                                null,
+                                new Type[]
+                                {
+                                    typeof(RuntimeMethodHandle)
+                                },
+                                null);
+
         readonly MethodInfo BaseInfo;
         readonly MethodInfo ThisInfo;
         readonly MethodInfo DupAddOneInfo;

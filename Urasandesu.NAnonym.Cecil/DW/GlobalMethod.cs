@@ -41,11 +41,92 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public DependencyClass HideBy(Delegate @delegate)
+        protected DependencyClass HideBy(Delegate @delegate)
         {
             @class.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Hide, source, @delegate.Method, @delegate.GetType()));
             return @class;
         }
+
+        protected DependencyClass BeforeRun(Delegate @delegate)
+        {
+            @class.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.Before, source, @delegate.Method, @delegate.GetType()));
+            return @class;
+        }
+
+        protected DependencyClass AfterRun(Delegate @delegate)
+        {
+            @class.MethodSet.Add(new WeaveMethodInfo(GlobalSetupModes.After, source, @delegate.Method, @delegate.GetType()));
+            return @class;
+        }
     }
+
+    public class GlobalBeforeSource : DependencyBeforeSource
+    {
+        public GlobalBeforeSource(Type type, MethodBase method)
+            : base(type, method)
+        {
+        }
+    }
+
+    public class GlobalAfterSource : DependencyBeforeSource
+    {
+        public GlobalAfterSource(Type type, MethodBase method)
+            : base(type, method)
+        {
+        }
+    }
+
+    public class GlobalBeforeFunc<TBase, TResult> : GlobalMethod
+    {
+        public GlobalBeforeFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
+        {
+        }
+
+        public GlobalClass<TBase> Run(Action<GlobalBeforeSource> beforeHandler)
+        {
+            return (GlobalClass<TBase>)BeforeRun((Delegate)beforeHandler);
+        }
+    }
+
+    public class GlobalBeforeFunc<TBase, T, TResult> : GlobalMethod
+    {
+        public GlobalBeforeFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
+        {
+        }
+
+        public GlobalClass<TBase> Run(Action<GlobalBeforeSource, T> beforeHandler)
+        {
+            return (GlobalClass<TBase>)BeforeRun((Delegate)beforeHandler);
+        }
+    }
+
+    public class GlobalAfterFunc<TBase, TResult> : GlobalMethod
+    {
+        public GlobalAfterFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
+        {
+        }
+
+        public GlobalClass<TBase> Run(Action<GlobalAfterSource, TResult> afterHandler)
+        {
+            return (GlobalClass<TBase>)AfterRun((Delegate)afterHandler);
+        }
+    }
+
+    public class GlobalAfterFunc<TBase, T, TResult> : GlobalMethod
+    {
+        public GlobalAfterFunc(GlobalClass<TBase> globalClass, MethodInfo source)
+            : base(globalClass, source)
+        {
+        }
+
+        public GlobalClass<TBase> Run(Action<GlobalAfterSource, T, TResult> afterHandler)
+        {
+            return (GlobalClass<TBase>)AfterRun((Delegate)afterHandler);
+        }
+    }
+
 }
 

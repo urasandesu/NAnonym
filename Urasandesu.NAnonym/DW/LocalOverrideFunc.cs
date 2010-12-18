@@ -71,7 +71,7 @@ namespace Urasandesu.NAnonym.DW
             return (LocalClass<TBase>)OverridBy((Delegate)destination);
         }
 
-        public LocalClass<TBase> By(FuncWithBase<T1, T2, TResult> destination)
+        public LocalClass<TBase> By(FuncWithPrev<T1, T2, TResult> destination)
         {
             return (LocalClass<TBase>)OverridBy((Delegate)destination);
         }

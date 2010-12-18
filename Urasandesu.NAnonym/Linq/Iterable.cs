@@ -421,6 +421,28 @@ namespace Urasandesu.NAnonym.Linq
             return source.Aggregate(0, (accumelate, next) => accumelate ^ next.NullableGetHashCode());
         }
 
+        public static decimal? MaxOrDefault(this IEnumerable<decimal?> source) { return source.FirstOrDefault().IsDefault() ? default(decimal?) : source.Max(); }
+        public static decimal MaxOrDefault(this IEnumerable<decimal> source) { return source.FirstOrDefault().IsDefault() ? default(decimal) : source.Max(); }
+        public static double? MaxOrDefault(this IEnumerable<double?> source) { return source.FirstOrDefault().IsDefault() ? default(double?) : source.Max(); }
+        public static double MaxOrDefault(this IEnumerable<double> source) { return source.FirstOrDefault().IsDefault() ? default(double) : source.Max(); }
+        public static float? MaxOrDefault(this IEnumerable<float?> source) { return source.FirstOrDefault().IsDefault() ? default(float?) : source.Max(); }
+        public static float MaxOrDefault(this IEnumerable<float> source) { return source.FirstOrDefault().IsDefault() ? default(float) : source.Max(); }
+        public static int? MaxOrDefault(this IEnumerable<int?> source) { return source.FirstOrDefault().IsDefault() ? default(int?) : source.Max(); }
+        public static int MaxOrDefault(this IEnumerable<int> source) { return source.FirstOrDefault().IsDefault() ? default(int) : source.Max(); }
+        public static long? MaxOrDefault(this IEnumerable<long?> source) { return source.FirstOrDefault().IsDefault() ? default(long?) : source.Max(); }
+        public static long MaxOrDefault(this IEnumerable<long> source) { return source.FirstOrDefault().IsDefault() ? default(long) : source.Max(); }
+        public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source) { return source.FirstOrDefault().IsDefault() ? default(TSource) : source.Max(); }
+        public static decimal? MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector) { return source.FirstOrDefault().IsDefault() ? default(decimal?) : source.Max(selector); }
+        public static decimal MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector) { return source.FirstOrDefault().IsDefault() ? default(decimal) : source.Max(selector); }
+        public static double? MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector) { return source.FirstOrDefault().IsDefault() ? default(double?) : source.Max(selector); }
+        public static double MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector) { return source.FirstOrDefault().IsDefault() ? default(double) : source.Max(selector); }
+        public static float? MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector) { return source.FirstOrDefault().IsDefault() ? default(float?) : source.Max(selector); }
+        public static float MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector) { return source.FirstOrDefault().IsDefault() ? default(float) : source.Max(selector); }
+        public static int? MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector) { return source.FirstOrDefault().IsDefault() ? default(int?) : source.Max(selector); }
+        public static int MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector) { return source.FirstOrDefault().IsDefault() ? default(int) : source.Max(selector); }
+        public static long? MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector) { return source.FirstOrDefault().IsDefault() ? default(long?) : source.Max(selector); }
+        public static long MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector) { return source.FirstOrDefault().IsDefault() ? default(long) : source.Max(selector); }
+        public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector) { return source.FirstOrDefault().IsDefault() ? default(TResult) : source.Max(selector); }
 
         public static IEqualityComparer<T> CreateEqualityComparer<T>(T obj)
         {

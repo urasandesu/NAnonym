@@ -27,10 +27,38 @@
  *  THE SOFTWARE.
  */
 
+using System;
+using System.Reflection;
+
 namespace Urasandesu.NAnonym.DW
 {
     abstract class DependencySetupModes
     {
         protected DependencySetupModes() { }
+
+        public static readonly SetupMode Before = new SetupMode();
+        public static readonly SetupMode After = new SetupMode();
+    }
+
+    public abstract class DependencyBeforeSource
+    {
+        public DependencyBeforeSource(Type type, MethodBase method)
+        {
+            Type = type;
+            Method = method;
+        }
+        public Type Type { get; set; }
+        public MethodBase Method { get; set; }
+    }
+
+    public abstract class DependencyAfterSource
+    {
+        public DependencyAfterSource(Type type, MethodBase method)
+        {
+            Type = type;
+            Method = method;
+        }
+        public Type Type { get; set; }
+        public MethodBase Method { get; set; }
     }
 }

@@ -42,12 +42,12 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         protected override ConstructorBodyWeaveDefiner GetBodyDefiner(ConstructorBodyWeaver parentBody)
         {
-            return new GlobalConstructorBodyWeaveDefiner(parentBody);
+            return new GlobalConstructorBodyDefiner(parentBody);
         }
 
         protected override ConstructorBodyWeaveBuilder GetBodyBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
         {
-            return new GlobalConstructorBodyWeaveBuilder(parentBodyDefiner);
+            return new GlobalConstructorBodyBuilder(parentBodyDefiner);
         }
     }
 }

@@ -516,7 +516,7 @@ namespace Test.Urasandesu.NAnonym.Linq
         {
             var items1 = new[] { new { Key = 0, Value = "a" }, new { Key = 1, Value = "b" }, new { Key = 0, Value = "c" } };
             var items2 = new[] { new { Key = 1, Value = "bb" } };
-            var merger = Anonymouslyable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
+            var merger = Anonymable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
                 (item1, item2) => new { Key = item2.Key, Value = item1.Value });
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);
@@ -545,7 +545,7 @@ namespace Test.Urasandesu.NAnonym.Linq
         {
             var items1 = new[] { new { Key = 0, Value = "a" }, new { Key = 1, Value = "b" }, new { Key = 0, Value = "c" } };
             var items2 = new[] { new { Key = 2, Value = "d" } };
-            var merger = Anonymouslyable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
+            var merger = Anonymable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
                 (item1, item2) => new { Key = item2.Key, Value = item1.Value });
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);
@@ -561,7 +561,7 @@ namespace Test.Urasandesu.NAnonym.Linq
         {
             var items1 = new[] { new { Key = 0, Value = "a" }, new { Key = 1, Value = "b" }, new { Key = 0, Value = "c" } };
             var items2 = new[] { new { Key = 0, Value = "aa" }, new { Key = 0, Value = "cc" } };
-            var merger = Anonymouslyable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
+            var merger = Anonymable.CreateFunc(items1.FirstOrDefault(), items2.FirstOrDefault(), items1.FirstOrDefault(),
                 (item1, item2) => new { Key = item2.Key, Value = item1.Value });
             var comparer = Iterable.CreateEqualityComparer(
                 items1.FirstOrDefault(), item => item.Key, (item1, item2) => item1.Key == item2.Key);

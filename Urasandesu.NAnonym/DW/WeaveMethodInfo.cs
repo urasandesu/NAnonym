@@ -36,23 +36,19 @@ using System.Reflection;
 using Urasandesu.NAnonym.ILTools;
 using System.Linq.Expressions;
 using Urasandesu.NAnonym.Mixins.System;
+using BuilderType = Urasandesu.NAnonym.DW.MethodBodyWeaveBuilderType;
 
 namespace Urasandesu.NAnonym.DW
 {
-    public class WeaveMethodInfo
+    class WeaveMethodInfo
     {
         public SetupMode Mode { get; set; }
         public MethodInfo Source { get; set; }
         public MethodInfo Destination { get; set; }
         public Type DelegateType { get; set; }
-        public MethodBodyWeaveBuilderType DestinationType { get; private set; }
+        public BuilderType DestinationType { get; private set; }
 
         public WeaveMethodInfo()
-        {
-        }
-
-        public WeaveMethodInfo(SetupMode mode, MethodInfo source, MethodInfo destination)
-            : this(mode, source, destination, null)
         {
         }
 
@@ -63,33 +59,42 @@ namespace Urasandesu.NAnonym.DW
             Destination = destination;
             DelegateType = delegateType;
 
-            DestinationType = MethodBodyWeaveBuilderType.None;
+            DestinationType = BuilderType.None;
             if (TypeAnalyzer.IsAnonymous(destination))
             {
-                DestinationType |= MethodBodyWeaveBuilderType.Anonymous;
+                DestinationType |= BuilderType.Anonym;
             }
 
             if (destination.IsStatic)
             {
-                DestinationType |= MethodBodyWeaveBuilderType.Static;
+                DestinationType |= BuilderType.Static;
             }
             else
             {
-                DestinationType |= MethodBodyWeaveBuilderType.Instance;
+                DestinationType |= BuilderType.Instance;
             }
 
-            if (delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithBase<>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithBase<,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithBase<,,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithBase<,,,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithBase<,,,,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithBase)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithBase<>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithBase<,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithBase<,,>)) ||
-                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithBase<,,,>)))
+            if (mode == DependencySetupModes.Before)
             {
-                DestinationType |= MethodBodyWeaveBuilderType.Base;
+                DestinationType |= BuilderType.Before;
+            }
+            else if (mode == DependencySetupModes.After)
+            {
+                DestinationType |= BuilderType.After;
+            }
+
+            if (delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithPrev<>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithPrev<,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithPrev<,,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithPrev<,,,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(FuncWithPrev<,,,,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithPrev)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithPrev<>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithPrev<,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithPrev<,,>)) ||
+                delegateType.EquivalentWithoutGenericArguments(typeof(ActionWithPrev<,,,>)))
+            {
+                DestinationType |= BuilderType.WithPrev;
             }
         }
 
