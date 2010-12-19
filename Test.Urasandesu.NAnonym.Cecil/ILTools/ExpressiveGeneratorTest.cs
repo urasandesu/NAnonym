@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveMethodBodyGeneratorTest.cs
+ * File: ExpressiveGeneratorTest.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,6 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
 using System.Collections.Generic;
@@ -39,8 +38,9 @@ using System.Text.RegularExpressions;
 using Mono.Cecil;
 using NUnit.Framework;
 using Test.Urasandesu.NAnonym.Etc;
-using Urasandesu.NAnonym.Cecil.ILTools;
-using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.Cecil.Mixins.System;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
@@ -48,14 +48,14 @@ using MC = Mono.Cecil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
-using Urasandesu.NAnonym;
-using Urasandesu.NAnonym.Cecil.Mixins.System;
-using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.ILTools;
+using SRE = System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
     [TestFixture]
-    public class ExpressiveMethodBodyGeneratorTest
+    public class ExpressiveGeneratorTest
     {
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -946,7 +946,7 @@ Parameter[1] = IntPtr method
                 // MEMO: なるほど。cache されない代わりに完全に中身が展開されるらしい。
                 // TODO: GlobalClass セットアップクラスでインスタンスメンバ参照させることはまずないと思うけど・・・。一応その場合のパスも考えるべし。
 
-                var candidateCallingCurrentMethods = typeof(ExpressiveMethodBodyGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
+                var candidateCallingCurrentMethods = typeof(ExpressiveGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
                 var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(callingCurrentMethod);
 
@@ -1269,6 +1269,72 @@ Parameter[1] = IntPtr method
                     Assert.Fail();
                 }
                 catch (Exception e)
+                {
+                    Assert.AreEqual("100", e.InnerException.Message);
+                }
+            });
+        }
+
+
+
+
+        [Test]
+        public void EmitTest23()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var emitTest23Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest23");
+
+
+                var ctorDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig | 
+                                        SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
+
+                var ctorGen = emitTest23Gen.AddConstructor(ctorDefaultAttr, CallingConventions.HasThis, Type.EmptyTypes);
+                ctorGen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+
+
+                var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
+
+                var generativeEmit1Gen = emitTest23Gen.AddMethod("GenerativeEmit1", methodDefaultAttr, typeof(void), Type.EmptyTypes);
+                generativeEmit1Gen.ExpressBody(
+                gen =>
+                {
+                    var dynamicMethod = default(DynamicMethod);
+                    gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod("DynamicMethod", null, null)));
+
+                    var il = default(ILGenerator);
+                    gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
+
+                    gen.ExpressEmit(() => il,
+                    _gen =>
+                    {
+                        _gen.Eval(_ => Console.WriteLine("testtest"));
+                    });
+
+                    var action = default(Action);
+                    gen.Eval(_ => _.St(action).As((Action)dynamicMethod.CreateDelegate(typeof(Action))));
+                    gen.Eval(_ => action());
+                });
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+                var emitTest23 = assembly.GetType(emitTest23Gen.FullName);
+                var instance = Activator.CreateInstance(emitTest23);
+                var generativeEmit1 = emitTest23.GetMethod(generativeEmit1Gen.Name);
+                try
+                {
+                    generativeEmit1.Invoke(instance, null);
+                    Assert.Fail();
+                }
+                catch (TargetInvocationException e)
                 {
                     Assert.AreEqual("100", e.InnerException.Message);
                 }

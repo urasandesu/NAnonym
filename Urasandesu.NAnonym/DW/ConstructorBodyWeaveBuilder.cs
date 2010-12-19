@@ -102,7 +102,7 @@ namespace Urasandesu.NAnonym.DW
                                                                     _.X(targetField.Name),
                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
-                    var macro = new ExpressiveMethodBodyGeneratorMacro(gen);
+                    var macro = new ExpressiveGeneratorMacro(gen);
                     macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(injectionField.Initializer));
 
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, actualTargetField));

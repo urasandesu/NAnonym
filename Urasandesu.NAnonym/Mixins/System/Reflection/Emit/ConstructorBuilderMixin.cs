@@ -41,21 +41,21 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
 {
     public static class ConstructorBuilderMixin
     {
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRConstructorGeneratorImpl(constructorBuilder));
+            var gen = new ExpressiveGenerator(new SRConstructorGeneratorImpl(constructorBuilder));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression, FieldBuilder[] fieldBuilders)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveGenerator> expression, FieldBuilder[] fieldBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRConstructorGeneratorImpl(constructorBuilder, fieldBuilders));
+            var gen = new ExpressiveGenerator(new SRConstructorGeneratorImpl(constructorBuilder, fieldBuilders));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveMethodBodyGenerator> expression, ParameterBuilder[] parameterBuilders)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ExpressiveGenerator> expression, ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRConstructorGeneratorImpl(constructorBuilder, parameterBuilders));
+            var gen = new ExpressiveGenerator(new SRConstructorGeneratorImpl(constructorBuilder, parameterBuilders));
             gen.ExpressBodyEnd(expression);
         }
 

@@ -38,7 +38,7 @@ namespace Urasandesu.NAnonym.DW
 {
     class LocalConstructorBodyWeaver : ConstructorBodyWeaver
     {
-        public LocalConstructorBodyWeaver(ExpressiveMethodBodyGenerator gen, ConstructorWeaveBuilder parentBuilder)
+        public LocalConstructorBodyWeaver(ExpressiveGenerator gen, ConstructorWeaveBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
         }

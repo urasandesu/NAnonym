@@ -41,15 +41,15 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
 {
     public static class DynamicMethodMixin
     {
-        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression)
+        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod));
+            var gen = new ExpressiveGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveMethodBodyGenerator> expression, ParameterBuilder[] parameterBuilders)
+        public static void ExpressBody(this DynamicMethod dynamicMethod, Action<ExpressiveGenerator> expression, ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod, parameterBuilders));
+            var gen = new ExpressiveGenerator(new SRDynamicMethodGeneratorImpl(dynamicMethod, parameterBuilders));
             gen.ExpressBodyEnd(expression);
         }
     }

@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="AnonymouslyableTest.cs" />
     <Compile Include="NewDomainTester.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyGeneratorTest.cs" />
+    <Compile Include="ILTools\ExpressiveGeneratorTest.cs" />
     <Compile Include="DW\DependencyUtilTest.cs" />
     <Compile Include="MixinTest.cs" />
     <Compile Include="Linq\DelegateComparerTest.cs" />

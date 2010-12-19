@@ -104,11 +104,12 @@
     <Compile Include="DW\LocalSetupModes.cs" />
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
+    <Compile Include="ILTools\GenerativeEmitter.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
     <Compile Include="ManuallyDeserializable.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyGenerator.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyGeneratorMacro.cs" />
+    <Compile Include="ILTools\ExpressiveGenerator.cs" />
+    <Compile Include="ILTools\ExpressiveGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />
     <Compile Include="ILTools\IConstructorDeclaration.cs" />
@@ -195,7 +196,7 @@
     <Compile Include="Linq\Transformer.cs" />
     <Compile Include="Linq\TransformerEnumerateOnly.cs" />
     <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
-    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ExpressiveMethodBodyGeneratorMixin.cs" />
+    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ExpressiveGeneratorMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

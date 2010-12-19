@@ -49,8 +49,6 @@ namespace Urasandesu.NAnonym.Linq
             this.selector = selector;
         }
 
-        #region IList<TDestination> メンバ
-
         public virtual int IndexOf(TDestination item)
         {
             throw new NotSupportedException();
@@ -78,10 +76,6 @@ namespace Urasandesu.NAnonym.Linq
             }
         }
 
-        #endregion
-
-        #region ICollection<TDestination> メンバ
-
         public virtual void Add(TDestination item)
         {
             throw new NotSupportedException();
@@ -99,7 +93,10 @@ namespace Urasandesu.NAnonym.Linq
 
         public virtual void CopyTo(TDestination[] array, int arrayIndex)
         {
-            throw new NotSupportedException();
+            for (int i = arrayIndex; i < Count; i++)
+            {
+                array[i] = this[i];
+            }
         }
 
         public int Count
@@ -117,25 +114,15 @@ namespace Urasandesu.NAnonym.Linq
             throw new NotSupportedException();
         }
 
-        #endregion
-
-        #region IEnumerable<TDestination> メンバ
-
         public IEnumerator<TDestination> GetEnumerator()
         {
             return source.Select(selector).GetEnumerator();
         }
 
-        #endregion
-
-        #region IEnumerable メンバ
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
-
-        #endregion
     }
 }
 

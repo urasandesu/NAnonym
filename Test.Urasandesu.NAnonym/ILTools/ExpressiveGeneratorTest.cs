@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveMethodBodyGeneratorTest.cs
+ * File: ExpressiveGeneratorTest.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.IO;
@@ -50,7 +50,7 @@ using System.Linq.Expressions;
 namespace Test.Urasandesu.NAnonym.ILTools
 {
     [TestFixture]
-    public class ExpressiveMethodBodyGeneratorTest
+    public class ExpressiveGeneratorTest
     {
         [TestFixtureSetUp]
         public void FixtureSetUp()
@@ -262,7 +262,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         {
             TestHelper.UsingTempFile(tempFileName =>
             {
-                var candidateCallingCurrentMethods = typeof(ExpressiveMethodBodyGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
+                var candidateCallingCurrentMethods = typeof(ExpressiveGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest05>"));
                 var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByRunningState(callingCurrentMethod);
 
@@ -459,41 +459,6 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 string message = instance.Print("aiueo");
                 Assert.AreEqual("Parameter = aiueo, FieldValue = 10", message);
-            });
-        }
-
-
-
-
-
-        [Test]
-        public void Hoge()
-        {
-            TestHelper.UsingTempFile(tempFileName =>
-            {
-                //var i = default(int);
-                //var exp = (Expression<Action>)(() => i = 10);
-
-                var tempDynamicMethod = new DynamicMethod("Temp", null, null);
-                tempDynamicMethod.ExpressBody(
-                gen =>
-                {
-                    var i = default(int);
-                    gen.Eval(_ => _.St(i).As(10));          // 代入を表す DSL。
-                    gen.Eval(_ => Console.WriteLine(i));    // 通常の構文も使える。
-                    gen.Eval(_ => TestHelper.ThrowException("aiueo"));
-                });
-
-                var temp = (Action)tempDynamicMethod.CreateDelegate(typeof(Action));
-                try
-                {
-                    temp();
-                    Assert.Fail();
-                }
-                catch (Exception e)
-                {
-                    Assert.AreEqual("aiueo", e.Message);
-                }
             });
         }
     }

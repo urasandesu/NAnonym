@@ -1,6 +1,5 @@
 // TODO: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
 // ------------ できれば 2010 年中にここまで・・・ --------------
-// TODO: EMBG で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？
 // TODO: テストで利用している AppDomain 生成系のヘルパーを本ちゃんコード側へ移動。GlobalDomainContext とか。ユーザーが自由に処理を書けるように、NUnit のような Attribute 制御を考え中。
 // TODO: EMBG 効率 UP。Extract 系を Expression<TDelegate>.Compile() 使わないように（Elicit 一式）。
 // TODO: EMBG 機能拡張。デバッグ機能強化。
@@ -11,6 +10,10 @@
 
 
 
+// DOING: EMBG で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？
+          ・St の意味に重複ありわかりにくい。引き込むだけ: Alloc、デフォルトで展開あり: St/Ld の形に。
+          ・Reflection 系の処理が IL に展開されるモードを追加。
+          ・ILGenerator ありきのモードを追加（もちろん Reflection 系の処理展開モードも有効に）。
 // DOING: OverridBy 全実装。
 // DOING: ImplementBy 全実装。
 // DOING: HideNewBy 全実装。

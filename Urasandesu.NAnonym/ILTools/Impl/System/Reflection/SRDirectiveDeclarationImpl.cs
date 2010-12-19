@@ -208,8 +208,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        #region IDirectiveDeclaration メンバ
-
         public OpCode OpCode
         {
             get { return opcode; }
@@ -229,8 +227,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get { return clrOperand; }
         }
-
-        #endregion
 
         public override string ToString()
         {

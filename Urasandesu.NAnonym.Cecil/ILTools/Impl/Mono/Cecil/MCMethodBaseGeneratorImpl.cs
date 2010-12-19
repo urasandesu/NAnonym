@@ -88,10 +88,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCPortableScopeItemImpl(itemRawData, fieldDef, variableDef);
         }
 
-        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ExpressiveMethodBodyGenerator> bodyExpression)
+        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ExpressiveGenerator> bodyExpression)
         {
             MethodDef.Body.InitLocals = true;
-            var gen = new UNI::ExpressiveMethodBodyGenerator(this);
+            var gen = new UNI::ExpressiveGenerator(this);
             bodyExpression(gen);
             if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)
             {

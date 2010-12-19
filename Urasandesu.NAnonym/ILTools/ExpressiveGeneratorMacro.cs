@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveMethodBodyGeneratorMacro.cs
+ * File: ExpressiveGeneratorMacro.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.ObjectModel;
@@ -37,10 +37,10 @@ using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class ExpressiveMethodBodyGeneratorMacro
+    public class ExpressiveGeneratorMacro
     {
-        ExpressiveMethodBodyGenerator gen;
-        public ExpressiveMethodBodyGeneratorMacro(ExpressiveMethodBodyGenerator gen)
+        ExpressiveGenerator gen;
+        public ExpressiveGeneratorMacro(ExpressiveGenerator gen)
         {
             this.gen = gen;
         }

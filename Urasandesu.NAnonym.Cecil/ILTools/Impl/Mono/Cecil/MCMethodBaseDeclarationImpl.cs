@@ -78,7 +78,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             methodName = methodDef.Name;
             methodAttr = methodDef.Attributes;
             parameterTypeFullNames = methodDef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
-            bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body, mode, target);
+            if (methodDef.Body != null)
+            {
+                bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body, mode, target);
+            }
             declaringTypeDecl = new MCTypeGeneratorImpl(methodRef.DeclaringType.Resolve());
             parameters = new ReadOnlyCollection<UNI::IParameterDeclaration>(
                 methodRef.Parameters.TransformEnumerateOnly(parameter => (UNI::IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));

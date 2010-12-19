@@ -34,6 +34,7 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public interface IMethodBodyDeclaration
     {
+        IMethodBaseDeclaration Method { get; }
         ReadOnlyCollection<ILocalDeclaration> Locals { get; }
         ReadOnlyCollection<IDirectiveDeclaration> Directives { get; }
     }

@@ -102,7 +102,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
         {
             methodBaseGen.ExpressBody(bodyExpression);
             return this;

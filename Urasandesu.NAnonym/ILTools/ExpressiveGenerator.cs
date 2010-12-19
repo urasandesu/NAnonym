@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveMethodBodyGenerator.cs
+ * File: ExpressiveGenerator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Linq;
@@ -42,10 +42,11 @@ using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using System.Collections.Generic;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
+using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class ExpressiveMethodBodyGenerator : IMethodBodyGenerator
+    public class ExpressiveGenerator : IMethodBodyGenerator
     {
         static readonly Expressible expressible = new Expressible();
         static readonly StoreExpressible storeExpressible = new StoreExpressible();
@@ -53,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly IMethodBaseGenerator methodGen;
         readonly EvalState state;
 
-        internal ExpressiveMethodBodyGenerator(IMethodBaseGenerator methodGen)
+        internal ExpressiveGenerator(IMethodBaseGenerator methodGen)
         {
             this.methodGen = methodGen;
             state = new EvalState();
@@ -875,7 +876,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         static void EvalParameter(IMethodBaseGenerator methodGen, ParameterExpression exp, EvalState state)
         {
-            if (exp.Type == typeof(ExpressiveMethodBodyGenerator))
+            if (exp.Type == typeof(ExpressiveGenerator))
             {
             }
             else
@@ -884,7 +885,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        #region IMethodBodyGenerator メンバ
+
 
         public IILOperator ILOperator { get { return methodGen.Body.ILOperator; } }
 
@@ -898,9 +899,9 @@ namespace Urasandesu.NAnonym.ILTools
             get { return methodGen.Body.Directives; }
         }
 
-        #endregion
 
-        #region IMethodBodyDeclaration メンバ
+
+
 
         ReadOnlyCollection<ILocalDeclaration> IMethodBodyDeclaration.Locals
         {
@@ -912,7 +913,7 @@ namespace Urasandesu.NAnonym.ILTools
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
+
 
         public void Dump()
         {
@@ -1062,9 +1063,6 @@ namespace Urasandesu.NAnonym.ILTools
             return dummyMethod.Body.Directives;
         }
 
-        #region IMethodBodyGenerator メンバ
-
-
         public ILocalGenerator AddLocal(string name, Type localType)
         {
             throw new NotImplementedException();
@@ -1075,16 +1073,19 @@ namespace Urasandesu.NAnonym.ILTools
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region IMethodBodyGenerator メンバ
-
-
         public ILocalGenerator AddLocal(ILocalGenerator localGen)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        public IMethodBaseGenerator Method
+        {
+            get { return methodGen; }
+        }
+
+        IMethodBaseDeclaration IMethodBodyDeclaration.Method
+        {
+            get { return Method; }
+        }
     }
 }

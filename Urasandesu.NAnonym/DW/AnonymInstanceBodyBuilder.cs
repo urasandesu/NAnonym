@@ -82,12 +82,42 @@ namespace Urasandesu.NAnonym.DW
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
                 // 例えばこんな感じでどう？
-                //1. gen.EvalEmit(() => il, _ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
-                //2. gen.EvalEmit(() => il, _ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                // 1. gen.EvalEmit(_ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))), () => il);
+                //    ⇒括弧多いょ…
+                // 2. gen.EvalEmit(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))), () => il);
+                //    ⇒Reflection をそのまま使いたいのかもしれない。判断不可能だょ…
+                // 
+                // Decoration パターンはどうだ！
+                //  また名前が長い問題が(笑)
+                //  ExpressiveMethodBodyGenerator -> ExpressiveGenerator
+                //  ExpressiveMethodBodyGenerationEmitter -> GenerativeEmitter
+                //  ExpressiveMethodBodyReflectionOptimizer -> ReflectionOptimizer
+                // 3. var emitter = new GenerativeEmitter(gen, () => il);
+                //    {
+                //        emitter.Eval(_ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                //    }
+                // 4. var emitter = new GenerativeEmitter(gen, () => il);
+                //    var optimizer = new ReflectionOptimizer(emitter);
+                //    {
+                //        optimizer.Eval(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+                //    }
+                // 
+                // 最終的には、Ld と X は統合されるから…   
+                // 5. var emitter = new GenerativeEmitter(gen, () => il);
+                //    var optimizer = new ReflectionOptimizer(emitter);
+                //    {
+                //        optimizer.Eval(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(injectionMethod.Source.ParameterNames()))));
+                //    }
+                // 
+                // 
+                //    
+                // 
+                //    
                 // 
                 // 最初に Reflection で書いてたなら、それがそのまま持ってこれたほうがいいんじゃね？
                 // ⇒2. が良さげ。
                 // ⇒この考え方って、MethodInfo だけじゃなく、Type や FieldInfo、PropertyInfo にも言えそう。
+                // 
 
 
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));

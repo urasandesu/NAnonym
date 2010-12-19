@@ -41,7 +41,7 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
     {
         public static FieldInfo ToFieldInfo(this FieldReference fieldRef)
         {
-            throw new NotImplementedException();
+            return fieldRef.Resolve().ToFieldInfo();
         }
     }
 }

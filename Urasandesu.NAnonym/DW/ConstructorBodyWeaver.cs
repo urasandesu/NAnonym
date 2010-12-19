@@ -39,7 +39,7 @@ namespace Urasandesu.NAnonym.DW
     abstract class ConstructorBodyWeaver : BodyWeaver
     {
         public new ConstructorWeaveBuilder ParentBuilder { get { return (ConstructorWeaveBuilder)base.ParentBuilder; } }
-        public ConstructorBodyWeaver(ExpressiveMethodBodyGenerator gen, ConstructorWeaveBuilder parentBuilder)
+        public ConstructorBodyWeaver(ExpressiveGenerator gen, ConstructorWeaveBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
         }

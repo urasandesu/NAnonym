@@ -76,6 +76,10 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
+        public new IMethodBaseGenerator Method
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

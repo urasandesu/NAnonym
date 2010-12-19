@@ -141,8 +141,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             else throw new NotSupportedException();
         }
 
-        #region IDirectiveDeclaration メンバ
-
         public OpCode OpCode
         {
             get { return instruction.OpCode.ToNAnonym(); }
@@ -152,11 +150,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { return instruction.Operand; }
         }
-
-        #endregion
-
-        #region IDirectiveDeclaration メンバ
-
 
         public object NAnonymOperand
         {
@@ -168,7 +161,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return clrOperand; }
         }
 
-        #endregion
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", OpCode, RawOperand);
+        }
     }
 }
 

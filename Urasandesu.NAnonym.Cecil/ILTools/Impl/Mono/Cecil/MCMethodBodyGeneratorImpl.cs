@@ -82,6 +82,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             throw new NotImplementedException();
         }
+
+        public new IMethodBaseGenerator Method
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

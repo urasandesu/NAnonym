@@ -49,6 +49,15 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             var destination = new FieldDefinition(source.Name, source.Attributes, source.FieldType);
             return destination;
         }
+
+        public static FieldInfo ToFieldInfo(this FieldDefinition fieldDef)
+        {
+            var assembly = Assembly.Load(fieldDef.DeclaringType.Module.Assembly.FullName);
+            var type = assembly.GetType(fieldDef.DeclaringType.FullName);
+            BindingFlags bindingAttr = fieldDef.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
+            bindingAttr |= fieldDef.IsPublic ? BindingFlags.Public : BindingFlags.NonPublic;
+            return type.GetField(fieldDef.Name, bindingAttr);
+        }
     }
 }
 

@@ -115,9 +115,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ExpressiveMethodBodyGenerator> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(this);
+            var gen = new ExpressiveGenerator(this);
             bodyExpression(gen);
             if (gen.Directives.Last().OpCode != OpCodes.Ret)
             {

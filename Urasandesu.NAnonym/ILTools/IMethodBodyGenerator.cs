@@ -34,6 +34,7 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public interface IMethodBodyGenerator : IMethodBodyDeclaration
     {
+        new IMethodBaseGenerator Method { get; }
         IILOperator ILOperator { get; }
         new ReadOnlyCollection<ILocalGenerator> Locals { get; }
         new ReadOnlyCollection<IDirectiveGenerator> Directives { get; }

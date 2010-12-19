@@ -41,27 +41,27 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
 {
     public static class MethodBuilderMixin
     {
-        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression)
+        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveGenerator> expression)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder));
+            var gen = new ExpressiveGenerator(new SRMethodGeneratorImpl(methodBuilder));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression, ParameterBuilder[] parameterBuilders)
+        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveGenerator> expression, ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders));
+            var gen = new ExpressiveGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression, FieldBuilder[] fieldBuilders)
+        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveGenerator> expression, FieldBuilder[] fieldBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder, fieldBuilders));
+            var gen = new ExpressiveGenerator(new SRMethodGeneratorImpl(methodBuilder, fieldBuilders));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveMethodBodyGenerator> expression, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
+        public static void ExpressBody(this MethodBuilder methodBuilder, Action<ExpressiveGenerator> expression, ParameterBuilder[] parameterBuilders, FieldBuilder[] fieldBuilders)
         {
-            var gen = new ExpressiveMethodBodyGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders, fieldBuilders));
+            var gen = new ExpressiveGenerator(new SRMethodGeneratorImpl(methodBuilder, parameterBuilders, fieldBuilders));
             gen.ExpressBodyEnd(expression);
         }
     }

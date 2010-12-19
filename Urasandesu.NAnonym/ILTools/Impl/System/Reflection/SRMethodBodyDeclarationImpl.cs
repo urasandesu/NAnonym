@@ -38,8 +38,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     class SRMethodBodyDeclarationImpl : IMethodBodyDeclaration
     {
-        #region IMethodBodyDeclaration メンバ
-
         public ReadOnlyCollection<ILocalDeclaration> Locals
         {
             get { throw new NotImplementedException(); }
@@ -50,7 +48,10 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
+        public IMethodBaseDeclaration Method
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 
