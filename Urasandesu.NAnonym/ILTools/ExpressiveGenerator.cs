@@ -48,8 +48,8 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public class ExpressiveGenerator : IMethodBodyGenerator
     {
-        static readonly Expressible expressible = new Expressible();
-        static readonly StoreExpressible storeExpressible = new StoreExpressible();
+        protected static readonly Expressible ExpressibleInstance = new Expressible();
+        protected static readonly StoreExpressible StoreExpressibleInstance = new StoreExpressible();
         
         readonly IMethodBaseGenerator methodGen;
         readonly EvalState state;
@@ -116,18 +116,18 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalBinary(methodGen, (BinaryExpression)exp, state);
                     return;
                 case ExpressionType.AddChecked:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.And:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.AndAlso:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Call:
                     EvalMethodCall(methodGen, (MethodCallExpression)exp, state);
                     return;
                 case ExpressionType.Coalesce:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Conditional:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Constant:
                     EvalConstant(methodGen, (ConstantExpression)exp, state);
                     return;
@@ -136,15 +136,15 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalUnary(methodGen, (UnaryExpression)exp, state);
                     return;
                 case ExpressionType.ConvertChecked:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Divide:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.ExclusiveOr:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.GreaterThan:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.GreaterThanOrEqual:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Invoke:
                     EvalInvoke(methodGen, (InvocationExpression)exp, state);
                     return;
@@ -152,65 +152,64 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalLambda(methodGen, (LambdaExpression)exp, state);
                     return;
                 case ExpressionType.LeftShift:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.LessThan:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.LessThanOrEqual:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.ListInit:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.MemberAccess:
                     EvalMember(methodGen, (MemberExpression)exp, state);
                     return;
                 case ExpressionType.MemberInit:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Modulo:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.MultiplyChecked:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Negate:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.NegateChecked:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.New:
                     EvalNew(methodGen, (NewExpression)exp, state);
                     return;
                 case ExpressionType.NewArrayBounds:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.NewArrayInit:
                     EvalNewArray(methodGen, (NewArrayExpression)exp, state);
                     return;
                 case ExpressionType.Not:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.NotEqual:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Or:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.OrElse:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Parameter:
                     EvalParameter(methodGen, (ParameterExpression)exp, state);
                     return;
                 case ExpressionType.Power:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Quote:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.RightShift:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.Subtract:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.SubtractChecked:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.TypeAs:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.TypeIs:
-                    break;
+                    throw new NotImplementedException();
                 case ExpressionType.UnaryPlus:
-                    break;
+                    throw new NotImplementedException();
                 default:
-                    break;
+                    throw new NotImplementedException();
             }
-            throw new NotImplementedException();
         }
 
         protected virtual void EvalBinary(IMethodBaseGenerator methodGen, BinaryExpression exp, EvalState state)
@@ -282,22 +281,22 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 if (exp.Object.Type == typeof(Expressible))
                 {
-                    if (expressible.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
-                    else if (expressible.IsThis(exp.Method)) EvalThis(methodGen, exp, state);
-                    else if (expressible.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
-                    else if (expressible.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
-                    else if (expressible.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
-                    else if (expressible.IsNew(exp.Method)) EvalNew(methodGen, exp, state);
-                    else if (expressible.IsInvoke(exp.Method)) EvalInvoke(methodGen, exp, state);
-                    else if (expressible.IsFtn(exp.Method)) EvalFtn(methodGen, exp, state);
-                    else if (expressible.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
-                    else if (expressible.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
-                    else if (expressible.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
-                    else if (expressible.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
-                    else if (expressible.IsLd(exp.Method)) EvalLd(methodGen, exp, state);
-                    else if (expressible.IsSt(exp.Method)) EvalSt(methodGen, exp, state);
-                    else if (expressible.IsX(exp.Method)) EvalExtract(methodGen, exp, state);
-                    else if (expressible.IsCm(exp.Method)) EvalCm(methodGen, exp, state);
+                    if (ExpressibleInstance.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsThis(exp.Method)) EvalThis(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsNew(exp.Method)) EvalNew(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsInvoke(exp.Method)) EvalInvoke(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsFtn(exp.Method)) EvalFtn(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsLd(exp.Method)) EvalLd(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsSt(exp.Method)) EvalSt(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsX(exp.Method)) EvalExtract(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsCm(exp.Method)) EvalCm(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -306,7 +305,7 @@ namespace Urasandesu.NAnonym.ILTools
                 else if (exp.Object.Type == typeof(StoreExpressible) || 
                          exp.Object.Type.EquivalentWithoutGenericArguments(typeof(StoreExpressible<>)))
                 {
-                    if (storeExpressible.IsAs(exp.Method)) EvalStoreAs(methodGen, exp, state);
+                    if (StoreExpressibleInstance.IsAs(exp.Method)) EvalStoreAs(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();

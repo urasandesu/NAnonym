@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
+    <Compile Include="ILTools\ReflectiveDesigner.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />

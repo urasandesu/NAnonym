@@ -59,27 +59,27 @@ namespace Urasandesu.NAnonym.ILTools
                                 },
                                 null);
 
-        readonly MethodInfo BaseInfo;
-        readonly MethodInfo ThisInfo;
-        readonly MethodInfo DupAddOneInfo;
-        readonly MethodInfo AddOneDupInfo;
-        readonly MethodInfo SubOneDupInfo;
-        readonly MethodInfo NewInfo;
-        readonly MethodInfo InvokeInfo;
-        readonly MethodInfo FtnInfo1;
-        readonly MethodInfo FtnInfo2;
-        readonly MethodInfo IfInfo;
-        readonly MethodInfo EndIfInfo;
-        readonly MethodInfo EndInfo;
-        readonly MethodInfo ReturnInfo;
+        public readonly MethodInfo BaseInfo;
+        public readonly MethodInfo ThisInfo;
+        public readonly MethodInfo DupAddOneInfo;
+        public readonly MethodInfo AddOneDupInfo;
+        public readonly MethodInfo SubOneDupInfo;
+        public readonly MethodInfo NewInfo;
+        public readonly MethodInfo InvokeInfo;
+        public readonly MethodInfo FtnInfo1;
+        public readonly MethodInfo FtnInfo2;
+        public readonly MethodInfo IfInfo;
+        public readonly MethodInfo EndIfInfo;
+        public readonly MethodInfo EndInfo;
+        public readonly MethodInfo ReturnInfo;
 
-        readonly MethodInfo LdInfo1;
-        readonly MethodInfo LdInfo2;
-        readonly MethodInfo LdInfo3;
-        readonly MethodInfo StInfo1;
-        readonly MethodInfo StInfo2;
-        readonly MethodInfo XInfo;
-        readonly MethodInfo CmInfo;
+        public readonly MethodInfo LdInfo1;
+        public readonly MethodInfo LdInfo2;
+        public readonly MethodInfo LdInfo3;
+        public readonly MethodInfo StInfo1;
+        public readonly MethodInfo StInfo2;
+        public readonly MethodInfo XInfo;
+        public readonly MethodInfo CmInfo;
 
         public Expressible()
         {
