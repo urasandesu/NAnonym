@@ -104,6 +104,10 @@
     <Compile Include="DW\LocalSetupModes.cs" />
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
+    <Compile Include="ILTools\ExpressiveDecorator.cs" />
+    <Compile Include="ILTools\ExpressiveILOperatorDecorator.cs" />
+    <Compile Include="ILTools\ExpressiveMethodBaseDecorator.cs" />
+    <Compile Include="ILTools\ExpressiveMethodBodyDecorator.cs" />
     <Compile Include="ILTools\GenerativeEmitter.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />

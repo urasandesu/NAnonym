@@ -27,308 +27,102 @@
  *  THE SOFTWARE.
  */
 
-
 using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-using SR = System.Reflection;
-using SRE = System.Reflection.Emit;
-using Urasandesu.NAnonym.Linq;
-using Urasandesu.NAnonym.Mixins.System;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
-using System.Collections.Generic;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
-using System.Runtime.Serialization;
+using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class GenerativeEmitter : ExpressiveGenerator
+    public class GenerativeEmitter : ExpressiveDecorator
     {
         public GenerativeEmitter(ExpressiveGenerator gen, string ilName)
-            : base(new EmittingGenerator(gen, ilName))
+            : base(new MethodBaseEmitterDecorator(gen, ilName))
         {
         }
 
-        class EmittingGenerator : IMethodBaseGenerator
+        class MethodBaseEmitterDecorator : ExpressiveMethodBaseDecorator
         {
-            readonly ExpressiveGenerator gen;
-            readonly IMethodBodyGenerator body;
-            public EmittingGenerator(ExpressiveGenerator gen, string ilName)
+            readonly MethodBodyEmitterDecorator bodyDecorator;
+            public MethodBaseEmitterDecorator(ExpressiveGenerator gen, string ilName)
+                : base(gen)
             {
-                this.gen = gen;
-                body = new EmittingBodyGenerator(gen, ilName);
+                ILName = ilName;
+                bodyDecorator = new MethodBodyEmitterDecorator(this);
             }
 
-            public IMethodBodyGenerator Body
+            public override ExpressiveMethodBodyDecorator BodyDecorator
             {
-                get { return body; }
+                get { return bodyDecorator; }
             }
 
-            public ITypeGenerator DeclaringType
+            public string ILName { get; private set; }
+        }
+
+        class MethodBodyEmitterDecorator : ExpressiveMethodBodyDecorator
+        {
+            readonly ILOperationEmitterDecorator ilOperatorDecorator;
+            public MethodBodyEmitterDecorator(MethodBaseEmitterDecorator methodDecorator)
+                : base(methodDecorator)
             {
-                get { throw new NotImplementedException(); }
+                this.ilOperatorDecorator = new ILOperationEmitterDecorator(this);
             }
 
-            public ReadOnlyCollection<IParameterGenerator> Parameters
+            public MethodBaseEmitterDecorator MethodEmitterDecorator
             {
-                get { throw new NotImplementedException(); }
+                get { return (MethodBaseEmitterDecorator)methodDecorator; }
             }
 
-            public IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo)
+            public override ExpressiveMethodBaseDecorator MethodDecorator
             {
-                throw new NotImplementedException();
+                get { return methodDecorator; }
             }
 
-            public IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
+            public override ExpressiveILOperatorDecorator ILOperatorDecorator
             {
-                throw new NotImplementedException();
-            }
-
-            public IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName)
-            {
-                throw new NotImplementedException();
-            }
-
-            public PortableScope CarryPortableScope()
-            {
-                throw new NotImplementedException();
-            }
-
-            IMethodBodyDeclaration IMethodBaseDeclaration.Body
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            ITypeDeclaration IMethodBaseDeclaration.DeclaringType
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            ReadOnlyCollection<IParameterDeclaration> IMethodBaseDeclaration.Parameters
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value)
-            {
-                throw new NotImplementedException();
-            }
-
-            public string Name
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public object Source
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public void OnDeserialized(StreamingContext context)
-            {
-                throw new NotImplementedException();
+                get { return ilOperatorDecorator; }
             }
         }
 
-        class EmittingBodyGenerator : IMethodBodyGenerator
+        class ILOperationEmitterDecorator : ExpressiveILOperatorDecorator
         {
-            readonly ExpressiveGenerator gen;
-            readonly IILOperator ilOperator;
-            public EmittingBodyGenerator(ExpressiveGenerator gen, string ilName)
+            public ILOperationEmitterDecorator(MethodBodyEmitterDecorator bodyDecorator)
+                : base(bodyDecorator)
             {
-                this.gen = gen;
-                this.ilOperator = new EmittingILOperator(gen, ilName);
             }
 
-            public IMethodBaseGenerator Method
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public MethodBodyEmitterDecorator BodyEmitterDecorator { get { return (MethodBodyEmitterDecorator)bodyDecorator; } }
+            public ExpressiveGenerator Gen { get { return BodyEmitterDecorator.MethodEmitterDecorator.ExpressiveGenerator; } }
+            public string ILName { get { return BodyEmitterDecorator.MethodEmitterDecorator.ILName; } }
 
-            public IILOperator ILOperator
-            {
-                get { return ilOperator; }
-            }
-
-            public ReadOnlyCollection<ILocalGenerator> Locals
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public ReadOnlyCollection<IDirectiveGenerator> Directives
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public ILocalGenerator AddLocal(ILocalGenerator localGen)
-            {
-                throw new NotImplementedException();
-            }
-
-            IMethodBaseDeclaration IMethodBodyDeclaration.Method
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            ReadOnlyCollection<ILocalDeclaration> IMethodBodyDeclaration.Locals
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            ReadOnlyCollection<IDirectiveDeclaration> IMethodBodyDeclaration.Directives
-            {
-                get { throw new NotImplementedException(); }
-            }
-        }
-
-        class EmittingILOperator : IILOperator
-        {
-            readonly string ilName;
-            readonly ExpressiveGenerator gen;
-            public EmittingILOperator(ExpressiveGenerator gen, string ilName)
-            {
-                this.gen = gen;
-                this.ilName = ilName;
-            }
-
-            public object Source
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public ILocalGenerator AddLocal(string name, Type localType)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ILocalGenerator AddLocal(Type localType)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ILocalGenerator AddLocal(Type localType, bool pinned)
-            {
-                throw new NotImplementedException();
-            }
-
-            public ILabelGenerator AddLabel()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode)
-            {
-                gen.Eval(_ => _.Ld<ILGenerator>(_.X(ilName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes))));
-            }
-
-            public void Emit(OpCode opcode, byte arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, ConstructorInfo con)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, double arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, FieldInfo field)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, float arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, int arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, ILabelDeclaration label)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, ILabelDeclaration[] labels)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, ILocalDeclaration local)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, long arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, MethodInfo meth)
-            {
-                gen.Eval(_ => _.Ld<ILGenerator>(_.X(ilName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((MethodInfo)meth)));
-            }
-
-            public void Emit(OpCode opcode, sbyte arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, short arg)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, string str)
-            {
-                gen.Eval(_ => _.Ld<ILGenerator>(_.X(ilName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((string)str)));
-            }
-
-            public void Emit(OpCode opcode, Type cls)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, IConstructorDeclaration constructorDecl)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, IMethodDeclaration methodDecl)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, IParameterDeclaration parameterDecl)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, IFieldDeclaration fieldDecl)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Emit(OpCode opcode, IPortableScopeItem scopeItem)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void SetLabel(ILabelDeclaration loc)
-            {
-                throw new NotImplementedException();
-            }
+            public override object Source { get { throw new NotImplementedException(); } }
+            public override ILocalGenerator AddLocal(string name, Type localType) { throw new NotImplementedException(); }
+            public override ILocalGenerator AddLocal(Type localType) { throw new NotImplementedException(); }
+            public override ILocalGenerator AddLocal(Type localType, bool pinned) { throw new NotImplementedException(); }
+            public override ILabelGenerator AddLabel() { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)))); }
+            public override void Emit(OpCode opcode, byte arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, ConstructorInfo con) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, double arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, FieldInfo field) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, float arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, int arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, ILabelDeclaration label) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, ILabelDeclaration[] labels) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, ILocalDeclaration local) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, long arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, MethodInfo meth) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((MethodInfo)meth))); }
+            public override void Emit(OpCode opcode, sbyte arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, short arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, string str) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((string)str))); }
+            public override void Emit(OpCode opcode, Type cls) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IConstructorDeclaration constructorDecl) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IMethodDeclaration methodDecl) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IParameterDeclaration parameterDecl) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IFieldDeclaration fieldDecl) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IPortableScopeItem scopeItem) { throw new NotImplementedException(); }
+            public override void SetLabel(ILabelDeclaration loc) { throw new NotImplementedException(); }
         }
     }
 }

@@ -1315,7 +1315,7 @@ Parameter[1] = IntPtr method
                     gen.ExpressEmit(() => il,
                     _gen =>
                     {
-                        _gen.Eval(_ => Console.WriteLine("testtest"));
+                        _gen.Eval(_ => TestHelper.ThrowException("testtest"));
                     });
 
                     var action = default(Action);
@@ -1336,7 +1336,59 @@ Parameter[1] = IntPtr method
                 }
                 catch (TargetInvocationException e)
                 {
-                    Assert.AreEqual("100", e.InnerException.Message);
+                    Assert.AreEqual("testtest", e.InnerException.Message);
+                }
+            });
+        }
+
+
+
+
+        [Test]
+        public void EmitTest24()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var emitTest24Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest24");
+
+
+                var ctorDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig |
+                                        SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
+
+                var ctorGen = emitTest24Gen.AddConstructor(ctorDefaultAttr, CallingConventions.HasThis, Type.EmptyTypes);
+                ctorGen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => _.Base());
+                });
+
+
+
+                var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
+
+                var reflectiveDesigner1Gen = emitTest24Gen.AddMethod("ReflectiveDesign1", methodDefaultAttr, typeof(void), Type.EmptyTypes);
+                reflectiveDesigner1Gen.ExpressBody(
+                gen =>
+                {
+                    gen.Eval(_ => TestHelper.ThrowException("testtest"));
+                });
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+                var emitTest24 = assembly.GetType(emitTest24Gen.FullName);
+                var instance = Activator.CreateInstance(emitTest24);
+                var generativeEmit1 = emitTest24.GetMethod(reflectiveDesigner1Gen.Name);
+                try
+                {
+                    generativeEmit1.Invoke(instance, null);
+                    Assert.Fail();
+                }
+                catch (TargetInvocationException e)
+                {
+                    Assert.AreEqual("testtest", e.InnerException.Message);
                 }
             });
         }
