@@ -157,7 +157,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 var sample1 = default(ISample1);
                 var executeMethodBuilder = 
                     emitTest03TypeBuilder.DefineMethod(
-                        TypeSavable.GetMethodName<string>(() => sample1.Execute), 
+                        TypeSavable.GetStaticMethodName<string>(() => sample1.Execute), 
                         SR::MethodAttributes.Public | 
                         SR::MethodAttributes.HideBySig | 
                         SR::MethodAttributes.NewSlot | 
@@ -165,8 +165,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         SR::MethodAttributes.Final, 
                         CallingConventions.HasThis, 
                         typeof(void), 
-                        TypeSavable.GetMethodParameterTypes<string>(() => sample1.Execute));
-                string valueParameterName = TypeSavable.GetMethodParameterNames<string>(() => sample1.Execute)[0];
+                        TypeSavable.GetStaticMethodParameterTypes<string>(() => sample1.Execute));
+                string valueParameterName = TypeSavable.GetStaticMethodParameterNames<string>(() => sample1.Execute)[0];
                 var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
                 executeMethodBuilder.ExpressBody(
                 gen =>
@@ -225,7 +225,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 var sample2 = default(ISample2);
                 var executeMethodBuilder =
                     emitTest04TypeBuilder.DefineMethod(
-                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        TypeSavable.GetStaticMethodName<string, string>(() => sample2.Print),
                         SR::MethodAttributes.Public |
                         SR::MethodAttributes.HideBySig |
                         SR::MethodAttributes.NewSlot |
@@ -233,8 +233,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         SR::MethodAttributes.Final,
                         CallingConventions.HasThis,
                         typeof(string),
-                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
-                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                        TypeSavable.GetStaticMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetStaticMethodParameterNames<string, string>(() => sample2.Print)[0];
                 var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
                 executeMethodBuilder.ExpressBody(
                 gen =>
@@ -290,7 +290,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 var sample2 = default(ISample2);
                 var executeMethodBuilder =
                     emitTest05TypeBuilder.DefineMethod(
-                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        TypeSavable.GetStaticMethodName<string, string>(() => sample2.Print),
                         SR::MethodAttributes.Public |
                         SR::MethodAttributes.HideBySig |
                         SR::MethodAttributes.NewSlot |
@@ -298,8 +298,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         SR::MethodAttributes.Final,
                         CallingConventions.HasThis,
                         typeof(string),
-                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
-                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                        TypeSavable.GetStaticMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetStaticMethodParameterNames<string, string>(() => sample2.Print)[0];
                 var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
                 executeMethodBuilder.ExpressBody(
                 gen =>
@@ -366,7 +366,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 var sample2 = default(ISample2);
                 var executeMethodBuilder =
                     emitTest06TypeBuilder.DefineMethod(
-                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        TypeSavable.GetStaticMethodName<string, string>(() => sample2.Print),
                         SR::MethodAttributes.Public |
                         SR::MethodAttributes.HideBySig |
                         SR::MethodAttributes.NewSlot |
@@ -374,8 +374,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         SR::MethodAttributes.Final,
                         CallingConventions.HasThis,
                         typeof(string),
-                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
-                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                        TypeSavable.GetStaticMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetStaticMethodParameterNames<string, string>(() => sample2.Print)[0];
                 var valueParameterBuilder = executeMethodBuilder.DefineParameter(1, ParameterAttributes.In, valueParameterName);
                 executeMethodBuilder.ExpressBody(
                 gen =>
@@ -434,7 +434,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 
                 var executeMethodGen = 
                     emitTest07TypeGen.AddMethod(
-                        TypeSavable.GetMethodName<string, string>(() => sample2.Print),
+                        TypeSavable.GetStaticMethodName<string, string>(() => sample2.Print),
                         SR::MethodAttributes.Public |
                         SR::MethodAttributes.HideBySig |
                         SR::MethodAttributes.NewSlot |
@@ -442,8 +442,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                         SR::MethodAttributes.Final,
                         CallingConventions.HasThis,
                         typeof(string),
-                        TypeSavable.GetMethodParameterTypes<string, string>(() => sample2.Print));
-                string valueParameterName = TypeSavable.GetMethodParameterNames<string, string>(() => sample2.Print)[0];
+                        TypeSavable.GetStaticMethodParameterTypes<string, string>(() => sample2.Print));
+                string valueParameterName = TypeSavable.GetStaticMethodParameterNames<string, string>(() => sample2.Print)[0];
                 var valueParameterGen = executeMethodGen.AddParameter(1, ParameterAttributes.In, valueParameterName);
                 executeMethodGen.ExpressBody(
                 gen =>

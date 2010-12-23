@@ -47,7 +47,7 @@ namespace Test.Urasandesu.NAnonym
         public void GetMethodTest1()
         {
             var dummy = default(Dummy);
-            var dummyPrintMethodInfo = TypeSavable.GetMethodInfo<string, string>(() => dummy.Print);
+            var dummyPrintMethodInfo = TypeSavable.GetStaticMethod<string, string>(() => dummy.Print);
             Assert.IsNotNull(typeof(ISample2).GetMethod(dummyPrintMethodInfo));
         }
 

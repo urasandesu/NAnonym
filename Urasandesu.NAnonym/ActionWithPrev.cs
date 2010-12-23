@@ -35,10 +35,10 @@ using System.Text;
 
 namespace Urasandesu.NAnonym
 {
-    public delegate void ActionWithPrev(Action baseAction);
-    public delegate void ActionWithPrev<T>(Action<T> baseAction, T arg);
-    public delegate void ActionWithPrev<T1, T2>(Action<T1, T2> baseAction, T1 arg1, T2 arg2);
-    public delegate void ActionWithPrev<T1, T2, T3>(Action<T1, T2, T3> baseAction, T1 arg1, T2 arg2, T3 arg3);
-    public delegate void ActionWithPrev<T1, T2, T3, T4>(Action<T1, T2, T3, T4> baseAction, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    public delegate void ActionWithPrev(Action prevAction);
+    public delegate void ActionWithPrev<T>(Action<T> prevAction, T arg);
+    public delegate void ActionWithPrev<T1, T2>(Action<T1, T2> prevAction, T1 arg1, T2 arg2);
+    public delegate void ActionWithPrev<T1, T2, T3>(Action<T1, T2, T3> prevAction, T1 arg1, T2 arg2, T3 arg3);
+    public delegate void ActionWithPrev<T1, T2, T3, T4>(Action<T1, T2, T3, T4> prevAction, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }
 

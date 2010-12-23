@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
-    <Compile Include="ActionReference.cs" />
+    <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilderWithPrev.cs" />
@@ -73,7 +73,7 @@
     <Compile Include="DW\LocalImplementFunc.cs" />
     <Compile Include="DW\LocalOverrideAction.cs" />
     <Compile Include="DW\LocalOverrideFunc.cs" />
-    <Compile Include="FuncReference.cs" />
+    <Compile Include="InstanceFunc.cs" />
     <Compile Include="FuncWithPrev.cs" />
     <Compile Include="DW\LocalClassLoadParameter.cs" />
     <Compile Include="DW\Weaver.cs" />
@@ -105,7 +105,7 @@
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
     <Compile Include="ILTools\ExpressiveDecorator.cs" />
-    <Compile Include="ILTools\ExpressiveILOperatorDecorator.cs" />
+    <Compile Include="ILTools\ExpressiveILOperationDecorator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBaseDecorator.cs" />
     <Compile Include="ILTools\ExpressiveMethodBodyDecorator.cs" />
     <Compile Include="ILTools\GenerativeEmitter.cs" />
@@ -209,6 +209,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Required.cs" />
+    <Compile Include="StaticAction.cs" />
+    <Compile Include="StaticFunc.cs" />
     <Compile Include="StringUtility.cs" />
     <Compile Include="TypeSavable.cs" />
   </ItemGroup>

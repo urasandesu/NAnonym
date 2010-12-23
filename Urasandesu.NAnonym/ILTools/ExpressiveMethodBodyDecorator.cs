@@ -44,10 +44,10 @@ namespace Urasandesu.NAnonym.ILTools
             directiveDecls = new ReadOnlyCollection<IDirectiveDeclaration>(methodDecorator.ExpressiveGenerator.Directives.TransformEnumerateOnly(directive => (IDirectiveDeclaration)directive));
         }
 
-        public abstract ExpressiveMethodBaseDecorator MethodDecorator { get; }
+        public virtual ExpressiveMethodBaseDecorator MethodDecorator { get { return methodDecorator; } }
         public virtual IMethodBaseGenerator Method { get { return MethodDecorator; } }
-        public abstract ExpressiveILOperatorDecorator ILOperatorDecorator { get; }
-        public virtual IILOperator ILOperator { get { return ILOperatorDecorator; } }
+        public abstract ExpressiveILOperationDecorator ILOperationDecorator { get; }
+        public virtual IILOperator ILOperator { get { return ILOperationDecorator; } }
         public virtual ReadOnlyCollection<ILocalGenerator> Locals { get { return methodDecorator.ExpressiveGenerator.Locals; } }
         public virtual ReadOnlyCollection<IDirectiveGenerator> Directives { get { return methodDecorator.ExpressiveGenerator.Directives; } }
         public virtual ILocalGenerator AddLocal(ILocalGenerator localGen)

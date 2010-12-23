@@ -40,117 +40,103 @@ namespace Urasandesu.NAnonym
 {
     public static class TypeSavable
     {
-        public static MethodInfo GetMethodInfo<TResult>(Expression<Func<Func<TResult>>> methodProvider)
+        public static MethodInfo GetStaticMethod<TResult>(Expression<StaticFunc<TResult>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
-        public static MethodInfo GetMethodInfo<T, TResult>(Expression<Func<Func<T, TResult>>> methodProvider)
+        public static MethodInfo GetStaticMethod<T, TResult>(Expression<StaticFunc<T, TResult>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
-        public static MethodInfo GetMethodInfo<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodProvider)
+        public static MethodInfo GetStaticMethod<T1, T2, TResult>(Expression<StaticFunc<T1, T2, TResult>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
-        public static MethodInfo GetMethodInfo<T1, T2, T3, TResult>(Expression<Func<Func<T1, T2, T3, TResult>>> methodProvider)
+        public static MethodInfo GetStaticMethod<T1, T2, T3, TResult>(Expression<StaticFunc<T1, T2, T3, TResult>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
-        public static MethodInfo GetMethodInfo<T1, T2, T3, T4, TResult>(Expression<Func<Func<T1, T2, T3, T4, TResult>>> methodProvider)
+        public static MethodInfo GetStaticMethod<T1, T2, T3, T4, TResult>(Expression<StaticFunc<T1, T2, T3, T4, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetStaticMethod(Expression<StaticAction> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetStaticMethod<T>(Expression<StaticAction<T>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetStaticMethod<T1, T2>(Expression<StaticAction<T1, T2>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetStaticMethod<T1, T2, T3>(Expression<StaticAction<T1, T2, T3>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetStaticMethod<T1, T2, T3, T4>(Expression<StaticAction<T1, T2, T3, T4>> methodProvider)
         {
             return GetMethodInfo((LambdaExpression)methodProvider);
         }
 
 
-        
-        
-        
-        
-        public static MethodInfo GetMethodInfo(Expression<Func<Action>> methodProvider)
-        {
-            return GetMethodInfo((LambdaExpression)methodProvider);
-        }
-
-        public static MethodInfo GetMethodInfo<T>(Expression<Func<Action<T>>> methodProvider)
-        {
-            return GetMethodInfo((LambdaExpression)methodProvider);
-        }
-
-        public static MethodInfo GetMethodInfo<T1, T2>(Expression<Func<Action<T1, T2>>> methodProvider)
-        {
-            return GetMethodInfo((LambdaExpression)methodProvider);
-        }
-
-        public static MethodInfo GetMethodInfo<T1, T2, T3>(Expression<Func<Action<T1, T2, T3>>> methodProvider)
-        {
-            return GetMethodInfo((LambdaExpression)methodProvider);
-        }
-
-        public static MethodInfo GetMethodInfo<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodProvider)
-        {
-            return GetMethodInfo((LambdaExpression)methodProvider);
-        }
-
-        
-        
-        
-        
-        
-        public static string GetMethodName(Expression<Func<Action>> methodNameProvider)
+        public static string GetStaticMethodName(Expression<StaticAction> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T>(Expression<Func<Action<T>>> methodNameProvider)
+        public static string GetStaticMethodName<T>(Expression<StaticAction<T>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2>(Expression<Func<Action<T1, T2>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2>(Expression<StaticAction<T1, T2>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2, T3>(Expression<Func<Action<T1, T2, T3>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2, T3>(Expression<StaticAction<T1, T2, T3>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2, T3, T4>(Expression<StaticAction<T1, T2, T3, T4>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        
-        
-        
-        
-        
-        public static string GetMethodName<TResult>(Expression<Func<Func<TResult>>> methodNameProvider)
+        public static string GetStaticMethodName<TResult>(Expression<StaticFunc<TResult>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T, TResult>(Expression<Func<Func<T, TResult>>> methodNameProvider)
+        public static string GetStaticMethodName<T, TResult>(Expression<StaticFunc<T, TResult>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2, TResult>(Expression<StaticFunc<T1, T2, TResult>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2, T3, TResult>(Expression<Func<Func<T1, T2, T3, TResult>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2, T3, TResult>(Expression<StaticFunc<T1, T2, T3, TResult>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
 
-        public static string GetMethodName<T1, T2, T3, T4, TResult>(Expression<Func<Func<T1, T2, T3, T4, TResult>>> methodNameProvider)
+        public static string GetStaticMethodName<T1, T2, T3, T4, TResult>(Expression<StaticFunc<T1, T2, T3, T4, TResult>> methodNameProvider)
         {
             return GetMethodInfo((LambdaExpression)methodNameProvider).Name;
         }
@@ -160,57 +146,52 @@ namespace Urasandesu.NAnonym
 
 
 
-        public static ParameterInfo[] GetMethodParameters(Expression<Func<Action>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters(Expression<StaticAction> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T>(Expression<StaticAction<T>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2>(Expression<Func<Action<T1, T2>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2>(Expression<StaticAction<T1, T2>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2, T3>(Expression<Func<Action<T1, T2, T3>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2, T3>(Expression<StaticAction<T1, T2, T3>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2, T3, T4>(Expression<StaticAction<T1, T2, T3, T4>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-
-
-
-
-
-        public static ParameterInfo[] GetMethodParameters<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<TResult>(Expression<StaticFunc<TResult>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T, TResult>(Expression<Func<Func<T, TResult>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T, TResult>(Expression<StaticFunc<T, TResult>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2, TResult>(Expression<StaticFunc<T1, T2, TResult>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2, T3, TResult>(Expression<Func<Func<T1, T2, T3, TResult>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2, T3, TResult>(Expression<StaticFunc<T1, T2, T3, TResult>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
 
-        public static ParameterInfo[] GetMethodParameters<T1, T2, T3, T4, TResult>(Expression<Func<Func<T1, T2, T3, T4, TResult>>> methodParameterProvider)
+        public static ParameterInfo[] GetStaticMethodParameters<T1, T2, T3, T4, TResult>(Expression<StaticFunc<T1, T2, T3, T4, TResult>> methodParameterProvider)
         {
             return GetMethodInfo((LambdaExpression)methodParameterProvider).GetParameters();
         }
@@ -220,59 +201,54 @@ namespace Urasandesu.NAnonym
 
 
 
-        public static Type[] GetMethodParameterTypes(Expression<Func<Action>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes(Expression<StaticAction> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T>(Expression<StaticAction<T>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2>(Expression<Func<Action<T1, T2>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2>(Expression<StaticAction<T1, T2>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2, T3>(Expression<Func<Action<T1, T2, T3>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2, T3>(Expression<StaticAction<T1, T2, T3>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2, T3, T4>(Expression<StaticAction<T1, T2, T3, T4>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-
-
-
-
-
-        public static Type[] GetMethodParameterTypes<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<TResult>(Expression<StaticFunc<TResult>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T, TResult>(Expression<Func<Func<T, TResult>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T, TResult>(Expression<StaticFunc<T, TResult>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2, TResult>(Expression<StaticFunc<T1, T2, TResult>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2, T3, TResult>(Expression<Func<Func<T1, T2, T3, TResult>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2, T3, TResult>(Expression<StaticFunc<T1, T2, T3, TResult>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
-        public static Type[] GetMethodParameterTypes<T1, T2, T3, T4, TResult>(Expression<Func<Func<T1, T2, T3, T4, TResult>>> methodParameterProvider)
+        public static Type[] GetStaticMethodParameterTypes<T1, T2, T3, T4, TResult>(Expression<StaticFunc<T1, T2, T3, T4, TResult>> methodParameterTypeProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterTypes();
+            return GetMethodInfo((LambdaExpression)methodParameterTypeProvider).ParameterTypes();
         }
 
 
@@ -280,143 +256,134 @@ namespace Urasandesu.NAnonym
 
 
 
-        public static string[] GetMethodParameterNames(Expression<Func<Action>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames(Expression<StaticAction> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T>(Expression<Func<Action<T>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T>(Expression<StaticAction<T>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2>(Expression<Func<Action<T1, T2>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2>(Expression<StaticAction<T1, T2>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2, T3>(Expression<Func<Action<T1, T2, T3>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2, T3>(Expression<StaticAction<T1, T2, T3>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2, T3, T4>(Expression<Func<Action<T1, T2, T3, T4>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2, T3, T4>(Expression<StaticAction<T1, T2, T3, T4>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-
-
-
-
-
-        public static string[] GetMethodParameterNames<TResult>(Expression<Func<Func<TResult>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<TResult>(Expression<StaticFunc<TResult>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T, TResult>(Expression<Func<Func<T, TResult>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T, TResult>(Expression<StaticFunc<T, TResult>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2, TResult>(Expression<Func<Func<T1, T2, TResult>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2, TResult>(Expression<StaticFunc<T1, T2, TResult>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2, T3, TResult>(Expression<Func<Func<T1, T2, T3, TResult>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2, T3, TResult>(Expression<StaticFunc<T1, T2, T3, TResult>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
-        public static string[] GetMethodParameterNames<T1, T2, T3, T4, TResult>(Expression<Func<Func<T1, T2, T3, T4, TResult>>> methodParameterProvider)
+        public static string[] GetStaticMethodParameterNames<T1, T2, T3, T4, TResult>(Expression<StaticFunc<T1, T2, T3, T4, TResult>> methodParameterNameProvider)
         {
-            return GetMethodInfo((LambdaExpression)methodParameterProvider).ParameterNames();
+            return GetMethodInfo((LambdaExpression)methodParameterNameProvider).ParameterNames();
         }
 
 
-        
-        
-        
-        
-        public static MethodInfo GetMethodInfo(LambdaExpression methodProvider)
-        {
-            return (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)methodProvider.Body).Operand).Arguments[2]).Value;
-        }
+
+
+
 
         public static FieldInfo GetFieldInfo<T>(Expression<Func<T>> fieldProvider)
         {
             return GetFieldInfo((LambdaExpression)fieldProvider);
         }
 
+        
+        
+        
+
+        public static MethodInfo GetInstanceMethod<TBase, TResult>(Expression<InstanceFunc<TBase, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T, TResult>(Expression<InstanceFunc<TBase, T, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2, TResult>(Expression<InstanceFunc<TBase, T1, T2, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2, T3, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2, T3, T4, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, T4, TResult>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase>(Expression<InstanceAction<TBase>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T>(Expression<InstanceAction<TBase, T>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2>(Expression<InstanceAction<TBase, T1, T2>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2, T3>(Expression<InstanceAction<TBase, T1, T2, T3>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+        public static MethodInfo GetInstanceMethod<TBase, T1, T2, T3, T4>(Expression<InstanceAction<TBase, T1, T2, T3, T4>> methodProvider)
+        {
+            return GetMethodInfo((LambdaExpression)methodProvider);
+        }
+
+
+
+
+
+
+        public static MethodInfo GetMethodInfo(LambdaExpression methodProvider)
+        {
+            return (MethodInfo)((ConstantExpression)((MethodCallExpression)((UnaryExpression)methodProvider.Body).Operand).Arguments[2]).Value;
+        }
+
         public static FieldInfo GetFieldInfo(LambdaExpression fieldProvider)
         {
             return (FieldInfo)((MemberExpression)fieldProvider.Body).Member;
         }
-
-        
-        
-        
-        public static MethodInfo ExtractMethod<TBase, TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-
-
-
-
-
-        public static MethodInfo ExtractMethod<TBase>(Expression<ActionReference<TBase>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T>(Expression<ActionReference<TBase, T>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        public static MethodInfo ExtractMethod<TBase, T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
-        {
-            return GetMethodInfo((LambdaExpression)methodReference);
-        }
-
-        
-        
-        
-        
         
         public static string GetName<T>(Expression<Func<T>> nameProvider)
         {

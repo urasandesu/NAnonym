@@ -517,7 +517,7 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             }
         }
 
-        public static TypeDefinition Duplicate(this TypeDefinition source)
+        public static TypeDefinition DuplicateWithoutMember(this TypeDefinition source)
         {
             var destination = new TypeDefinition(source.Namespace, source.Name, source.Attributes, source.BaseType);
             return destination;

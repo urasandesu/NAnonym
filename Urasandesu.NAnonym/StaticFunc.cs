@@ -1,5 +1,5 @@
-/* 
- * File: FuncReference.cs
+﻿/* 
+ * File: StaticFunc.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,19 +26,14 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym
 {
-    public delegate Func<TResult> FuncReference<TBase, TResult>(TBase @base);
-    public delegate Func<T, TResult> FuncReference<TBase, T, TResult>(TBase @base);
-    public delegate Func<T1, T2, TResult> FuncReference<TBase, T1, T2, TResult>(TBase @base);
-    public delegate Func<T1, T2, T3, TResult> FuncReference<TBase, T1, T2, T3, TResult>(TBase @base);
-    public delegate Func<T1, T2, T3, T4, TResult> FuncReference<TBase, T1, T2, T3, T4, TResult>(TBase @base);
+    public delegate Func<TResult> StaticFunc<TResult>();
+    public delegate Func<T, TResult> StaticFunc<T, TResult>();
+    public delegate Func<T1, T2, TResult> StaticFunc<T1, T2, TResult>();
+    public delegate Func<T1, T2, T3, TResult> StaticFunc<T1, T2, T3, TResult>();
+    public delegate Func<T1, T2, T3, T4, TResult> StaticFunc<T1, T2, T3, T4, TResult>();
 }
-

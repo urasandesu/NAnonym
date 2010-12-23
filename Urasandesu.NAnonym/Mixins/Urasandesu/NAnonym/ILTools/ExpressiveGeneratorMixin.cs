@@ -80,6 +80,15 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
                 gen.Eval(_ => _.Ld<SRE::ILGenerator>(_.X(ilName)).Emit(SRE::OpCodes.Ret));
             }
         }
+
+        public static void ExpressReflection(this ExpressiveGenerator gen, Action<ReflectiveDesigner> expression)
+        {
+            expression(new ReflectiveDesigner(gen));
+            if (gen.Directives.Last().OpCode != OpCodes.Ret)
+            {
+                gen.Eval(_ => _.End());
+            }
+        }
     }
 }
 

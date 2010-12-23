@@ -44,8 +44,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public StoreExpressible()
         {
-            AsInfo1 = TypeSavable.GetMethodInfo<object, object>(() => As);
-            AsInfo2 = TypeSavable.GetMethodInfo<object, object>(() => storeExpressible.As);
+            AsInfo1 = TypeSavable.GetStaticMethod<object, object>(() => As);
+            AsInfo2 = TypeSavable.GetStaticMethod<object, object>(() => storeExpressible.As);
         }
 
         public bool IsAs(MethodInfo target)

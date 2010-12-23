@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
+using System.Linq.Expressions;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -62,11 +63,11 @@ namespace Urasandesu.NAnonym.ILTools
 
         class MethodBodyEmitterDecorator : ExpressiveMethodBodyDecorator
         {
-            readonly ILOperationEmitterDecorator ilOperatorDecorator;
+            readonly ILOperationEmitterDecorator ilOperationDecorator;
             public MethodBodyEmitterDecorator(MethodBaseEmitterDecorator methodDecorator)
                 : base(methodDecorator)
             {
-                this.ilOperatorDecorator = new ILOperationEmitterDecorator(this);
+                this.ilOperationDecorator = new ILOperationEmitterDecorator(this);
             }
 
             public MethodBaseEmitterDecorator MethodEmitterDecorator
@@ -79,13 +80,13 @@ namespace Urasandesu.NAnonym.ILTools
                 get { return methodDecorator; }
             }
 
-            public override ExpressiveILOperatorDecorator ILOperatorDecorator
+            public override ExpressiveILOperationDecorator ILOperationDecorator
             {
-                get { return ilOperatorDecorator; }
+                get { return ilOperationDecorator; }
             }
         }
 
-        class ILOperationEmitterDecorator : ExpressiveILOperatorDecorator
+        class ILOperationEmitterDecorator : ExpressiveILOperationDecorator
         {
             public ILOperationEmitterDecorator(MethodBodyEmitterDecorator bodyDecorator)
                 : base(bodyDecorator)
@@ -93,7 +94,6 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             public MethodBodyEmitterDecorator BodyEmitterDecorator { get { return (MethodBodyEmitterDecorator)bodyDecorator; } }
-            public ExpressiveGenerator Gen { get { return BodyEmitterDecorator.MethodEmitterDecorator.ExpressiveGenerator; } }
             public string ILName { get { return BodyEmitterDecorator.MethodEmitterDecorator.ILName; } }
 
             public override object Source { get { throw new NotImplementedException(); } }
@@ -123,6 +123,60 @@ namespace Urasandesu.NAnonym.ILTools
             public override void Emit(OpCode opcode, IFieldDeclaration fieldDecl) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, IPortableScopeItem scopeItem) { throw new NotImplementedException(); }
             public override void SetLabel(ILabelDeclaration loc) { throw new NotImplementedException(); }
+        }
+    }
+
+    public class ReflectiveDesigner : ExpressiveDecorator
+    {
+        public static readonly MethodInfo InvokeInfo = TypeSavable.GetInstanceMethod<MethodInfo, object, object[], object>(_ => _.Invoke);
+
+        public ReflectiveDesigner(ExpressiveGenerator gen)
+            : base(new MethodBaseReflectiveDecorator(gen))
+        {
+        }
+
+        protected override void EvalMethodCall(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            throw new NotImplementedException();
+            //base.EvalMethodCall(methodGen, exp, state);
+        }
+
+        class MethodBaseReflectiveDecorator : ExpressiveMethodBaseDecorator
+        {
+            readonly ExpressiveMethodBodyDecorator bodyDecorator;
+            public MethodBaseReflectiveDecorator(ExpressiveGenerator gen)
+                : base(gen)
+            {
+                bodyDecorator = new MethodBodyReflectiveDecorator(this);
+            }
+
+            public override ExpressiveMethodBodyDecorator BodyDecorator
+            {
+                get { return bodyDecorator; }
+            }
+        }
+
+        class MethodBodyReflectiveDecorator : ExpressiveMethodBodyDecorator
+        {
+            readonly ExpressiveILOperationDecorator ilOperationDecorator;
+            public MethodBodyReflectiveDecorator(MethodBaseReflectiveDecorator methodDecorator)
+                : base(methodDecorator)
+            {
+                ilOperationDecorator = new ILOperationReflectiveDecorator(this);
+            }
+
+            public override ExpressiveILOperationDecorator ILOperationDecorator
+            {
+                get { return ilOperationDecorator; }
+            }
+        }
+
+        class ILOperationReflectiveDecorator : ExpressiveILOperationDecorator
+        {
+            public ILOperationReflectiveDecorator(MethodBodyReflectiveDecorator bodyDecorator)
+                : base(bodyDecorator)
+            {
+            }
         }
     }
 }

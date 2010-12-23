@@ -1,5 +1,5 @@
 /* 
- * File: FuncWithPrev.cs
+ * File: InstanceAction.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -27,18 +27,14 @@
  *  THE SOFTWARE.
  */
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym
 {
-    public delegate TResult FuncWithPrev<TResult>(Func<TResult> prevFunc);
-    public delegate TResult FuncWithPrev<T, TResult>(Func<T, TResult> prevFunc, T arg);
-    public delegate TResult FuncWithPrev<T1, T2, TResult>(Func<T1, T2, TResult> prevFunc, T1 arg1, T2 arg2);
-    public delegate TResult FuncWithPrev<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> prevFunc, T1 arg1, T2 arg2, T3 arg3);
-    public delegate TResult FuncWithPrev<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> prevFunc, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    public delegate Action InstanceAction<TInstance>(TInstance instance);
+    public delegate Action<T> InstanceAction<TInstance, T>(TInstance instance);
+    public delegate Action<T1, T2> InstanceAction<TInstance, T1, T2>(TInstance instance);
+    public delegate Action<T1, T2, T3> InstanceAction<TInstance, T1, T2, T3>(TInstance instance);
+    public delegate Action<T1, T2, T3, T4> InstanceAction<TInstance, T1, T2, T3, T4>(TInstance instance);
 }
 

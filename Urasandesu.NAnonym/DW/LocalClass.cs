@@ -80,142 +80,142 @@ namespace Urasandesu.NAnonym.DW
             return null;
         }
 
-        public LocalImplementFunc<TBase, TResult> ImplementMethod<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        public LocalImplementFunc<TBase, TResult> ImplementMethod<TResult>(Expression<InstanceFunc<TBase, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementFunc<TBase, TResult>(this, source);
         }
 
-        public LocalImplementFunc<TBase, T, TResult> ImplementMethod<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        public LocalImplementFunc<TBase, T, TResult> ImplementMethod<T, TResult>(Expression<InstanceFunc<TBase, T, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementFunc<TBase, T, TResult>(this, source);
         }
 
-        public LocalImplementFunc<TBase, T1, T2, TResult> ImplementMethod<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
+        public LocalImplementFunc<TBase, T1, T2, TResult> ImplementMethod<T1, T2, TResult>(Expression<InstanceFunc<TBase, T1, T2, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementFunc<TBase, T1, T2, TResult>(this, source);
         }
 
-        public LocalImplementFunc<TBase, T1, T2, T3, TResult> ImplementMethod<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
+        public LocalImplementFunc<TBase, T1, T2, T3, TResult> ImplementMethod<T1, T2, T3, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
-        public LocalImplementFunc<TBase, T1, T2, T3, T4, TResult> ImplementMethod<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
+        public LocalImplementFunc<TBase, T1, T2, T3, T4, TResult> ImplementMethod<T1, T2, T3, T4, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
-        public LocalImplementAction<TBase> ImplementMethod(Expression<ActionReference<TBase>> methodReference)
+        public LocalImplementAction<TBase> ImplementMethod(Expression<InstanceAction<TBase>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementAction<TBase>(this, source);
         }
 
-        public LocalImplementAction<TBase, T> ImplementMethod<T>(Expression<ActionReference<TBase, T>> methodReference)
+        public LocalImplementAction<TBase, T> ImplementMethod<T>(Expression<InstanceAction<TBase, T>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementAction<TBase, T>(this, source);
         }
 
-        public LocalImplementAction<TBase, T1, T2> ImplementMethod<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
+        public LocalImplementAction<TBase, T1, T2> ImplementMethod<T1, T2>(Expression<InstanceAction<TBase, T1, T2>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementAction<TBase, T1, T2>(this, source);
         }
 
-        public LocalImplementAction<TBase, T1, T2, T3> ImplementMethod<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
+        public LocalImplementAction<TBase, T1, T2, T3> ImplementMethod<T1, T2, T3>(Expression<InstanceAction<TBase, T1, T2, T3>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementAction<TBase, T1, T2, T3>(this, source);
         }
 
-        public LocalImplementAction<TBase, T1, T2, T3, T4> ImplementMethod<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
+        public LocalImplementAction<TBase, T1, T2, T3, T4> ImplementMethod<T1, T2, T3, T4>(Expression<InstanceAction<TBase, T1, T2, T3, T4>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalImplementAction<TBase, T1, T2, T3, T4>(this, source);
         }
 
-        public LocalOverrideFunc<TBase, TResult> OverrideMethod<TResult>(Expression<FuncReference<TBase, TResult>> methodReference)
+        public LocalOverrideFunc<TBase, TResult> OverrideMethod<TResult>(Expression<InstanceFunc<TBase, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideFunc<TBase, TResult>(this, source);
         }
 
-        public LocalOverrideFunc<TBase, T, TResult> OverrideMethod<T, TResult>(Expression<FuncReference<TBase, T, TResult>> methodReference)
+        public LocalOverrideFunc<TBase, T, TResult> OverrideMethod<T, TResult>(Expression<InstanceFunc<TBase, T, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideFunc<TBase, T, TResult>(this, source);
         }
 
-        public LocalOverrideFunc<TBase, T1, T2, TResult> OverrideMethod<T1, T2, TResult>(Expression<FuncReference<TBase, T1, T2, TResult>> methodReference)
+        public LocalOverrideFunc<TBase, T1, T2, TResult> OverrideMethod<T1, T2, TResult>(Expression<InstanceFunc<TBase, T1, T2, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideFunc<TBase, T1, T2, TResult>(this, source);
         }
 
-        public LocalOverrideFunc<TBase, T1, T2, T3, TResult> OverrideMethod<T1, T2, T3, TResult>(Expression<FuncReference<TBase, T1, T2, T3, TResult>> methodReference)
+        public LocalOverrideFunc<TBase, T1, T2, T3, TResult> OverrideMethod<T1, T2, T3, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideFunc<TBase, T1, T2, T3, TResult>(this, source);
         }
 
-        public LocalOverrideFunc<TBase, T1, T2, T3, T4, TResult> OverrideMethod<T1, T2, T3, T4, TResult>(Expression<FuncReference<TBase, T1, T2, T3, T4, TResult>> methodReference)
+        public LocalOverrideFunc<TBase, T1, T2, T3, T4, TResult> OverrideMethod<T1, T2, T3, T4, TResult>(Expression<InstanceFunc<TBase, T1, T2, T3, T4, TResult>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideFunc<TBase, T1, T2, T3, T4, TResult>(this, source);
         }
 
-        public LocalOverrideAction<TBase> OverrideMethod(Expression<ActionReference<TBase>> methodReference)
+        public LocalOverrideAction<TBase> OverrideMethod(Expression<InstanceAction<TBase>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideAction<TBase>(this, source);
         }
 
-        public LocalOverrideAction<TBase, T> OverrideMethod<T>(Expression<ActionReference<TBase, T>> methodReference)
+        public LocalOverrideAction<TBase, T> OverrideMethod<T>(Expression<InstanceAction<TBase, T>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideAction<TBase, T>(this, source);
         }
 
-        public LocalOverrideAction<TBase, T1, T2> OverrideMethod<T1, T2>(Expression<ActionReference<TBase, T1, T2>> methodReference)
+        public LocalOverrideAction<TBase, T1, T2> OverrideMethod<T1, T2>(Expression<InstanceAction<TBase, T1, T2>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideAction<TBase, T1, T2>(this, source);
         }
 
-        public LocalOverrideAction<TBase, T1, T2, T3> OverrideMethod<T1, T2, T3>(Expression<ActionReference<TBase, T1, T2, T3>> methodReference)
+        public LocalOverrideAction<TBase, T1, T2, T3> OverrideMethod<T1, T2, T3>(Expression<InstanceAction<TBase, T1, T2, T3>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideAction<TBase, T1, T2, T3>(this, source);
         }
 
-        public LocalOverrideAction<TBase, T1, T2, T3, T4> OverrideMethod<T1, T2, T3, T4>(Expression<ActionReference<TBase, T1, T2, T3, T4>> methodReference)
+        public LocalOverrideAction<TBase, T1, T2, T3, T4> OverrideMethod<T1, T2, T3, T4>(Expression<InstanceAction<TBase, T1, T2, T3, T4>> methodReference)
         {
-            var method = TypeSavable.ExtractMethod(methodReference);
+            var method = TypeSavable.GetInstanceMethod(methodReference);
             var source = typeof(TBase).GetMethod(method);
             return new LocalOverrideAction<TBase, T1, T2, T3, T4>(this, source);
         }

@@ -83,27 +83,27 @@ namespace Urasandesu.NAnonym.ILTools
 
         public Expressible()
         {
-            BaseInfo = TypeSavable.GetMethodInfo(() => Base);
-            ThisInfo = TypeSavable.GetMethodInfo<object>(() => This);
-            DupAddOneInfo = TypeSavable.GetMethodInfo<object, object>(() => DupAddOne).GetGenericMethodDefinition();
-            AddOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => AddOneDup).GetGenericMethodDefinition();
-            SubOneDupInfo = TypeSavable.GetMethodInfo<object, object>(() => SubOneDup).GetGenericMethodDefinition();
-            NewInfo = TypeSavable.GetMethodInfo<ConstructorInfo, object, object>(() => New);
-            InvokeInfo = TypeSavable.GetMethodInfo<object, MethodInfo, object[], object>(() => Invoke);
-            FtnInfo1 = TypeSavable.GetMethodInfo<IMethodDeclaration, object>(() => Ftn);
-            FtnInfo2 = TypeSavable.GetMethodInfo<object, IMethodDeclaration, object>(() => Ftn);
-            IfInfo = TypeSavable.GetMethodInfo<bool>(() => If);
-            EndIfInfo = TypeSavable.GetMethodInfo(() => EndIf);
-            EndInfo = TypeSavable.GetMethodInfo(() => End);
-            ReturnInfo = TypeSavable.GetMethodInfo<object>(() => Return).GetGenericMethodDefinition();
+            BaseInfo = TypeSavable.GetStaticMethod(() => Base);
+            ThisInfo = TypeSavable.GetStaticMethod<object>(() => This);
+            DupAddOneInfo = TypeSavable.GetStaticMethod<object, object>(() => DupAddOne).GetGenericMethodDefinition();
+            AddOneDupInfo = TypeSavable.GetStaticMethod<object, object>(() => AddOneDup).GetGenericMethodDefinition();
+            SubOneDupInfo = TypeSavable.GetStaticMethod<object, object>(() => SubOneDup).GetGenericMethodDefinition();
+            NewInfo = TypeSavable.GetStaticMethod<ConstructorInfo, object, object>(() => New);
+            InvokeInfo = TypeSavable.GetStaticMethod<object, MethodInfo, object[], object>(() => Invoke);
+            FtnInfo1 = TypeSavable.GetStaticMethod<IMethodDeclaration, object>(() => Ftn);
+            FtnInfo2 = TypeSavable.GetStaticMethod<object, IMethodDeclaration, object>(() => Ftn);
+            IfInfo = TypeSavable.GetStaticMethod<bool>(() => If);
+            EndIfInfo = TypeSavable.GetStaticMethod(() => EndIf);
+            EndInfo = TypeSavable.GetStaticMethod(() => End);
+            ReturnInfo = TypeSavable.GetStaticMethod<object>(() => Return).GetGenericMethodDefinition();
 
-            LdInfo1 = TypeSavable.GetMethodInfo<string, object>(() => Ld);
-            LdInfo2 = TypeSavable.GetMethodInfo<string[], object[]>(() => Ld);
-            LdInfo3 = TypeSavable.GetMethodInfo<string, object>(() => Ld<object>).GetGenericMethodDefinition();
-            StInfo1 = TypeSavable.GetMethodInfo<object, StoreExpressible<object>>(() => St<object>).GetGenericMethodDefinition();
-            StInfo2 = TypeSavable.GetMethodInfo<string, StoreExpressible>(() => St);
-            XInfo = TypeSavable.GetMethodInfo<object, object>(() => X).GetGenericMethodDefinition();
-            CmInfo = TypeSavable.GetMethodInfo<object, Type, object>(() => Cm).GetGenericMethodDefinition();
+            LdInfo1 = TypeSavable.GetStaticMethod<string, object>(() => Ld);
+            LdInfo2 = TypeSavable.GetStaticMethod<string[], object[]>(() => Ld);
+            LdInfo3 = TypeSavable.GetStaticMethod<string, object>(() => Ld<object>).GetGenericMethodDefinition();
+            StInfo1 = TypeSavable.GetStaticMethod<object, StoreExpressible<object>>(() => St<object>).GetGenericMethodDefinition();
+            StInfo2 = TypeSavable.GetStaticMethod<string, StoreExpressible>(() => St);
+            XInfo = TypeSavable.GetStaticMethod<object, object>(() => X).GetGenericMethodDefinition();
+            CmInfo = TypeSavable.GetStaticMethod<object, Type, object>(() => Cm).GetGenericMethodDefinition();
         }
 
         public bool IsBase(MethodInfo target)

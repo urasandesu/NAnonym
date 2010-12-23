@@ -784,9 +784,12 @@ namespace Urasandesu.NAnonym.ILTools
                 else if ((portable = exp.Expression as ConstantExpression) != null)
                 {
                     // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
-                    var item = methodGen.AddPortableScopeItem(fieldInfo);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
+                    // NOTE: 他の簡略表記向けモードを競合するようになってきた。一時的に NotSupportedException 化。
+                    // NOTE: 例えば、CarryPortableScope で作成した scope に Add してあったらそれが利用される、とか。
+                    throw new NotSupportedException();
+                    //var item = methodGen.AddPortableScopeItem(fieldInfo);
+                    //methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                    //methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
                 }
                 else
                 {

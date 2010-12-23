@@ -1,5 +1,5 @@
-/* 
- * File: FuncWithPrev.cs
+﻿/* 
+ * File: StaticAction.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -27,18 +27,13 @@
  *  THE SOFTWARE.
  */
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Urasandesu.NAnonym
 {
-    public delegate TResult FuncWithPrev<TResult>(Func<TResult> prevFunc);
-    public delegate TResult FuncWithPrev<T, TResult>(Func<T, TResult> prevFunc, T arg);
-    public delegate TResult FuncWithPrev<T1, T2, TResult>(Func<T1, T2, TResult> prevFunc, T1 arg1, T2 arg2);
-    public delegate TResult FuncWithPrev<T1, T2, T3, TResult>(Func<T1, T2, T3, TResult> prevFunc, T1 arg1, T2 arg2, T3 arg3);
-    public delegate TResult FuncWithPrev<T1, T2, T3, T4, TResult>(Func<T1, T2, T3, T4, TResult> prevFunc, T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    public delegate Action StaticAction();
+    public delegate Action<T> StaticAction<T>();
+    public delegate Action<T1, T2> StaticAction<T1, T2>();
+    public delegate Action<T1, T2, T3> StaticAction<T1, T2, T3>();
+    public delegate Action<T1, T2, T3, T4> StaticAction<T1, T2, T3, T4>();
 }
-
