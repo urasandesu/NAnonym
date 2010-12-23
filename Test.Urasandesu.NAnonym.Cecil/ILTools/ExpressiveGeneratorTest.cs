@@ -54,22 +54,34 @@ using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
-    [TestFixture]
-    public class ExpressiveGeneratorTest
+    [NewDomainTestFixture]
+    public class ExpressiveGeneratorTest : NewDomainTestBase
     {
-        [TestFixtureSetUp]
+        [NewDomainTestFixtureSetUp]
         public void FixtureSetUp()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
-        [TestFixtureTearDown]
+        [NewDomainTestFixtureTearDown]
         public void FixtureTearDown()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
         }
 
-        [Test]
+        [NewDomainSetUp]
+        public void SetUp()
+        {
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
+        }
+
+        [NewDomainTearDown]
+        public void TearDown()
+        {
+            TestHelper.TryDeleteFiles(".", "tmp*.dll");
+        }
+
+        [NewDomainTest]
         public void EmitTest01()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -119,7 +131,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest02()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -172,7 +184,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest03()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -224,7 +236,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest04()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -276,7 +288,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest05()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -326,7 +338,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest06()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -392,7 +404,7 @@ i++ = 1
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest07()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -456,7 +468,7 @@ Parameter[0] Type = Int32
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest08()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -500,7 +512,7 @@ Parameter[0] Type = Int32
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest09()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -546,7 +558,7 @@ Parameter[0] Type = Int32
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest10()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -596,7 +608,7 @@ Parameter[0] Type = Int32
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest11()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -671,18 +683,24 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
+        [Ignore("Occurred for statement rule conflict.")]
         public void EmitTest12()
         {
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
+                var tempAssemblyNameDef =
+                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef =
+                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
                 // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
 
                 var action2LocalVariableDef10 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -696,7 +714,7 @@ Parameter[1] = IntPtr method
                     gen.Eval(_ => TestHelper.ThrowException(i + (int)d));
                 });
 
-                methodTestClassDef.Module.Assembly.Write(tempFileName);
+                tempAssemblyDef.Write(tempFileName);
 
                 var scope = action2LocalVariableDef10.CarryPortableScope();
                 scope.SetValue(() => i, i);
@@ -729,18 +747,24 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
+        [Ignore("Occurred for statement rule conflict.")]
         public void EmitTest13()
         {
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
+                var tempAssemblyNameDef =
+                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef =
+                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
                 // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
 
                 var action2LocalVariableDef11 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -753,7 +777,7 @@ Parameter[1] = IntPtr method
                     gen.Eval(_ => TestHelper.ThrowException(a));
                 });
 
-                methodTestClassDef.Module.Assembly.Write(tempFileName);
+                tempAssemblyDef.Write(tempFileName);
 
                 var scope = action2LocalVariableDef11.CarryPortableScope();
                 scope.SetValue(() => a, a);
@@ -785,7 +809,8 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
+        [Ignore("Occurred for statement rule conflict.")]
         public void EmitTest14()
         {
             // TODO: 同一 AppDomain の場合は SharedScope の明示的な作成は必要ないはず。
@@ -864,7 +889,7 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest16()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -936,16 +961,12 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest18()
         {
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // MEMO: 偶然見つけた。Anonymous メソッド内に外側のクラスのメンバ紛れ込ますと cache されなくなってしまうあ。
-                // MEMO: なるほど。cache されない代わりに完全に中身が展開されるらしい。
-                // TODO: GlobalClass セットアップクラスでインスタンスメンバ参照させることはまずないと思うけど・・・。一応その場合のパスも考えるべし。
-
                 var candidateCallingCurrentMethods = typeof(ExpressiveGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
                 var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(callingCurrentMethod);
@@ -1004,7 +1025,8 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
+        [Ignore("Occurred for statement rule conflict.")]
         public void EmitTest19()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1090,7 +1112,7 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest20()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1145,7 +1167,7 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest21()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1212,7 +1234,8 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
+        [Ignore("Occurred for statement rule conflict.")]
         public void EmitTest22()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1278,7 +1301,7 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest23()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1344,7 +1367,7 @@ Parameter[1] = IntPtr method
 
 
 
-        [Test]
+        [NewDomainTest]
         public void EmitTest24()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -1372,7 +1395,20 @@ Parameter[1] = IntPtr method
                 reflectiveDesigner1Gen.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException("testtest"));
+                    gen.ExpressReflection(
+                    _gen =>
+                    {
+                        var throwExceptionInfo = typeof(TestHelper).GetMethod("ThrowException",
+                                                                              BindingFlags.Public | BindingFlags.Static,
+                                                                              null,
+                                                                              new Type[] 
+                                                                              { 
+                                                                                  typeof(string) 
+                                                                              },
+                                                                              null);
+
+                        _gen.Eval(_ => throwExceptionInfo.Invoke(null, new object[] { "testtest" }));
+                    });
                 });
 
                 tempAssemblyDef.Write(tempFileName);

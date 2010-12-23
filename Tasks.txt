@@ -3,6 +3,7 @@
 // TODO: テストで利用している AppDomain 生成系のヘルパーを本ちゃんコード側へ移動。GlobalDomainContext とか。ユーザーが自由に処理を書けるように、NUnit のような Attribute 制御を考え中。
 // TODO: EMBG 効率 UP。Extract 系を Expression<TDelegate>.Compile() 使わないように（Elicit 一式）。
 // TODO: EMBG 機能拡張。デバッグ機能強化。
+// TODO: PortableScope 構文競合解決。例えば、CarryPortableScope で作成した scope に Add してないとエラーになるとか。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
 // TODO: static メソッドの SetupMode.** 実装。
