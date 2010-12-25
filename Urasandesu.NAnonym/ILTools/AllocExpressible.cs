@@ -1,5 +1,5 @@
-/* 
- * File: StoreExpressible.cs
+﻿/* 
+ * File: AllocExpressible.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,26 +26,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class StoreExpressible
+    public class AllocExpressible
     {
-        readonly StoreExpressible<object> storeExpressible = new StoreExpressible<object>();
-        readonly MethodInfo AsInfo1;
-        readonly MethodInfo AsInfo2;
+        public readonly MethodInfo AsInfo1;
+        public readonly MethodInfo AsInfo2;
 
-        public StoreExpressible()
+        public AllocExpressible()
         {
-            AsInfo1 = TypeSavable.GetStaticMethod<object, object>(() => As);
-            AsInfo2 = TypeSavable.GetStaticMethod<object, object>(() => storeExpressible.As);
+            AsInfo1 = TypeSavable.GetInstanceMethod<AllocExpressible, object, object>(_ => _.As);
+            AsInfo2 = TypeSavable.GetInstanceMethod<AllocExpressible<object>, object, object>(_ => _.As);
         }
 
         public bool IsAs(MethodInfo target)
@@ -59,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools
         }
     }
 
-    public class StoreExpressible<T>
+    public class AllocExpressible<T>
     {
         public T As(T value)
         {
@@ -67,4 +62,3 @@ namespace Urasandesu.NAnonym.ILTools
         }
     }
 }
-

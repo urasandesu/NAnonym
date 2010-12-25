@@ -47,6 +47,13 @@ namespace Urasandesu.NAnonym.Mixins.System
                             null);
         }
 
+        public static readonly BindingFlags StaticNonPublic = BindingFlags.Static | BindingFlags.NonPublic;
+
+        public static MethodInfo GetMethodStaticNonPublic(this Type type, string name, Type[] types)
+        {
+            return type.GetMethod(name, StaticNonPublic, null, types, null);
+        }
+
         public static bool Equivalent(this Type source, Type target)
         {
             if (!source.IsGenericTypeDefinition)

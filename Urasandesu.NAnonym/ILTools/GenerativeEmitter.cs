@@ -103,7 +103,7 @@ namespace Urasandesu.NAnonym.ILTools
             public override ILocalGenerator AddLocal(Type localType) { throw new NotImplementedException(); }
             public override ILocalGenerator AddLocal(Type localType, bool pinned) { throw new NotImplementedException(); }
             public override ILabelGenerator AddLabel() { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)))); }
+            public override void Emit(OpCode opcode) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)))); }
             public override void Emit(OpCode opcode, byte arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, ConstructorInfo con) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, double arg) { throw new NotImplementedException(); }
@@ -114,10 +114,10 @@ namespace Urasandesu.NAnonym.ILTools
             public override void Emit(OpCode opcode, ILabelDeclaration[] labels) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, ILocalDeclaration local) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, long arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, MethodInfo meth) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((MethodInfo)meth))); }
+            public override void Emit(OpCode opcode, MethodInfo meth) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((MethodInfo)meth))); }
             public override void Emit(OpCode opcode, sbyte arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, short arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, string str) { Gen.Eval(_ => _.Ld<ILGenerator>(_.X(ILName)).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((string)str))); }
+            public override void Emit(OpCode opcode, string str) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X((string)str))); }
             public override void Emit(OpCode opcode, Type cls) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, IConstructorDeclaration constructorDecl) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, IMethodDeclaration methodDecl) { throw new NotImplementedException(); }

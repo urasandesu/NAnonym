@@ -172,9 +172,9 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
                     gen.Eval(_ => stringBuilder.Append("Hello, World!! "));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(_.X(valueParameterName))));
+                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
                     gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
@@ -240,10 +240,10 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(_.X(valueParameterName))));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(_.X(valueParameterName))));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(_.X(valueParameterName))));
+                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
+                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
@@ -305,8 +305,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.Ld<string>(_.X(valueParameterName))));
+                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.Ld<string>(valueParameterName)));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.X(cacheField.Name)));
                     gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.X(cacheField.FieldType.FullName)));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
@@ -359,7 +359,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
-                    gen.Eval(_ => _.St(fieldValue).As(10));
+                    gen.Eval(_ => _.Alloc(fieldValue).As(10));
                 },
                 new FieldBuilder[] { fieldValueFieldBuilder });
 
@@ -381,8 +381,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(_.X(valueParameterName)), fieldValue));
+                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(valueParameterName), fieldValue));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder },
@@ -426,7 +426,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     gen.Eval(_ => _.Base());
-                    gen.Eval(_ => _.St(fieldValue).As(10));
+                    gen.Eval(_ => _.Alloc(fieldValue).As(10));
                 });
 
 
@@ -449,8 +449,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.St(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(_.X(valueParameterName)), fieldValue));
+                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(valueParameterName), fieldValue));
                     gen.Eval(_ => _.Return(stringBuilder.ToString()));
                 });
 

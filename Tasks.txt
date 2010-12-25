@@ -11,10 +11,7 @@
 
 
 
-// DOING: EMBG で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？
-          ・St の意味に重複ありわかりにくい。引き込むだけ: Alloc、デフォルトで展開あり: St/Ld の形に。
-          ・Reflection 系の処理が IL に展開されるモードを追加。
-          ・ILGenerator ありきのモードを追加（もちろん Reflection 系の処理展開モードも有効に）。
+// DOING: ExpressibeEmitter, ReflectiveDesigner への載せ換え
 // DOING: OverridBy 全実装。
 // DOING: ImplementBy 全実装。
 // DOING: HideNewBy 全実装。
@@ -73,3 +70,4 @@
 // DONE: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // DONE: 書込処理効率アップ。GlobalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 // DONE: 書込処理効率アップ。LocalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
+// DONE: EMBG で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
+    <Compile Include="ILTools\AllocExpressible.cs" />
     <Compile Include="ILTools\ReflectiveDesigner.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
@@ -173,7 +174,6 @@
     <Compile Include="ILTools\IParameterGenerator.cs" />
     <Compile Include="ILTools\ITypeDeclaration.cs" />
     <Compile Include="ILTools\ITypeGenerator.cs" />
-    <Compile Include="ILTools\StoreExpressible.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\ConstructorBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />

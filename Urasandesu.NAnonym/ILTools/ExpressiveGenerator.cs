@@ -49,7 +49,7 @@ namespace Urasandesu.NAnonym.ILTools
     public class ExpressiveGenerator : IMethodBodyGenerator
     {
         protected static readonly Expressible ExpressibleInstance = new Expressible();
-        protected static readonly StoreExpressible StoreExpressibleInstance = new StoreExpressible();
+        protected static readonly AllocExpressible AllocExpressibleInstance = new AllocExpressible();
         
         readonly IMethodBaseGenerator methodGen;
         readonly EvalState state;
@@ -294,6 +294,7 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (ExpressibleInstance.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
                     else if (ExpressibleInstance.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
                     else if (ExpressibleInstance.IsLd(exp.Method)) EvalLd(methodGen, exp, state);
+                    else if (ExpressibleInstance.IsAlloc(exp.Method)) EvalAlloc(methodGen, exp, state);
                     else if (ExpressibleInstance.IsSt(exp.Method)) EvalSt(methodGen, exp, state);
                     else if (ExpressibleInstance.IsX(exp.Method)) EvalExtract(methodGen, exp, state);
                     else if (ExpressibleInstance.IsCm(exp.Method)) EvalCm(methodGen, exp, state);
@@ -302,10 +303,10 @@ namespace Urasandesu.NAnonym.ILTools
                         throw new NotImplementedException();
                     }
                 }
-                else if (exp.Object.Type == typeof(StoreExpressible) || 
-                         exp.Object.Type.EquivalentWithoutGenericArguments(typeof(StoreExpressible<>)))
+                else if (exp.Object.Type == typeof(AllocExpressible) || 
+                         exp.Object.Type.EquivalentWithoutGenericArguments(typeof(AllocExpressible<>)))
                 {
-                    if (StoreExpressibleInstance.IsAs(exp.Method)) EvalStoreAs(methodGen, exp, state);
+                    if (AllocExpressibleInstance.IsAs(exp.Method)) EvalAllocAs(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -469,7 +470,17 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Arguments[0], state);
+            var extractExp = Expression.Call(
+                                Expression.Constant(ExpressibleInstance),
+                                ExpressibleInstance.XInfo1.MakeGenericMethod(exp.Arguments[0].Type),
+                                new Expression[] 
+                                { 
+                                    exp.Arguments[0]
+                                }
+                             );
+
+            EvalExtract(methodGen, extractExp, state);
+
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
@@ -494,50 +505,40 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalSt(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalAlloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
             {
                 var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-                state.StInfoStack.Push(new StInfo(fieldInfo.Name, fieldInfo.FieldType));
+                state.AllocInfoStack.Push(new AllocInfo(fieldInfo.Name, fieldInfo.FieldType));
             }
             else
             {
-                EvalExpression(methodGen, exp.Arguments[0], state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    var name = (string)extractInfo.Value;
-                    state.StInfoStack.Push(new StInfo(name, extractInfo.Type));
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+                throw new NotSupportedException();
             }
         }
 
-        protected virtual void EvalStoreAs(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalAllocAs(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             EvalExpression(methodGen, exp.Object, state);
-            if (0 < state.StInfoStack.Count)
+            if (0 < state.AllocInfoStack.Count)
             {
-                var stInfo = state.StInfoStack.Pop();
+                var allocInfo = state.AllocInfoStack.Pop();
 
                 var localGen = default(ILocalGenerator);
                 var parameterGen = default(IParameterGenerator);
                 var fieldGen = default(IFieldGenerator);
-                if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == stInfo.Name)) != null)
+                if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == allocInfo.Name)) != null)
                 {
                     EvalExpression(methodGen, exp.Arguments[0], state);
                     methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localGen);
                 }
-                else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == stInfo.Name)) != null)
+                else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == allocInfo.Name)) != null)
                 {
                     EvalExpression(methodGen, exp.Arguments[0], state);
                     methodGen.Body.ILOperator.Emit(OpCodes.Starg, parameterGen);
                 }
-                else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == stInfo.Name)) != null)
+                else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
                 {
                     methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
                     EvalExpression(methodGen, exp.Arguments[0], state);
@@ -546,7 +547,7 @@ namespace Urasandesu.NAnonym.ILTools
                 else
                 {
                     EvalExpression(methodGen, exp.Arguments[0], state);
-                    var local = methodGen.Body.ILOperator.AddLocal(stInfo.Name, stInfo.Type);
+                    var local = methodGen.Body.ILOperator.AddLocal(allocInfo.Name, allocInfo.Type);
                     methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
                 }
             }
@@ -555,6 +556,44 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotImplementedException();
             }
             state.ProhibitsLastAutoPop = true;
+        }
+
+        protected virtual void EvalSt(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var xInfoType = default(Type);
+            if (exp.Type == typeof(AllocExpressible))
+            {
+                xInfoType = typeof(object);
+            }
+            else if (exp.Type.EquivalentWithoutGenericArguments(typeof(AllocExpressible<>)))
+            {
+                xInfoType = exp.Type.GetGenericArguments()[0];
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            var extractExp = Expression.Call(
+                                Expression.Constant(ExpressibleInstance),
+                                ExpressibleInstance.XInfo2.MakeGenericMethod(xInfoType),
+                                new Expression[] 
+                                { 
+                                    exp.Arguments[0]
+                                }
+                             );
+
+            EvalExtract(methodGen, extractExp, state);
+            if (0 < state.ExtractInfoStack.Count)
+            {
+                var extractInfo = state.ExtractInfoStack.Pop();
+                var name = (string)extractInfo.Value;
+                state.AllocInfoStack.Push(new AllocInfo(name, extractInfo.Type));
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected virtual void EvalExtract(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
@@ -931,21 +970,17 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 IfInfoStack = new Stack<IfInfo>();
                 ExtractInfoStack = new Stack<ExtractInfo>();
-                StInfoStack = new Stack<StInfo>();
+                AllocInfoStack = new Stack<AllocInfo>();
             }
 
             public bool ProhibitsLastAutoPop { get; set; }
             public Stack<IfInfo> IfInfoStack { get; private set; }
             public Stack<ExtractInfo> ExtractInfoStack { get; private set; }
-            public Stack<StInfo> StInfoStack { get; private set; }
+            public Stack<AllocInfo> AllocInfoStack { get; private set; }
         }
 
         protected class IfInfo
         {
-            public IfInfo()
-            {
-            }
-
             public IfInfo(ILabelDeclaration labelDecl)
             {
                 LabelDecl = labelDecl;
@@ -956,10 +991,6 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected class ExtractInfo
         {
-            public ExtractInfo()
-            {
-            }
-
             public ExtractInfo(Type type, object value)
             {
                 Type = type;
@@ -970,13 +1001,9 @@ namespace Urasandesu.NAnonym.ILTools
             public object Value { get; private set; }
         }
 
-        protected class StInfo
+        protected class AllocInfo
         {
-            public StInfo()
-            {
-            }
-
-            public StInfo(string name, Type type)
+            public AllocInfo(string name, Type type)
             {
                 Name = name;
                 Type = type;

@@ -77,7 +77,7 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 
             if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
             {
-                gen.Eval(_ => _.Ld<SRE::ILGenerator>(_.X(ilName)).Emit(SRE::OpCodes.Ret));
+                gen.Eval(_ => _.Ld<SRE::ILGenerator>(ilName).Emit(SRE::OpCodes.Ret));
             }
         }
 

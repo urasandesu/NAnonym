@@ -57,10 +57,10 @@ namespace Urasandesu.NAnonym.DW
             var returnType = injectionMethod.Source.ReturnType;
             var parameterTypes = definer.ParameterTypes;
 
-            gen.Eval(_ => _.If(_.Ld(_.X(cachedMethod.Name)) == null));
+            gen.Eval(_ => _.If(_.Ld(cachedMethod.Name) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
+                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod(
                                                             "dynamicMethod",
                                                             _.X(returnType),
                                                             new Type[] { _.X(ownerType) }.Concat(_.X(parameterTypes)).ToArray(),
@@ -69,57 +69,18 @@ namespace Urasandesu.NAnonym.DW
 
 
                 var cacheField = default(FieldInfo);
-                gen.Eval(_ => _.St(cacheField).As(_.X(ownerType).GetField(
+                gen.Eval(_ => _.Alloc(cacheField).As(_.X(ownerType).GetField(
                                                         _.X(cachedSetting.Name),
                                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
                 var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.St(targetMethod).As(_.X(injectionMethod.Destination.DeclaringType).GetMethod(
+                gen.Eval(_ => _.Alloc(targetMethod).As(_.X(injectionMethod.Destination.DeclaringType).GetMethod(
                                                         _.X(injectionMethod.Destination.Name),
                                                         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)));
 
 
                 var il = default(ILGenerator);
-                gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
-                // 例えばこんな感じでどう？
-                // 1. gen.EvalEmit(_ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))), () => il);
-                //    ⇒括弧多いょ…
-                // 2. gen.EvalEmit(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))), () => il);
-                //    ⇒Reflection をそのまま使いたいのかもしれない。判断不可能だょ…
-                // 
-                // Decoration パターンはどうだ！
-                //  また名前が長い問題が(笑)
-                //  ExpressiveMethodBodyGenerator -> ExpressiveGenerator
-                //  ExpressiveMethodBodyGenerationEmitter -> GenerativeEmitter
-                //  ExpressiveMethodBodyReflectionOptimizer -> ReflectionOptimizer
-                // 3. var emitter = new GenerativeEmitter(gen, () => il);
-                //    {
-                //        emitter.Eval(_ => _.Return(_.Invoke(_.This(), _.X(targetMethod), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
-                //    }
-                // 4. var emitter = new GenerativeEmitter(gen, () => il);
-                //    var optimizer = new ReflectionOptimizer(emitter);
-                //    {
-                //        optimizer.Eval(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
-                //    }
-                // 
-                // 最終的には、Ld と X は統合されるから…   
-                // 5. var emitter = new GenerativeEmitter(gen, () => il);
-                //    var optimizer = new ReflectionOptimizer(emitter);
-                //    {
-                //        optimizer.Eval(_ => _.Return(targetMethod.Invoke(_.This(), _.Ld(injectionMethod.Source.ParameterNames()))));
-                //    }
-                // 
-                // 
-                //    
-                // 
-                //    
-                // 
-                // 最初に Reflection で書いてたなら、それがそのまま持ってこれたほうがいいんじゃね？
-                // ⇒2. が良さげ。
-                // ⇒この考え方って、MethodInfo だけじゃなく、Type や FieldInfo、PropertyInfo にも言えそう。
-                // 
-
-
+                gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, cacheField));
                 for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
@@ -144,7 +105,7 @@ namespace Urasandesu.NAnonym.DW
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(cachedMethod.Name)).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType), _.This())));
+                gen.Eval(_ => _.St(cachedMethod.Name).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType), _.This())));
             }
             gen.Eval(_ => _.EndIf());
             var invoke = injectionMethod.DelegateType.GetMethod(
@@ -153,7 +114,7 @@ namespace Urasandesu.NAnonym.DW
                                                         null,
                                                         parameterTypes,
                                                         null);
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(_.X(cachedMethod.Name)), _.X(invoke), _.Ld(_.X(injectionMethod.Source.ParameterNames())))));
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(cachedMethod.Name), _.X(invoke), _.Ld(injectionMethod.Source.ParameterNames()))));
         }
     }
 }

@@ -59,17 +59,17 @@ namespace Urasandesu.NAnonym.DW
             var injectionDefiner = bodyWeaver.ParentBuilder.ParentDefiner;
             var injection = injectionDefiner.Parent;
 
-            gen.Eval(_ => _.If(_.Ld(_.X(injectionDefiner.CachedConstructor.Name)) == null));
+            gen.Eval(_ => _.If(_.Ld(injectionDefiner.CachedConstructor.Name) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.St(dynamicMethod).As(new DynamicMethod(
+                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod(
                                                             "dynamicMethod",
                                                             typeof(void),
                                                             new Type[] { _.X(injection.DeclaringType) },
                                                             _.X(injection.DeclaringType),
                                                             true)));
                 var il = default(ILGenerator);
-                gen.Eval(_ => _.St(il).As(dynamicMethod.GetILGenerator()));
+                gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
                 foreach (var injectionField in injection.FieldSet)
                 {
                     var targetField = TypeSavable.GetFieldInfo(injectionField.FieldReference);
@@ -78,26 +78,26 @@ namespace Urasandesu.NAnonym.DW
                         injectionDefiner.InitializedDeclaringTypeConstructor[targetField.DeclaringType] = true;
 
                         var declaringTypeConstructor = default(ConstructorInfo);
-                        gen.Eval(_ => _.St(declaringTypeConstructor).As(
+                        gen.Eval(_ => _.Alloc(declaringTypeConstructor).As(
                                                _.X(targetField.DeclaringType).GetConstructor(
                                                                     BindingFlags.Public | BindingFlags.Instance,
                                                                     null,
                                                                     Type.EmptyTypes,
                                                                     null)));
 
-                        gen.Eval(_ => _.St(_.X(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))).As(
+                        gen.Eval(_ => _.St<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)).As(
                                                _.X(injection.DeclaringType).GetField(
                                                                     _.X(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)),
                                                                     BindingFlags.Instance | BindingFlags.NonPublic)));
                         gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
                         gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, declaringTypeConstructor));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(_.X(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)))));
+                        gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
                     }
 
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(_.X(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)))));
+                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
                     var actualTargetField = default(FieldInfo);
-                    gen.Eval(_ => _.St(actualTargetField).As(
+                    gen.Eval(_ => _.Alloc(actualTargetField).As(
                                            _.X(targetField.DeclaringType).GetField(
                                                                     _.X(targetField.Name),
                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
@@ -108,10 +108,10 @@ namespace Urasandesu.NAnonym.DW
                     gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, actualTargetField));
                 }
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(_.X(injectionDefiner.CachedConstructor.Name)).As(dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                gen.Eval(_ => _.St<Action>(injectionDefiner.CachedConstructor.Name).As((Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
             }
             gen.Eval(_ => _.EndIf());
-            gen.Eval(_ => _.Ld<Action>(_.X(injectionDefiner.CachedConstructor.Name)).Invoke());
+            gen.Eval(_ => _.Ld<Action>(injectionDefiner.CachedConstructor.Name).Invoke());
         }
     }
 }

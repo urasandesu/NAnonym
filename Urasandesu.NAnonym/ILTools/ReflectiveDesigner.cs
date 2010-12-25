@@ -62,7 +62,7 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     var extractExp = Expression.Call(
                                         Expression.Constant(ExpressibleInstance),
-                                        ExpressibleInstance.XInfo.MakeGenericMethod(typeof(MethodInfo)),
+                                        ExpressibleInstance.XInfo1.MakeGenericMethod(typeof(MethodInfo)),
                                         new Expression[] 
                                         { 
                                             exp.Object
@@ -77,29 +77,28 @@ namespace Urasandesu.NAnonym.ILTools
                     methodInfo = (MethodInfo)extractInfo.Value;
                 }
 
-                var instance = default(Expression);
-                if (exp.Arguments[0].NodeType != ExpressionType.Constant || ((ConstantExpression)exp.Arguments[0]).Value != null)
+                if (!methodInfo.IsStatic)
                 {
-                    instance = exp.Arguments[0];
+                    base.EvalExpression(methodGen, exp.Arguments[0], state);
                 }
 
                 var arguments = new List<Expression>();
                 if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
                 {
-                    arguments.AddRange(((NewArrayExpression)exp.Arguments[1]).Expressions);
+                    base.EvalArguments(methodGen, ((NewArrayExpression)exp.Arguments[1]).Expressions, state); 
                 }
                 else
                 {
                     throw new NotImplementedException();
                 }
 
-                if (instance == null)
+                if (methodInfo.IsStatic)
                 {
-                    base.EvalMethodCall(methodGen, Expression.Call(methodInfo, arguments.ToArray()), state);
+                    methodGen.Body.ILOperator.Emit(OpCodes.Call, methodInfo);
                 }
                 else
                 {
-                    base.EvalMethodCall(methodGen, Expression.Call(instance, methodInfo, arguments.ToArray()), state);
+                    methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, methodInfo);
                 }
 
                 state.ProhibitsLastAutoPop = methodInfo.ReturnType == typeof(void);
