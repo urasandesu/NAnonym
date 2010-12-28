@@ -61,8 +61,8 @@ namespace Urasandesu.NAnonym.ILTools
                 var methodInfo = default(MethodInfo);
                 {
                     var extractExp = Expression.Call(
-                                        Expression.Constant(ExpressibleInstance),
-                                        ExpressibleInstance.XInfo1.MakeGenericMethod(typeof(MethodInfo)),
+                                        Expression.Constant(ReservedWords),
+                                        ReservedWordXInfo1.MakeGenericMethod(typeof(MethodInfo)),
                                         new Expression[] 
                                         { 
                                             exp.Object

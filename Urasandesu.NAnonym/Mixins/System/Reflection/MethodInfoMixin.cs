@@ -26,12 +26,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using Urasandesu.NAnonym.Linq;
 
@@ -39,6 +36,10 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
     public static class MethodInfoMixin
     {
+        public static readonly MethodInfo GetTypeFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeTypeHandle, Type>(() => Type.GetTypeFromHandle);
+        public static readonly MethodInfo GetMethodFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeMethodHandle, MethodBase>(() => MethodBase.GetMethodFromHandle);
+        public static readonly MethodInfo GetFieldFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeFieldHandle, FieldInfo>(() => FieldInfo.GetFieldFromHandle);
+
         public static BindingFlags ExportBinding(this MethodInfo methodInfo)
         {
             BindingFlags bindingAttr = BindingFlags.Default;
@@ -100,8 +101,8 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
                 if (target.Name != source.Name) return false;
                 if (target.IsGenericMethod && target.GetGenericArguments().Length == source.GetGenericArguments().Length) return true;
 
-                return !target.ReturnType.IsGenericParameter && 
-                       !source.ReturnType.IsGenericParameter && 
+                return !target.ReturnType.IsGenericParameter &&
+                       !source.ReturnType.IsGenericParameter &&
                        target.ParameterTypes().Where(parameterType => !parameterType.IsGenericParameter).Equivalent(
                             source.ParameterTypes().Where(parameterType => !parameterType.IsGenericParameter));
             }

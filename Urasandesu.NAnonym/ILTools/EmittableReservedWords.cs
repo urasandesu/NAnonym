@@ -1,5 +1,5 @@
 /* 
- * File: LocalField.cs
+ * File: EmittableReservedWords.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,48 +26,48 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
-using Urasandesu.NAnonym.ILTools;
+using System.Reflection;
+using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym.ILTools
 {
-
-    public abstract class LocalField : DependencyField
+    [EmittableReservedWords]
+    public interface IEmittableReservedWords : IExpressibleReservedWords
     {
-        public LocalField(DependencyClass @class, LambdaExpression fieldReference, Type fieldType)
-            : base(@class, fieldReference, fieldType)
-        {
-        }
+        [EmittableReservedWordLd]
+        T Ld<T>(FieldInfo field);
+
+        [EmittableReservedWordSt]
+        IEmittableAllocReservedWords<T> St<T>(FieldInfo field);
     }
 
-    public class LocalField<T> : LocalField
-    {
-        public LocalField(LocalClass @class, Expression<Func<T>> fieldReference)
-            : base(@class, fieldReference, typeof(T))
-        {
-        }
+    [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
+    public sealed class EmittableReservedWordsAttribute : Attribute { }
 
-        public void As(Expression<Func<IExpressibleReservedWords, T>> initializer)
-        {
-            base.As(initializer);
-        }
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class EmittableReservedWordLdAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class EmittableReservedWordStAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
+    public sealed class EmittableAllocReservedWordsAttribute : Attribute { }
+
+
+    [EmittableAllocReservedWords]
+    public interface IEmittableAllocReservedWords : IExpressibleAllocReservedWords
+    {
     }
 
-    public class LocalFieldInt : LocalField
+    [EmittableAllocReservedWords]
+    public interface IEmittableAllocReservedWords<T> : IExpressibleAllocReservedWords<T>
     {
-        public LocalFieldInt(LocalClass @class, Expression<Func<int>> fieldReference)
-            : base(@class, fieldReference, typeof(int))
-        {
-        }
-
-        public void As(int arg)
-        {
-            Expression<Func<IExpressibleReservedWords, int>> initializer = _ => _.X(arg);
-            base.As(initializer);
-        }
     }
 }
 

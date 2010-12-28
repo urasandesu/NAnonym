@@ -48,10 +48,21 @@ namespace Urasandesu.NAnonym.Mixins.System
         }
 
         public static readonly BindingFlags StaticNonPublic = BindingFlags.Static | BindingFlags.NonPublic;
+        public static readonly BindingFlags InstanceNonPublic = BindingFlags.Instance | BindingFlags.NonPublic;
 
         public static MethodInfo GetMethodStaticNonPublic(this Type type, string name, Type[] types)
         {
             return type.GetMethod(name, StaticNonPublic, null, types, null);
+        }
+
+        public static FieldInfo GetFieldStaticNonPublic(this Type type, string name)
+        {
+            return type.GetField(name, StaticNonPublic);
+        }
+
+        public static FieldInfo GetFieldInstanceNonPublic(this Type type, string name)
+        {
+            return type.GetField(name, InstanceNonPublic);
         }
 
         public static bool Equivalent(this Type source, Type target)
@@ -82,15 +93,32 @@ namespace Urasandesu.NAnonym.Mixins.System
                        target.GetGenericArguments().Length == source.GetGenericArguments().Length;
             }
         }
-    }
 
-    public static class AppDomainMixin
-    {
-        public static void NullableUnload(this AppDomain domain)
+        public static bool EquivalentGenericParameterPosition(this Type source, Type target)
         {
-            if (domain != null)
+            if (!source.IsGenericParameter && !target.IsGenericParameter)
             {
-                AppDomain.Unload(domain);
+                return true;
+            }
+            else if (!source.IsGenericParameter || !target.IsGenericParameter)
+            {
+                return false;
+            }
+            else
+            {
+                return source.GenericParameterPosition == target.GenericParameterPosition;
+            }
+        }
+
+        public static bool IsAssignableWithoutGenericArgumentsFrom(this Type source, Type target)
+        {
+            if (!source.IsGenericType || !target.IsGenericType)
+            {
+                return source.IsAssignableFrom(target);
+            }
+            else
+            {
+                return source.GetGenericTypeDefinition().IsAssignableFrom(target.GetGenericTypeDefinition());
             }
         }
     }

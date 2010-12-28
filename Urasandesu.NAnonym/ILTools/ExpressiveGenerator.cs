@@ -48,11 +48,14 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public class ExpressiveGenerator : IMethodBodyGenerator
     {
-        protected static readonly Expressible ExpressibleInstance = new Expressible();
-        protected static readonly AllocExpressible AllocExpressibleInstance = new AllocExpressible();
+        readonly IExpressibleReservedWords reservedWords = new ExpressibleReservedWords();
+        readonly IExpressibleAllocReservedWords allocReservedWords = new ExpressibleAllocReservedWords();
+
+        public static readonly MethodInfo ReservedWordXInfo1 = TypeSavable.GetInstanceMethod<IExpressibleReservedWords, object, object>(_ => _.X).GetGenericMethodDefinition();
+        public static readonly MethodInfo ReservedWordXInfo2 = TypeSavable.GetInstanceMethod<IExpressibleReservedWords, object, object>(_ => _.X<object>).GetGenericMethodDefinition();
         
         readonly IMethodBaseGenerator methodGen;
-        readonly EvalState state;
+        protected readonly EvalState state;
 
         protected internal ExpressiveGenerator(IMethodBaseGenerator methodGen)
         {
@@ -60,17 +63,36 @@ namespace Urasandesu.NAnonym.ILTools
             state = new EvalState();
         }
 
-        public void Eval(Expression<Action<Expressible>> exp)
+        public void Eval(Expression<Action<IExpressibleReservedWords>> exp)
         {
-            EvalExpression(methodGen, exp.Body, state);
-            EvalExit(methodGen, exp.Body, state);
+            Eval(methodGen, exp.Body, state);
         }
 
-        public void EvalTo(Expression<Action<Expressible>> exp, IMethodBaseGenerator methodGen)
+        public void EvalTo(Expression<Action<IExpressibleReservedWords>> exp, IMethodBaseGenerator methodGen)
         {
-            var state = new EvalState();
-            EvalExpression(methodGen, exp.Body, state);
-            EvalExit(methodGen, exp.Body, state);
+            Eval(methodGen, exp.Body, new EvalState());
+        }
+
+        protected virtual IExpressibleReservedWords ReservedWords
+        {
+            get
+            {
+                return reservedWords;
+            }
+        }
+
+        protected virtual IExpressibleAllocReservedWords AllocReservedWords
+        {
+            get
+            {
+                return allocReservedWords;
+            }
+        }
+
+        protected virtual void Eval(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
+        {
+            EvalExpression(methodGen, exp, state);
+            EvalExit(methodGen, exp, state);
         }
 
         protected virtual void EvalExit(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
@@ -279,34 +301,33 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else
             {
-                if (exp.Object.Type == typeof(Expressible))
+                if (exp.Object.Type.IsDefined(typeof(ExpressibleReservedWordsAttribute), false))
                 {
-                    if (ExpressibleInstance.IsBase(exp.Method)) EvalBase(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsThis(exp.Method)) EvalThis(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsDupAddOne(exp.Method)) EvalDupAddOne(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsAddOneDup(exp.Method)) EvalAddOneDup(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsSubOneDup(exp.Method)) EvalSubOneDup(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsNew(exp.Method)) EvalNew(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsInvoke(exp.Method)) EvalInvoke(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsFtn(exp.Method)) EvalFtn(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsIf(exp.Method)) EvalIf(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsEndIf(exp.Method)) EvalEndIf(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsReturn(exp.Method)) EvalReturn(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsEnd(exp.Method)) EvalEnd(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsLd(exp.Method)) EvalLd(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsAlloc(exp.Method)) EvalAlloc(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsSt(exp.Method)) EvalSt(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsX(exp.Method)) EvalExtract(methodGen, exp, state);
-                    else if (ExpressibleInstance.IsCm(exp.Method)) EvalCm(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(ExpressibleReservedWordBaseAttribute), false)) EvalBase(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordThisAttribute), false)) EvalThis(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordDupAddOneAttribute), false)) EvalDupAddOne(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordAddOneDupAttribute), false)) EvalAddOneDup(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordSubOneDupAttribute), false)) EvalSubOneDup(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordNewAttribute), false)) EvalNew(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordInvokeAttribute), false)) EvalInvoke(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordFtnAttribute), false)) EvalFtn(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordIfAttribute), false)) EvalIf(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordEndIfAttribute), false)) EvalEndIf(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordReturnAttribute), false)) EvalReturn(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordEndAttribute), false)) EvalEnd(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordLdAttribute), false)) EvalLd(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordAllocAttribute), false)) EvalAlloc(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordStAttribute), false)) EvalSt(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordXAttribute), false)) EvalExtract(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordCmAttribute), false)) EvalCm(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
                     }
                 }
-                else if (exp.Object.Type == typeof(AllocExpressible) || 
-                         exp.Object.Type.EquivalentWithoutGenericArguments(typeof(AllocExpressible<>)))
+                else if (exp.Object.Type.IsDefined(typeof(ExpressibleAllocReservedWordsAttribute), false))
                 {
-                    if (AllocExpressibleInstance.IsAs(exp.Method)) EvalAllocAs(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(ExpressibleAllocReservedWordAsAttribute), false)) EvalAllocAs(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -471,8 +492,8 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var extractExp = Expression.Call(
-                                Expression.Constant(ExpressibleInstance),
-                                ExpressibleInstance.XInfo1.MakeGenericMethod(exp.Arguments[0].Type),
+                                Expression.Constant(ReservedWords),
+                                ReservedWordXInfo1.MakeGenericMethod(exp.Arguments[0].Type),
                                 new Expression[] 
                                 { 
                                     exp.Arguments[0]
@@ -561,11 +582,11 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalSt(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
             var xInfoType = default(Type);
-            if (exp.Type == typeof(AllocExpressible))
+            if (typeof(IExpressibleAllocReservedWords).IsAssignableFrom(exp.Type))
             {
                 xInfoType = typeof(object);
             }
-            else if (exp.Type.EquivalentWithoutGenericArguments(typeof(AllocExpressible<>)))
+            else if (typeof(IExpressibleAllocReservedWords<>).IsAssignableWithoutGenericArgumentsFrom(exp.Type))
             {
                 xInfoType = exp.Type.GetGenericArguments()[0];
             }
@@ -575,8 +596,8 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             var extractExp = Expression.Call(
-                                Expression.Constant(ExpressibleInstance),
-                                ExpressibleInstance.XInfo2.MakeGenericMethod(xInfoType),
+                                Expression.Constant(ReservedWords),
+                                ReservedWordXInfo2.MakeGenericMethod(xInfoType),
                                 new Expression[] 
                                 { 
                                     exp.Arguments[0]
@@ -672,6 +693,7 @@ namespace Urasandesu.NAnonym.ILTools
             var t = default(Type);
             var mi = default(MethodInfo);
             var ci = default(ConstructorInfo);
+            var fi = default(FieldInfo);
             if (exp.Value == null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldnull);
@@ -708,19 +730,24 @@ namespace Urasandesu.NAnonym.ILTools
             else if ((t = exp.Value as Type) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, t);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetTypeFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo);
             }
             else if ((mi = exp.Value as MethodInfo) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
                 methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
             }
             else if ((ci = exp.Value as ConstructorInfo) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, ci);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, Expressible.GetMethodFromHandle);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
                 methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(ConstructorInfo));
+            }
+            else if ((fi = exp.Value as FieldInfo) != null)
+            {
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, fi);
+                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetFieldFromHandleInfo);
             }
             else
             {
@@ -1115,6 +1142,145 @@ namespace Urasandesu.NAnonym.ILTools
         IMethodBaseDeclaration IMethodBodyDeclaration.Method
         {
             get { return Method; }
+        }
+
+        class ExpressibleReservedWords : IExpressibleReservedWords
+        {
+            public void Base()
+            {
+                throw new NotSupportedException();
+            }
+
+            public object This()
+            {
+                throw new NotSupportedException();
+            }
+
+            public T DupAddOne<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T AddOneDup<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T SubOneDup<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object New(ConstructorInfo constructor, object parameter)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object New(ConstructorInfo constructor, params object[] parameters)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Invoke(object variable, MethodInfo method, object[] parameters)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Ftn(object variable, IMethodDeclaration methodDecl)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Ftn(IMethodDeclaration methodDecl)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void If(bool condition)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void EndIf()
+            {
+                throw new NotSupportedException();
+            }
+
+            public void End()
+            {
+                throw new NotSupportedException();
+            }
+
+            public void Return<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T Ld<T>(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Ld(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object[] Ld(string[] variableNames)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IExpressibleAllocReservedWords<T> St<T>(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IExpressibleAllocReservedWords St(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IExpressibleAllocReservedWords<T> Alloc<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IExpressibleAllocReservedWords Alloc(object variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T X<T>(T constant)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T X<T>(object constant)
+            {
+                throw new NotSupportedException();
+            }
+
+            public TValue Cm<TValue>(TValue constMember, Type declaringType)
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        class ExpressibleAllocReservedWords : IExpressibleAllocReservedWords
+        {
+            public object As(object value)
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        class ExpressibleAllocReservedWords<T> : IExpressibleAllocReservedWords<T>
+        {
+            public T As(T value)
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }

@@ -29,12 +29,12 @@
 
 using System;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
     public abstract class ExpressiveILOperationDecorator : IILOperator
     {
-
         protected readonly ExpressiveMethodBodyDecorator bodyDecorator;
         public ExpressiveILOperationDecorator(ExpressiveMethodBodyDecorator bodyDecorator)
         {
@@ -70,5 +70,76 @@ namespace Urasandesu.NAnonym.ILTools
         public virtual void Emit(OpCode opcode, IFieldDeclaration fieldDecl) { Gen.ILOperator.Emit(opcode, fieldDecl); }
         public virtual void Emit(OpCode opcode, IPortableScopeItem scopeItem) { Gen.ILOperator.Emit(opcode, scopeItem); }
         public virtual void SetLabel(ILabelDeclaration loc) { Gen.ILOperator.SetLabel(loc); }
+    }
+
+    public abstract class ExpressiveLocalDecorator : ILocalGenerator
+    {
+        protected readonly ExpressiveILOperationDecorator ilOperationDecorator;
+        string name;
+        ITypeDeclaration type;
+        int index;
+
+        public ExpressiveLocalDecorator(ExpressiveILOperationDecorator ilOperationDecorator, Type type, int index)
+        {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = "local$" + index;
+            this.type = new SRTypeDeclarationImpl(Required.NotDefault(type, () => type));
+            this.index = index;
+        }
+
+        public ExpressiveLocalDecorator(ExpressiveILOperationDecorator ilOperationDecorator, string name, Type type, int index)
+        {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = Required.NotDefault(name, () => name).Replace("$", "$$");
+            this.type = new SRTypeDeclarationImpl(Required.NotDefault(type, () => type));
+            this.index = index;
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+
+        public ITypeDeclaration Type
+        {
+            get { return type; }
+        }
+
+        public int Index
+        {
+            get { return index; }
+        }
+    }
+
+    public abstract class ExpressiveLabelDecorator : ILabelGenerator
+    {
+        protected readonly ExpressiveILOperationDecorator ilOperationDecorator;
+        string name;
+        int index;
+
+        public ExpressiveLabelDecorator(ExpressiveILOperationDecorator ilOperationDecorator, int index)
+        {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = "label$" + index;
+            this.index = index;
+        }
+
+        public ExpressiveLabelDecorator(ExpressiveILOperationDecorator ilOperationDecorator, string name, int index)
+        {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = Required.NotDefault(name, () => name).Replace("$", "$$");
+            this.index = index;
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+
+
+        public int Index
+        {
+            get { return index; }
+        }
     }
 }

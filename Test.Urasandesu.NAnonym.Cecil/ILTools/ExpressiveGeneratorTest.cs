@@ -51,6 +51,7 @@ using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
 using Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -87,12 +88,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action1Def2 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action1",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -118,7 +123,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                             target.Method.Invoke(target.Instance, null);
                             Assert.Fail();
                         }
-                        catch (Exception e)
+                        catch (TargetInvocationException e)
                         {
                             Assert.AreEqual("Hello, World!!", e.InnerException.Message);
                         }
@@ -137,12 +142,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef2 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -190,12 +199,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef3 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -242,12 +255,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef4 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -294,12 +311,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef5 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -344,12 +365,16 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef6 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -410,12 +435,16 @@ i++ = 1
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef7 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -474,12 +503,16 @@ Parameter[0] Type = Int32
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var func1Parameters2 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Func1Parameters",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { typeof(int) }).DuplicateWithoutBody();
@@ -518,12 +551,16 @@ Parameter[0] Type = Int32
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var func1Parameters3 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Func1Parameters",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { typeof(int) }).DuplicateWithoutBody();
@@ -564,12 +601,16 @@ Parameter[0] Type = Int32
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef8 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -614,12 +655,16 @@ Parameter[0] Type = Int32
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef9 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -910,20 +955,7 @@ Parameter[1] = IntPtr method
                         tempAssemblyDef.MainModule.Import(typeof(object)));
                 tempAssemblyDef.MainModule.Types.Add(emitTest16Def);
 
-                var ctorDef =
-                    new MethodDefinition(
-                        ".ctor",
-                        MC::MethodAttributes.Public |
-                        MC::MethodAttributes.HideBySig |
-                        MC::MethodAttributes.SpecialName |
-                        MC::MethodAttributes.RTSpecialName,
-                        tempAssemblyDef.MainModule.Import(typeof(void)));
-                emitTest16Def.Methods.Add(ctorDef);
-                ctorDef.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.Base());
-                });
+                emitTest16Def.AddDefaultConstructor();
 
                 var action2SameDomain2Def =
                     new MethodDefinition(
@@ -970,13 +1002,16 @@ Parameter[1] = IntPtr method
                 var candidateCallingCurrentMethods = typeof(ExpressiveGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
                 var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(callingCurrentMethod);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
 
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef12 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -1118,12 +1153,16 @@ Parameter[1] = IntPtr method
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var action2LocalVariableDef20 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -1173,9 +1212,13 @@ Parameter[1] = IntPtr method
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                // modify ...
-                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef();
-                methodTestClassDef.Module.Assembly.Name.Name = Path.GetFileNameWithoutExtension(tempFileName);
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+
+                var methodTestClassDef = typeof(MethodTestClass1).ToTypeDef().DuplicateWithoutMember();
+                tempAssemblyDef.MainModule.Types.Add(methodTestClassDef);
+
+                methodTestClassDef.AddDefaultConstructor();
 
                 var methodToCall20 = default(Func<string, string>);
                 var methodToCall20Def = 
@@ -1186,7 +1229,7 @@ Parameter[1] = IntPtr method
                 methodTestClassDef.Fields.Add(methodToCall20Def);
 
                 var action2LocalVariableDef21 =
-                    methodTestClassDef.GetMethod(
+                    typeof(MethodTestClass1).ToTypeDef().GetMethod(
                         "Action2LocalVariable",
                         BindingFlags.Instance | BindingFlags.Public,
                         new Type[] { }).DuplicateWithoutBody();
@@ -1298,9 +1341,6 @@ Parameter[1] = IntPtr method
             });
         }
 
-
-
-
         [NewDomainTest]
         public void EmitTest23()
         {
@@ -1310,18 +1350,7 @@ Parameter[1] = IntPtr method
                 var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
                 var emitTest23Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest23");
 
-
-                var ctorDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig | 
-                                        SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
-
-                var ctorGen = emitTest23Gen.AddConstructor(ctorDefaultAttr, CallingConventions.HasThis, Type.EmptyTypes);
-                ctorGen.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.Base());
-                });
-
-
+                emitTest23Gen.AddDefaultConstructor();
 
                 var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
 
@@ -1330,7 +1359,7 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("DynamicMethod", null, null)));
+                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("DynamicMethod", null, null, true)));
 
                     var il = default(ILGenerator);
                     gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
@@ -1338,7 +1367,19 @@ Parameter[1] = IntPtr method
                     gen.ExpressEmit(() => il,
                     _gen =>
                     {
-                        _gen.Eval(_ => TestHelper.ThrowException("testtest"));
+                        var staticObjectFieldInfo = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
+                        _gen.Emit(_ => _.St<string>(staticObjectFieldInfo).As("testtest"));
+                        _gen.Emit(_ => TestHelper.ThrowException(_.Ld<string>(staticObjectFieldInfo)));
+
+                        // MEMO: インスタンスメソッドを同じ構文で扱いたい…。
+                        // MEMO: 現状だと↓。null かどうかの判別は難しいか…。
+                        // MEMO: 通常の処理側に流せない？メソッド名を変えたほうが良さそう？
+                        //       ⇒引数の型が文字列の場合は通常の処理、FieldInfo の場合は、Emit の処理という流れにはできる！
+                        //var instanceObjectFieldInfo = typeof(FieldTestClass1).GetFieldInstanceNonPublic("objectField");
+                        //var fieldTestClass1 = default(FieldTestClass1);
+                        //_gen.Emit(_ => _.Alloc(fieldTestClass1).As(new FieldTestClass1()));
+                        //_gen.Emit(_ => _.St<string>(fieldTestClass1, instanceObjectFieldInfo).As("testtesttest"));
+                        //_gen.Emit(_ => TestHelper.ThrowException(_.Ld<string>(fieldTestClass1, instanceObjectFieldInfo)));
                     });
 
                     var action = default(Action);
@@ -1376,18 +1417,7 @@ Parameter[1] = IntPtr method
                 var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
                 var emitTest24Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest24");
 
-
-                var ctorDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig |
-                                        SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
-
-                var ctorGen = emitTest24Gen.AddConstructor(ctorDefaultAttr, CallingConventions.HasThis, Type.EmptyTypes);
-                ctorGen.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.Base());
-                });
-
-
+                emitTest24Gen.AddDefaultConstructor();
 
                 var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
 
@@ -1441,18 +1471,7 @@ Parameter[1] = IntPtr method
                 var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
                 var emitTest25Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest25");
 
-
-                var ctorDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig |
-                                        SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
-
-                var ctorGen = emitTest25Gen.AddConstructor(ctorDefaultAttr, CallingConventions.HasThis, Type.EmptyTypes);
-                ctorGen.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(_ => _.Base());
-                });
-
-
+                emitTest25Gen.AddDefaultConstructor();
 
                 var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
 

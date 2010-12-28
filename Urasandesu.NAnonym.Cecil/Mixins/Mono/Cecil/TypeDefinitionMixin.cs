@@ -36,6 +36,7 @@ using Mono.Cecil;
 using System.Reflection;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.Mixins.System.Collections.Generic;
+using MC = Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
 {
@@ -521,6 +522,25 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
         {
             var destination = new TypeDefinition(source.Namespace, source.Name, source.Attributes, source.BaseType);
             return destination;
+        }
+
+        public static MethodDefinition AddDefaultConstructor(this TypeDefinition source)
+        {
+            var attributes = MC::MethodAttributes.Public | MC::MethodAttributes.HideBySig | 
+                             MC::MethodAttributes.SpecialName | MC::MethodAttributes.RTSpecialName;
+            return source.AddConstructor(attributes);
+        }
+
+        public static MethodDefinition AddConstructor(this TypeDefinition source, MC::MethodAttributes attributes)
+        {
+            var ctorDef = new MethodDefinition(".ctor", attributes, source.Module.Import(typeof(void)));
+            source.Methods.Add(ctorDef);
+            ctorDef.ExpressBody(
+            gen =>
+            {
+                gen.Eval(_ => _.Base());
+            });
+            return ctorDef;
         }
     }
 }

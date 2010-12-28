@@ -133,6 +133,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             throw new NotImplementedException();
         }
+
+        public void AddDefaultConstructor()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

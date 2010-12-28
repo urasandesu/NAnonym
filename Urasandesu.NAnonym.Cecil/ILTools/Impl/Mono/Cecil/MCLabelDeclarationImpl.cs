@@ -46,6 +46,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         }
 
         internal Instruction Target { get { return target; } }
+
+        public string Name
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int Index
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

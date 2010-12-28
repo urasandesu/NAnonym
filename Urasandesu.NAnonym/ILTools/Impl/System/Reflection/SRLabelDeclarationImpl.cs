@@ -26,12 +26,8 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
@@ -45,6 +41,16 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         internal Label Label { get { return label; } }
+
+        public string Name
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int Index
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿/* 
- * File: AllocExpressible.cs
+ * File: AppDomainMixin.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -27,38 +27,18 @@
  *  THE SOFTWARE.
  */
 
-using System.Reflection;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
+using System;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Mixins.System
 {
-    public class AllocExpressible
+    public static class AppDomainMixin
     {
-        public readonly MethodInfo AsInfo1;
-        public readonly MethodInfo AsInfo2;
-
-        public AllocExpressible()
+        public static void NullableUnload(this AppDomain domain)
         {
-            AsInfo1 = TypeSavable.GetInstanceMethod<AllocExpressible, object, object>(_ => _.As);
-            AsInfo2 = TypeSavable.GetInstanceMethod<AllocExpressible<object>, object, object>(_ => _.As);
-        }
-
-        public bool IsAs(MethodInfo target)
-        {
-            return AsInfo1.Equivalent(AsInfo1) || AsInfo2.EquivalentWithoutGenericArguments(target);
-        }
-
-        public object As(object value)
-        {
-            return null;
-        }
-    }
-
-    public class AllocExpressible<T>
-    {
-        public T As(T value)
-        {
-            return default(T);
+            if (domain != null)
+            {
+                AppDomain.Unload(domain);
+            }
         }
     }
 }

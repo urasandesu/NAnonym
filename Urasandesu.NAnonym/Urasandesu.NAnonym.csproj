@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
-    <Compile Include="ILTools\AllocExpressible.cs" />
+    <Compile Include="ILTools\ExpressibleReservedWords.cs" />
     <Compile Include="ILTools\ReflectiveDesigner.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
@@ -137,7 +137,7 @@
     <Compile Include="ILTools\Impl\System\Reflection\SRFieldDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRFieldGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorImpl.cs" />
-    <Compile Include="ILTools\Expressible.cs" />
+    <Compile Include="ILTools\EmittableReservedWords.cs" />
     <Compile Include="ILTools\ILocalDeclaration.cs" />
     <Compile Include="ILTools\ILocalGenerator.cs" />
     <Compile Include="ILTools\IMemberDeclaration.cs" />
@@ -174,12 +174,14 @@
     <Compile Include="ILTools\IParameterGenerator.cs" />
     <Compile Include="ILTools\ITypeDeclaration.cs" />
     <Compile Include="ILTools\ITypeGenerator.cs" />
+    <Compile Include="Mixins\System\AppDomainMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\ConstructorBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\ModuleBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\OpCodeMixin.cs" />
     <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\ParameterInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />
     <Compile Include="ILTools\OpCode.cs" />

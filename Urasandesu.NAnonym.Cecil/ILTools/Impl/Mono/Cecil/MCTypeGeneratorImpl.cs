@@ -108,6 +108,19 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             throw new NotImplementedException();
         }
 
+        public void AddDefaultConstructor()
+        {
+            var attributes = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig |
+                             SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
+
+            var ctor = AddConstructor(attributes, SR::CallingConventions.HasThis, Type.EmptyTypes);
+            ctor.ExpressBody(
+            gen =>
+            {
+                gen.Eval(_ => _.Base());
+            });
+        }
+
         public UNI::IConstructorGenerator AddConstructor(SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type[] parameterTypes)
         {
             var constructorDef = new MethodDefinition(".ctor", (MethodAttributes)attributes, TypeDef.Module.Import(typeof(void)));

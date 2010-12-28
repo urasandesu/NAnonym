@@ -51,7 +51,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
         {
         }
 
-        public void As(Expression<Func<Expressible, T>> initializer)
+        public void As(Expression<Func<IExpressibleReservedWords, T>> initializer)
         {
             base.As(initializer);
         }
@@ -66,7 +66,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         public void As(int arg)
         {
-            Expression<Func<Expressible, int>> initializer = _ => _.X(arg);
+            Expression<Func<IExpressibleReservedWords, int>> initializer = _ => _.X(arg);
             base.As(initializer);
         }
     }

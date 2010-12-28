@@ -119,7 +119,7 @@ namespace Urasandesu.NAnonym.DW
                 
                 // TODO: この辺実装中。
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Ldtoken, _.This().GetType()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Call, Expressible.GetTypeFromHandle));
+                gen.Eval(_ => il.Emit(SRE::OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Call, (MethodInfo)MethodBase.GetCurrentMethod()));
                 gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, beforeSourceConstructor));
                 

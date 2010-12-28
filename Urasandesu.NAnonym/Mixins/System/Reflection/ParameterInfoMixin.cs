@@ -1,5 +1,5 @@
-/* 
- * File: LocalField.cs
+﻿/* 
+ * File: ParameterInfoMixin.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,48 +26,16 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Linq.Expressions;
-using Urasandesu.NAnonym.ILTools;
+using System.Reflection;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
-
-    public abstract class LocalField : DependencyField
+    public static class ParameterInfoMixin
     {
-        public LocalField(DependencyClass @class, LambdaExpression fieldReference, Type fieldType)
-            : base(@class, fieldReference, fieldType)
+        public static bool Equivalent(this ParameterInfo source, ParameterInfo target)
         {
-        }
-    }
-
-    public class LocalField<T> : LocalField
-    {
-        public LocalField(LocalClass @class, Expression<Func<T>> fieldReference)
-            : base(@class, fieldReference, typeof(T))
-        {
-        }
-
-        public void As(Expression<Func<IExpressibleReservedWords, T>> initializer)
-        {
-            base.As(initializer);
-        }
-    }
-
-    public class LocalFieldInt : LocalField
-    {
-        public LocalFieldInt(LocalClass @class, Expression<Func<int>> fieldReference)
-            : base(@class, fieldReference, typeof(int))
-        {
-        }
-
-        public void As(int arg)
-        {
-            Expression<Func<IExpressibleReservedWords, int>> initializer = _ => _.X(arg);
-            base.As(initializer);
+            return source.Position == target.Position && source.ParameterType == target.ParameterType;
         }
     }
 }
-

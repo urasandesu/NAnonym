@@ -47,6 +47,7 @@ namespace Urasandesu.NAnonym.ILTools
         new IModuleGenerator Module { get; }
         ITypeGenerator AddInterfaceImplementation(Type interfaceType);
         ITypeGenerator SetParent(Type parentType);
+        void AddDefaultConstructor();
         IConstructorGenerator AddConstructor(MethodAttributes attributes, CallingConventions callingConvention, Type[] parameterTypes);
     }
 
