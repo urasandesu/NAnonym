@@ -1503,6 +1503,37 @@ Parameter[1] = IntPtr method
                 }
             });
         }
+
+        [NewDomainTest]
+        public void Hoge()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var t = typeof(Func<string, int>);
+                Console.WriteLine(t);
+                //var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                //var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                //var hogeGen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "Hoge");
+
+                //hogeGen.AddDefaultConstructor();
+
+                //var genericsample = typeof(GenericSample<string>);
+                //var genericsampleRef = genericsample.ToTypeRef();
+                //var test = genericsample.GetMethod("Test", BindingFlags.Instance | BindingFlags.Public);
+                //var testDef = genericsampleRef.Module.Import(test, genericsampleRef);
+                //Console.WriteLine(testDef.FullName);    
+                // MEMO: Generic な型の Generic Parameter を使ったメソッドの場合、Close な Generic 型にしてもメソッドに使われている 
+                // MEMO: Generic Parameter が解決されることはなさそう。
+            });
+        }
+    }
+
+    public class GenericSample<T>
+    {
+        public T Test()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -48,11 +48,17 @@ namespace Urasandesu.NAnonym.Mixins.System
         }
 
         public static readonly BindingFlags StaticNonPublic = BindingFlags.Static | BindingFlags.NonPublic;
+        public static readonly BindingFlags InstancePublic = BindingFlags.Instance | BindingFlags.Public;
         public static readonly BindingFlags InstanceNonPublic = BindingFlags.Instance | BindingFlags.NonPublic;
 
         public static MethodInfo GetMethodStaticNonPublic(this Type type, string name, Type[] types)
         {
             return type.GetMethod(name, StaticNonPublic, null, types, null);
+        }
+
+        public static MethodInfo GetMethodInstancePublic(this Type type, string name, Type[] types)
+        {
+            return type.GetMethod(name, InstancePublic, null, types, null);
         }
 
         public static FieldInfo GetFieldStaticNonPublic(this Type type, string name)

@@ -40,41 +40,6 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
         public static readonly MethodInfo GetMethodFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeMethodHandle, MethodBase>(() => MethodBase.GetMethodFromHandle);
         public static readonly MethodInfo GetFieldFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeFieldHandle, FieldInfo>(() => FieldInfo.GetFieldFromHandle);
 
-        public static BindingFlags ExportBinding(this MethodInfo methodInfo)
-        {
-            BindingFlags bindingAttr = BindingFlags.Default;
-
-            if (methodInfo.IsPublic)
-            {
-                bindingAttr |= BindingFlags.Public;
-            }
-            else
-            {
-                bindingAttr |= BindingFlags.NonPublic;
-            }
-
-            if (methodInfo.IsStatic)
-            {
-                bindingAttr |= BindingFlags.Static;
-            }
-            else
-            {
-                bindingAttr |= BindingFlags.Instance;
-            }
-
-            return bindingAttr;
-        }
-
-        public static Type[] ParameterTypes(this MethodInfo methodInfo)
-        {
-            return methodInfo.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-        }
-
-        public static string[] ParameterNames(this MethodInfo methodInfo)
-        {
-            return methodInfo.GetParameters().Select(parameter => parameter.Name).ToArray();
-        }
-
         public static bool Equivalent(this MethodInfo source, MethodInfo target)
         {
             if (!source.IsGenericMethodDefinition)

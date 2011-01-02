@@ -1,8 +1,10 @@
+// TODO: ExpressiveGenerator を使って記述する DSL について現状の方針とかまとめておく。
+// TODO: 
 // TODO: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
-// ------------ できれば 2010 年中にここまで・・・ --------------
 // TODO: テストで利用している AppDomain 生成系のヘルパーを本ちゃんコード側へ移動。GlobalDomainContext とか。ユーザーが自由に処理を書けるように、NUnit のような Attribute 制御を考え中。
-// TODO: EMBG 効率 UP。Extract 系を Expression<TDelegate>.Compile() 使わないように（Elicit 一式）。
-// TODO: EMBG 機能拡張。デバッグ機能強化。
+// TODO: ExpressiveGenerator 効率 UP。Extract 系を Expression<TDelegate>.Compile() 使わないように（Elicit 一式）。
+// TODO: ExpressiveGenerator 効率 UP。Static フィールドの参照命令（Cm）について、キャッシュを使った最適化をかける。
+// TODO: ExpressiveGenerator 機能拡張。デバッグ機能強化。
 // TODO: PortableScope 構文競合解決。例えば、CarryPortableScope で作成した scope に Add してないとエラーになるとか。
 // TODO: LocalClass でインスタンス取得は DependencyUtil からに変更。Unity 的に。
 // TODO: GlobalClass で複数メソッド上書きに対応。
@@ -27,7 +29,7 @@
 // DONE: LocalClassBase もたぶん必要。Generic な型に、型パラメータ関係ない処理を括りだした I/F クラスがあると便利なのが世の常。
 // DONE: LocalMethod 生成メソッドの引数用デリゲート型追加。
 // DONE: フィールドへの参照許可を ExpressiveMethodBodyGenerator に追加。
-// DONE: EMBG リファクタリング。
+// DONE: ExpressiveGenerator リファクタリング。
 // DONE: 2項演算子（null 比較）実装。
 // DONE: If 文、Scope を導入。
 // DONE: 実際の処理を呼び出すための DynamicMethod 用キャッシュ追加。
@@ -70,4 +72,4 @@
 // DONE: GlobalClass のテストについて、NUnit-Addin を利用する形に修正。
 // DONE: 書込処理効率アップ。GlobalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 // DONE: 書込処理効率アップ。LocalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
-// DONE: EMBG で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？
+// DONE: ExpressiveGenerator で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？

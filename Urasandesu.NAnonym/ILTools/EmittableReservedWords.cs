@@ -37,11 +37,15 @@ using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
+    [ExpressibleReservedWords]
     [EmittableReservedWords]
     public interface IEmittableReservedWords : IExpressibleReservedWords
     {
         [EmittableReservedWordLd]
         T Ld<T>(FieldInfo field);
+
+        [EmittableReservedWordLd]
+        T Ld<T>(object instance, IFieldDeclaration field);
 
         [EmittableReservedWordSt]
         IEmittableAllocReservedWords<T> St<T>(FieldInfo field);
@@ -60,11 +64,13 @@ namespace Urasandesu.NAnonym.ILTools
     public sealed class EmittableAllocReservedWordsAttribute : Attribute { }
 
 
+    [ExpressibleAllocReservedWords]
     [EmittableAllocReservedWords]
     public interface IEmittableAllocReservedWords : IExpressibleAllocReservedWords
     {
     }
 
+    [ExpressibleAllocReservedWords]
     [EmittableAllocReservedWords]
     public interface IEmittableAllocReservedWords<T> : IExpressibleAllocReservedWords<T>
     {

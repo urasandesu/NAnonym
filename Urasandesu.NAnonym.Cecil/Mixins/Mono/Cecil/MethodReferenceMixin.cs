@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using Mono.Cecil;
 using System.Reflection;
+using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Cecil.Mixins.System.Collections.Generic;
 
 namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
@@ -80,8 +81,54 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             }
             else
             {
-                throw new NotSupportedException();
+                var destination = new MethodReference(source.Name, source.ReturnType, source.DeclaringType);
+                destination.MetadataToken = source.MetadataToken;
+                destination.CallingConvention = source.CallingConvention;
+                if (source.HasGenericParameters)
+                {
+                    source.GenericParameters.Select(_ => _.Duplicate(destination)).AddRangeTo(destination.GenericParameters);
+                }
+                source.Parameters.Select(_ => _.Duplicate()).AddRangeTo(destination.Parameters);
+                return destination;
             }
+        }
+
+        public static MethodDefinition DeepResolve(this MethodReference source)
+        {
+            var resolved = source.Resolve();
+            var typeResolved = default(TypeDefinition);
+            if (resolved == null && (typeResolved = source.DeclaringType.Resolve()) != null && typeResolved.HasGenericParameters)
+            {
+                throw new NotImplementedException();
+            }
+            return resolved;
+            //var type = source.DeclaringType;
+            //if (typeResolved.HasGenericParameters)
+            //{
+            //    throw new NotImplementedException();
+            //    //var resolved = source.Duplicate();
+            //    //resolved.ReturnType = typeResolved.GenericParameters.
+            //    //                        Select((genericParameter, index) => new { GenericParameter = genericParameter, Index = index }).
+            //    //                        Where(item => item.GenericParameter.FullName == source.ReturnType.FullName).
+            //    //                        Select(item => ((GenericInstanceType)type).GenericArguments[item.Index].Resolve()).
+            //    //                        FirstOrDefault(() => source.ReturnType.Resolve());
+
+            //    //resolved.Parameters.Clear();
+            //    //source.Parameters.
+            //    //    Select(parameter =>
+            //    //            typeResolved.GenericParameters.
+            //    //                Select((genericParameter, index) => new { GenericParameter = genericParameter, Index = index }).
+            //    //                Where(item => item.GenericParameter.FullName == parameter.ParameterType.FullName).
+            //    //                Select(item => parameter.DuplicateWith(((GenericInstanceType)type).GenericArguments[item.Index])).
+            //    //                FirstOrDefault(() => parameter.Duplicate())).
+            //    //    AddRangeTo(resolved.Parameters);
+
+            //    //return resolved;
+            //}
+            //else
+            //{
+            //    return source.Resolve();
+            //}
         }
 
         public static MethodInfo ToMethodInfo(this MethodReference source)

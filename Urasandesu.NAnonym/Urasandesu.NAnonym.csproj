@@ -181,6 +181,7 @@
     <Compile Include="Mixins\System\Reflection\Emit\ModuleBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\OpCodeMixin.cs" />
     <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\MethodBaseMixin.cs" />
     <Compile Include="Mixins\System\Reflection\ParameterInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />

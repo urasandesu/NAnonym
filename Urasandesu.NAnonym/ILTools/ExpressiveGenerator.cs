@@ -100,7 +100,7 @@ namespace Urasandesu.NAnonym.ILTools
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
-                EvalExtracted(methodGen, extractInfo, state);
+                EvalConstantExtracted(methodGen, extractInfo, state);
             }
 
             if (exp.Type != typeof(void) && !state.ProhibitsLastAutoPop)
@@ -119,7 +119,7 @@ namespace Urasandesu.NAnonym.ILTools
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
-                    EvalExtracted(methodGen, extractInfo, state);
+                    EvalConstantExtracted(methodGen, extractInfo, state);
                 }
             }
         }
@@ -320,6 +320,7 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordStAttribute), false)) EvalSt(methodGen, exp, state);
                     else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordXAttribute), false)) EvalExtract(methodGen, exp, state);
                     else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordCmAttribute), false)) EvalCm(methodGen, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordLdArgAttribute), false)) EvalLdArg(methodGen, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -340,7 +341,7 @@ namespace Urasandesu.NAnonym.ILTools
                     if (0 < state.ExtractInfoStack.Count)
                     {
                         var extractInfo = state.ExtractInfoStack.Pop();
-                        EvalExtracted(methodGen, extractInfo, state);
+                        EvalConstantExtracted(methodGen, extractInfo, state);
                     }
                     if (exp.Object.Type.IsValueType)
                     {
@@ -404,11 +405,15 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalNew(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Arguments[1], state);
-            if (0 < state.ExtractInfoStack.Count)
+            if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
             {
-                throw new NotImplementedException();
+                ((NewArrayExpression)exp.Arguments[1]).Expressions.ForEach(_exp => EvalExpression(methodGen, _exp, state));
             }
+            else
+            {
+                EvalExpression(methodGen, exp.Arguments[1], state);
+            }
+
             EvalExpression(methodGen, exp.Arguments[0], state);
             if (0 < state.ExtractInfoStack.Count)
             {
@@ -450,12 +455,29 @@ namespace Urasandesu.NAnonym.ILTools
                 }
             }
 
-            EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
-            if (0 < state.ExtractInfoStack.Count)
+            if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(IMethodDeclaration))
             {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                var methodDecl = (IMethodDeclaration)extractInfo.Value;
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodDecl);
+                EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    var extractInfo = state.ExtractInfoStack.Pop();
+                    var methodDecl = (IMethodDeclaration)extractInfo.Value;
+                    methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodDecl);
+                }
+            }
+            else if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(MethodInfo))
+            {
+                EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    var extractInfo = state.ExtractInfoStack.Pop();
+                    var methodInfo = (MethodInfo)extractInfo.Value;
+                    methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodInfo);
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
             }
         }
 
@@ -491,32 +513,87 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
-            var extractExp = Expression.Call(
-                                Expression.Constant(ReservedWords),
-                                ReservedWordXInfo1.MakeGenericMethod(exp.Arguments[0].Type),
-                                new Expression[] 
-                                { 
-                                    exp.Arguments[0]
-                                }
-                             );
+            var extractExp = default(MethodCallExpression);
 
+            if (exp.Arguments.Count == 2)
+            {
+                extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
+                EvalExtract(methodGen, extractExp, state);
+            }
+
+            extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
             EvalExtract(methodGen, extractExp, state);
 
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
-                if (extractInfo.Type.IsArray)
+                var shiftCount = -1;
+                if (0 < state.ExtractInfoStack.Count)
                 {
-                    ((Array)extractInfo.Value).OfType<string>().
+                    var _extractInfo = state.ExtractInfoStack.Pop();
+                    shiftCount = (int)_extractInfo.Value;
+                }
+
+                if (extractInfo.Type == typeof(string[]))
+                {
+                    ((string[])extractInfo.Value).
                     ForEach(name =>
                     {
-                        var fieldInfo = new ExpressibleFieldInfo(name, typeof(object));
+                        var fieldInfo = new NameResolvableInfo(name, typeof(object));
+                        if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
                         EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
                     });
                 }
                 else
                 {
-                    var fieldInfo = new ExpressibleFieldInfo((string)extractInfo.Value, extractInfo.Type);
+                    var fieldInfo = new NameResolvableInfo((string)extractInfo.Value, extractInfo.Type);
+                    if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
+                    EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        protected virtual void EvalLdArg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        {
+            var extractExp = default(MethodCallExpression);
+
+            if (exp.Arguments.Count == 2)
+            {
+                extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
+                EvalExtract(methodGen, extractExp, state);
+            }
+
+            extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
+            EvalExtract(methodGen, extractExp, state);
+
+            if (0 < state.ExtractInfoStack.Count)
+            {
+                var extractInfo = state.ExtractInfoStack.Pop();
+                var shiftCount = -1;
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    var _extractInfo = state.ExtractInfoStack.Pop();
+                    shiftCount = (int)_extractInfo.Value;
+                }
+
+                if (extractInfo.Type == typeof(int[]))
+                {
+                    ((int[])extractInfo.Value).
+                    ForEach(index =>
+                    {
+                        var fieldInfo = new ParameterIndexResolvableInfo(index, typeof(object));
+                        if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
+                        EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                    });
+                }
+                else
+                {
+                    var fieldInfo = new ParameterIndexResolvableInfo((int)extractInfo.Value, extractInfo.Type);
+                    if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
                     EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
                 }
             }
@@ -633,7 +710,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalExtracted(IMethodBaseGenerator methodGen, ExtractInfo extractInfo, EvalState state)
+        protected virtual void EvalConstantExtracted(IMethodBaseGenerator methodGen, ExtractInfo extractInfo, EvalState state)
         {
             if (extractInfo.Type.IsArray)
             {
@@ -646,7 +723,7 @@ namespace Urasandesu.NAnonym.ILTools
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     extractInfo = state.ExtractInfoStack.Pop();
-                    EvalExtracted(methodGen, extractInfo, state);
+                    EvalConstantExtracted(methodGen, extractInfo, state);
                 }
                 state.ProhibitsLastAutoPop = true;
             }
@@ -684,6 +761,7 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalConstant(IMethodBaseGenerator methodGen, ConstantExpression exp, EvalState state)
         {
             string s = default(string);
+            short? ns = default(short?);
             int? ni = default(int?);
             double? nd = default(double?);
             char? nc = default(char?);
@@ -701,6 +779,11 @@ namespace Urasandesu.NAnonym.ILTools
             else if ((s = exp.Value as string) != null)
             {
                 methodGen.Body.ILOperator.Emit(OpCodes.Ldstr, s);
+            }
+            else if ((ns = exp.Value as short?) != null)
+            {
+                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4, (int)ns);
+                methodGen.Body.ILOperator.Emit(OpCodes.Conv_I2);
             }
             else if ((ni = exp.Value as int?) != null)
             {
@@ -824,49 +907,87 @@ namespace Urasandesu.NAnonym.ILTools
             var propertyInfo = default(PropertyInfo);
             if ((fieldInfo = exp.Member as FieldInfo) != null)
             {
-                // 評価の優先順は、
-                // 1. Addloc でローカル変数として追加したの（名前引き）
-                // 2. メソッドの引数（名前引き）
-                // 3. 定義時に使った変数そのもの
-                // 4. その他
-                var localGen = default(ILocalGenerator);
-                var parameterGen = default(IParameterGenerator);
-                var fieldGen = default(IFieldGenerator);
-                var portable = default(ConstantExpression);
-                if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == fieldInfo.Name)) != null)
+                var localIndex = default(LocalIndexResolvableInfo);
+                var parameterIndex = default(ParameterIndexResolvableInfo);
+                if ((localIndex = fieldInfo as LocalIndexResolvableInfo) != null)
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localGen);
-                }
-                else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
-                {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
-                }
-                else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == fieldInfo.Name)) != null)
-                {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldGen);
-                }
-                else if ((portable = exp.Expression as ConstantExpression) != null)
-                {
-                    // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
-                    // NOTE: 他の簡略表記向けモードを競合するようになってきた。一時的に NotSupportedException 化。
-                    // NOTE: 例えば、CarryPortableScope で作成した scope に Add してあったらそれが利用される、とか。
-                    throw new NotSupportedException();
-                    //var item = methodGen.AddPortableScopeItem(fieldInfo);
-                    //methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                    //methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
-                }
-                else
-                {
-                    EvalExpression(methodGen, exp.Expression, state);
-
-                    if (fieldInfo.IsStatic)
+                    if (0 < state.ShiftInfoStack.Count)
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldInfo);
+                        throw new NotImplementedException();
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, (short)localIndex.Index);
+                    }
+                }
+                else if ((parameterIndex = fieldInfo as ParameterIndexResolvableInfo) != null)
+                {
+                    if (0 < state.ShiftInfoStack.Count)
+                    {
+                        var shiftInfo = state.ShiftInfoStack.Pop();
+                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterIndex.Index + shiftInfo.Count));
+                    }
+                    else
+                    {
+                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)parameterIndex.Index);
+                    }
+                }
+                else
+                {
+                    var localGen = default(ILocalGenerator);
+                    var parameterGen = default(IParameterGenerator);
+                    var fieldGen = default(IFieldGenerator);
+                    var portable = default(ConstantExpression);
+                    if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == fieldInfo.Name)) != null)
+                    {
+                        if (0 < state.ShiftInfoStack.Count)
+                        {
+                            throw new NotImplementedException();
+                        }
+                        else
+                        {
+                            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localGen);
+                        }
+                    }
+                    else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
+                    {
+                        if (0 < state.ShiftInfoStack.Count)
+                        {
+                            var shiftInfo = state.ShiftInfoStack.Pop();
+                            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterGen.Position + shiftInfo.Count));
+                        }
+                        else
+                        {
+                            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
+                        }
+                    }
+                    else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == fieldInfo.Name)) != null)
+                    {
+                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                        methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldGen);
+                    }
+                    else if ((portable = exp.Expression as ConstantExpression) != null)
+                    {
+                        // NOTE: 同じ名前の変数を Addloc されるとやっかい。擬似的にローカル変数としても定義することを検討中。
+                        // NOTE: 他の簡略表記向けモードを競合するようになってきた。一時的に NotSupportedException 化。
+                        // NOTE: 例えば、CarryPortableScope で作成した scope に Add してあったらそれが利用される、とか。
+                        throw new NotSupportedException();
+                        //var item = methodGen.AddPortableScopeItem(fieldInfo);
+                        //methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                        //methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
+                    }
+                    else
+                    {
+                        EvalExpression(methodGen, exp.Expression, state);
+
+                        if (fieldInfo.IsStatic)
+                        {
+                            methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldInfo);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
                 }
             }
@@ -923,7 +1044,7 @@ namespace Urasandesu.NAnonym.ILTools
                         if (0 < state.ExtractInfoStack.Count)
                         {
                             var extractInfo = state.ExtractInfoStack.Pop();
-                            EvalExtracted(methodGen, extractInfo, state);
+                            EvalConstantExtracted(methodGen, extractInfo, state);
                         }
                         if (typeof(double).IsAssignableFrom(_exp.Type))
                         {
@@ -953,8 +1074,6 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-
-
         public IILOperator ILOperator { get { return methodGen.Body.ILOperator; } }
 
         public ReadOnlyCollection<ILocalGenerator> Locals
@@ -967,10 +1086,6 @@ namespace Urasandesu.NAnonym.ILTools
             get { return methodGen.Body.Directives; }
         }
 
-
-
-
-
         ReadOnlyCollection<ILocalDeclaration> IMethodBodyDeclaration.Locals
         {
             get { throw new NotImplementedException(); }
@@ -981,14 +1096,17 @@ namespace Urasandesu.NAnonym.ILTools
             get { throw new NotImplementedException(); }
         }
 
-
-
         public void Dump()
         {
             for (int directivesIndex = 0; directivesIndex < Directives.Count; directivesIndex++)
             {
                 Console.WriteLine(string.Format("L_{0:X4}: {1}", directivesIndex, Directives[directivesIndex]));
             }
+        }
+
+        protected MethodCallExpression CreateExtractExp1(Expression constant, Type type)
+        {
+            return Expression.Call(Expression.Constant(ReservedWords), ReservedWordXInfo1.MakeGenericMethod(type), new Expression[] { constant });
         }
 
         protected class EvalState
@@ -998,12 +1116,14 @@ namespace Urasandesu.NAnonym.ILTools
                 IfInfoStack = new Stack<IfInfo>();
                 ExtractInfoStack = new Stack<ExtractInfo>();
                 AllocInfoStack = new Stack<AllocInfo>();
+                ShiftInfoStack = new Stack<ShiftInfo>();
             }
 
             public bool ProhibitsLastAutoPop { get; set; }
             public Stack<IfInfo> IfInfoStack { get; private set; }
             public Stack<ExtractInfo> ExtractInfoStack { get; private set; }
             public Stack<AllocInfo> AllocInfoStack { get; private set; }
+            public Stack<ShiftInfo> ShiftInfoStack { get; private set; }
         }
 
         protected class IfInfo
@@ -1040,11 +1160,21 @@ namespace Urasandesu.NAnonym.ILTools
             public Type Type { get; private set; }
         }
 
-        protected class ExpressibleFieldInfo : FieldInfo
+        protected class ShiftInfo
+        {
+            public ShiftInfo(int count)
+            {
+                Count = count;
+            }
+
+            public int Count { get; private set; }
+        }
+
+        protected class NameResolvableInfo : FieldInfo
         {
             string name;
             Type fieldType;
-            public ExpressibleFieldInfo(string name, Type fieldType)
+            public NameResolvableInfo(string name, Type fieldType)
             {
                 this.name = name;
                 this.fieldType = fieldType;
@@ -1103,6 +1233,93 @@ namespace Urasandesu.NAnonym.ILTools
             public override Type ReflectedType
             {
                 get { throw new NotImplementedException(); }
+            }
+        }
+
+        protected abstract class IndexResolvableInfo : FieldInfo
+        {
+            int index;
+            Type fieldType;
+            public IndexResolvableInfo(int index, Type fieldType)
+            {
+                this.index = index;
+                this.fieldType = fieldType;
+            }
+
+            public override FieldAttributes Attributes
+            {
+                get { return FieldAttributes.Public | FieldAttributes.Static; }
+            }
+
+            public override RuntimeFieldHandle FieldHandle
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override Type FieldType
+            {
+                get { return fieldType; }
+            }
+
+            public override object GetValue(object obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, System.Globalization.CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Type DeclaringType
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override object[] GetCustomAttributes(Type attributeType, bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object[] GetCustomAttributes(bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool IsDefined(Type attributeType, bool inherit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override string Name
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override Type ReflectedType
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public int Index
+            {
+                get { return index; }
+            }
+        }
+
+        protected class LocalIndexResolvableInfo : IndexResolvableInfo
+        {
+            public LocalIndexResolvableInfo(int index, Type fieldType)
+                : base(index, fieldType)
+            {
+            }
+        }
+
+        protected class ParameterIndexResolvableInfo : IndexResolvableInfo
+        {
+            public ParameterIndexResolvableInfo(int index, Type fieldType)
+                : base(index, fieldType)
+            {
             }
         }
 
@@ -1176,7 +1393,7 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public object New(ConstructorInfo constructor, params object[] parameters)
+            public T New<T>(ConstructorInfo constructor, params object[] parameters)
             {
                 throw new NotSupportedException();
             }
@@ -1192,6 +1409,11 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             public object Ftn(IMethodDeclaration methodDecl)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Ftn(MethodInfo methodInfo)
             {
                 throw new NotSupportedException();
             }
@@ -1231,6 +1453,11 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
+            public object[] Ld(string[] variableNames, int shift)
+            {
+                throw new NotSupportedException();
+            }
+
             public IExpressibleAllocReservedWords<T> St<T>(string variableName)
             {
                 throw new NotSupportedException();
@@ -1264,6 +1491,12 @@ namespace Urasandesu.NAnonym.ILTools
             public TValue Cm<TValue>(TValue constMember, Type declaringType)
             {
                 throw new NotSupportedException();
+            }
+
+
+            public object[] LdArg(int[] variableIndexes)
+            {
+                throw new NotImplementedException();
             }
         }
 

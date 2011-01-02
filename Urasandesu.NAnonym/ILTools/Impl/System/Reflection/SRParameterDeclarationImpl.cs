@@ -57,8 +57,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             typeDecl = new SRTypeDeclarationImpl(type);
         }
 
-        #region IParameterDeclaration メンバ
-
         public string Name
         {
             get { return name; }
@@ -73,8 +71,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get { return position; }
         }
-
-        #endregion
     }
 }
 

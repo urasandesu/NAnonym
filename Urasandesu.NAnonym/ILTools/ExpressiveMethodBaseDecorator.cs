@@ -67,7 +67,7 @@ namespace Urasandesu.NAnonym.ILTools
             return gen.Method.CarryPortableScope();
         }
         IMethodBodyDeclaration IMethodBaseDeclaration.Body { get { return BodyDecorator; } }
-        ITypeDeclaration IMethodBaseDeclaration.DeclaringType { get { return gen.Method.DeclaringType; } }
+        ITypeDeclaration IMemberDeclaration.DeclaringType { get { return gen.Method.DeclaringType; } }
         ReadOnlyCollection<IParameterDeclaration> IMethodBaseDeclaration.Parameters { get { return parameterDecls; } }
         public virtual IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value)
         {
@@ -78,6 +78,12 @@ namespace Urasandesu.NAnonym.ILTools
         public virtual void OnDeserialized(StreamingContext context)
         {
             gen.Method.OnDeserialized(context);
+        }
+
+
+        public bool IsPublic
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

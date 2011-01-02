@@ -65,8 +65,11 @@ namespace Urasandesu.NAnonym.Cecil.DW
                                         SR::FieldAttributes.Private);
 
             var declaringTypeDef = ((MCTypeGeneratorImpl)Parent.ConstructorWeaver.DeclaringTypeGenerator).TypeDef;
-            cachedSetting = new MCFieldGeneratorImpl(declaringTypeDef.Fields.FirstOrDefault(
-                fieldDef => fieldDef.FieldType.Resolve().GetFullName() == WeaveMethod.Destination.DeclaringType.FullName));
+            var cachedSettingGen = declaringTypeDef.Fields.FirstOrDefault(fieldDef => fieldDef.FieldType.Resolve().GetFullName() == WeaveMethod.Destination.DeclaringType.FullName);
+            if (cachedSettingGen != null)
+            {
+                cachedSetting = new MCFieldGeneratorImpl(cachedSettingGen);
+            }
 
             methodInterface = GetMethodInterface();
         }

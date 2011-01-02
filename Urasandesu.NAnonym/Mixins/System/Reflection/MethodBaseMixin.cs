@@ -1,5 +1,5 @@
-/* 
- * File: IMemberDeclaration.cs
+﻿/* 
+ * File: MethodBaseMixin.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,15 +26,49 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+using System;
+using System.Linq;
+using System.Reflection;
+using Urasandesu.NAnonym.Linq;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
-    public interface IMemberDeclaration : IManuallyDeserializable
+    public static class MethodBaseMixin
     {
-        string Name { get; }
-        object Source { get; }
-        ITypeDeclaration DeclaringType { get; }
+        public static BindingFlags ExportBinding(this MethodBase methodBase)
+        {
+            BindingFlags bindingAttr = BindingFlags.Default;
+
+            if (methodBase.IsPublic)
+            {
+                bindingAttr |= BindingFlags.Public;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.NonPublic;
+            }
+
+            if (methodBase.IsStatic)
+            {
+                bindingAttr |= BindingFlags.Static;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.Instance;
+            }
+
+            return bindingAttr;
+        }
+
+        public static Type[] ParameterTypes(this MethodBase methodBase)
+        {
+            return methodBase.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+        }
+
+        public static string[] ParameterNames(this MethodBase methodBase)
+        {
+            return methodBase.GetParameters().Select(parameter => parameter.Name).ToArray();
+        }
     }
 }

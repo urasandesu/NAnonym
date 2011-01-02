@@ -44,6 +44,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     {
         [NonSerialized]
         MemberReference memberRef;
+        UNI::ITypeDeclaration declaringType;
 
         public MCMemberDeclarationImpl(MemberReference memberRef)
             : base(true)
@@ -53,6 +54,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         void Initialize(MemberReference memberRef)
         {
+            Required.NotDefault(memberRef, () => memberRef);
             this.memberRef = memberRef;
         }
 
@@ -70,11 +72,27 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             }
         }
 
-        public object Source
+        public MemberReference Source
         {
-            get { throw new NotImplementedException(); }
+            get { return memberRef; }
         }
 
+        public UNI::ITypeDeclaration DeclaringType
+        {
+            get 
+            {
+                if (declaringType == null)
+                {
+                    declaringType = memberRef.DeclaringType == null ? default(UNI::ITypeDeclaration) : new MCTypeGeneratorImpl(memberRef.DeclaringType.Resolve());
+                }
+                return declaringType; 
+            }
+        }
+
+        object UNI::IMemberDeclaration.Source
+        {
+            get { return Source; }
+        }
     }
 }
 

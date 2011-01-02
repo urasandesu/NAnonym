@@ -134,6 +134,24 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { throw new NotImplementedException(); }
         }
+
+
+        public ITypeDeclaration DeclaringType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsStatic
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsPublic
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

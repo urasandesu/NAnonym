@@ -31,13 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.9.4.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\bin\Release\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\jbevain-cecil\cecil\symbols\pdb\bin\Debug\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.9.3.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.4.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\jbevain-cecil\cecil\symbols\pdb\bin\Release\Mono.Cecil.Pdb.dll</HintPath>
+      <HintPath>..\..\jbevain-cecil\cecil\symbols\pdb\bin\Debug\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -133,6 +135,7 @@
     <Compile Include="Mixins\System\Collections\Generic\IEnumerableMixin.cs" />
     <Compile Include="Mixins\System\Reflection\CallingConventionsMixin.cs" />
     <Compile Include="Mixins\System\Reflection\MethodAttributesMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\ParameterInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />

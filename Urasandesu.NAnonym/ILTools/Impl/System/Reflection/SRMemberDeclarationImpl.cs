@@ -40,6 +40,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     class SRMemberDeclarationImpl : ManuallyDeserializable, IMemberDeclaration
     {
         readonly object source;
+        ITypeDeclaration declaringType;
 
         public SRMemberDeclarationImpl(MemberInfo memberInfo)
             : base(true)
@@ -59,6 +60,18 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         protected override void OnDeserializedManually(StreamingContext context)
         {
             throw new NotImplementedException();
+        }
+
+        public ITypeDeclaration DeclaringType
+        {
+            get 
+            {
+                if (declaringType == null)
+                {
+                    declaringType = Source.DeclaringType == null ? default(ITypeDeclaration) : new SRTypeDeclarationImpl(Source.DeclaringType);
+                }
+                return declaringType; 
+            }
         }
     }
 }

@@ -55,11 +55,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        public ITypeDeclaration DeclaringType
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public ReadOnlyCollection<IParameterDeclaration> Parameters
         {
             get { return new ReadOnlyCollection<IParameterDeclaration>(new IParameterDeclaration[] { }); }

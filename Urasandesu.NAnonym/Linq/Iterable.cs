@@ -444,6 +444,12 @@ namespace Urasandesu.NAnonym.Linq
         public static long MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector) { return source.FirstOrDefault().IsDefault() ? default(long) : source.Max(selector); }
         public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector) { return source.FirstOrDefault().IsDefault() ? default(TResult) : source.Max(selector); }
 
+        public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource> defaultProvider)
+        {
+            var value = source.FirstOrDefault();
+            return value.IsDefault() ? defaultProvider() : value;
+        }
+
         public static IEqualityComparer<T> CreateEqualityComparer<T>(T obj)
         {
             return new DelegateEqualityComparer<T>();

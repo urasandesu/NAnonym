@@ -32,7 +32,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.DW
@@ -49,88 +51,41 @@ namespace Urasandesu.NAnonym.DW
             var bodyDefiner = ParentBodyDefiner.ParentBody;
             var definer = bodyDefiner.ParentBuilder.ParentDefiner;
 
-            var injectionMethod = definer.WeaveMethod;
+            var weaveMethod = definer.WeaveMethod;
             var gen = bodyDefiner.Gen;
             var ownerType = definer.Parent.ConstructorWeaver.DeclaringType;
             var cachedMethod = definer.CachedMethod;
             var cachedSetting = definer.CachedSetting;
-            var returnType = injectionMethod.Source.ReturnType;
+            var returnType = weaveMethod.Source.ReturnType;
             var parameterTypes = definer.ParameterTypes;
             var baseMethod = definer.BaseMethod;
+            var delegateInvoke = weaveMethod.DelegateType.GetMethodInstancePublic("Invoke", parameterTypes);
 
             gen.Eval(_ => _.If(_.Ld(cachedMethod.Name) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod(
-                                                            "dynamicMethod",
-                                                            _.X(returnType),
-                                                            new Type[] { _.X(ownerType) }.Concat(_.X(parameterTypes)).ToArray(),
-                                                            _.X(ownerType),
-                                                            true)));
-
-
-                var cacheField = default(FieldInfo);
-                gen.Eval(_ => _.Alloc(cacheField).As(_.X(ownerType).GetField(
-                                                        _.X(cachedSetting.Name),
-                                                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
-
-                var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.Alloc(targetMethod).As(_.X(injectionMethod.Destination.DeclaringType).GetMethod(
-                                                        _.X(injectionMethod.Destination.Name),
-                                                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)));
-
+                var dynamicMethodParameterTypes = new Type[] { ownerType }.Concat(parameterTypes).ToArray();
+                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("dynamicMethod", _.X(returnType), _.X(dynamicMethodParameterTypes), _.X(ownerType), true)));
 
                 var il = default(ILGenerator);
                 gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, cacheField));
-                for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
+                gen.ExpressEmit(() => il,
+                _gen =>
                 {
-                    switch (parametersIndex)
-                    {
-                        case 0:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
-                            break;
-                        case 1:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
-                            break;
-                        case 2:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
-                            break;
-                        case 3:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)4));
-                            break;
-                        case 4:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)5));
-                            break;
-                        default:
-                            throw new NotSupportedException();
-                    }
-                }
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, targetMethod));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(cachedMethod.Name).As(dynamicMethod.CreateDelegate(_.X(injectionMethod.DelegateType), _.This())));
+                    // Not use the index 0 because it is reference of 'this'. The index 1 is specified previous method.
+                    var variableIndexes = new int[] { 1 };
+                    variableIndexes = variableIndexes.Concat(weaveMethod.Source.GetParameters().Select((parameter, index) => index + 1 + variableIndexes.Length)).ToArray();
+                    _gen.Emit(_ => _.Return(_.Invoke(_.Ld<Delegate>(_.This(), cachedSetting), _.X(weaveMethod.Destination), _.LdArg(variableIndexes))));
+                });
+                gen.Eval(_ => _.St(cachedMethod.Name).As(dynamicMethod.CreateDelegate(_.X(weaveMethod.DelegateType), _.This())));
             }
             gen.Eval(_ => _.EndIf());
-            var invoke = injectionMethod.DelegateType.GetMethod(
-                                                        "Invoke",
-                                                        BindingFlags.Public | BindingFlags.Instance,
-                                                        null,
-                                                        parameterTypes,
-                                                        null);
-            var delegateForBaseConstructor = parameterTypes[0].GetConstructor(
-                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                    null,
-                                                    new Type[] 
-                                                    { 
-                                                        typeof(Object), 
-                                                        typeof(IntPtr) 
-                                                    }, null);
 
-            var delegateForBase = default(object);
-            gen.Eval(_ => _.Alloc(delegateForBase).As(_.New(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
-            var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(injectionMethod.Source.ParameterNames()).ToArray();
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(cachedMethod.Name), _.X(invoke), _.Ld(variableNames))));
+            var delegateForBaseConstructor = parameterTypes[0].GetConstructor(new Type[] { typeof(object), typeof(IntPtr) });
+            var delegateForBase = default(Delegate);
+            gen.Eval(_ => _.Alloc(delegateForBase).As(_.New<Delegate>(_.X(delegateForBaseConstructor), _.Ftn(_.This(), _.X(baseMethod)))));
+            var variableNames = new string[] { TypeSavable.GetName(() => delegateForBase) }.Concat(weaveMethod.Source.ParameterNames()).ToArray();
+            gen.Eval(_ => _.Return(_.Invoke(_.Ld(cachedMethod.Name), _.X(delegateInvoke), _.Ld(variableNames))));
         }
     }
 

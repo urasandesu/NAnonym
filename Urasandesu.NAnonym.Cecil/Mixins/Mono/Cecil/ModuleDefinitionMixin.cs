@@ -35,6 +35,10 @@ using System.Text;
 using Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
+using SR = System.Reflection;
+using Urasandesu.NAnonym.Cecil.Mixins.System;
+using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.Cecil.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
 {
@@ -62,6 +66,26 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
         public static ITypeGenerator ReadType(this ModuleDefinition moduleDef, string fullName)
         {
             return new MCTypeGeneratorImpl(moduleDef.GetType(fullName));
+        }
+
+        public static MethodReference DeepImport(this ModuleDefinition moduleDef, SR::MethodInfo methodInfo)
+        {
+            var type = methodInfo.DeclaringType;
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                var methodRef = moduleDef.Import(methodInfo);
+
+                methodRef.ReturnType = methodInfo.ReturnType.ToTypeRef();
+
+                methodRef.Parameters.Clear();
+                methodInfo.GetParameters().Select(_ => _.ToParamDef()).AddRangeTo(methodRef.Parameters);
+
+                return methodRef;
+            }
+            else
+            {
+                return moduleDef.Import(methodInfo);
+            }
         }
     }
 }

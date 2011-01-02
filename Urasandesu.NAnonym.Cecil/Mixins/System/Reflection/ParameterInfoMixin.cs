@@ -1,5 +1,5 @@
-/* 
- * File: IMemberDeclaration.cs
+﻿/* 
+ * File: ParameterInfoMixin.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,15 +26,24 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 
-namespace Urasandesu.NAnonym.ILTools
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Reflection;
+using Mono.Cecil;
+using MC = Mono.Cecil;
+
+namespace Urasandesu.NAnonym.Cecil.Mixins.System.Reflection
 {
-    public interface IMemberDeclaration : IManuallyDeserializable
+    public static class ParameterInfoMixin
     {
-        string Name { get; }
-        object Source { get; }
-        ITypeDeclaration DeclaringType { get; }
+        public static ParameterDefinition ToParamDef(this ParameterInfo source)
+        {
+            var paramDef = new ParameterDefinition(source.Name, (MC::ParameterAttributes)source.Attributes, source.ParameterType.ToTypeRef());
+            return paramDef;
+        }
     }
 }

@@ -37,6 +37,8 @@ using Mono.Cecil.Cil;
 using Urasandesu.NAnonym.Linq;
 using MC = Mono.Cecil;
 using UNI = Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using SR = System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -52,7 +54,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         MC::MethodAttributes methodAttr;
         string[] parameterTypeFullNames;
 
-        UNI::ITypeDeclaration declaringTypeDecl;
+        //UNI::ITypeDeclaration declaringTypeDecl;
 
         [NonSerialized]
         UNI::IMethodBodyDeclaration bodyDecl;
@@ -74,17 +76,20 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         void Initialize(MethodReference methodRef, ILEmitMode mode, Instruction target)
         {
             this.methodRef = methodRef;
-            this.methodDef = methodRef.Resolve();
-            methodName = methodDef.Name;
+            methodName = methodRef.Name;
+            var declaringTypeDef = methodRef.DeclaringType.Resolve();
+            //declaringTypeDecl = new MCTypeGeneratorImpl(declaringTypeDef);
+            parameterTypeFullNames = methodRef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
+            parameters = new ReadOnlyCollection<UNI::IParameterDeclaration>(
+                methodRef.Parameters.TransformEnumerateOnly(parameter => (UNI::IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
+
+            methodDef = methodRef.Resolve();
+
             methodAttr = methodDef.Attributes;
-            parameterTypeFullNames = methodDef.Parameters.Select(parameter => parameter.ParameterType.FullName).ToArray();
             if (methodDef.Body != null)
             {
                 bodyDecl = new MCMethodBodyGeneratorImpl(methodDef.Body, mode, target);
             }
-            declaringTypeDecl = new MCTypeGeneratorImpl(methodRef.DeclaringType.Resolve());
-            parameters = new ReadOnlyCollection<UNI::IParameterDeclaration>(
-                methodRef.Parameters.TransformEnumerateOnly(parameter => (UNI::IParameterDeclaration)new MCParameterGeneratorImpl(parameter)));
         }
 
 
@@ -93,10 +98,10 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             get { return bodyDecl; }
         }
 
-        public UNI::ITypeDeclaration DeclaringType
-        {
-            get { return declaringTypeDecl; }
-        }
+        //public UNI::ITypeDeclaration DeclaringType
+        //{
+        //    get { return declaringTypeDecl; }
+        //}
 
         public ReadOnlyCollection<UNI::IParameterDeclaration> Parameters
         {
@@ -113,11 +118,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         internal MethodDefinition MethodDef { get { return methodDef; } }
         protected UNI::IMethodBodyDeclaration BodyDecl { get { return bodyDecl; } }
-        protected UNI::ITypeDeclaration DeclaringTypeDecl { get { return declaringTypeDecl; } }
+        protected UNI::ITypeDeclaration DeclaringTypeDecl { get { return base.DeclaringType; } }
 
         protected override void OnDeserializedManually(StreamingContext context)
         {
-            var declaringTypeGen = (MCTypeGeneratorImpl)this.declaringTypeDecl;
+            var declaringTypeGen = (MCTypeGeneratorImpl)DeclaringTypeDecl;
             declaringTypeGen.OnDeserialized(context);
             var typeDef = declaringTypeGen.TypeDef;
             var methodDef = typeDef.Methods.First(

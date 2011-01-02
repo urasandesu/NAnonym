@@ -61,18 +61,18 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             var lastDirectives = gen.Directives.Skip(gen.Directives.Count - 3).ToArray();
 
             var localDecl = default(ILocalDeclaration);
-            var isLastDirectives0Ldloc = 
-                lastDirectives[0].OpCode == OpCodes.Ldloc && 
+            var isLastDirectives0Ldloc =
+                lastDirectives[0].OpCode == OpCodes.Ldloc &&
                 (localDecl = lastDirectives[0].NAnonymOperand as ILocalDeclaration) != null && localDecl.Name == ilName;
-            
+
             var fieldInfo = default(FieldInfo);
-            var isLastDirectives1Ldsfld = 
-                lastDirectives[1].OpCode == OpCodes.Ldsfld && 
+            var isLastDirectives1Ldsfld =
+                lastDirectives[1].OpCode == OpCodes.Ldsfld &&
                 (fieldInfo = lastDirectives[1].ClrOperand as FieldInfo) != null && fieldInfo == OpcodesRetInfo;
-            
+
             var methodInfo = default(MethodInfo);
-            var isLastDirectives2Callvirt = 
-                lastDirectives[2].OpCode == OpCodes.Callvirt && 
+            var isLastDirectives2Callvirt =
+                lastDirectives[2].OpCode == OpCodes.Callvirt &&
                 (methodInfo = lastDirectives[2].ClrOperand as MethodInfo) != null && methodInfo == ILGeneratorEmit;
 
             if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
@@ -88,6 +88,34 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             {
                 gen.Eval(_ => _.End());
             }
+        }
+    }
+
+    public static class IFieldDeclarationMixin
+    {
+        public static BindingFlags ExportBinding(this IFieldDeclaration fieldDecl)
+        {
+            BindingFlags bindingAttr = BindingFlags.Default;
+
+            if (fieldDecl.IsPublic)
+            {
+                bindingAttr |= BindingFlags.Public;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.NonPublic;
+            }
+
+            if (fieldDecl.IsStatic)
+            {
+                bindingAttr |= BindingFlags.Static;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.Instance;
+            }
+
+            return bindingAttr;
         }
     }
 }

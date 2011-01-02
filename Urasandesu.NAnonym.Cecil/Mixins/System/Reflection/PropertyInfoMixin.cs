@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using Mono.Cecil;
+using MC = Mono.Cecil;
 
 namespace Urasandesu.NAnonym.Cecil.Mixins.System.Reflection
 {

@@ -36,6 +36,7 @@ using SRE = System.Reflection.Emit;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -84,7 +85,7 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (exp.Method.IsDefined(typeof(EmittableReservedWordStAttribute), false)) EvalEmittableSt(methodGen, exp, state);
                     else
                     {
-                        throw new NotImplementedException();
+                        base.EvalMethodCall(methodGen, exp, state);
                     }
                 }
                 else if (exp.Object.Type.IsDefined(typeof(EmittableAllocReservedWordsAttribute), false))
@@ -92,7 +93,7 @@ namespace Urasandesu.NAnonym.ILTools
                     if (exp.Method.IsDefined(typeof(ExpressibleAllocReservedWordAsAttribute), false)) EvalEmittableAllocAs(methodGen, exp, state);
                     else
                     {
-                        throw new NotImplementedException();
+                        base.EvalMethodCall(methodGen, exp, state);
                     }
                 }
                 else
@@ -104,22 +105,45 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalEmittableLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
         {
+            if (exp.Arguments.Count == 2)
+            {
+                EvalExpression(methodGen, exp.Arguments[0], state);
+                if (0 < state.ExtractInfoStack.Count)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
             var extractExp = Expression.Call(
                                 Expression.Constant(ReservedWords),
-                                ReservedWordXInfo1.MakeGenericMethod(exp.Arguments[0].Type),
+                                ReservedWordXInfo1.MakeGenericMethod(exp.Arguments[exp.Arguments.Count - 1].Type),
                                 new Expression[] 
                                 { 
-                                    exp.Arguments[0]
+                                    exp.Arguments[exp.Arguments.Count - 1]
                                 }
                              );
 
             EvalExtract(methodGen, extractExp, state);
 
+            var opcode = exp.Arguments.Count == 1 ? OpCodes.Ldsfld : OpCodes.Ldfld;
+
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
-                var fieldInfo = (FieldInfo)extractInfo.Value;
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldInfo);
+                var fieldInfo = default(FieldInfo);
+                var fieldDecl = default(IFieldDeclaration);
+                if ((fieldInfo = extractInfo.Value as FieldInfo) != null)
+                {
+                    methodGen.Body.ILOperator.Emit(opcode, fieldInfo);
+                }
+                else if ((fieldDecl = extractInfo.Value as IFieldDeclaration) != null)
+                {
+                    methodGen.Body.ILOperator.Emit(opcode, fieldDecl);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
             else
             {
@@ -229,8 +253,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         class ILOperationEmitterDecorator : ExpressiveILOperationDecorator
         {
-            int localIndex;
-            int labelIndex;
+            internal int localIndex;
+            internal int labelIndex;
 
             public ILOperationEmitterDecorator(MethodBodyEmitterDecorator bodyDecorator)
                 : base(bodyDecorator)
@@ -244,63 +268,87 @@ namespace Urasandesu.NAnonym.ILTools
             public override ILocalGenerator AddLocal(string name, Type localType) { throw new NotImplementedException(); }
             public override ILocalGenerator AddLocal(Type localType) 
             {
-                var local = new LocalEmitterDecorator(this, localType, localIndex++);
+                var local = new LocalEmitterDecorator(this, localType);
                 Gen.Eval(_ => _.St<LocalBuilder>(local.Name).As(_.Ld<ILGenerator>(ILName).DeclareLocal(_.X(localType))));
                 return local;
             }
             public override ILocalGenerator AddLocal(Type localType, bool pinned) { throw new NotImplementedException(); }
             public override ILabelGenerator AddLabel() 
             {
-                var label = new LabelEmitterDecorator(this, labelIndex++);
+                var label = new LabelEmitterDecorator(this);
                 Gen.Eval(_ => _.St<Label>(label.Name).As(_.Ld<ILGenerator>(ILName).DefineLabel()));
                 return label;
             }
             public override void Emit(OpCode opcode) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)))); }
             public override void Emit(OpCode opcode, byte arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, ConstructorInfo con) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(con))); }
+            public override void Emit(OpCode opcode, ConstructorInfo con) 
+            {
+                var local = new LocalEmitterDecorator(this, typeof(ConstructorInfo));
+                Gen.Eval(_ => _.St<ConstructorInfo>(local.Name).As(_.X(con.DeclaringType).GetConstructor(_.X(con.ExportBinding()), null, _.X(con.ParameterTypes()), null)));
+                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<ConstructorInfo>(local.Name))); 
+            }
             public override void Emit(OpCode opcode, double arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, FieldInfo field) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(field))); }
+            public override void Emit(OpCode opcode, FieldInfo field) 
+            {
+                var local = new LocalEmitterDecorator(this, typeof(FieldInfo));
+                Gen.Eval(_ => _.St<FieldInfo>(local.Name).As(_.X(field.DeclaringType).GetField(_.X(field.Name), _.X(field.ExportBinding()))));
+                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<FieldInfo>(local.Name))); 
+            }
             public override void Emit(OpCode opcode, float arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, int arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
             public override void Emit(OpCode opcode, ILabelDeclaration label) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<Label>(label.Name))); }
             public override void Emit(OpCode opcode, ILabelDeclaration[] labels) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, ILocalDeclaration local) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<LocalBuilder>(local.Name))); }
             public override void Emit(OpCode opcode, long arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, MethodInfo meth) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(meth))); }
+            public override void Emit(OpCode opcode, MethodInfo meth) 
+            {
+                var local = new LocalEmitterDecorator(this, typeof(MethodInfo));
+                Gen.Eval(_ => _.St<MethodInfo>(local.Name).As(_.X(meth.DeclaringType).GetMethod(_.X(meth.Name), _.X(meth.ExportBinding()), null, _.X(meth.ParameterTypes()), null)));
+                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<MethodInfo>(local.Name))); 
+            }
             public override void Emit(OpCode opcode, sbyte arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
-            public override void Emit(OpCode opcode, short arg) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, short arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
             public override void Emit(OpCode opcode, string str) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(str))); }
             public override void Emit(OpCode opcode, Type cls) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(cls))); }
             public override void Emit(OpCode opcode, IConstructorDeclaration constructorDecl) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, IMethodDeclaration methodDecl) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, IParameterDeclaration parameterDecl) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, IFieldDeclaration fieldDecl) { throw new NotImplementedException(); }
+            public override void Emit(OpCode opcode, IParameterDeclaration parameterDecl) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X<short>(parameterDecl.Position))); }
+            public override void Emit(OpCode opcode, IFieldDeclaration fieldDecl) 
+            {
+                var local = new LocalEmitterDecorator(this, typeof(MethodInfo));
+                Gen.Eval(_ => _.St<FieldInfo>(local.Name).As(_.X(fieldDecl.DeclaringType.Source).GetField(_.X(fieldDecl.Name), _.X(fieldDecl.ExportBinding()))));
+                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<FieldInfo>(local.Name)));
+            }
             public override void Emit(OpCode opcode, IPortableScopeItem scopeItem) { throw new NotImplementedException(); }
-            public override void SetLabel(ILabelDeclaration loc) { throw new NotImplementedException(); }
+            public override void SetLabel(ILabelDeclaration loc) 
+            {
+                var label = (LabelEmitterDecorator)loc;
+                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).MarkLabel(_.Ld<Label>(label.Name)));
+            }
         }
 
         class LocalEmitterDecorator : ExpressiveLocalDecorator
         {
-            public LocalEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, Type type, int index)
-                : base(ilOperationDecorator, type, index)
+            public LocalEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, Type type)
+                : base(ilOperationDecorator, type, ilOperationDecorator.localIndex++)
             {
             }
 
-            public LocalEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, string name, Type type, int index)
-                : base(ilOperationDecorator, type, index)
+            public LocalEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, string name, Type type)
+                : base(ilOperationDecorator, type, ilOperationDecorator.localIndex++)
             {
             }
         }
 
         class LabelEmitterDecorator : ExpressiveLabelDecorator
         {
-            public LabelEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, int index)
-                : base(ilOperationDecorator, index)
+            public LabelEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator)
+                : base(ilOperationDecorator, ilOperationDecorator.labelIndex++)
             {
             }
 
-            public LabelEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, string name, int index)
-                : base(ilOperationDecorator, name, index)
+            public LabelEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, string name)
+                : base(ilOperationDecorator, name, ilOperationDecorator.labelIndex++)
             {
             }
         }
@@ -319,6 +367,11 @@ namespace Urasandesu.NAnonym.ILTools
         class EmittableReservedWords : IEmittableReservedWords
         {
             public T Ld<T>(FieldInfo field)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T Ld<T>(object instance, IFieldDeclaration field)
             {
                 throw new NotSupportedException();
             }
@@ -358,7 +411,7 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public object New(ConstructorInfo constructor, params object[] parameters)
+            public T New<T>(ConstructorInfo constructor, params object[] parameters)
             {
                 throw new NotSupportedException();
             }
@@ -374,6 +427,11 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             public object Ftn(IMethodDeclaration methodDecl)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Ftn(MethodInfo methodInfo)
             {
                 throw new NotSupportedException();
             }
@@ -413,6 +471,11 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
+            public object[] Ld(string[] variableNames, int shift)
+            {
+                throw new NotSupportedException();
+            }
+
             public IExpressibleAllocReservedWords<T> St<T>(string variableName)
             {
                 throw new NotSupportedException();
@@ -446,6 +509,12 @@ namespace Urasandesu.NAnonym.ILTools
             public TValue Cm<TValue>(TValue constMember, Type declaringType)
             {
                 throw new NotSupportedException();
+            }
+
+
+            public object[] LdArg(int[] variableIndexes)
+            {
+                throw new NotImplementedException();
             }
         }
 

@@ -55,6 +55,12 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             return destination;
         }
 
+        public static ParameterDefinition DuplicateWith(this ParameterDefinition source, TypeReference parameterType)
+        {
+            var destination = new ParameterDefinition(source.Name, source.Attributes, parameterType);
+            return destination;
+        }
+
         public static ParameterInfo ToParameterInfo(this ParameterDefinition source)
         {
             throw new NotImplementedException();

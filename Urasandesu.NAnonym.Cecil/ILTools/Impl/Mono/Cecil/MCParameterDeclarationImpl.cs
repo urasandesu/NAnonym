@@ -33,36 +33,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
-using UN = Urasandesu.NAnonym;
+using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
-    class MCParameterDeclarationImpl : UN::ILTools.IParameterDeclaration
+    class MCParameterDeclarationImpl : UNI::IParameterDeclaration
     {
         readonly ParameterReference parameterRef;
+        readonly MCTypeDeclarationImpl parameterTypeDecl;
         public MCParameterDeclarationImpl(ParameterReference parameterRef)
         {
             this.parameterRef = parameterRef;
+            parameterTypeDecl = new MCTypeDeclarationImpl(parameterRef.ParameterType);
         }
-
-        #region IParameterDeclaration メンバ
 
         public string Name
         {
             get { return parameterRef.Name; }
         }
 
-        public UN::ILTools.ITypeDeclaration ParameterType
+        public UNI::ITypeDeclaration ParameterType
         {
-            get { return new MCTypeDeclarationImpl(parameterRef.ParameterType); }
+            get { return parameterTypeDecl; }
         }
 
         public int Position
         {
-            get { throw new NotImplementedException(); }
+            get { return parameterRef.Index; }
         }
-
-        #endregion
     }
 }
 

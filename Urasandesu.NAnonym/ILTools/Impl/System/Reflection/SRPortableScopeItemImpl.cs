@@ -92,6 +92,24 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get { throw new NotImplementedException(); }
         }
+
+
+        public ITypeDeclaration DeclaringType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsPublic
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsStatic
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

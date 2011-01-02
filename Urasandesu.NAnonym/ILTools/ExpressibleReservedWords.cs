@@ -54,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools
         object New(ConstructorInfo constructor, object parameter);
 
         [ExpressibleReservedWordNew]
-        object New(ConstructorInfo constructor, params object[] parameters);
+        T New<T>(ConstructorInfo constructor, params object[] parameters);
 
         [ExpressibleReservedWordInvoke]
         object Invoke(object variable, MethodInfo method, object[] parameters);
@@ -64,6 +64,9 @@ namespace Urasandesu.NAnonym.ILTools
 
         [ExpressibleReservedWordFtn]
         object Ftn(IMethodDeclaration methodDecl);
+
+        [ExpressibleReservedWordFtn]
+        object Ftn(MethodInfo methodInfo);
 
         [ExpressibleReservedWordIf]
         void If(bool condition);
@@ -85,6 +88,12 @@ namespace Urasandesu.NAnonym.ILTools
 
         [ExpressibleReservedWordLd]
         object[] Ld(string[] variableNames);
+
+        [ExpressibleReservedWordLd]
+        object[] Ld(string[] variableNames, int shift);
+
+        [ExpressibleReservedWordLdArg]
+        object[] LdArg(int[] variableIndexes);
 
         [ExpressibleReservedWordSt]
         IExpressibleAllocReservedWords<T> St<T>(string variableName);
@@ -161,6 +170,9 @@ namespace Urasandesu.NAnonym.ILTools
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class ExpressibleReservedWordCmAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class ExpressibleReservedWordLdArgAttribute : Attribute { }
 
     [ExpressibleAllocReservedWords]
     public interface IExpressibleAllocReservedWords

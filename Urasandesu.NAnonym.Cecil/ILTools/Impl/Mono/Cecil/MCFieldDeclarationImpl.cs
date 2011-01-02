@@ -38,10 +38,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     class MCFieldDeclarationImpl : MCMemberDeclarationImpl, UNI::IFieldDeclaration
     {
         readonly FieldReference fieldRef;
+        readonly FieldDefinition fieldDef;
         public MCFieldDeclarationImpl(FieldReference fieldRef)
             : base(fieldRef)
         {
             this.fieldRef = fieldRef;
+            fieldDef = fieldRef.Resolve();
         }
 
         internal FieldReference FieldRef { get { return fieldRef; } }
@@ -49,6 +51,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         public Type FieldType
         {
             get { return fieldRef.FieldType.ToType(); }
+        }
+
+        public bool IsStatic
+        {
+            get { return fieldDef.IsStatic; }
+        }
+
+        public bool IsPublic
+        {
+            get { return fieldDef.IsPublic; }
         }
     }
 }
