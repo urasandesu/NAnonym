@@ -46,8 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
-    <Compile Include="ILTools\ExpressibleReservedWords.cs" />
-    <Compile Include="ILTools\ReflectiveDesigner.cs" />
+    <Compile Include="ILTools\ReflectiveLabelDecorator.cs" />
+    <Compile Include="ILTools\ReflectiveLocalDecorator.cs" />
+    <Compile Include="ILTools\MethodReservedWords.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
@@ -106,15 +107,15 @@
     <Compile Include="DW\LocalSetupModes.cs" />
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
-    <Compile Include="ILTools\ExpressiveDecorator.cs" />
-    <Compile Include="ILTools\ExpressiveILOperationDecorator.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBaseDecorator.cs" />
-    <Compile Include="ILTools\ExpressiveMethodBodyDecorator.cs" />
-    <Compile Include="ILTools\GenerativeEmitter.cs" />
+    <Compile Include="ILTools\ReflectiveDesignerDecorator.cs" />
+    <Compile Include="ILTools\ReflectiveILOperationDecorator.cs" />
+    <Compile Include="ILTools\ReflectiveMethodBaseDecorator.cs" />
+    <Compile Include="ILTools\ReflectiveMethodBodyDecorator.cs" />
+    <Compile Include="ILTools\ReflectiveILEmitter.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
     <Compile Include="ManuallyDeserializable.cs" />
-    <Compile Include="ILTools\ExpressiveGenerator.cs" />
+    <Compile Include="ILTools\ReflectiveMethodDesigner.cs" />
     <Compile Include="ILTools\ExpressiveGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />
@@ -137,7 +138,7 @@
     <Compile Include="ILTools\Impl\System\Reflection\SRFieldDeclarationImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRFieldGeneratorImpl.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorImpl.cs" />
-    <Compile Include="ILTools\EmittableReservedWords.cs" />
+    <Compile Include="ILTools\ILReservedWords.cs" />
     <Compile Include="ILTools\ILocalDeclaration.cs" />
     <Compile Include="ILTools\ILocalGenerator.cs" />
     <Compile Include="ILTools\IMemberDeclaration.cs" />

@@ -99,15 +99,15 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             return scope;
         }
 
-        public static void ExpressBody(this MethodDefinition methodDef, Action<ExpressiveGenerator> expression)    // TODO: ハンドラ化したほうが良いかも？
+        public static void ExpressBody(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
-            var gen = new ExpressiveGenerator(new MCMethodGeneratorImpl(methodDef));
+            var gen = new ReflectiveMethodDesigner(new MCMethodGeneratorImpl(methodDef));
             gen.ExpressBodyEnd(expression);
         }
 
-        public static void ExpressBodyBefore(this MethodDefinition methodDef, Action<ExpressiveGenerator> expression, Instruction target)
+        public static void ExpressBodyBefore(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner> expression, Instruction target)
         {
-            var gen = new ExpressiveGenerator(new MCMethodGeneratorImpl(methodDef, ILEmitMode.InsertBefore, target));
+            var gen = new ReflectiveMethodDesigner(new MCMethodGeneratorImpl(methodDef, ILEmitMode.InsertBefore, target));
             gen.ExpressBodyEnd(expression);
         }
 

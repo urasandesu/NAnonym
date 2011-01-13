@@ -1,5 +1,5 @@
-/* 
- * File: LocalConstructorBodyWeaver.cs
+﻿/* 
+ * File: ReflectiveDesignerDecorator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,32 +26,14 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Urasandesu.NAnonym.ILTools;
-
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym.ILTools
 {
-    class LocalConstructorBodyWeaver : ConstructorBodyWeaver
+    public abstract class ReflectiveDesignerDecorator : ReflectiveMethodDesigner
     {
-        public LocalConstructorBodyWeaver(ReflectiveMethodDesigner gen, ConstructorWeaveBuilder parentBuilder)
-            : base(gen, parentBuilder)
+        public ReflectiveDesignerDecorator(ReflectiveMethodBaseDecorator methodDecorator)
+            : base(methodDecorator)
         {
-        }
-
-        protected override ConstructorBodyWeaveDefiner GetBodyDefiner(ConstructorBodyWeaver parentBody)
-        {
-            return new LocalConstructorBodyDefiner(parentBody);
-        }
-
-        protected override ConstructorBodyWeaveBuilder GetBodyBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
-        {
-            return new LocalConstructorBodyBuilder(parentBodyDefiner);
         }
     }
 }
-

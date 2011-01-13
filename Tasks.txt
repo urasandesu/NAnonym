@@ -1,6 +1,9 @@
-// TODO: ExpressiveGenerator を使って記述する DSL について現状の方針とかまとめておく。
-// TODO: 
-// TODO: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
+// TODO: OverridBy 全実装。
+// TODO: ImplementBy 全実装。
+// TODO: HideNewBy 全実装。
+// TODO: HideOverrideBy 全実装。
+// TODO: BeforeRun 全実装。
+// TODO: AfterRun 全実装。
 // TODO: テストで利用している AppDomain 生成系のヘルパーを本ちゃんコード側へ移動。GlobalDomainContext とか。ユーザーが自由に処理を書けるように、NUnit のような Attribute 制御を考え中。
 // TODO: ExpressiveGenerator 効率 UP。Extract 系を Expression<TDelegate>.Compile() 使わないように（Elicit 一式）。
 // TODO: ExpressiveGenerator 効率 UP。Static フィールドの参照命令（Cm）について、キャッシュを使った最適化をかける。
@@ -13,13 +16,14 @@
 
 
 
-// DOING: ExpressibeEmitter, ReflectiveDesigner への載せ換え
-// DOING: OverridBy 全実装。
-// DOING: ImplementBy 全実装。
-// DOING: HideNewBy 全実装。
-// DOING: HideOverrideBy 全実装。
-// DOING: BeforeRun 全実装。
-// DOING: AfterRun 全実装。
+// DOING: as 演算子実装
+// DOING: else if/else 文実装
+// DOING: 条件 AND 演算子実装
+// DOING: ビットごとの排他的OR演算子実装
+// DOING: 3項条件演算子実装
+// DOING: NAnonym を利用したサンプルの作成。
+// DOING: ExpressiveGenerator を使って記述する DSL について現状の方針とかまとめておく。
+// DOING: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
 
 
 
@@ -73,3 +77,11 @@
 // DONE: 書込処理効率アップ。GlobalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 // DONE: 書込処理効率アップ。LocalClass の (Register)+Load の流れの中で、ファイルシステムへの書き込みは高々 1 回までとする。
 // DONE: ExpressiveGenerator で使う構文を再整理。通常→メタ、通常→メタメタへの引き込みをもう少しきれいに書けない？？
+// DONE: ExpressibeEmitter への載せ換え
+// DONE: CodeDOM を利用したサンプルの作成
+// DONE: リフレクションを利用したサンプルの作成
+// DONE: 動的アセンブリを利用したサンプルの作成
+// DONE: Cecil を利用したサンプルの作成
+// DONE: 動的メソッドを利用したサンプルの作成
+// DONE: 式ツリーを利用したサンプルの作成
+// DONE: ReflectiveMethodDesigner 実装

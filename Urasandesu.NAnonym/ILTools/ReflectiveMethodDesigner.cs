@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveGenerator.cs
+ * File: ReflectiveMethodDesigner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -29,51 +29,50 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Reflection.Emit;
-using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
-using SR = System.Reflection;
-using SRE = System.Reflection.Emit;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
-using System.Collections.Generic;
-using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
-using System.Runtime.Serialization;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class ExpressiveGenerator : IMethodBodyGenerator
+    public class ReflectiveMethodDesigner : IMethodBodyGenerator
     {
-        readonly IExpressibleReservedWords reservedWords = new ExpressibleReservedWords();
-        readonly IExpressibleAllocReservedWords allocReservedWords = new ExpressibleAllocReservedWords();
+        readonly IMethodReservedWords reservedWords = new MethodReservedWords();
+        readonly IMethodAllocReservedWords allocReservedWords = new MethodAllocReservedWords();
 
-        public static readonly MethodInfo ReservedWordXInfo1 = TypeSavable.GetInstanceMethod<IExpressibleReservedWords, object, object>(_ => _.X).GetGenericMethodDefinition();
-        public static readonly MethodInfo ReservedWordXInfo2 = TypeSavable.GetInstanceMethod<IExpressibleReservedWords, object, object>(_ => _.X<object>).GetGenericMethodDefinition();
+        public static readonly MethodInfo MethodInfoInvoke_object_objects = TypeSavable.GetInstanceMethod<MethodInfo, object, object[], object>(_ => _.Invoke);
+        public static readonly MethodInfo ConstructorInfoInvoke_objects = TypeSavable.GetInstanceMethod<ConstructorInfo, object[], object>(_ => _.Invoke);
+        public static readonly MethodInfo PropertyInfoSetValue_object_object_objects = TypeSavable.GetInstanceMethod<PropertyInfo, object, object, object[]>(_ => _.SetValue);
+        public static readonly MethodInfo PropertyInfoGetValue_object_objects = TypeSavable.GetInstanceMethod<PropertyInfo, object, object[], object>(_ => _.GetValue);
+
+        public static readonly MethodInfo ReservedWordXInfo_T = TypeSavable.GetInstanceMethod<IMethodReservedWords, object, object>(_ => _.X).GetGenericMethodDefinition();
+        public static readonly MethodInfo ReservedWordXInfo_object = TypeSavable.GetInstanceMethod<IMethodReservedWords, object, object>(_ => _.X<object>).GetGenericMethodDefinition();
         
-        readonly IMethodBaseGenerator methodGen;
+        readonly IMethodBaseGenerator method;
         protected readonly EvalState state;
 
-        protected internal ExpressiveGenerator(IMethodBaseGenerator methodGen)
+        protected internal ReflectiveMethodDesigner(IMethodBaseGenerator method)
         {
-            this.methodGen = methodGen;
+            this.method = method;
             state = new EvalState();
         }
 
-        public void Eval(Expression<Action<IExpressibleReservedWords>> exp)
+        public void Eval(Expression<Action<IMethodReservedWords>> exp)
         {
-            Eval(methodGen, exp.Body, state);
+            Eval(method, exp.Body, state);
         }
 
-        public void EvalTo(Expression<Action<IExpressibleReservedWords>> exp, IMethodBaseGenerator methodGen)
+        public void EvalTo(Expression<Action<IMethodReservedWords>> exp, IMethodBaseGenerator method)
         {
-            Eval(methodGen, exp.Body, new EvalState());
+            Eval(method, exp.Body, new EvalState());
         }
 
-        protected virtual IExpressibleReservedWords ReservedWords
+        protected virtual IMethodReservedWords ReservedWords
         {
             get
             {
@@ -81,7 +80,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual IExpressibleAllocReservedWords AllocReservedWords
+        protected virtual IMethodAllocReservedWords AllocReservedWords
         {
             get
             {
@@ -89,42 +88,35 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void Eval(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
+        protected virtual void Eval(IMethodBaseGenerator method, Expression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp, state);
-            EvalExit(methodGen, exp, state);
+            EvalExpression(method, exp, state);
+            EvalExit(method, exp, state);
         }
 
-        protected virtual void EvalExit(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
+        protected virtual void EvalExit(IMethodBaseGenerator method, Expression exp, EvalState state)
         {
-            if (0 < state.ExtractInfoStack.Count)
-            {
-                var extractInfo = state.ExtractInfoStack.Pop();
-                EvalConstantExtracted(methodGen, extractInfo, state);
-            }
+            EvalAdjustState(method, exp, state);
 
             if (exp.Type != typeof(void) && !state.ProhibitsLastAutoPop)
             {
                 // NOTE: void ではないということは評価スタックに情報が残っているということ。
                 //       pop するのは、基本的に 1 回の Emit(Expression<Action<ExpressiveILProcessor>>) で完結するようにしたいため。
-                methodGen.Body.ILOperator.Emit(OpCodes.Pop);
+                method.Body.ILOperator.Emit(OpCodes.Pop);
             }
         }
 
-        protected virtual void EvalArguments(IMethodBaseGenerator methodGen, ReadOnlyCollection<Expression> exps, EvalState state)
+        protected virtual void EvalArguments(IMethodBaseGenerator method, ReadOnlyCollection<Expression> exps, EvalState state)
         {
             foreach (var exp in exps)
             {
-                EvalExpression(methodGen, exp, state);
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var extractInfo = state.ExtractInfoStack.Pop();
-                    EvalConstantExtracted(methodGen, extractInfo, state);
-                }
+                state.CandidateDesigningExpressionStack.Push(exp);
+                EvalExpression(method, exp, state);
+                EvalAdjustState(method, exp, state);
             }
         }
 
-        protected virtual void EvalExpression(IMethodBaseGenerator methodGen, Expression exp, EvalState state)
+        protected virtual void EvalExpression(IMethodBaseGenerator method, Expression exp, EvalState state)
         {
             state.ProhibitsLastAutoPop = false;
             if (exp == null) return;
@@ -135,7 +127,7 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.ArrayIndex:
                 case ExpressionType.Multiply:
                 case ExpressionType.Equal:
-                    EvalBinary(methodGen, (BinaryExpression)exp, state);
+                    EvalBinary(method, (BinaryExpression)exp, state);
                     return;
                 case ExpressionType.AddChecked:
                     throw new NotImplementedException();
@@ -144,18 +136,18 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.AndAlso:
                     throw new NotImplementedException();
                 case ExpressionType.Call:
-                    EvalMethodCall(methodGen, (MethodCallExpression)exp, state);
+                    EvalMethodCall(method, (MethodCallExpression)exp, state);
                     return;
                 case ExpressionType.Coalesce:
                     throw new NotImplementedException();
                 case ExpressionType.Conditional:
                     throw new NotImplementedException();
                 case ExpressionType.Constant:
-                    EvalConstant(methodGen, (ConstantExpression)exp, state);
+                    EvalConstant(method, (ConstantExpression)exp, state);
                     return;
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Convert:
-                    EvalUnary(methodGen, (UnaryExpression)exp, state);
+                    EvalUnary(method, (UnaryExpression)exp, state);
                     return;
                 case ExpressionType.ConvertChecked:
                     throw new NotImplementedException();
@@ -168,10 +160,10 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.GreaterThanOrEqual:
                     throw new NotImplementedException();
                 case ExpressionType.Invoke:
-                    EvalInvoke(methodGen, (InvocationExpression)exp, state);
+                    EvalInvoke(method, (InvocationExpression)exp, state);
                     return;
                 case ExpressionType.Lambda:
-                    EvalLambda(methodGen, (LambdaExpression)exp, state);
+                    EvalLambda(method, (LambdaExpression)exp, state);
                     return;
                 case ExpressionType.LeftShift:
                     throw new NotImplementedException();
@@ -182,7 +174,7 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.ListInit:
                     throw new NotImplementedException();
                 case ExpressionType.MemberAccess:
-                    EvalMember(methodGen, (MemberExpression)exp, state);
+                    EvalMember(method, (MemberExpression)exp, state);
                     return;
                 case ExpressionType.MemberInit:
                     throw new NotImplementedException();
@@ -195,12 +187,12 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.NegateChecked:
                     throw new NotImplementedException();
                 case ExpressionType.New:
-                    EvalNew(methodGen, (NewExpression)exp, state);
+                    EvalNew(method, (NewExpression)exp, state);
                     return;
                 case ExpressionType.NewArrayBounds:
                     throw new NotImplementedException();
                 case ExpressionType.NewArrayInit:
-                    EvalNewArray(methodGen, (NewArrayExpression)exp, state);
+                    EvalNewArray(method, (NewArrayExpression)exp, state);
                     return;
                 case ExpressionType.Not:
                     throw new NotImplementedException();
@@ -211,7 +203,7 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.OrElse:
                     throw new NotImplementedException();
                 case ExpressionType.Parameter:
-                    EvalParameter(methodGen, (ParameterExpression)exp, state);
+                    EvalParameter(method, (ParameterExpression)exp, state);
                     return;
                 case ExpressionType.Power:
                     throw new NotImplementedException();
@@ -234,10 +226,10 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalBinary(IMethodBaseGenerator methodGen, BinaryExpression exp, EvalState state)
+        protected virtual void EvalBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Left, state);
-            EvalExpression(methodGen, exp.Right, state);
+            EvalExpression(method, exp.Left, state);
+            EvalExpression(method, exp.Right, state);
 
             // TODO: ?? 演算子とか演算子のオーバーロードとか。
             if (exp.Conversion != null) throw new NotImplementedException();
@@ -251,7 +243,7 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 if (exp.Left.Type == typeof(int) && exp.Left.Type == typeof(int))
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Add);
+                    method.Body.ILOperator.Emit(OpCodes.Add);
                 }
                 else
                 {
@@ -262,7 +254,7 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 if (exp.Left.Type == typeof(int) && exp.Left.Type == typeof(int))
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Mul);
+                    method.Body.ILOperator.Emit(OpCodes.Mul);
                 }
                 else
                 {
@@ -277,12 +269,12 @@ namespace Urasandesu.NAnonym.ILTools
                 }
                 else
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldelem_Ref);
+                    method.Body.ILOperator.Emit(OpCodes.Ldelem_Ref);
                 }
             }
             else if (exp.NodeType == ExpressionType.Equal)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ceq);
+                method.Body.ILOperator.Emit(OpCodes.Ceq);
             }
             else
             {
@@ -290,45 +282,45 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalMethodCall(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalMethodCall(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             // 評価の順番は、Object -> Arguments -> Method。
             if (exp.Object == null)
             {
                 // static method call
-                EvalArguments(methodGen, exp.Arguments, state);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, exp.Method);
+                EvalArguments(method, exp.Arguments, state);
+                method.Body.ILOperator.Emit(OpCodes.Call, exp.Method);
             }
             else
             {
-                if (exp.Object.Type.IsDefined(typeof(ExpressibleReservedWordsAttribute), false))
+                if (exp.Object.Type.IsDefined(typeof(MethodReservedWordsAttribute), false))
                 {
-                    if (exp.Method.IsDefined(typeof(ExpressibleReservedWordBaseAttribute), false)) EvalBase(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordThisAttribute), false)) EvalThis(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordDupAddOneAttribute), false)) EvalDupAddOne(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordAddOneDupAttribute), false)) EvalAddOneDup(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordSubOneDupAttribute), false)) EvalSubOneDup(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordNewAttribute), false)) EvalNew(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordInvokeAttribute), false)) EvalInvoke(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordFtnAttribute), false)) EvalFtn(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordIfAttribute), false)) EvalIf(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordEndIfAttribute), false)) EvalEndIf(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordReturnAttribute), false)) EvalReturn(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordEndAttribute), false)) EvalEnd(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordLdAttribute), false)) EvalLd(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordAllocAttribute), false)) EvalAlloc(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordStAttribute), false)) EvalSt(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordXAttribute), false)) EvalExtract(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordCmAttribute), false)) EvalCm(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(ExpressibleReservedWordLdArgAttribute), false)) EvalLdArg(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(MethodReservedWordBaseAttribute), false)) EvalBase(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordThisAttribute), false)) EvalThis(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordDupAddOneAttribute), false)) EvalDupAddOne(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordAddOneDupAttribute), false)) EvalAddOneDup(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordSubOneDupAttribute), false)) EvalSubOneDup(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordNewAttribute), false)) EvalNew(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordInvokeAttribute), false)) EvalInvoke(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordFtnAttribute), false)) EvalFtn(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordIfAttribute), false)) EvalIf(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordEndIfAttribute), false)) EvalEndIf(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordReturnAttribute), false)) EvalReturn(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordEndAttribute), false)) EvalEnd(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordLdAttribute), false)) EvalLd(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordAllocAttribute), false)) EvalAlloc(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordStAttribute), false)) EvalSt(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordXAttribute), false)) EvalExtract(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordCmAttribute), false)) EvalCm(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordLdArgAttribute), false)) EvalLdArg(method, exp, state);
                     else
                     {
                         throw new NotImplementedException();
                     }
                 }
-                else if (exp.Object.Type.IsDefined(typeof(ExpressibleAllocReservedWordsAttribute), false))
+                else if (exp.Object.Type.IsDefined(typeof(MethodAllocReservedWordsAttribute), false))
                 {
-                    if (exp.Method.IsDefined(typeof(ExpressibleAllocReservedWordAsAttribute), false)) EvalAllocAs(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(MethodAllocReservedWordAsAttribute), false)) EvalAllocAs(method, exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -336,119 +328,308 @@ namespace Urasandesu.NAnonym.ILTools
                 }
                 else
                 {
-                    // instance method call
-                    EvalExpression(methodGen, exp.Object, state);
-                    if (0 < state.ExtractInfoStack.Count)
+                    if (exp.Method == MethodInfoInvoke_object_objects) EvalMethodInfoInvoke_object_objects(method, exp, state);
+                    else if (exp.Method == ConstructorInfoInvoke_objects) EvalConstructorInfoInvoke_objects(method, exp, state);
+                    else if (exp.Method == PropertyInfoSetValue_object_object_objects) EvalPropertyInfoSetValue_object_object_objects(method, exp, state);
+                    else if (exp.Method == PropertyInfoGetValue_object_objects) EvalPropertyInfoGetValue_object_objects(method, exp, state);
+                    else
                     {
-                        var extractInfo = state.ExtractInfoStack.Pop();
-                        EvalConstantExtracted(methodGen, extractInfo, state);
-                    }
-                    if (exp.Object.Type.IsValueType)
-                    {
-                        // NOTE: 値型のメソッドを呼び出すには、アドレスへの変換が必要。
-                        var local = methodGen.Body.ILOperator.AddLocal(exp.Object.Type);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloca, local);
-                    }
+                        // instance method call
+                        state.CandidateDesigningExpressionStack.Push(exp.Object);
+                        EvalExpression(method, exp.Object, state);
+                        EvalAdjustState(method, exp.Object, state);
+                        if (exp.Object.Type.IsValueType)
+                        {
+                            // NOTE: 値型のメソッドを呼び出すには、アドレスへの変換が必要。
+                            var local = method.Body.ILOperator.AddLocal(exp.Object.Type);
+                            method.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                            method.Body.ILOperator.Emit(OpCodes.Ldloca, local);
+                        }
 
-                    EvalArguments(methodGen, exp.Arguments, state);
+                        EvalArguments(method, exp.Arguments, state);
 
-                    methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, exp.Method);
+                        method.Body.ILOperator.Emit(OpCodes.Callvirt, exp.Method);
+                    }
                 }
             }
         }
 
-        protected virtual void EvalBase(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalBase(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-            var constructorDecl = methodGen.DeclaringType.BaseType.GetConstructor(new Type[] { });
-            methodGen.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+            var constructorDecl = method.DeclaringType.BaseType.GetConstructor(new Type[] { });
+            method.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
         }
 
-        protected virtual void EvalThis(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalThis(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+            method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
         }
 
-        protected virtual void EvalDupAddOne(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
-        {
-            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-            methodGen.Body.ILOperator.Emit(OpCodes.Add);
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-        }
-
-        protected virtual void EvalAddOneDup(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalDupAddOne(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-            methodGen.Body.ILOperator.Emit(OpCodes.Add);
-            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            var localDecl = method.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Dup);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            method.Body.ILOperator.Emit(OpCodes.Add);
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
         }
 
-        protected virtual void EvalSubOneDup(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalAddOneDup(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
-            var localDecl = methodGen.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
-            methodGen.Body.ILOperator.Emit(OpCodes.Sub);
-            methodGen.Body.ILOperator.Emit(OpCodes.Dup);
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            var localDecl = method.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            method.Body.ILOperator.Emit(OpCodes.Add);
+            method.Body.ILOperator.Emit(OpCodes.Dup);
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
         }
 
-        protected virtual void EvalNew(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalSubOneDup(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var fieldInfo = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
+            var localDecl = method.Body.Locals.First(_localDecl => _localDecl.Name == fieldInfo.Name);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_1);
+            method.Body.ILOperator.Emit(OpCodes.Sub);
+            method.Body.ILOperator.Emit(OpCodes.Dup);
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+        }
+
+        protected virtual void EvalNew(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
             {
-                ((NewArrayExpression)exp.Arguments[1]).Expressions.ForEach(_exp => EvalExpression(methodGen, _exp, state));
+                ((NewArrayExpression)exp.Arguments[1]).Expressions.ForEach(_exp => EvalExpression(method, _exp, state));
             }
             else
             {
-                EvalExpression(methodGen, exp.Arguments[1], state);
+                EvalExpression(method, exp.Arguments[1], state);
             }
 
-            EvalExpression(methodGen, exp.Arguments[0], state);
+            EvalExpression(method, exp.Arguments[0], state);
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
                 var constructor = (ConstructorInfo)extractInfo.Value;
-                methodGen.Body.ILOperator.Emit(OpCodes.Newobj, constructor);
+                method.Body.ILOperator.Emit(OpCodes.Newobj, constructor);
             }
         }
 
-        protected virtual void EvalInvoke(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalInvoke(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Arguments[0], state);
+            EvalExpression(method, exp.Arguments[0], state);
             if (0 < state.ExtractInfoStack.Count)
             {
                 throw new NotImplementedException();
             }
-            EvalExpression(methodGen, exp.Arguments[2], state);
+            EvalExpression(method, exp.Arguments[2], state);
             if (0 < state.ExtractInfoStack.Count)
             {
                 throw new NotImplementedException();
             }
-            EvalExpression(methodGen, exp.Arguments[1], state);
+            EvalExpression(method, exp.Arguments[1], state);
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
-                var method = (MethodInfo)extractInfo.Value;
-                methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, method);
+                var methodInfo = (MethodInfo)extractInfo.Value;
+                method.Body.ILOperator.Emit(OpCodes.Callvirt, methodInfo);
             }
         }
 
-        protected virtual void EvalFtn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalMethodInfoInvoke_object_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var methodInfo = default(MethodInfo);
+            {
+                var constantExp = Expression.Constant(ReservedWords);
+                var extractMethod = ReservedWordXInfo_T.MakeGenericMethod(typeof(MethodInfo));
+                var parameterExps = new Expression[] { exp.Object };
+                var extractExp = Expression.Call(constantExp, extractMethod, parameterExps);
+                EvalExtract(method, extractExp, state);
+                if (state.ExtractInfoStack.Count == 0)
+                {
+                    throw new NotSupportedException();
+                }
+                var extractInfo = state.ExtractInfoStack.Pop();
+                methodInfo = (MethodInfo)extractInfo.Value;
+            }
+
+            if (!methodInfo.IsStatic)
+            {
+                EvalExpression(method, exp.Arguments[0], state);
+            }
+
+            var arguments = new List<Expression>();
+            if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
+            {
+                EvalArguments(method, ((NewArrayExpression)exp.Arguments[1]).Expressions, state);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (methodInfo.IsStatic)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Call, methodInfo);
+            }
+            else
+            {
+                method.Body.ILOperator.Emit(OpCodes.Callvirt, methodInfo);
+            }
+
+            state.ProhibitsLastAutoPop = methodInfo.ReturnType == typeof(void);
+            state.MethodDesignedInfoStack.Push(methodInfo);
+        }
+
+        protected virtual void EvalConstructorInfoInvoke_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var constructorInfo = default(ConstructorInfo);
+            {
+                var constantExp = Expression.Constant(ReservedWords);
+                var extractMethod = ReservedWordXInfo_T.MakeGenericMethod(typeof(ConstructorInfo));
+                var parameterExps = new Expression[] { exp.Object };
+                var extractExp = Expression.Call(constantExp, extractMethod, parameterExps);
+                EvalExtract(method, extractExp, state);
+                if (state.ExtractInfoStack.Count == 0)
+                {
+                    throw new NotSupportedException();
+                }
+                var extractInfo = state.ExtractInfoStack.Pop();
+                constructorInfo = (ConstructorInfo)extractInfo.Value;
+            }
+
+            var arguments = new List<Expression>();
+            if (exp.Arguments[0].NodeType == ExpressionType.NewArrayInit)
+            {
+                EvalArguments(method, ((NewArrayExpression)exp.Arguments[0]).Expressions, state);
+            }
+            else if (exp.Arguments[0].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[0]).Value == null)
+            {
+                // discard...
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            method.Body.ILOperator.Emit(OpCodes.Newobj, constructorInfo);
+            state.ConstructorDesignedInfoStack.Push(constructorInfo);
+        }
+
+        protected virtual void EvalPropertyInfoSetValue_object_object_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var propertyInfo = default(PropertyInfo);
+            {
+                var constantExp = Expression.Constant(ReservedWords);
+                var extractMethod = ReservedWordXInfo_T.MakeGenericMethod(typeof(PropertyInfo));
+                var parameterExps = new Expression[] { exp.Object };
+                var extractExp = Expression.Call(constantExp, extractMethod, parameterExps);
+                EvalExtract(method, extractExp, state);
+                if (state.ExtractInfoStack.Count == 0)
+                {
+                    throw new NotSupportedException();
+                }
+                var extractInfo = state.ExtractInfoStack.Pop();
+                propertyInfo = (PropertyInfo)extractInfo.Value;
+            }
+
+            var setter = propertyInfo.GetSetMethod(true);
+            if (!setter.IsStatic)
+            {
+                EvalExpression(method, exp.Arguments[0], state);
+            }
+
+            if (propertyInfo.PropertyType.IsValueType && 
+                exp.Arguments[1].NodeType == ExpressionType.Convert && 
+                ((UnaryExpression)exp.Arguments[1]).Operand.Type.IsSubclassOf(typeof(ValueType)))
+            {
+                EvalExpression(method, ((UnaryExpression)exp.Arguments[1]).Operand, state);
+            }
+            else
+            {
+                EvalExpression(method, exp.Arguments[1], state);
+            }
+
+            if (exp.Arguments[2].NodeType == ExpressionType.NewArrayInit)
+            {
+                throw new NotImplementedException();
+            }
+            else if (exp.Arguments[2].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[2]).Value == null)
+            {
+                // discard...
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (setter.IsStatic)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Call, setter);
+            }
+            else
+            {
+                method.Body.ILOperator.Emit(OpCodes.Callvirt, setter);
+            }
+        }
+
+        protected virtual void EvalPropertyInfoGetValue_object_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var propertyInfo = default(PropertyInfo);
+            {
+                var constantExp = Expression.Constant(ReservedWords);
+                var extractMethod = ReservedWordXInfo_T.MakeGenericMethod(typeof(PropertyInfo));
+                var parameterExps = new Expression[] { exp.Object };
+                var extractExp = Expression.Call(constantExp, extractMethod, parameterExps);
+                EvalExtract(method, extractExp, state);
+                if (state.ExtractInfoStack.Count == 0)
+                {
+                    throw new NotSupportedException();
+                }
+                var extractInfo = state.ExtractInfoStack.Pop();
+                propertyInfo = (PropertyInfo)extractInfo.Value;
+            }
+
+            var getter = propertyInfo.GetGetMethod(true);
+            if (!getter.IsStatic)
+            {
+                EvalExpression(method, exp.Arguments[0], state);
+            }
+
+            if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
+            {
+                throw new NotImplementedException();
+            }
+            else if (exp.Arguments[1].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[1]).Value == null)
+            {
+                // discard...
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (getter.IsStatic)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Call, getter);
+            }
+            else
+            {
+                method.Body.ILOperator.Emit(OpCodes.Callvirt, getter);
+            }
+
+            state.PropertyDesignedInfoStack.Push(propertyInfo);
+        }
+
+        protected virtual void EvalFtn(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (1 < exp.Arguments.Count)
             {
-                EvalExpression(methodGen, exp.Arguments[0], state);
+                EvalExpression(method, exp.Arguments[0], state);
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     throw new NotImplementedException();
@@ -457,22 +638,22 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(IMethodDeclaration))
             {
-                EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
+                EvalExpression(method, exp.Arguments[exp.Arguments.Count - 1], state);
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
                     var methodDecl = (IMethodDeclaration)extractInfo.Value;
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodDecl);
+                    method.Body.ILOperator.Emit(OpCodes.Ldftn, methodDecl);
                 }
             }
             else if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(MethodInfo))
             {
-                EvalExpression(methodGen, exp.Arguments[exp.Arguments.Count - 1], state);
+                EvalExpression(method, exp.Arguments[exp.Arguments.Count - 1], state);
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
                     var methodInfo = (MethodInfo)extractInfo.Value;
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldftn, methodInfo);
+                    method.Body.ILOperator.Emit(OpCodes.Ldftn, methodInfo);
                 }
             }
             else
@@ -481,48 +662,48 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalIf(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ceq);
-            var localDecl = methodGen.Body.ILOperator.AddLocal(typeof(bool));
-            methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-            var labelDecl = methodGen.Body.ILOperator.AddLabel();
+            EvalExpression(method, exp.Arguments[0], state);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+            method.Body.ILOperator.Emit(OpCodes.Ceq);
+            var localDecl = method.Body.ILOperator.AddLocal(typeof(bool));
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            var labelDecl = method.Body.ILOperator.AddLabel();
             state.IfInfoStack.Push(new IfInfo(labelDecl));
-            methodGen.Body.ILOperator.Emit(OpCodes.Brtrue, labelDecl);
+            method.Body.ILOperator.Emit(OpCodes.Brtrue, labelDecl);
         }
 
-        protected virtual void EvalEndIf(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalEndIf(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var ifInfo = state.IfInfoStack.Pop();
-            methodGen.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
+            method.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
         }
 
-        protected virtual void EvalReturn(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalReturn(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Arguments[0], state);
-            methodGen.Body.ILOperator.Emit(OpCodes.Ret);
+            EvalExpression(method, exp.Arguments[0], state);
+            method.Body.ILOperator.Emit(OpCodes.Ret);
         }
 
-        protected virtual void EvalEnd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalEnd(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            methodGen.Body.ILOperator.Emit(OpCodes.Ret);
+            method.Body.ILOperator.Emit(OpCodes.Ret);
         }
 
-        protected virtual void EvalLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalLd(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var extractExp = default(MethodCallExpression);
 
             if (exp.Arguments.Count == 2)
             {
                 extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
-                EvalExtract(methodGen, extractExp, state);
+                EvalExtract(method, extractExp, state);
             }
 
             extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
-            EvalExtract(methodGen, extractExp, state);
+            EvalExtract(method, extractExp, state);
 
             if (0 < state.ExtractInfoStack.Count)
             {
@@ -541,14 +722,14 @@ namespace Urasandesu.NAnonym.ILTools
                     {
                         var fieldInfo = new NameResolvableInfo(name, typeof(object));
                         if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
-                        EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                        EvalMember(method, Expression.Field(null, fieldInfo), state);
                     });
                 }
                 else
                 {
                     var fieldInfo = new NameResolvableInfo((string)extractInfo.Value, extractInfo.Type);
                     if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
-                    EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                    EvalMember(method, Expression.Field(null, fieldInfo), state);
                 }
             }
             else
@@ -557,18 +738,18 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalLdArg(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalLdArg(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var extractExp = default(MethodCallExpression);
 
             if (exp.Arguments.Count == 2)
             {
                 extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
-                EvalExtract(methodGen, extractExp, state);
+                EvalExtract(method, extractExp, state);
             }
 
             extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
-            EvalExtract(methodGen, extractExp, state);
+            EvalExtract(method, extractExp, state);
 
             if (0 < state.ExtractInfoStack.Count)
             {
@@ -587,14 +768,14 @@ namespace Urasandesu.NAnonym.ILTools
                     {
                         var fieldInfo = new ParameterIndexResolvableInfo(index, typeof(object));
                         if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
-                        EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                        EvalMember(method, Expression.Field(null, fieldInfo), state);
                     });
                 }
                 else
                 {
                     var fieldInfo = new ParameterIndexResolvableInfo((int)extractInfo.Value, extractInfo.Type);
                     if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
-                    EvalMember(methodGen, Expression.Field(null, fieldInfo), state);
+                    EvalMember(method, Expression.Field(null, fieldInfo), state);
                 }
             }
             else
@@ -603,7 +784,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalAlloc(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalAlloc(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (exp.Arguments[0].NodeType == ExpressionType.MemberAccess)
             {
@@ -616,37 +797,46 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalAllocAs(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalAllocAs(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Object, state);
+            EvalExpression(method, exp.Object, state);
             if (0 < state.AllocInfoStack.Count)
             {
                 var allocInfo = state.AllocInfoStack.Pop();
 
+                var stExp = exp.Arguments[0];
                 var localGen = default(ILocalGenerator);
                 var parameterGen = default(IParameterGenerator);
                 var fieldGen = default(IFieldGenerator);
-                if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == allocInfo.Name)) != null)
+                if ((localGen = method.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == allocInfo.Name)) != null)
                 {
-                    EvalExpression(methodGen, exp.Arguments[0], state);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localGen);
+                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    EvalExpression(method, stExp, state);
+                    EvalAdjustState(method, stExp, state);
+                    method.Body.ILOperator.Emit(OpCodes.Stloc, localGen);
                 }
-                else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == allocInfo.Name)) != null)
+                else if ((parameterGen = method.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == allocInfo.Name)) != null)
                 {
-                    EvalExpression(methodGen, exp.Arguments[0], state);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Starg, parameterGen);
+                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    EvalExpression(method, stExp, state);
+                    EvalAdjustState(method, stExp, state);
+                    method.Body.ILOperator.Emit(OpCodes.Starg, parameterGen);
                 }
-                else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
+                else if ((fieldGen = method.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                    EvalExpression(methodGen, exp.Arguments[0], state);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stfld, fieldGen);
+                    method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    EvalExpression(method, stExp, state);
+                    EvalAdjustState(method, stExp, state);
+                    method.Body.ILOperator.Emit(OpCodes.Stfld, fieldGen);
                 }
                 else
                 {
-                    EvalExpression(methodGen, exp.Arguments[0], state);
-                    var local = methodGen.Body.ILOperator.AddLocal(allocInfo.Name, allocInfo.Type);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    EvalExpression(method, stExp, state);
+                    EvalAdjustState(method, stExp, state);
+                    var local = method.Body.ILOperator.AddLocal(allocInfo.Name, allocInfo.Type);
+                    method.Body.ILOperator.Emit(OpCodes.Stloc, local);
                 }
             }
             else
@@ -656,14 +846,14 @@ namespace Urasandesu.NAnonym.ILTools
             state.ProhibitsLastAutoPop = true;
         }
 
-        protected virtual void EvalSt(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalSt(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var xInfoType = default(Type);
-            if (typeof(IExpressibleAllocReservedWords).IsAssignableFrom(exp.Type))
+            if (typeof(IMethodAllocReservedWords).IsAssignableFrom(exp.Type))
             {
                 xInfoType = typeof(object);
             }
-            else if (typeof(IExpressibleAllocReservedWords<>).IsAssignableWithoutGenericArgumentsFrom(exp.Type))
+            else if (typeof(IMethodAllocReservedWords<>).IsAssignableWithoutGenericArgumentsFrom(exp.Type))
             {
                 xInfoType = exp.Type.GetGenericArguments()[0];
             }
@@ -672,16 +862,11 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            var extractExp = Expression.Call(
-                                Expression.Constant(ReservedWords),
-                                ReservedWordXInfo2.MakeGenericMethod(xInfoType),
-                                new Expression[] 
-                                { 
-                                    exp.Arguments[0]
-                                }
-                             );
-
-            EvalExtract(methodGen, extractExp, state);
+            var constantExp = Expression.Constant(ReservedWords);
+            var extractMethod = ReservedWordXInfo_object.MakeGenericMethod(xInfoType);
+            var parameterExps = new Expression[] { exp.Arguments[0] };
+            var extractExp = Expression.Call(constantExp, extractMethod, parameterExps);
+            EvalExtract(method, extractExp, state);
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
@@ -694,7 +879,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalExtract(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalExtract(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var extracted = Expression.Lambda(exp.Arguments[0]).Compile();
             object o = extracted.DynamicInvoke();
@@ -710,30 +895,104 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalConstantExtracted(IMethodBaseGenerator methodGen, ExtractInfo extractInfo, EvalState state)
+        protected virtual void EvalAdjustState(IMethodBaseGenerator method, Expression exp, EvalState state)
         {
-            if (extractInfo.Type.IsArray)
+            // Adjust ExtractInfoStack. 
+            if (0 < state.ExtractInfoStack.Count)
             {
-                EvalNewArray(methodGen, Expression.NewArrayInit(extractInfo.Type.GetElementType(),
-                    ((Array)extractInfo.Value).Cast<object>().Select(value => (Expression)Expression.Constant(value))), state);
-            }
-            else if (typeof(LambdaExpression).IsAssignableFrom(extractInfo.Type))
-            {
-                EvalExpression(methodGen, ((LambdaExpression)extractInfo.Value).Body, state);
-                if (0 < state.ExtractInfoStack.Count)
+                var extractInfo = state.ExtractInfoStack.Pop();
+                if (extractInfo.Type.IsArray)
                 {
-                    extractInfo = state.ExtractInfoStack.Pop();
-                    EvalConstantExtracted(methodGen, extractInfo, state);
+                    EvalNewArray(method, Expression.NewArrayInit(extractInfo.Type.GetElementType(),
+                        ((Array)extractInfo.Value).Cast<object>().Select(value => (Expression)Expression.Constant(value))), state);
                 }
-                state.ProhibitsLastAutoPop = true;
+                else if (typeof(LambdaExpression).IsAssignableFrom(extractInfo.Type))
+                {
+                    var lambdaExp = (LambdaExpression)extractInfo.Value;
+                    state.CandidateDesigningExpressionStack.Push(lambdaExp.Body);
+                    EvalExpression(method, lambdaExp.Body, state);
+                    EvalAdjustState(method, lambdaExp.Body, state);
+                    state.ProhibitsLastAutoPop = true;
+                }
+                else
+                {
+                    EvalConstant(method, Expression.Constant(extractInfo.Value), state);
+                }
             }
-            else
+
+            // Adjust the return type.
+            var designingExp = default(Expression);
+            if (0 < state.CandidateDesigningExpressionStack.Count)
             {
-                EvalConstant(methodGen, Expression.Constant(extractInfo.Value), state);
+                designingExp = state.CandidateDesigningExpressionStack.Pop();
+            }
+
+            var convertExp = default(UnaryExpression);
+            if (0 < state.MethodDesignedInfoStack.Count)
+            {
+                var methodInfo = state.MethodDesignedInfoStack.Pop();
+                if (designingExp != null && designingExp.Type != methodInfo.ReturnType)
+                {
+                    var actualParameters = methodInfo.GetParameters();
+                    var methodCallExp = (MethodCallExpression)exp;
+                    var objectExp = methodCallExp.Arguments[0];
+                    var parameterExps = default(ReadOnlyCollection<Expression>);
+                    if (methodCallExp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
+                    {
+                        var _parameterExps = new List<Expression>();
+                        ((NewArrayExpression)methodCallExp.Arguments[1]).Expressions.
+                        ForEach((_exp, parameterIndex) =>
+                        {
+                            if (_exp.NodeType == ExpressionType.Convert && 
+                                ((UnaryExpression)_exp).Operand.Type == actualParameters[parameterIndex].ParameterType)
+                            {
+                                _parameterExps.Add(((UnaryExpression)_exp).Operand);
+                            }
+                            else
+                            {
+                                _parameterExps.Add(_exp);
+                            }
+                        });
+                        parameterExps = new ReadOnlyCollection<Expression>(_parameterExps);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                    var actualMethodCallExp = Expression.Call(objectExp, methodInfo, parameterExps);
+                    convertExp = Expression.Convert(actualMethodCallExp, designingExp.Type);
+                }
+            }
+            else if (0 < state.ConstructorDesignedInfoStack.Count)
+            {
+                var constructorInfo = state.ConstructorDesignedInfoStack.Pop();
+                if (designingExp != null && designingExp.Type != constructorInfo.DeclaringType)
+                {
+                    var methodCallExp = (MethodCallExpression)exp;
+                    var parameterExps = methodCallExp.Arguments;
+                    var actualNewExp = Expression.New(constructorInfo, parameterExps);
+                    convertExp = Expression.Convert(actualNewExp, designingExp.Type);
+                }
+            }
+            else if (0 < state.PropertyDesignedInfoStack.Count)
+            {
+                var propertyInfo = state.PropertyDesignedInfoStack.Pop();
+                if (designingExp != null && designingExp.Type != propertyInfo.PropertyType)
+                {
+                    var methodCallExp = (MethodCallExpression)exp;
+                    var objectExp = methodCallExp.Arguments[0];
+                    var actualPropertyExp = Expression.Property(objectExp, propertyInfo);
+                    convertExp = Expression.Convert(actualPropertyExp, designingExp.Type);
+                }
+            }
+
+            if (convertExp != null)
+            {
+                EvalUnaryWithoutOperandEval(method, convertExp, state);
             }
         }
 
-        protected virtual void EvalCm(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalCm(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var expanded0 = Expression.Lambda(exp.Arguments[0]).Compile();
             object staticMember = expanded0.DynamicInvoke();
@@ -755,10 +1014,10 @@ namespace Urasandesu.NAnonym.ILTools
                 }
             }
 
-            EvalMember(methodGen, Expression.Field(null, targetFieldInfo), state);
+            EvalMember(method, Expression.Field(null, targetFieldInfo), state);
         }
 
-        protected virtual void EvalConstant(IMethodBaseGenerator methodGen, ConstantExpression exp, EvalState state)
+        protected virtual void EvalConstant(IMethodBaseGenerator method, ConstantExpression exp, EvalState state)
         {
             string s = default(string);
             short? ns = default(short?);
@@ -774,63 +1033,63 @@ namespace Urasandesu.NAnonym.ILTools
             var fi = default(FieldInfo);
             if (exp.Value == null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldnull);
+                method.Body.ILOperator.Emit(OpCodes.Ldnull);
             }
             else if ((s = exp.Value as string) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldstr, s);
+                method.Body.ILOperator.Emit(OpCodes.Ldstr, s);
             }
             else if ((ns = exp.Value as short?) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4, (int)ns);
-                methodGen.Body.ILOperator.Emit(OpCodes.Conv_I2);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4, (int)ns);
+                method.Body.ILOperator.Emit(OpCodes.Conv_I2);
             }
             else if ((ni = exp.Value as int?) != null)
             {
                 // HACK: _S が付く命令は短い形式。-127 ～ 128 以外は最適化が必要。
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(int)ni);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(int)ni);
             }
             else if ((nd = exp.Value as double?) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_R8, (double)nd);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_R8, (double)nd);
             }
             else if ((nc = exp.Value as char?) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(char)nc);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)(char)nc);
             }
             else if ((nsb = exp.Value as sbyte?) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)nsb);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)nsb);
             }
             else if ((nb = exp.Value as bool?) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4, (bool)nb ? 1 : 0);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4, (bool)nb ? 1 : 0);
             }
             else if ((e = exp.Value as Enum) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4, e.GetHashCode());
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4, e.GetHashCode());
             }
             else if ((t = exp.Value as Type) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, t);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo);
+                method.Body.ILOperator.Emit(OpCodes.Ldtoken, t);
+                method.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo);
             }
             else if ((mi = exp.Value as MethodInfo) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
-                methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
+                method.Body.ILOperator.Emit(OpCodes.Ldtoken, mi);
+                method.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
+                method.Body.ILOperator.Emit(OpCodes.Castclass, typeof(MethodInfo));
             }
             else if ((ci = exp.Value as ConstructorInfo) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, ci);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
-                methodGen.Body.ILOperator.Emit(OpCodes.Castclass, typeof(ConstructorInfo));
+                method.Body.ILOperator.Emit(OpCodes.Ldtoken, ci);
+                method.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetMethodFromHandleInfo);
+                method.Body.ILOperator.Emit(OpCodes.Castclass, typeof(ConstructorInfo));
             }
             else if ((fi = exp.Value as FieldInfo) != null)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldtoken, fi);
-                methodGen.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetFieldFromHandleInfo);
+                method.Body.ILOperator.Emit(OpCodes.Ldtoken, fi);
+                method.Body.ILOperator.Emit(OpCodes.Call, MethodInfoMixin.GetFieldFromHandleInfo);
             }
             else
             {
@@ -839,9 +1098,24 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalUnary(IMethodBaseGenerator methodGen, UnaryExpression exp, EvalState state)
+        protected virtual void EvalUnary(IMethodBaseGenerator method, UnaryExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Operand, state);
+            EvalExpression(method, exp.Operand, state);
+            if (0 < state.CandidateDesigningExpressionStack.Count &&
+                (0 < state.MethodDesignedInfoStack.Count ||
+                 0 < state.ConstructorDesignedInfoStack.Count ||
+                 0 < state.PropertyDesignedInfoStack.Count))
+            {
+                EvalAdjustState(method, exp.Operand, state);
+            }
+            else
+            {
+                EvalUnaryWithoutOperandEval(method, exp, state);
+            }
+        }
+
+        protected virtual void EvalUnaryWithoutOperandEval(IMethodBaseGenerator method, UnaryExpression exp, EvalState state)
+        {
             switch (exp.NodeType)
             {
                 case ExpressionType.Convert:
@@ -849,11 +1123,11 @@ namespace Urasandesu.NAnonym.ILTools
                     {
                         if (exp.Type == typeof(int))
                         {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                            method.Body.ILOperator.Emit(OpCodes.Conv_I4);
                         }
                         else if (exp.Type == typeof(sbyte))
                         {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Conv_I2);
+                            method.Body.ILOperator.Emit(OpCodes.Conv_I2);
                         }
                         else
                         {
@@ -863,31 +1137,31 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
                     {
                         // TODO: implicit operator や explicit operator の実装。
-                        methodGen.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
+                        method.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
                     }
                     else
                     {
                         // TODO: implicit operator や explicit operator の実装。
-                        methodGen.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
+                        method.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
                     }
                     break;
                 case ExpressionType.ArrayLength:
-                    methodGen.Body.ILOperator.Emit(OpCodes.Ldlen);
-                    methodGen.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                    method.Body.ILOperator.Emit(OpCodes.Ldlen);
+                    method.Body.ILOperator.Emit(OpCodes.Conv_I4);
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        protected virtual void EvalInvoke(IMethodBaseGenerator methodGen, InvocationExpression exp, EvalState state)
+        protected virtual void EvalInvoke(IMethodBaseGenerator method, InvocationExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Expression, state);
-            EvalArguments(methodGen, exp.Arguments, state);
+            EvalExpression(method, exp.Expression, state);
+            EvalArguments(method, exp.Arguments, state);
             if (exp.Expression.Type.IsSubclassOf(typeof(Delegate)))
             {
                 var invokeMethod = exp.Expression.Type.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
-                methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, invokeMethod);
+                method.Body.ILOperator.Emit(OpCodes.Callvirt, invokeMethod);
             }
             else
             {
@@ -895,13 +1169,13 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalLambda(IMethodBaseGenerator methodGen, LambdaExpression exp, EvalState state)
+        protected virtual void EvalLambda(IMethodBaseGenerator method, LambdaExpression exp, EvalState state)
         {
             // TODO: DynamicMethod 再帰して作ることになる。手間なので後回し。
-            EvalExpression(methodGen, exp.Body, state);
+            EvalExpression(method, exp.Body, state);
         }
 
-        protected virtual void EvalMember(IMethodBaseGenerator methodGen, MemberExpression exp, EvalState state)
+        protected virtual void EvalMember(IMethodBaseGenerator method, MemberExpression exp, EvalState state)
         {
             var fieldInfo = default(FieldInfo);
             var propertyInfo = default(PropertyInfo);
@@ -917,7 +1191,7 @@ namespace Urasandesu.NAnonym.ILTools
                     }
                     else
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, (short)localIndex.Index);
+                        method.Body.ILOperator.Emit(OpCodes.Ldloc, (short)localIndex.Index);
                     }
                 }
                 else if ((parameterIndex = fieldInfo as ParameterIndexResolvableInfo) != null)
@@ -925,11 +1199,11 @@ namespace Urasandesu.NAnonym.ILTools
                     if (0 < state.ShiftInfoStack.Count)
                     {
                         var shiftInfo = state.ShiftInfoStack.Pop();
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterIndex.Index + shiftInfo.Count));
+                        method.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterIndex.Index + shiftInfo.Count));
                     }
                     else
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)parameterIndex.Index);
+                        method.Body.ILOperator.Emit(OpCodes.Ldarg, (short)parameterIndex.Index);
                     }
                 }
                 else
@@ -938,7 +1212,7 @@ namespace Urasandesu.NAnonym.ILTools
                     var parameterGen = default(IParameterGenerator);
                     var fieldGen = default(IFieldGenerator);
                     var portable = default(ConstantExpression);
-                    if ((localGen = methodGen.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == fieldInfo.Name)) != null)
+                    if ((localGen = method.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == fieldInfo.Name)) != null)
                     {
                         if (0 < state.ShiftInfoStack.Count)
                         {
@@ -946,25 +1220,25 @@ namespace Urasandesu.NAnonym.ILTools
                         }
                         else
                         {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localGen);
+                            method.Body.ILOperator.Emit(OpCodes.Ldloc, localGen);
                         }
                     }
-                    else if ((parameterGen = methodGen.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
+                    else if ((parameterGen = method.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == fieldInfo.Name)) != null)
                     {
                         if (0 < state.ShiftInfoStack.Count)
                         {
                             var shiftInfo = state.ShiftInfoStack.Pop();
-                            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterGen.Position + shiftInfo.Count));
+                            method.Body.ILOperator.Emit(OpCodes.Ldarg, (short)(parameterGen.Position + shiftInfo.Count));
                         }
                         else
                         {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
+                            method.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
                         }
                     }
-                    else if ((fieldGen = methodGen.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == fieldInfo.Name)) != null)
+                    else if ((fieldGen = method.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == fieldInfo.Name)) != null)
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, fieldGen);
+                        method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                        method.Body.ILOperator.Emit(OpCodes.Ldfld, fieldGen);
                     }
                     else if ((portable = exp.Expression as ConstantExpression) != null)
                     {
@@ -972,17 +1246,17 @@ namespace Urasandesu.NAnonym.ILTools
                         // NOTE: 他の簡略表記向けモードを競合するようになってきた。一時的に NotSupportedException 化。
                         // NOTE: 例えば、CarryPortableScope で作成した scope に Add してあったらそれが利用される、とか。
                         throw new NotSupportedException();
-                        //var item = methodGen.AddPortableScopeItem(fieldInfo);
-                        //methodGen.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                        //methodGen.Body.ILOperator.Emit(OpCodes.Ldfld, item);
+                        //var item = method.AddPortableScopeItem(fieldInfo);
+                        //method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                        //method.Body.ILOperator.Emit(OpCodes.Ldfld, item);
                     }
                     else
                     {
-                        EvalExpression(methodGen, exp.Expression, state);
+                        EvalExpression(method, exp.Expression, state);
 
                         if (fieldInfo.IsStatic)
                         {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldInfo);
+                            method.Body.ILOperator.Emit(OpCodes.Ldsfld, fieldInfo);
                         }
                         else
                         {
@@ -993,7 +1267,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else if ((propertyInfo = exp.Member as PropertyInfo) != null)
             {
-                EvalExpression(methodGen, exp.Expression, state);
+                EvalExpression(method, exp.Expression, state);
 
                 if (propertyInfo.IsStatic())
                 {
@@ -1001,7 +1275,7 @@ namespace Urasandesu.NAnonym.ILTools
                 }
                 else
                 {
-                    methodGen.Body.ILOperator.Emit(OpCodes.Callvirt, propertyInfo.GetGetMethod());
+                    method.Body.ILOperator.Emit(OpCodes.Callvirt, propertyInfo.GetGetMethod());
                 }
             }
             else
@@ -1010,10 +1284,10 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalNew(IMethodBaseGenerator methodGen, NewExpression exp, EvalState state)
+        protected virtual void EvalNew(IMethodBaseGenerator method, NewExpression exp, EvalState state)
         {
-            EvalArguments(methodGen, exp.Arguments, state);
-            methodGen.Body.ILOperator.Emit(OpCodes.Newobj, exp.Constructor);
+            EvalArguments(method, exp.Arguments, state);
+            method.Body.ILOperator.Emit(OpCodes.Newobj, exp.Constructor);
             if (exp.Members != null)
             {
                 //// 使わなくても構築は問題なくできそう？
@@ -1027,35 +1301,32 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalNewArray(IMethodBaseGenerator methodGen, NewArrayExpression exp, EvalState state)
+        protected virtual void EvalNewArray(IMethodBaseGenerator method, NewArrayExpression exp, EvalState state)
         {
             if (exp.NodeType == ExpressionType.NewArrayInit)
             {
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)exp.Expressions.Count);
-                methodGen.Body.ILOperator.Emit(OpCodes.Newarr, exp.Type.GetElementType());
-                var localDecl = methodGen.Body.ILOperator.AddLocal(exp.Type);
-                methodGen.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
-                exp.Expressions
-                    .ForEach((_exp, index) =>
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_S, (sbyte)exp.Expressions.Count);
+                method.Body.ILOperator.Emit(OpCodes.Newarr, exp.Type.GetElementType());
+                var localDecl = method.Body.ILOperator.AddLocal(exp.Type);
+                method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+                exp.Expressions.
+                ForEach((_exp, index) =>
+                {
+                    method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+                    method.Body.ILOperator.Emit(OpCodes.Ldc_I4, index);
+                    state.CandidateDesigningExpressionStack.Push(_exp);
+                    EvalExpression(method, _exp, state);
+                    EvalAdjustState(method, _exp, state);
+                    if (typeof(double).IsAssignableFrom(_exp.Type))
                     {
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
-                        methodGen.Body.ILOperator.Emit(OpCodes.Ldc_I4, index);
-                        EvalExpression(methodGen, _exp, state);
-                        if (0 < state.ExtractInfoStack.Count)
-                        {
-                            var extractInfo = state.ExtractInfoStack.Pop();
-                            EvalConstantExtracted(methodGen, extractInfo, state);
-                        }
-                        if (typeof(double).IsAssignableFrom(_exp.Type))
-                        {
-                            throw new NotImplementedException();
-                        }
-                        else
-                        {
-                            methodGen.Body.ILOperator.Emit(OpCodes.Stelem_Ref);
-                        }
-                    });
-                methodGen.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        method.Body.ILOperator.Emit(OpCodes.Stelem_Ref);
+                    }
+                });
+                method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
             }
             else
             {
@@ -1063,9 +1334,9 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalParameter(IMethodBaseGenerator methodGen, ParameterExpression exp, EvalState state)
+        protected virtual void EvalParameter(IMethodBaseGenerator method, ParameterExpression exp, EvalState state)
         {
-            if (exp.Type == typeof(ExpressiveGenerator))
+            if (exp.Type == typeof(ReflectiveMethodDesigner))
             {
             }
             else
@@ -1074,16 +1345,16 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public IILOperator ILOperator { get { return methodGen.Body.ILOperator; } }
+        public IILOperator ILOperator { get { return method.Body.ILOperator; } }
 
         public ReadOnlyCollection<ILocalGenerator> Locals
         {
-            get { return methodGen.Body.Locals; }
+            get { return method.Body.Locals; }
         }
 
         public ReadOnlyCollection<IDirectiveGenerator> Directives
         {
-            get { return methodGen.Body.Directives; }
+            get { return method.Body.Directives; }
         }
 
         ReadOnlyCollection<ILocalDeclaration> IMethodBodyDeclaration.Locals
@@ -1106,7 +1377,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected MethodCallExpression CreateExtractExp1(Expression constant, Type type)
         {
-            return Expression.Call(Expression.Constant(ReservedWords), ReservedWordXInfo1.MakeGenericMethod(type), new Expression[] { constant });
+            return Expression.Call(Expression.Constant(ReservedWords), ReservedWordXInfo_T.MakeGenericMethod(type), new Expression[] { constant });
         }
 
         protected class EvalState
@@ -1117,6 +1388,10 @@ namespace Urasandesu.NAnonym.ILTools
                 ExtractInfoStack = new Stack<ExtractInfo>();
                 AllocInfoStack = new Stack<AllocInfo>();
                 ShiftInfoStack = new Stack<ShiftInfo>();
+                CandidateDesigningExpressionStack = new Stack<Expression>();
+                MethodDesignedInfoStack = new Stack<MethodInfo>();
+                ConstructorDesignedInfoStack = new Stack<ConstructorInfo>();
+                PropertyDesignedInfoStack = new Stack<PropertyInfo>();
             }
 
             public bool ProhibitsLastAutoPop { get; set; }
@@ -1124,6 +1399,10 @@ namespace Urasandesu.NAnonym.ILTools
             public Stack<ExtractInfo> ExtractInfoStack { get; private set; }
             public Stack<AllocInfo> AllocInfoStack { get; private set; }
             public Stack<ShiftInfo> ShiftInfoStack { get; private set; }
+            public Stack<Expression> CandidateDesigningExpressionStack { get; private set; }
+            public Stack<MethodInfo> MethodDesignedInfoStack { get; private set; }
+            public Stack<ConstructorInfo> ConstructorDesignedInfoStack { get; private set; }
+            public Stack<PropertyInfo> PropertyDesignedInfoStack { get; private set; }
         }
 
         protected class IfInfo
@@ -1326,7 +1605,7 @@ namespace Urasandesu.NAnonym.ILTools
         public ReadOnlyCollection<IDirectiveGenerator> ToDirectives(LambdaExpression expression)
         {
             var dummyAssemblyName = new AssemblyName("Dummy");
-            var dummyAssembly = methodGen.DeclaringType.Module.Assembly.CreateInstance(dummyAssemblyName);
+            var dummyAssembly = method.DeclaringType.Module.Assembly.CreateInstance(dummyAssemblyName);
             var dummyModule = dummyAssembly.AddModule("Dummy");
             var dummyType = dummyModule.AddType("Dummy.Dummy", TypeAttributes.Public, typeof(object));
             var dummyMethod = dummyType.AddMethod("Dummy", MethodAttributes.Public | MethodAttributes.Static, typeof(void), Type.EmptyTypes);
@@ -1353,7 +1632,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public IMethodBaseGenerator Method
         {
-            get { return methodGen; }
+            get { return method; }
         }
 
         IMethodBaseDeclaration IMethodBodyDeclaration.Method
@@ -1361,7 +1640,7 @@ namespace Urasandesu.NAnonym.ILTools
             get { return Method; }
         }
 
-        class ExpressibleReservedWords : IExpressibleReservedWords
+        class MethodReservedWords : IMethodReservedWords
         {
             public void Base()
             {
@@ -1398,7 +1677,12 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public object Invoke(object variable, MethodInfo method, object[] parameters)
+            public object Invoke(MethodInfo method, params object[] parameters)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Invoke(object variable, MethodInfo method, params object[] parameters)
             {
                 throw new NotSupportedException();
             }
@@ -1458,22 +1742,32 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords<T> St<T>(string variableName)
+            public object LdArg(int variableIndex)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords St(string variableName)
+            public object[] LdArg(int[] variableIndexes)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords<T> Alloc<T>(T variable)
+            public IMethodAllocReservedWords<T> St<T>(string variableName)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords Alloc(object variable)
+            public IMethodAllocReservedWords St(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IMethodAllocReservedWords<T> Alloc<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IMethodAllocReservedWords Alloc(object variable)
             {
                 throw new NotSupportedException();
             }
@@ -1493,14 +1787,13 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-
-            public object[] LdArg(int[] variableIndexes)
+            public bool AreEqual(object left, object right)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
-        class ExpressibleAllocReservedWords : IExpressibleAllocReservedWords
+        class MethodAllocReservedWords : IMethodAllocReservedWords
         {
             public object As(object value)
             {
@@ -1508,7 +1801,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        class ExpressibleAllocReservedWords<T> : IExpressibleAllocReservedWords<T>
+        class MethodAllocReservedWords<T> : IMethodAllocReservedWords<T>
         {
             public T As(T value)
             {

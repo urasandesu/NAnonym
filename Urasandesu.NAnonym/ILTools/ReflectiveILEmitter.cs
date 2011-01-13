@@ -1,5 +1,5 @@
 ﻿/* 
- * File: GenerativeEmitter.cs
+ * File: ReflectiveILEmitter.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -40,17 +40,17 @@ using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class GenerativeEmitter : ExpressiveDecorator
+    public class ReflectiveILEmitter : ReflectiveDesignerDecorator
     {
-        IEmittableReservedWords reservedWords = new EmittableReservedWords();
-        IEmittableAllocReservedWords allocReservedWords = new EmittableAllocReservedWords();
+        IILReservedWords reservedWords = new ILReservedWords();
+        IILAllocReservedWords allocReservedWords = new ILAllocReservedWords();
 
-        public GenerativeEmitter(ExpressiveGenerator gen, string ilName)
+        public ReflectiveILEmitter(ReflectiveMethodDesigner gen, string ilName)
             : base(new MethodBaseEmitterDecorator(gen, ilName))
         {
         }
 
-        protected override IExpressibleReservedWords ReservedWords
+        protected override IMethodReservedWords ReservedWords
         {
             get
             {
@@ -58,7 +58,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected override IExpressibleAllocReservedWords AllocReservedWords
+        protected override IMethodAllocReservedWords AllocReservedWords
         {
             get
             {
@@ -66,48 +66,48 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public void Emit(Expression<Action<IEmittableReservedWords>> exp)
+        public void Emit(Expression<Action<IILReservedWords>> exp)
         {
             Eval(Method, exp.Body, state);
         }
 
-        protected override void EvalMethodCall(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected override void EvalMethodCall(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (exp.Object == null)
             {
-                base.EvalMethodCall(methodGen, exp, state);
+                base.EvalMethodCall(method, exp, state);
             }
             else
             {
-                if (exp.Object.Type.IsDefined(typeof(EmittableReservedWordsAttribute), false))
+                if (exp.Object.Type.IsDefined(typeof(ILReservedWordsAttribute), false))
                 {
-                    if (exp.Method.IsDefined(typeof(EmittableReservedWordLdAttribute), false)) EvalEmittableLd(methodGen, exp, state);
-                    else if (exp.Method.IsDefined(typeof(EmittableReservedWordStAttribute), false)) EvalEmittableSt(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(ILReservedWordLdAttribute), false)) EvalEmitLd(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(ILReservedWordStAttribute), false)) EvalEmitSt(method, exp, state);
                     else
                     {
-                        base.EvalMethodCall(methodGen, exp, state);
+                        base.EvalMethodCall(method, exp, state);
                     }
                 }
-                else if (exp.Object.Type.IsDefined(typeof(EmittableAllocReservedWordsAttribute), false))
+                else if (exp.Object.Type.IsDefined(typeof(ILAllocReservedWordsAttribute), false))
                 {
-                    if (exp.Method.IsDefined(typeof(ExpressibleAllocReservedWordAsAttribute), false)) EvalEmittableAllocAs(methodGen, exp, state);
+                    if (exp.Method.IsDefined(typeof(MethodAllocReservedWordAsAttribute), false)) EvalEmitAllocAs(method, exp, state);
                     else
                     {
-                        base.EvalMethodCall(methodGen, exp, state);
+                        base.EvalMethodCall(method, exp, state);
                     }
                 }
                 else
                 {
-                    base.EvalMethodCall(methodGen, exp, state);
+                    base.EvalMethodCall(method, exp, state);
                 }
             }
         }
 
-        protected virtual void EvalEmittableLd(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalEmitLd(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (exp.Arguments.Count == 2)
             {
-                EvalExpression(methodGen, exp.Arguments[0], state);
+                EvalExpression(method, exp.Arguments[0], state);
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     throw new NotImplementedException();
@@ -116,14 +116,14 @@ namespace Urasandesu.NAnonym.ILTools
 
             var extractExp = Expression.Call(
                                 Expression.Constant(ReservedWords),
-                                ReservedWordXInfo1.MakeGenericMethod(exp.Arguments[exp.Arguments.Count - 1].Type),
+                                ReservedWordXInfo_T.MakeGenericMethod(exp.Arguments[exp.Arguments.Count - 1].Type),
                                 new Expression[] 
                                 { 
                                     exp.Arguments[exp.Arguments.Count - 1]
                                 }
                              );
 
-            EvalExtract(methodGen, extractExp, state);
+            EvalExtract(method, extractExp, state);
 
             var opcode = exp.Arguments.Count == 1 ? OpCodes.Ldsfld : OpCodes.Ldfld;
 
@@ -134,11 +134,11 @@ namespace Urasandesu.NAnonym.ILTools
                 var fieldDecl = default(IFieldDeclaration);
                 if ((fieldInfo = extractInfo.Value as FieldInfo) != null)
                 {
-                    methodGen.Body.ILOperator.Emit(opcode, fieldInfo);
+                    method.Body.ILOperator.Emit(opcode, fieldInfo);
                 }
                 else if ((fieldDecl = extractInfo.Value as IFieldDeclaration) != null)
                 {
-                    methodGen.Body.ILOperator.Emit(opcode, fieldDecl);
+                    method.Body.ILOperator.Emit(opcode, fieldDecl);
                 }
                 else
                 {
@@ -151,25 +151,25 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalEmittableSt(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalEmitSt(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             if (exp.Arguments.Count == 1)
             {
                 var extractExp = Expression.Call(
                                     Expression.Constant(ReservedWords),
-                                    ReservedWordXInfo2.MakeGenericMethod(typeof(FieldInfo)),
+                                    ReservedWordXInfo_object.MakeGenericMethod(typeof(FieldInfo)),
                                     new Expression[] 
                                     { 
                                         exp.Arguments[0]
                                     }
                                  );
 
-                EvalExtract(methodGen, extractExp, state);
+                EvalExtract(method, extractExp, state);
                 if (0 < state.ExtractInfoStack.Count)
                 {
                     var extractInfo = state.ExtractInfoStack.Pop();
                     var fieldInfo = (FieldInfo)extractInfo.Value;
-                    state.AllocInfoStack.Push(new EmittableAllocInfo(fieldInfo));
+                    state.AllocInfoStack.Push(new EmitAllocInfo(fieldInfo));
                 }
                 else
                 {
@@ -186,15 +186,15 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalEmittableAllocAs(IMethodBaseGenerator methodGen, MethodCallExpression exp, EvalState state)
+        protected virtual void EvalEmitAllocAs(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
-            EvalExpression(methodGen, exp.Object, state);
+            EvalExpression(method, exp.Object, state);
             if (0 < state.AllocInfoStack.Count)
             {
-                var allocInfo = (EmittableAllocInfo)state.AllocInfoStack.Pop();
+                var allocInfo = (EmitAllocInfo)state.AllocInfoStack.Pop();
 
-                EvalExpression(methodGen, exp.Arguments[0], state);
-                methodGen.Body.ILOperator.Emit(OpCodes.Stsfld, allocInfo.Field);
+                EvalExpression(method, exp.Arguments[0], state);
+                method.Body.ILOperator.Emit(OpCodes.Stsfld, allocInfo.Field);
             }
             else
             {
@@ -208,17 +208,17 @@ namespace Urasandesu.NAnonym.ILTools
 
 
 
-        class MethodBaseEmitterDecorator : ExpressiveMethodBaseDecorator
+        class MethodBaseEmitterDecorator : ReflectiveMethodBaseDecorator
         {
             readonly MethodBodyEmitterDecorator bodyDecorator;
-            public MethodBaseEmitterDecorator(ExpressiveGenerator gen, string ilName)
+            public MethodBaseEmitterDecorator(ReflectiveMethodDesigner gen, string ilName)
                 : base(gen)
             {
                 ILName = ilName;
                 bodyDecorator = new MethodBodyEmitterDecorator(this);
             }
 
-            public override ExpressiveMethodBodyDecorator BodyDecorator
+            public override ReflectiveMethodBodyDecorator BodyDecorator
             {
                 get { return bodyDecorator; }
             }
@@ -226,7 +226,7 @@ namespace Urasandesu.NAnonym.ILTools
             public string ILName { get; private set; }
         }
 
-        class MethodBodyEmitterDecorator : ExpressiveMethodBodyDecorator
+        class MethodBodyEmitterDecorator : ReflectiveMethodBodyDecorator
         {
             readonly ILOperationEmitterDecorator ilOperationDecorator;
             public MethodBodyEmitterDecorator(MethodBaseEmitterDecorator methodDecorator)
@@ -240,18 +240,18 @@ namespace Urasandesu.NAnonym.ILTools
                 get { return (MethodBaseEmitterDecorator)methodDecorator; }
             }
 
-            public override ExpressiveMethodBaseDecorator MethodDecorator
+            public override ReflectiveMethodBaseDecorator MethodDecorator
             {
                 get { return methodDecorator; }
             }
 
-            public override ExpressiveILOperationDecorator ILOperationDecorator
+            public override ReflectiveILOperationDecorator ILOperationDecorator
             {
                 get { return ilOperationDecorator; }
             }
         }
 
-        class ILOperationEmitterDecorator : ExpressiveILOperationDecorator
+        class ILOperationEmitterDecorator : ReflectiveILOperationDecorator
         {
             internal int localIndex;
             internal int labelIndex;
@@ -327,7 +327,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        class LocalEmitterDecorator : ExpressiveLocalDecorator
+        class LocalEmitterDecorator : ReflectiveLocalDecorator
         {
             public LocalEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator, Type type)
                 : base(ilOperationDecorator, type, ilOperationDecorator.localIndex++)
@@ -340,7 +340,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        class LabelEmitterDecorator : ExpressiveLabelDecorator
+        class LabelEmitterDecorator : ReflectiveLabelDecorator
         {
             public LabelEmitterDecorator(ILOperationEmitterDecorator ilOperationDecorator)
                 : base(ilOperationDecorator, ilOperationDecorator.labelIndex++)
@@ -353,9 +353,9 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected class EmittableAllocInfo : AllocInfo
+        protected class EmitAllocInfo : AllocInfo
         {
-            public EmittableAllocInfo(FieldInfo field)
+            public EmitAllocInfo(FieldInfo field)
                 : base(field.Name, field.FieldType)
             {
                 Field = field;
@@ -364,7 +364,7 @@ namespace Urasandesu.NAnonym.ILTools
             public FieldInfo Field { get; private set; }
         }
 
-        class EmittableReservedWords : IEmittableReservedWords
+        class ILReservedWords : IILReservedWords
         {
             public T Ld<T>(FieldInfo field)
             {
@@ -376,7 +376,7 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public IEmittableAllocReservedWords<T> St<T>(FieldInfo field)
+            public IILAllocReservedWords<T> St<T>(FieldInfo field)
             {
                 throw new NotSupportedException();
             }
@@ -416,7 +416,12 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public object Invoke(object variable, MethodInfo method, object[] parameters)
+            public object Invoke(MethodInfo method, params object[] parameters)
+            {
+                throw new NotSupportedException();
+            }
+
+            public object Invoke(object variable, MethodInfo method, params object[] parameters)
             {
                 throw new NotSupportedException();
             }
@@ -476,22 +481,32 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords<T> St<T>(string variableName)
+            public object LdArg(int variableIndex)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords St(string variableName)
+            public object[] LdArg(int[] variableIndexes)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords<T> Alloc<T>(T variable)
+            public IMethodAllocReservedWords<T> St<T>(string variableName)
             {
                 throw new NotSupportedException();
             }
 
-            public IExpressibleAllocReservedWords Alloc(object variable)
+            public IMethodAllocReservedWords St(string variableName)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IMethodAllocReservedWords<T> Alloc<T>(T variable)
+            {
+                throw new NotSupportedException();
+            }
+
+            public IMethodAllocReservedWords Alloc(object variable)
             {
                 throw new NotSupportedException();
             }
@@ -512,13 +527,13 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
 
-            public object[] LdArg(int[] variableIndexes)
+            public bool AreEqual(object left, object right)
             {
                 throw new NotImplementedException();
             }
         }
 
-        class EmittableAllocReservedWords : IEmittableAllocReservedWords
+        class ILAllocReservedWords : IILAllocReservedWords
         {
             public object As(object value)
             {
@@ -526,7 +541,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        class EmittableAllocReservedWords<T> : IEmittableAllocReservedWords<T>
+        class ILAllocReservedWords<T> : IILAllocReservedWords<T>
         {
             public T As(T value)
             {

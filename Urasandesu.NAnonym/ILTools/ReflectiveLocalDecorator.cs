@@ -1,5 +1,5 @@
-/* 
- * File: LocalConstructorBodyWeaver.cs
+﻿/* 
+ * File: ReflectiveLocalDecorator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,32 +26,48 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
-namespace Urasandesu.NAnonym.DW
+namespace Urasandesu.NAnonym.ILTools
 {
-    class LocalConstructorBodyWeaver : ConstructorBodyWeaver
+    public abstract class ReflectiveLocalDecorator : ILocalGenerator
     {
-        public LocalConstructorBodyWeaver(ReflectiveMethodDesigner gen, ConstructorWeaveBuilder parentBuilder)
-            : base(gen, parentBuilder)
+        protected readonly ReflectiveILOperationDecorator ilOperationDecorator;
+        string name;
+        ITypeDeclaration type;
+        int index;
+
+        public ReflectiveLocalDecorator(ReflectiveILOperationDecorator ilOperationDecorator, Type type, int index)
         {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = "local$" + index;
+            this.type = new SRTypeDeclarationImpl(Required.NotDefault(type, () => type));
+            this.index = index;
         }
 
-        protected override ConstructorBodyWeaveDefiner GetBodyDefiner(ConstructorBodyWeaver parentBody)
+        public ReflectiveLocalDecorator(ReflectiveILOperationDecorator ilOperationDecorator, string name, Type type, int index)
         {
-            return new LocalConstructorBodyDefiner(parentBody);
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = Required.NotDefault(name, () => name).Replace("$", "$$");
+            this.type = new SRTypeDeclarationImpl(Required.NotDefault(type, () => type));
+            this.index = index;
         }
 
-        protected override ConstructorBodyWeaveBuilder GetBodyBuilder(ConstructorBodyWeaveDefiner parentBodyDefiner)
+        public string Name
         {
-            return new LocalConstructorBodyBuilder(parentBodyDefiner);
+            get { return name; }
+        }
+
+        public ITypeDeclaration Type
+        {
+            get { return type; }
+        }
+
+        public int Index
+        {
+            get { return index; }
         }
     }
 }
-

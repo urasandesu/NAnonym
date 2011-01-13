@@ -38,9 +38,9 @@ namespace Urasandesu.NAnonym.DW
 {
     abstract class BodyWeaver
     {
-        public ExpressiveGenerator Gen { get; private set; }
+        public ReflectiveMethodDesigner Gen { get; private set; }
         public WeaveBuilder ParentBuilder { get; private set; }
-        public BodyWeaver(ExpressiveGenerator gen, WeaveBuilder parentBuilder)
+        public BodyWeaver(ReflectiveMethodDesigner gen, WeaveBuilder parentBuilder)
         {
             Gen = gen;
             ParentBuilder = parentBuilder;

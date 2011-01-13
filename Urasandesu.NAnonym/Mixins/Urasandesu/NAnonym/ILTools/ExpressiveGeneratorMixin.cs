@@ -44,7 +44,7 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
         static readonly FieldInfo OpcodesRetInfo = typeof(SRE::OpCodes).GetField("Ret");
         static readonly MethodInfo ILGeneratorEmit = typeof(SRE::ILGenerator).GetMethod("Emit", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(SRE::OpCode) }, null);
 
-        internal static void ExpressBodyEnd(this ExpressiveGenerator gen, Action<ExpressiveGenerator> expression)
+        internal static void ExpressBodyEnd(this ReflectiveMethodDesigner gen, Action<ReflectiveMethodDesigner> expression)
         {
             expression(gen);
             if (gen.Directives.Last().OpCode != OpCodes.Ret)
@@ -53,10 +53,10 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             }
         }
 
-        public static void ExpressEmit(this ExpressiveGenerator gen, Expression<Func<SRE::ILGenerator>> ilIdentifier, Action<GenerativeEmitter> expression)
+        public static void ExpressEmit(this ReflectiveMethodDesigner gen, Expression<Func<SRE::ILGenerator>> ilIdentifier, Action<ReflectiveILEmitter> expression)
         {
             var ilName = TypeSavable.GetName(ilIdentifier);
-            expression(new GenerativeEmitter(gen, ilName));
+            expression(new ReflectiveILEmitter(gen, ilName));
 
             var lastDirectives = gen.Directives.Skip(gen.Directives.Count - 3).ToArray();
 
@@ -78,15 +78,6 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
             {
                 gen.Eval(_ => _.Ld<SRE::ILGenerator>(ilName).Emit(SRE::OpCodes.Ret));
-            }
-        }
-
-        public static void ExpressReflection(this ExpressiveGenerator gen, Action<ReflectiveDesigner> expression)
-        {
-            expression(new ReflectiveDesigner(gen));
-            if (gen.Directives.Last().OpCode != OpCodes.Ret)
-            {
-                gen.Eval(_ => _.End());
             }
         }
     }

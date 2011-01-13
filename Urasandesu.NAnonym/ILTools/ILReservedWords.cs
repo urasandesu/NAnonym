@@ -1,5 +1,5 @@
 /* 
- * File: EmittableReservedWords.cs
+ * File: ILReservedWords.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -29,50 +29,46 @@
 
 
 using System;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using Urasandesu.NAnonym.Mixins.System;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    [ExpressibleReservedWords]
-    [EmittableReservedWords]
-    public interface IEmittableReservedWords : IExpressibleReservedWords
+    [MethodReservedWords]
+    [ILReservedWords]
+    public interface IILReservedWords : IMethodReservedWords
     {
-        [EmittableReservedWordLd]
+        [ILReservedWordLd]
         T Ld<T>(FieldInfo field);
 
-        [EmittableReservedWordLd]
+        [ILReservedWordLd]
         T Ld<T>(object instance, IFieldDeclaration field);
 
-        [EmittableReservedWordSt]
-        IEmittableAllocReservedWords<T> St<T>(FieldInfo field);
+        [ILReservedWordSt]
+        IILAllocReservedWords<T> St<T>(FieldInfo field);
     }
 
     [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
-    public sealed class EmittableReservedWordsAttribute : Attribute { }
+    public sealed class ILReservedWordsAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class EmittableReservedWordLdAttribute : Attribute { }
+    public sealed class ILReservedWordLdAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class EmittableReservedWordStAttribute : Attribute { }
+    public sealed class ILReservedWordStAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
-    public sealed class EmittableAllocReservedWordsAttribute : Attribute { }
+    public sealed class ILAllocReservedWordsAttribute : Attribute { }
 
 
-    [ExpressibleAllocReservedWords]
-    [EmittableAllocReservedWords]
-    public interface IEmittableAllocReservedWords : IExpressibleAllocReservedWords
+    [MethodAllocReservedWords]
+    [ILAllocReservedWords]
+    public interface IILAllocReservedWords : IMethodAllocReservedWords
     {
     }
 
-    [ExpressibleAllocReservedWords]
-    [EmittableAllocReservedWords]
-    public interface IEmittableAllocReservedWords<T> : IExpressibleAllocReservedWords<T>
+    [MethodAllocReservedWords]
+    [ILAllocReservedWords]
+    public interface IILAllocReservedWords<T> : IMethodAllocReservedWords<T>
     {
     }
 }

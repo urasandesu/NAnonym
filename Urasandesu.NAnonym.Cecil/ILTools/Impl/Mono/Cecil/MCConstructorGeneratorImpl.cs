@@ -70,7 +70,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return methodBaseGen.AddPortableScopeItem(fieldInfo);
         }
 
-        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ExpressiveGenerator> bodyExpression)
+        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ReflectiveMethodDesigner> bodyExpression)
         {
             methodBaseGen.ExpressBody(bodyExpression);
             return this;

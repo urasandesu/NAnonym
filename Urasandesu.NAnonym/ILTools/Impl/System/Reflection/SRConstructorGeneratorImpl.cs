@@ -99,7 +99,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return methodGen.CreateInstance(name, attributes, returnType, parameterTypes);
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
         {
             methodGen.ExpressBody(bodyExpression);
             return this;

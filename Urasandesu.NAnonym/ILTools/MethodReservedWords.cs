@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ExpressibleReservedWords.cs
+ * File: ReflectiveReservedWords.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -32,165 +32,177 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    [ExpressibleReservedWords]
-    public interface IExpressibleReservedWords
+    [MethodReservedWords]
+    public interface IMethodReservedWords
     {
-        [ExpressibleReservedWordBase]
+        [MethodReservedWordBase]
         void Base();
 
-        [ExpressibleReservedWordThis]
+        [MethodReservedWordThis]
         object This();
 
-        [ExpressibleReservedWordDupAddOne]
+        [MethodReservedWordDupAddOne]
         T DupAddOne<T>(T variable);
 
-        [ExpressibleReservedWordAddOneDup]
+        [MethodReservedWordAddOneDup]
         T AddOneDup<T>(T variable);
 
-        [ExpressibleReservedWordSubOneDup]
+        [MethodReservedWordSubOneDup]
         T SubOneDup<T>(T variable);
 
-        [ExpressibleReservedWordNew]
+        [MethodReservedWordNew]
         object New(ConstructorInfo constructor, object parameter);
 
-        [ExpressibleReservedWordNew]
+        [MethodReservedWordNew]
         T New<T>(ConstructorInfo constructor, params object[] parameters);
 
-        [ExpressibleReservedWordInvoke]
-        object Invoke(object variable, MethodInfo method, object[] parameters);
+        [MethodReservedWordInvoke]
+        object Invoke(MethodInfo method, params object[] parameters);
 
-        [ExpressibleReservedWordFtn]
+        [MethodReservedWordInvoke]
+        object Invoke(object variable, MethodInfo method, params object[] parameters);
+
+        [MethodReservedWordFtn]
         object Ftn(object variable, IMethodDeclaration methodDecl);
 
-        [ExpressibleReservedWordFtn]
+        [MethodReservedWordFtn]
         object Ftn(IMethodDeclaration methodDecl);
 
-        [ExpressibleReservedWordFtn]
+        [MethodReservedWordFtn]
         object Ftn(MethodInfo methodInfo);
 
-        [ExpressibleReservedWordIf]
+        [MethodReservedWordIf]
         void If(bool condition);
 
-        [ExpressibleReservedWordEndIf]
+        [MethodReservedWordEndIf]
         void EndIf();
 
-        [ExpressibleReservedWordEnd]
+        [MethodReservedWordEnd]
         void End();
 
-        [ExpressibleReservedWordReturn]
+        [MethodReservedWordReturn]
         void Return<T>(T variable);
 
-        [ExpressibleReservedWordLd]
+        [MethodReservedWordLd]
         T Ld<T>(string variableName);
 
-        [ExpressibleReservedWordLd]
+        [MethodReservedWordLd]
         object Ld(string variableName);
 
-        [ExpressibleReservedWordLd]
+        [MethodReservedWordLd]
         object[] Ld(string[] variableNames);
 
-        [ExpressibleReservedWordLd]
+        [MethodReservedWordLd]
         object[] Ld(string[] variableNames, int shift);
 
-        [ExpressibleReservedWordLdArg]
+        [MethodReservedWordLdArg]
+        object LdArg(int variableIndex);
+
+        [MethodReservedWordLdArg]
         object[] LdArg(int[] variableIndexes);
 
-        [ExpressibleReservedWordSt]
-        IExpressibleAllocReservedWords<T> St<T>(string variableName);
+        [MethodReservedWordSt]
+        IMethodAllocReservedWords<T> St<T>(string variableName);
 
-        [ExpressibleReservedWordSt]
-        IExpressibleAllocReservedWords St(string variableName);
+        [MethodReservedWordSt]
+        IMethodAllocReservedWords St(string variableName);
 
-        [ExpressibleReservedWordAlloc]
-        IExpressibleAllocReservedWords<T> Alloc<T>(T variable);
+        [MethodReservedWordAlloc]
+        IMethodAllocReservedWords<T> Alloc<T>(T variable);
 
-        [ExpressibleReservedWordAlloc]
-        IExpressibleAllocReservedWords Alloc(object variable);
+        [MethodReservedWordAlloc]
+        IMethodAllocReservedWords Alloc(object variable);
 
-        [ExpressibleReservedWordX]
+        [MethodReservedWordX]
         T X<T>(T constant);
 
-        [ExpressibleReservedWordX]
+        [MethodReservedWordX]
         T X<T>(object constant);
 
-        [ExpressibleReservedWordCm]
+        [MethodReservedWordCm]
         TValue Cm<TValue>(TValue constMember, Type declaringType);
+
+        [MethodReservedWordAreEqual]
+        bool AreEqual(object left, object right);
     }
 
     [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
-    public sealed class ExpressibleReservedWordsAttribute : Attribute { }
+    public sealed class MethodReservedWordsAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordBaseAttribute : Attribute { }
+    public sealed class MethodReservedWordBaseAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordThisAttribute : Attribute { }
+    public sealed class MethodReservedWordThisAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordDupAddOneAttribute : Attribute { }
+    public sealed class MethodReservedWordDupAddOneAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordAddOneDupAttribute : Attribute { }
+    public sealed class MethodReservedWordAddOneDupAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordSubOneDupAttribute : Attribute { }
+    public sealed class MethodReservedWordSubOneDupAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordNewAttribute : Attribute { }
+    public sealed class MethodReservedWordNewAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordInvokeAttribute : Attribute { }
+    public sealed class MethodReservedWordInvokeAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordFtnAttribute : Attribute { }
+    public sealed class MethodReservedWordFtnAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordIfAttribute : Attribute { }
+    public sealed class MethodReservedWordIfAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordEndIfAttribute : Attribute { }
+    public sealed class MethodReservedWordEndIfAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordEndAttribute : Attribute { }
+    public sealed class MethodReservedWordEndAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordReturnAttribute : Attribute { }
+    public sealed class MethodReservedWordReturnAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordLdAttribute : Attribute { }
+    public sealed class MethodReservedWordLdAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordStAttribute : Attribute { }
+    public sealed class MethodReservedWordStAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordAllocAttribute : Attribute { }
+    public sealed class MethodReservedWordAllocAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordXAttribute : Attribute { }
+    public sealed class MethodReservedWordXAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordCmAttribute : Attribute { }
+    public sealed class MethodReservedWordCmAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleReservedWordLdArgAttribute : Attribute { }
+    public sealed class MethodReservedWordLdArgAttribute : Attribute { }
 
-    [ExpressibleAllocReservedWords]
-    public interface IExpressibleAllocReservedWords
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class MethodReservedWordAreEqualAttribute : Attribute { }
+
+    [MethodAllocReservedWords]
+    public interface IMethodAllocReservedWords
     {
-        [ExpressibleAllocReservedWordAs]
+        [MethodAllocReservedWordAs]
         object As(object value);
     }
 
-    [ExpressibleAllocReservedWords]
-    public interface IExpressibleAllocReservedWords<T>
+    [MethodAllocReservedWords]
+    public interface IMethodAllocReservedWords<T>
     {
-        [ExpressibleAllocReservedWordAs]
+        [MethodAllocReservedWordAs]
         T As(T value);
     }
 
     [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
-    public sealed class ExpressibleAllocReservedWordsAttribute : Attribute { }
+    public sealed class MethodAllocReservedWordsAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class ExpressibleAllocReservedWordAsAttribute : Attribute { }
+    public sealed class MethodAllocReservedWordAsAttribute : Attribute { }
 }

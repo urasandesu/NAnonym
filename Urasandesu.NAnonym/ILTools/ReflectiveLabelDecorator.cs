@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ExpressiveDecorator.cs
+ * File: ReflectiveLabelDecorator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -27,13 +27,41 @@
  *  THE SOFTWARE.
  */
 
+using System;
+using System.Reflection;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
+
 namespace Urasandesu.NAnonym.ILTools
 {
-    public abstract class ExpressiveDecorator : ExpressiveGenerator
+    public abstract class ReflectiveLabelDecorator : ILabelGenerator
     {
-        public ExpressiveDecorator(ExpressiveMethodBaseDecorator methodDecorator)
-            : base(methodDecorator)
+        protected readonly ReflectiveILOperationDecorator ilOperationDecorator;
+        string name;
+        int index;
+
+        public ReflectiveLabelDecorator(ReflectiveILOperationDecorator ilOperationDecorator, int index)
         {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = "label$" + index;
+            this.index = index;
+        }
+
+        public ReflectiveLabelDecorator(ReflectiveILOperationDecorator ilOperationDecorator, string name, int index)
+        {
+            this.ilOperationDecorator = ilOperationDecorator;
+            this.name = Required.NotDefault(name, () => name).Replace("$", "$$");
+            this.index = index;
+        }
+
+        public string Name
+        {
+            get { return name; }
+        }
+
+
+        public int Index
+        {
+            get { return index; }
         }
     }
 }

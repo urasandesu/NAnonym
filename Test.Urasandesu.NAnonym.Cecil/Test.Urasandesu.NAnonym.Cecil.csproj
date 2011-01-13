@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DW\GlobalClassTest.cs" />
-    <Compile Include="ILTools\ExpressiveGeneratorTest.cs" />
+    <Compile Include="ILTools\ReflectiveMethodDesignerTest.cs" />
     <Compile Include="MixinTest.cs" />
     <Compile Include="ILTools\NewDomainTestInfoWithScope.cs" />
     <Compile Include="ILTools\PortableScopeTest.cs" />

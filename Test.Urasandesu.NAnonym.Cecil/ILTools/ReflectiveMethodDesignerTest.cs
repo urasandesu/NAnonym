@@ -1,5 +1,5 @@
 /* 
- * File: ExpressiveGeneratorTest.cs
+ * File: ReflectiveMethodDesignerTest.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -42,21 +42,19 @@ using Urasandesu.NAnonym;
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.Mixins.System;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
 using MC = Mono.Cecil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
-using Urasandesu.NAnonym.ILTools;
-using SRE = System.Reflection.Emit;
-using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
-using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
     [NewDomainTestFixture]
-    public class ExpressiveGeneratorTest : NewDomainTestBase
+    public class ReflectiveMethodDesignerTest : NewDomainTestBase
     {
         [NewDomainTestFixtureSetUp]
         public void FixtureSetUp()
@@ -999,7 +997,7 @@ Parameter[1] = IntPtr method
             TestHelper.UsingTempFile(tempFileName =>
             TestHelper.UsingNewDomain(() =>
             {
-                var candidateCallingCurrentMethods = typeof(ExpressiveGeneratorTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
+                var candidateCallingCurrentMethods = typeof(ReflectiveMethodDesignerTest).GetMethods(BindingFlags.NonPublic | BindingFlags.Static);
                 var callingCurrentMethod = candidateCallingCurrentMethods.FirstOrDefault(method => method.Name.StartsWith("<EmitTest18>"));
                 var cacheField = TypeAnalyzer.GetCacheFieldIfAnonymousByDirective(callingCurrentMethod);
                 var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
@@ -1425,20 +1423,21 @@ Parameter[1] = IntPtr method
                 reflectiveDesigner1Gen.ExpressBody(
                 gen =>
                 {
-                    gen.ExpressReflection(
-                    _gen =>
-                    {
-                        var throwExceptionInfo = typeof(TestHelper).GetMethod("ThrowException",
-                                                                              BindingFlags.Public | BindingFlags.Static,
-                                                                              null,
-                                                                              new Type[] 
-                                                                              { 
-                                                                                  typeof(string) 
-                                                                              },
-                                                                              null);
+                    var getValueInfo = typeof(TestHelper).GetMethod("GetValue", new Type[] { typeof(int) });
+                    var value = default(object);
+                    gen.Eval(_ => _.Alloc(value).As(getValueInfo.Invoke(null, new object[] { 20 })));
 
-                        _gen.Eval(_ => throwExceptionInfo.Invoke(null, new object[] { "testtest" }));
-                    });
+                    var writeLogInfo = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
+                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "testtest", new object[] { } }));
+
+                    var propertyTestClass1 = default(PropertyTestClass1);
+                    var propertyTestClass1CtorInfo = typeof(PropertyTestClass1).GetConstructor(Type.EmptyTypes);
+                    gen.Eval(_ => _.Alloc(propertyTestClass1).As((PropertyTestClass1)propertyTestClass1CtorInfo.Invoke(null)));
+                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "{0}", new object[] { propertyTestClass1 } }));
+
+                    var valuePropertyInfo = typeof(PropertyTestClass1).GetProperty("ValueProperty");
+                    gen.Eval(_ => valuePropertyInfo.SetValue(propertyTestClass1, 10, null));
+                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { valuePropertyInfo.GetValue(propertyTestClass1, null) } }));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1447,15 +1446,12 @@ Parameter[1] = IntPtr method
                 var emitTest24 = assembly.GetType(emitTest24Gen.FullName);
                 var instance = Activator.CreateInstance(emitTest24);
                 var generativeEmit1 = emitTest24.GetMethod(reflectiveDesigner1Gen.Name);
-                try
-                {
-                    generativeEmit1.Invoke(instance, null);
-                    Assert.Fail();
-                }
-                catch (TargetInvocationException e)
-                {
-                    Assert.AreEqual("testtest", e.InnerException.Message);
-                }
+                generativeEmit1.Invoke(instance, null);
+                Assert.AreEqual(
+@"testtest
+Test.Urasandesu.NAnonym.Etc.PropertyTestClass1
+ValueProperty: 10
+", SimpleLogWriter.Instance.ReadToEnd());
             });
         }
 
@@ -1507,24 +1503,27 @@ Parameter[1] = IntPtr method
         [NewDomainTest]
         public void Hoge()
         {
-            TestHelper.UsingTempFile(tempFileName =>
-            {
-                var t = typeof(Func<string, int>);
-                Console.WriteLine(t);
-                //var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
-                //var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
-                //var hogeGen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "Hoge");
+            var propertyTestClass1 = new PropertyTestClass1();
+            propertyTestClass1.ValueProperty = 10;
+            TestHelper.WriteLog("ValueProperty: {0}", propertyTestClass1.ValueProperty);
+            //TestHelper.UsingTempFile(tempFileName =>
+            //{
+            //    var t = typeof(Func<string, int>);
+            //    Console.WriteLine(t);
+            //    //var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+            //    //var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+            //    //var hogeGen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "Hoge");
 
-                //hogeGen.AddDefaultConstructor();
+            //    //hogeGen.AddDefaultConstructor();
 
-                //var genericsample = typeof(GenericSample<string>);
-                //var genericsampleRef = genericsample.ToTypeRef();
-                //var test = genericsample.GetMethod("Test", BindingFlags.Instance | BindingFlags.Public);
-                //var testDef = genericsampleRef.Module.Import(test, genericsampleRef);
-                //Console.WriteLine(testDef.FullName);    
-                // MEMO: Generic な型の Generic Parameter を使ったメソッドの場合、Close な Generic 型にしてもメソッドに使われている 
-                // MEMO: Generic Parameter が解決されることはなさそう。
-            });
+            //    //var genericsample = typeof(GenericSample<string>);
+            //    //var genericsampleRef = genericsample.ToTypeRef();
+            //    //var test = genericsample.GetMethod("Test", BindingFlags.Instance | BindingFlags.Public);
+            //    //var testDef = genericsampleRef.Module.Import(test, genericsampleRef);
+            //    //Console.WriteLine(testDef.FullName);    
+            //    // MEMO: Generic な型の Generic Parameter を使ったメソッドの場合、Close な Generic 型にしてもメソッドに使われている 
+            //    // MEMO: Generic Parameter が解決されることはなさそう。
+            //});
         }
     }
 

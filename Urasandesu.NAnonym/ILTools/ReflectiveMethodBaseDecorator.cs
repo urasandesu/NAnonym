@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ExpressiveMethodBaseDecorator.cs
+ * File: ReflectiveMethodBaseDecorator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -35,18 +35,18 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public abstract class ExpressiveMethodBaseDecorator : IMethodBaseGenerator
+    public abstract class ReflectiveMethodBaseDecorator : IMethodBaseGenerator
     {
         protected readonly ReadOnlyCollection<IParameterDeclaration> parameterDecls;
-        protected readonly ExpressiveGenerator gen;
-        public ExpressiveMethodBaseDecorator(ExpressiveGenerator gen)
+        protected readonly ReflectiveMethodDesigner gen;
+        public ReflectiveMethodBaseDecorator(ReflectiveMethodDesigner gen)
         {
             this.gen = gen;
             parameterDecls = new ReadOnlyCollection<IParameterDeclaration>(gen.Method.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)parameter));
         }
 
-        public ExpressiveGenerator ExpressiveGenerator { get { return gen; } }
-        public abstract ExpressiveMethodBodyDecorator BodyDecorator { get; }
+        public ReflectiveMethodDesigner ExpressiveGenerator { get { return gen; } }
+        public abstract ReflectiveMethodBodyDecorator BodyDecorator { get; }
         public virtual IMethodBodyGenerator Body { get { return BodyDecorator; } }
         public virtual ITypeGenerator DeclaringType { get { return gen.Method.DeclaringType; } }
         public virtual ReadOnlyCollection<IParameterGenerator> Parameters { get { return gen.Method.Parameters; } }
@@ -54,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
             return gen.Method.AddPortableScopeItem(fieldInfo);
         }
-        public virtual IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
+        public virtual IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
         {
             return gen.Method.ExpressBody(bodyExpression);
         }

@@ -96,7 +96,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ExpressiveGenerator> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
         {
             methodBaseGen.ExpressBody(bodyExpression);
             return this;

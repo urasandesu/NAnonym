@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ExpressiveMethodBodyDecorator.cs
+ * File: ReflectiveMethodBodyDecorator.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -32,21 +32,21 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public abstract class ExpressiveMethodBodyDecorator : IMethodBodyGenerator
+    public abstract class ReflectiveMethodBodyDecorator : IMethodBodyGenerator
     {
-        protected readonly ExpressiveMethodBaseDecorator methodDecorator;
+        protected readonly ReflectiveMethodBaseDecorator methodDecorator;
         protected readonly ReadOnlyCollection<ILocalDeclaration> localDecls;
         protected readonly ReadOnlyCollection<IDirectiveDeclaration> directiveDecls;
-        public ExpressiveMethodBodyDecorator(ExpressiveMethodBaseDecorator methodDecorator)
+        public ReflectiveMethodBodyDecorator(ReflectiveMethodBaseDecorator methodDecorator)
         {
             this.methodDecorator = methodDecorator;
             localDecls = new ReadOnlyCollection<ILocalDeclaration>(methodDecorator.ExpressiveGenerator.Locals.TransformEnumerateOnly(local => (ILocalDeclaration)local));
             directiveDecls = new ReadOnlyCollection<IDirectiveDeclaration>(methodDecorator.ExpressiveGenerator.Directives.TransformEnumerateOnly(directive => (IDirectiveDeclaration)directive));
         }
 
-        public virtual ExpressiveMethodBaseDecorator MethodDecorator { get { return methodDecorator; } }
+        public virtual ReflectiveMethodBaseDecorator MethodDecorator { get { return methodDecorator; } }
         public virtual IMethodBaseGenerator Method { get { return MethodDecorator; } }
-        public abstract ExpressiveILOperationDecorator ILOperationDecorator { get; }
+        public abstract ReflectiveILOperationDecorator ILOperationDecorator { get; }
         public virtual IILOperator ILOperator { get { return ILOperationDecorator; } }
         public virtual ReadOnlyCollection<ILocalGenerator> Locals { get { return methodDecorator.ExpressiveGenerator.Locals; } }
         public virtual ReadOnlyCollection<IDirectiveGenerator> Directives { get { return methodDecorator.ExpressiveGenerator.Directives; } }
