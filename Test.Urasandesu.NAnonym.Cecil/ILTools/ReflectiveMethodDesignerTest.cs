@@ -527,7 +527,7 @@ Parameter[0] Type = Int32
                     var value = default(int);
                     var objValue = default(object);
                     var value2 = default(int?);
-                    gen.Eval(_ => _.If(value == 10));
+                    gen.Eval(_ => _.If(value != 20 && value != 30));
                     {
                         gen.Eval(_ => _.Alloc(objValue).As(value));
                         gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
@@ -1521,33 +1521,47 @@ ValueProperty: 10
         [NewDomainTest]
         public void Hoge()
         {
-            TestHelper.UsingTempFile(tempFileName =>
+            var value = 10;
+
+            if (value != 20 && value != 30 && value != 40)
             {
-                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
-                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
-                var hogeDef = new TypeDefinition("Hoge", "Hoge", MC::TypeAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(object)));
-                tempAssemblyDef.MainModule.Types.Add(hogeDef);
+                Console.WriteLine(10);
+            }
+            else if (value == 20)
+            {
+                Console.WriteLine(20);
+            }
+            else if (value != 20)
+            {
+                Console.WriteLine(30);
+            }
+            //TestHelper.UsingTempFile(tempFileName =>
+            //{
+            //    var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+            //    var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+            //    var hogeDef = new TypeDefinition("Hoge", "Hoge", MC::TypeAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(object)));
+            //    tempAssemblyDef.MainModule.Types.Add(hogeDef);
 
-                hogeDef.AddDefaultConstructor();
+            //    hogeDef.AddDefaultConstructor();
 
-                var testDef = new MethodDefinition("Test", MC::MethodAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(int)));
-                hogeDef.Methods.Add(testDef);
-                testDef.Body.InitLocals = true;
-                var gen = testDef.Body.GetILProcessor();
-                gen.Emit(MCC::OpCodes.Ldc_I4_0);
-                var instruction = gen.Create(MCC::OpCodes.Nop);
-                gen.Emit(MCC::OpCodes.Br_S, instruction);
-                gen.Append(instruction);
-                gen.Emit(MCC::OpCodes.Ret);
+            //    var testDef = new MethodDefinition("Test", MC::MethodAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(int)));
+            //    hogeDef.Methods.Add(testDef);
+            //    testDef.Body.InitLocals = true;
+            //    var gen = testDef.Body.GetILProcessor();
+            //    gen.Emit(MCC::OpCodes.Ldc_I4_0);
+            //    var instruction = gen.Create(MCC::OpCodes.Nop);
+            //    gen.Emit(MCC::OpCodes.Br_S, instruction);
+            //    gen.Append(instruction);
+            //    gen.Emit(MCC::OpCodes.Ret);
 
-                tempAssemblyDef.Write(tempFileName);
+            //    tempAssemblyDef.Write(tempFileName);
 
-                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
-                var hoge = assembly.GetType(hogeDef.GetFullName());
-                var instance = Activator.CreateInstance(hoge);
-                var test = hoge.GetMethod(testDef.Name);
-                Assert.AreEqual(0, (int)test.Invoke(instance, null));
-            });
+            //    var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+            //    var hoge = assembly.GetType(hogeDef.GetFullName());
+            //    var instance = Activator.CreateInstance(hoge);
+            //    var test = hoge.GetMethod(testDef.Name);
+            //    Assert.AreEqual(0, (int)test.Invoke(instance, null));
+            //});
         }
     }
 

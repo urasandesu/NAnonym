@@ -16,7 +16,6 @@
 
 
 
-// DOING: 条件 AND 演算子実装
 // DOING: ビットごとの排他的OR演算子実装
 // DOING: 3項条件演算子実装
 // DOING: NAnonym を利用したサンプルの作成。
@@ -85,3 +84,4 @@
 // DONE: ReflectiveMethodDesigner 実装
 // DONE: as 演算子実装
 // DONE: else if/else 文実装
+// DONE: 条件 AND 演算子実装

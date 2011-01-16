@@ -110,7 +110,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
             foreach (var exp in exps)
             {
-                state.CandidateDesigningExpressionStack.Push(exp);
+                state.CandidateReflectiveDesigningStack.Push(exp);
                 EvalExpression(method, exp, state);
                 EvalAdjustState(method, exp, state);
             }
@@ -127,13 +127,13 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.ArrayIndex:
                 case ExpressionType.Multiply:
                 case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.AndAlso:
                     EvalBinary(method, (BinaryExpression)exp, state);
                     return;
                 case ExpressionType.AddChecked:
                     throw new NotImplementedException();
                 case ExpressionType.And:
-                    throw new NotImplementedException();
-                case ExpressionType.AndAlso:
                     throw new NotImplementedException();
                 case ExpressionType.Call:
                     EvalMethodCall(method, (MethodCallExpression)exp, state);
@@ -197,8 +197,6 @@ namespace Urasandesu.NAnonym.ILTools
                     return;
                 case ExpressionType.Not:
                     throw new NotImplementedException();
-                case ExpressionType.NotEqual:
-                    throw new NotImplementedException();
                 case ExpressionType.Or:
                     throw new NotImplementedException();
                 case ExpressionType.OrElse:
@@ -227,18 +225,45 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
         {
+            if (exp.NodeType == ExpressionType.Add || 
+                exp.NodeType == ExpressionType.Multiply)
+            {
+                EvalArithmeticBinary(method, exp, state);
+            }
+            else if (exp.NodeType == ExpressionType.ArrayIndex)
+            {
+                EvalArrayIndexBinary(method, exp, state);
+            }
+            else if (exp.NodeType == ExpressionType.Equal ||
+                     exp.NodeType == ExpressionType.NotEqual)
+            {
+                EvalLogicalBinaryWithoutAssociation(method, exp, state);
+            }
+            else if (exp.NodeType == ExpressionType.AndAlso)
+            {
+                EvalLogicalBinary(method, exp, state);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        protected virtual void EvalArithmeticBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
+        {
+            state.CandidateReflectiveDesigningStack.Push(exp.Left);
             EvalExpression(method, exp.Left, state);
+            EvalAdjustState(method, exp.Left, state);
+
+            state.CandidateReflectiveDesigningStack.Push(exp.Right);
             EvalExpression(method, exp.Right, state);
+            EvalAdjustState(method, exp.Right, state);
 
             // TODO: ?? 演算子とか演算子のオーバーロードとか。
             if (exp.Conversion != null) throw new NotImplementedException();
             if (exp.Method != null) throw new NotImplementedException();
 
-            if (exp.NodeType == ExpressionType.Coalesce)
-            {
-                throw new NotImplementedException();
-            }
-            else if (exp.NodeType == ExpressionType.Add)
+            if (exp.NodeType == ExpressionType.Add)
             {
                 if (exp.Left.Type == typeof(int) && exp.Left.Type == typeof(int))
                 {
@@ -260,25 +285,114 @@ namespace Urasandesu.NAnonym.ILTools
                     throw new NotImplementedException();
                 }
             }
-            else if (exp.NodeType == ExpressionType.ArrayIndex)
+            else
             {
-                if (typeof(double).IsAssignableFrom(exp.Left.Type.GetElementType()))
-                {
-                    throw new NotImplementedException();
-                }
-                else
-                {
-                    method.Body.ILOperator.Emit(OpCodes.Ldelem_Ref);
-                }
+                throw new NotImplementedException();
             }
-            else if (exp.NodeType == ExpressionType.Equal)
+        }
+
+        protected virtual void EvalArrayIndexBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
+        {
+            state.CandidateReflectiveDesigningStack.Push(exp.Left);
+            EvalExpression(method, exp.Left, state);
+            EvalAdjustState(method, exp.Left, state);
+
+            state.CandidateReflectiveDesigningStack.Push(exp.Right);
+            EvalExpression(method, exp.Right, state);
+            EvalAdjustState(method, exp.Right, state);
+
+            // TODO: ?? 演算子とか演算子のオーバーロードとか。
+            if (exp.Conversion != null) throw new NotImplementedException();
+            if (exp.Method != null) throw new NotImplementedException();
+
+            if (typeof(double).IsAssignableFrom(exp.Left.Type.GetElementType()))
             {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                method.Body.ILOperator.Emit(OpCodes.Ldelem_Ref);
+            }
+        }
+
+        protected virtual void EvalLogicalBinaryWithoutAssociation(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
+        {
+            state.CandidateReflectiveDesigningStack.Push(exp.Left);
+            EvalExpression(method, exp.Left, state);
+            EvalAdjustState(method, exp.Left, state);
+
+            state.CandidateReflectiveDesigningStack.Push(exp.Right);
+            EvalExpression(method, exp.Right, state);
+            EvalAdjustState(method, exp.Right, state);
+
+            // TODO: ?? 演算子とか演算子のオーバーロードとか。
+            if (exp.Conversion != null) throw new NotImplementedException();
+            if (exp.Method != null) throw new NotImplementedException();
+
+            if (exp.NodeType == ExpressionType.Equal)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Ceq);
+            }
+            else if (exp.NodeType == ExpressionType.NotEqual)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Ceq);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
                 method.Body.ILOperator.Emit(OpCodes.Ceq);
             }
             else
             {
                 throw new NotImplementedException();
             }
+        }
+
+        protected virtual void EvalLogicalBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
+        {
+            state.CandidateReflectiveDesigningStack.Push(exp.Left);
+            EvalExpression(method, exp.Left, state);
+            EvalAdjustState(method, exp.Left, state);
+
+            var labelLeft = default(ILabelDeclaration);
+            var localLeft = default(ILocalDeclaration);
+            if (exp.NodeType == ExpressionType.AndAlso)
+            {
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+                method.Body.ILOperator.Emit(OpCodes.Ceq);
+                localLeft = method.Body.ILOperator.AddLocal(typeof(bool));
+                method.Body.ILOperator.Emit(OpCodes.Stloc, localLeft);
+                method.Body.ILOperator.Emit(OpCodes.Ldloc, localLeft);
+                labelLeft = method.Body.ILOperator.AddLabel();
+                method.Body.ILOperator.Emit(OpCodes.Brtrue, labelLeft);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            state.CandidateReflectiveDesigningStack.Push(exp.Right);
+            EvalExpression(method, exp.Right, state);
+            EvalAdjustState(method, exp.Right, state);
+
+            var labelRight = default(ILabelDeclaration);
+            var localRight = default(ILocalDeclaration);
+            if (exp.NodeType == ExpressionType.AndAlso)
+            {
+                localRight = method.Body.ILOperator.AddLocal(typeof(bool));
+                method.Body.ILOperator.Emit(OpCodes.Stloc, localRight);
+                method.Body.ILOperator.Emit(OpCodes.Ldloc, localRight);
+                labelRight = method.Body.ILOperator.AddLabel();
+                method.Body.ILOperator.Emit(OpCodes.Br, labelRight);
+                method.Body.ILOperator.SetLabel(labelLeft);
+                method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+                method.Body.ILOperator.SetLabel(labelRight);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            // TODO: ?? 演算子とか演算子のオーバーロードとか。
+            if (exp.Conversion != null) throw new NotImplementedException();
+            if (exp.Method != null) throw new NotImplementedException();
         }
 
         protected virtual void EvalMethodCall(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
@@ -336,7 +450,7 @@ namespace Urasandesu.NAnonym.ILTools
                     else
                     {
                         // instance method call
-                        state.CandidateDesigningExpressionStack.Push(exp.Object);
+                        state.CandidateReflectiveDesigningStack.Push(exp.Object);
                         EvalExpression(method, exp.Object, state);
                         EvalAdjustState(method, exp.Object, state);
                         if (exp.Object.Type.IsValueType)
@@ -864,14 +978,14 @@ namespace Urasandesu.NAnonym.ILTools
                 var fieldGen = default(IFieldGenerator);
                 if ((localGen = method.Body.Locals.FirstOrDefault(_localGen => _localGen.Name == allocInfo.Name)) != null)
                 {
-                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    state.CandidateReflectiveDesigningStack.Push(stExp);
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Stloc, localGen);
                 }
                 else if ((parameterGen = method.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == allocInfo.Name)) != null)
                 {
-                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    state.CandidateReflectiveDesigningStack.Push(stExp);
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Starg, parameterGen);
@@ -879,14 +993,14 @@ namespace Urasandesu.NAnonym.ILTools
                 else if ((fieldGen = method.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
                 {
                     method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    state.CandidateReflectiveDesigningStack.Push(stExp);
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Stfld, fieldGen);
                 }
                 else
                 {
-                    state.CandidateDesigningExpressionStack.Push(stExp);
+                    state.CandidateReflectiveDesigningStack.Push(stExp);
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     var local = method.Body.ILOperator.AddLocal(allocInfo.Name, allocInfo.Type);
@@ -963,7 +1077,7 @@ namespace Urasandesu.NAnonym.ILTools
                 else if (typeof(LambdaExpression).IsAssignableFrom(extractInfo.Type))
                 {
                     var lambdaExp = (LambdaExpression)extractInfo.Value;
-                    state.CandidateDesigningExpressionStack.Push(lambdaExp.Body);
+                    state.CandidateReflectiveDesigningStack.Push(lambdaExp.Body);
                     EvalExpression(method, lambdaExp.Body, state);
                     EvalAdjustState(method, lambdaExp.Body, state);
                     state.ProhibitsLastAutoPop = true;
@@ -976,9 +1090,9 @@ namespace Urasandesu.NAnonym.ILTools
 
             // Adjust the return type.
             var designingExp = default(Expression);
-            if (0 < state.CandidateDesigningExpressionStack.Count)
+            if (0 < state.CandidateReflectiveDesigningStack.Count)
             {
-                designingExp = state.CandidateDesigningExpressionStack.Pop();
+                designingExp = state.CandidateReflectiveDesigningStack.Pop();
             }
 
             var convertExp = default(UnaryExpression);
@@ -1155,7 +1269,7 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalUnary(IMethodBaseGenerator method, UnaryExpression exp, EvalState state)
         {
             EvalExpression(method, exp.Operand, state);
-            if (0 < state.CandidateDesigningExpressionStack.Count &&
+            if (0 < state.CandidateReflectiveDesigningStack.Count &&
                 (0 < state.MethodDesignedInfoStack.Count ||
                  0 < state.ConstructorDesignedInfoStack.Count ||
                  0 < state.PropertyDesignedInfoStack.Count))
@@ -1387,7 +1501,7 @@ namespace Urasandesu.NAnonym.ILTools
                 {
                     method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
                     method.Body.ILOperator.Emit(OpCodes.Ldc_I4, index);
-                    state.CandidateDesigningExpressionStack.Push(_exp);
+                    state.CandidateReflectiveDesigningStack.Push(_exp);
                     EvalExpression(method, _exp, state);
                     EvalAdjustState(method, _exp, state);
                     if (typeof(double).IsAssignableFrom(_exp.Type))
@@ -1462,7 +1576,7 @@ namespace Urasandesu.NAnonym.ILTools
                 ExtractInfoStack = new Stack<ExtractInfo>();
                 AllocInfoStack = new Stack<AllocInfo>();
                 ShiftInfoStack = new Stack<ShiftInfo>();
-                CandidateDesigningExpressionStack = new Stack<Expression>();
+                CandidateReflectiveDesigningStack = new Stack<Expression>();
                 MethodDesignedInfoStack = new Stack<MethodInfo>();
                 ConstructorDesignedInfoStack = new Stack<ConstructorInfo>();
                 PropertyDesignedInfoStack = new Stack<PropertyInfo>();
@@ -1474,7 +1588,7 @@ namespace Urasandesu.NAnonym.ILTools
             public Stack<ExtractInfo> ExtractInfoStack { get; private set; }
             public Stack<AllocInfo> AllocInfoStack { get; private set; }
             public Stack<ShiftInfo> ShiftInfoStack { get; private set; }
-            public Stack<Expression> CandidateDesigningExpressionStack { get; private set; }
+            public Stack<Expression> CandidateReflectiveDesigningStack { get; private set; }
             public Stack<MethodInfo> MethodDesignedInfoStack { get; private set; }
             public Stack<ConstructorInfo> ConstructorDesignedInfoStack { get; private set; }
             public Stack<PropertyInfo> PropertyDesignedInfoStack { get; private set; }
