@@ -527,7 +527,7 @@ Parameter[0] Type = Int32
                     var value = default(int);
                     var objValue = default(object);
                     var value2 = default(int?);
-                    gen.Eval(_ => _.If(value != 20 && value != 30));
+                    gen.Eval(_ => _.If(value != 20 && value != 30 && value != 40));
                     {
                         gen.Eval(_ => _.Alloc(objValue).As(value));
                         gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
@@ -536,6 +536,10 @@ Parameter[0] Type = Int32
                     gen.Eval(_ => _.ElseIf(value == 20));
                     {
                         gen.Eval(_ => _.Return(value));
+                    }
+                    gen.Eval(_ => _.ElseIf(value == 40));
+                    {
+                        gen.Eval(_ => _.Return(value ^ value ^ value));
                     }
                     gen.Eval(_ => _.Else());
                     {
@@ -560,6 +564,8 @@ Parameter[0] Type = Int32
                         Assert.AreEqual(20, result);
                         result = (int)target.Method.Invoke(target.Instance, new object[] { 30 });
                         Assert.AreEqual(60, result);
+                        result = (int)target.Method.Invoke(target.Instance, new object[] { 40 });
+                        Assert.AreEqual(40, result);
                     };
 
                 return testInfo;

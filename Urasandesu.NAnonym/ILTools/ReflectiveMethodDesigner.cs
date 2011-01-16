@@ -129,6 +129,7 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                 case ExpressionType.AndAlso:
+                case ExpressionType.ExclusiveOr:
                     EvalBinary(method, (BinaryExpression)exp, state);
                     return;
                 case ExpressionType.AddChecked:
@@ -153,8 +154,6 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.ConvertChecked:
                     throw new NotImplementedException();
                 case ExpressionType.Divide:
-                    throw new NotImplementedException();
-                case ExpressionType.ExclusiveOr:
                     throw new NotImplementedException();
                 case ExpressionType.GreaterThan:
                     throw new NotImplementedException();
@@ -226,7 +225,8 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalBinary(IMethodBaseGenerator method, BinaryExpression exp, EvalState state)
         {
             if (exp.NodeType == ExpressionType.Add || 
-                exp.NodeType == ExpressionType.Multiply)
+                exp.NodeType == ExpressionType.Multiply ||
+                exp.NodeType == ExpressionType.ExclusiveOr)
             {
                 EvalArithmeticBinary(method, exp, state);
             }
@@ -265,7 +265,7 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.NodeType == ExpressionType.Add)
             {
-                if (exp.Left.Type == typeof(int) && exp.Left.Type == typeof(int))
+                if (exp.Left.Type == typeof(int) && exp.Right.Type == typeof(int))
                 {
                     method.Body.ILOperator.Emit(OpCodes.Add);
                 }
@@ -276,9 +276,20 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else if (exp.NodeType == ExpressionType.Multiply)
             {
-                if (exp.Left.Type == typeof(int) && exp.Left.Type == typeof(int))
+                if (exp.Left.Type == typeof(int) && exp.Right.Type == typeof(int))
                 {
                     method.Body.ILOperator.Emit(OpCodes.Mul);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            else if (exp.NodeType == ExpressionType.ExclusiveOr)
+            {
+                if (exp.Left.Type == typeof(int) && exp.Right.Type == typeof(int))
+                {
+                    method.Body.ILOperator.Emit(OpCodes.Xor);
                 }
                 else
                 {
