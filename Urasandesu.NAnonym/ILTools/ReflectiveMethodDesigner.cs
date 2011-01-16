@@ -142,7 +142,8 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.Coalesce:
                     throw new NotImplementedException();
                 case ExpressionType.Conditional:
-                    throw new NotImplementedException();
+                    EvalConditional(method, (ConditionalExpression)exp, state);
+                    return;
                 case ExpressionType.Constant:
                     EvalConstant(method, (ConstantExpression)exp, state);
                     return;
@@ -1194,6 +1195,32 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             EvalMember(method, Expression.Field(null, targetFieldInfo), state);
+        }
+
+        protected virtual void EvalConditional(IMethodBaseGenerator method, ConditionalExpression exp, EvalState state)
+        {
+            EvalExpression(method, exp.Test, state);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+            method.Body.ILOperator.Emit(OpCodes.Ceq);
+            var localDecl = method.Body.ILOperator.AddLocal(typeof(bool));
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            var labelFalse = method.Body.ILOperator.AddLabel();
+            method.Body.ILOperator.Emit(OpCodes.Brtrue, labelFalse);
+
+            state.CandidateReflectiveDesigningStack.Push(exp.IfTrue);
+            EvalExpression(method, exp.IfTrue, state);
+            EvalAdjustState(method, exp.IfTrue, state);
+            var labelEnd = method.Body.ILOperator.AddLabel();
+            method.Body.ILOperator.Emit(OpCodes.Br, labelEnd);
+
+            method.Body.ILOperator.SetLabel(labelFalse);
+
+            state.CandidateReflectiveDesigningStack.Push(exp.IfFalse);
+            EvalExpression(method, exp.IfFalse, state);
+            EvalAdjustState(method, exp.IfFalse, state);
+
+            method.Body.ILOperator.SetLabel(labelEnd);
         }
 
         protected virtual void EvalConstant(IMethodBaseGenerator method, ConstantExpression exp, EvalState state)

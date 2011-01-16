@@ -16,7 +16,6 @@
 
 
 
-// DOING: 3項条件演算子実装
 // DOING: NAnonym を利用したサンプルの作成。
 // DOING: ExpressiveGenerator を使って記述する DSL について現状の方針とかまとめておく。
 // DOING: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
@@ -85,3 +84,4 @@
 // DONE: else if/else 文実装
 // DONE: 条件 AND 演算子実装
 // DONE: ビットごとの排他的OR演算子実装
+// DONE: 3項条件演算子実装
