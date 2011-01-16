@@ -303,6 +303,8 @@ namespace Urasandesu.NAnonym.ILTools
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordInvokeAttribute), false)) EvalInvoke(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordFtnAttribute), false)) EvalFtn(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordIfAttribute), false)) EvalIf(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordElseIfAttribute), false)) EvalElseIf(method, exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordElseAttribute), false)) EvalElse(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordEndIfAttribute), false)) EvalEndIf(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordReturnAttribute), false)) EvalReturn(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordEndAttribute), false)) EvalEnd(method, exp, state);
@@ -356,7 +358,15 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalBase(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
-            var constructorDecl = method.DeclaringType.BaseType.GetConstructor(new Type[] { });
+            var constructorDecl = default(IConstructorDeclaration);
+            if (method.DeclaringType.BaseType != null)
+            {
+                constructorDecl = method.DeclaringType.BaseType.GetConstructor(new Type[] { });
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
             method.Body.ILOperator.Emit(OpCodes.Call, constructorDecl);
         }
 
@@ -674,20 +684,65 @@ namespace Urasandesu.NAnonym.ILTools
             method.Body.ILOperator.Emit(OpCodes.Brtrue, labelDecl);
         }
 
+        protected virtual void EvalElseIf(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var ifInfo = state.IfInfoStack.Pop();
+            method.Body.ILOperator.SetLabel(ifInfo.Label);
+            EvalExpression(method, exp.Arguments[0], state);
+            method.Body.ILOperator.Emit(OpCodes.Ldc_I4_0);
+            method.Body.ILOperator.Emit(OpCodes.Ceq);
+            var localDecl = method.Body.ILOperator.AddLocal(typeof(bool));
+            method.Body.ILOperator.Emit(OpCodes.Stloc, localDecl);
+            method.Body.ILOperator.Emit(OpCodes.Ldloc, localDecl);
+            var labelDecl = method.Body.ILOperator.AddLabel();
+            state.IfInfoStack.Push(new IfInfo(labelDecl));
+            method.Body.ILOperator.Emit(OpCodes.Brtrue, labelDecl);
+        }
+
+        protected virtual void EvalElse(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
+        {
+            var ifInfo = state.IfInfoStack.Pop();
+            method.Body.ILOperator.SetLabel(ifInfo.Label);
+            var labelDecl = method.Body.ILOperator.AddLabel();
+            state.IfInfoStack.Push(new IfInfo(labelDecl));
+        }
+
         protected virtual void EvalEndIf(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var ifInfo = state.IfInfoStack.Pop();
-            method.Body.ILOperator.SetLabel(ifInfo.LabelDecl);
+            method.Body.ILOperator.SetLabel(ifInfo.Label);
         }
 
         protected virtual void EvalReturn(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             EvalExpression(method, exp.Arguments[0], state);
-            method.Body.ILOperator.Emit(OpCodes.Ret);
+            var labelDecl = default(ILabelDeclaration);
+            if (0 < state.ReturnInfoStack.Count)
+            {
+                var returnInfo = state.ReturnInfoStack.Pop();
+                labelDecl = returnInfo.Label;
+                state.ReturnInfoStack.Push(returnInfo);
+            }
+            else
+            {
+                labelDecl = method.Body.ILOperator.AddLabel();
+                state.ReturnInfoStack.Push(new ReturnInfo(labelDecl));
+            }
+            method.Body.ILOperator.Emit(OpCodes.Br, labelDecl);
         }
 
         protected virtual void EvalEnd(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
+            if (1 < state.ReturnInfoStack.Count)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (0 < state.ReturnInfoStack.Count)
+            {
+                var returnInfo = state.ReturnInfoStack.Pop();
+                method.Body.ILOperator.SetLabel(returnInfo.Label);
+            }
             method.Body.ILOperator.Emit(OpCodes.Ret);
         }
 
@@ -1403,6 +1458,7 @@ namespace Urasandesu.NAnonym.ILTools
             public EvalState()
             {
                 IfInfoStack = new Stack<IfInfo>();
+                ReturnInfoStack = new Stack<ReturnInfo>();
                 ExtractInfoStack = new Stack<ExtractInfo>();
                 AllocInfoStack = new Stack<AllocInfo>();
                 ShiftInfoStack = new Stack<ShiftInfo>();
@@ -1414,6 +1470,7 @@ namespace Urasandesu.NAnonym.ILTools
 
             public bool ProhibitsLastAutoPop { get; set; }
             public Stack<IfInfo> IfInfoStack { get; private set; }
+            public Stack<ReturnInfo> ReturnInfoStack { get; private set; }
             public Stack<ExtractInfo> ExtractInfoStack { get; private set; }
             public Stack<AllocInfo> AllocInfoStack { get; private set; }
             public Stack<ShiftInfo> ShiftInfoStack { get; private set; }
@@ -1425,12 +1482,22 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected class IfInfo
         {
-            public IfInfo(ILabelDeclaration labelDecl)
+            public IfInfo(ILabelDeclaration label)
             {
-                LabelDecl = labelDecl;
+                Label = label;
             }
 
-            public ILabelDeclaration LabelDecl { get; private set; }
+            public ILabelDeclaration Label { get; private set; }
+        }
+
+        protected class ReturnInfo
+        {
+            public ReturnInfo(ILabelDeclaration label)
+            {
+                Label = label;
+            }
+
+            public ILabelDeclaration Label { get; private set; }
         }
 
         protected class ExtractInfo
@@ -1721,6 +1788,16 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             public void If(bool condition)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void ElseIf(bool condition)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void Else()
             {
                 throw new NotSupportedException();
             }

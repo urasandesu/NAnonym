@@ -29,6 +29,7 @@
 
 using System;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -74,9 +75,16 @@ namespace Urasandesu.NAnonym.ILTools
         [MethodReservedWordIf]
         void If(bool condition);
 
+        [MethodReservedWordElseIf]
+        void ElseIf(bool condition);
+
+        [MethodReservedWordElse]
+        void Else();
+
         [MethodReservedWordEndIf]
         void EndIf();
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodReservedWordEnd]
         void End();
 
@@ -155,6 +163,12 @@ namespace Urasandesu.NAnonym.ILTools
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordIfAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class MethodReservedWordElseIfAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class MethodReservedWordElseAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordEndIfAttribute : Attribute { }

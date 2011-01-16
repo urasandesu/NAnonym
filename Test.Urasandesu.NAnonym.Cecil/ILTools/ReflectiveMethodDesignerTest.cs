@@ -47,6 +47,7 @@ using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
 using MC = Mono.Cecil;
+using MCC = Mono.Cecil.Cil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
@@ -526,9 +527,21 @@ Parameter[0] Type = Int32
                     var value = default(int);
                     var objValue = default(object);
                     var value2 = default(int?);
-                    gen.Eval(_ => _.Alloc(objValue).As(value));
-                    gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
-                    gen.Eval(_ => _.Return(value + value * value + (int)value2));
+                    gen.Eval(_ => _.If(value == 10));
+                    {
+                        gen.Eval(_ => _.Alloc(objValue).As(value));
+                        gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
+                        gen.Eval(_ => _.Return(value + value * value + (int)value2));
+                    }
+                    gen.Eval(_ => _.ElseIf(value == 20));
+                    {
+                        gen.Eval(_ => _.Return(value));
+                    }
+                    gen.Eval(_ => _.Else());
+                    {
+                        gen.Eval(_ => _.Return(value + value));
+                    }
+                    gen.Eval(_ => _.EndIf());
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -540,8 +553,13 @@ Parameter[0] Type = Int32
                 testInfo.TestVerifier =
                     target =>
                     {
-                        object result = target.Method.Invoke(target.Instance, new object[] { 10 });
+                        var result = default(int);
+                        result = (int)target.Method.Invoke(target.Instance, new object[] { 10 });
                         Assert.AreEqual(120, result);
+                        result = (int)target.Method.Invoke(target.Instance, new object[] { 20 });
+                        Assert.AreEqual(20, result);
+                        result = (int)target.Method.Invoke(target.Instance, new object[] { 30 });
+                        Assert.AreEqual(60, result);
                     };
 
                 return testInfo;
@@ -1360,12 +1378,12 @@ Parameter[1] = IntPtr method
 
                 var methodDefaultAttr = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
 
-                var generativeEmit1Gen = emitTest23Gen.AddMethod("GenerativeEmit1", methodDefaultAttr, typeof(void), Type.EmptyTypes);
+                var generativeEmit1Gen = emitTest23Gen.AddMethod("GenerativeEmit1", methodDefaultAttr, typeof(string), Type.EmptyTypes);
                 generativeEmit1Gen.ExpressBody(
                 gen =>
                 {
                     var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("DynamicMethod", null, null, true)));
+                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("DynamicMethod", typeof(string), null, true)));
 
                     var il = default(ILGenerator);
                     gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
@@ -1375,7 +1393,7 @@ Parameter[1] = IntPtr method
                     {
                         var staticObjectFieldInfo = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
                         _gen.Emit(_ => _.St<string>(staticObjectFieldInfo).As("testtest"));
-                        _gen.Emit(_ => TestHelper.ThrowException(_.Ld<string>(staticObjectFieldInfo)));
+                        _gen.Emit(_ => _.Return(_.Ld<string>(staticObjectFieldInfo)));
 
                         // MEMO: インスタンスメソッドを同じ構文で扱いたい…。
                         // MEMO: 現状だと↓。null かどうかの判別は難しいか…。
@@ -1388,9 +1406,9 @@ Parameter[1] = IntPtr method
                         //_gen.Emit(_ => TestHelper.ThrowException(_.Ld<string>(fieldTestClass1, instanceObjectFieldInfo)));
                     });
 
-                    var action = default(Action);
-                    gen.Eval(_ => _.Alloc(action).As((Action)dynamicMethod.CreateDelegate(typeof(Action))));
-                    gen.Eval(_ => action());
+                    var func = default(Func<string>);
+                    gen.Eval(_ => _.Alloc(func).As((Func<string>)dynamicMethod.CreateDelegate(typeof(Func<string>))));
+                    gen.Eval(_ => _.Return(func()));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1399,15 +1417,7 @@ Parameter[1] = IntPtr method
                 var emitTest23 = assembly.GetType(emitTest23Gen.FullName);
                 var instance = Activator.CreateInstance(emitTest23);
                 var generativeEmit1 = emitTest23.GetMethod(generativeEmit1Gen.Name);
-                try
-                {
-                    generativeEmit1.Invoke(instance, null);
-                    Assert.Fail();
-                }
-                catch (TargetInvocationException e)
-                {
-                    Assert.AreEqual("testtest", e.InnerException.Message);
-                }
+                Assert.AreEqual("testtest", generativeEmit1.Invoke(instance, null));
             });
         }
 
@@ -1511,30 +1521,33 @@ ValueProperty: 10
         [NewDomainTest]
         public void Hoge()
         {
-            var value = 10;
-            var objValue = default(object);
-            objValue = 10;
-            var value2 = default(int?);
-            value2 = objValue as int?;
-            Console.WriteLine("{0}", value + (int)value2);
-            //TestHelper.UsingTempFile(tempFileName =>
-            //{
-            //    var t = typeof(Func<string, int>);
-            //    Console.WriteLine(t);
-            //    //var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
-            //    //var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
-            //    //var hogeGen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "Hoge");
+            TestHelper.UsingTempFile(tempFileName =>
+            {
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var hogeDef = new TypeDefinition("Hoge", "Hoge", MC::TypeAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(object)));
+                tempAssemblyDef.MainModule.Types.Add(hogeDef);
 
-            //    //hogeGen.AddDefaultConstructor();
+                hogeDef.AddDefaultConstructor();
 
-            //    //var genericsample = typeof(GenericSample<string>);
-            //    //var genericsampleRef = genericsample.ToTypeRef();
-            //    //var test = genericsample.GetMethod("Test", BindingFlags.Instance | BindingFlags.Public);
-            //    //var testDef = genericsampleRef.Module.Import(test, genericsampleRef);
-            //    //Console.WriteLine(testDef.FullName);    
-            //    // MEMO: Generic な型の Generic Parameter を使ったメソッドの場合、Close な Generic 型にしてもメソッドに使われている 
-            //    // MEMO: Generic Parameter が解決されることはなさそう。
-            //});
+                var testDef = new MethodDefinition("Test", MC::MethodAttributes.Public, tempAssemblyDef.MainModule.Import(typeof(int)));
+                hogeDef.Methods.Add(testDef);
+                testDef.Body.InitLocals = true;
+                var gen = testDef.Body.GetILProcessor();
+                gen.Emit(MCC::OpCodes.Ldc_I4_0);
+                var instruction = gen.Create(MCC::OpCodes.Nop);
+                gen.Emit(MCC::OpCodes.Br_S, instruction);
+                gen.Append(instruction);
+                gen.Emit(MCC::OpCodes.Ret);
+
+                tempAssemblyDef.Write(tempFileName);
+
+                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+                var hoge = assembly.GetType(hogeDef.GetFullName());
+                var instance = Activator.CreateInstance(hoge);
+                var test = hoge.GetMethod(testDef.Name);
+                Assert.AreEqual(0, (int)test.Invoke(instance, null));
+            });
         }
     }
 

@@ -446,6 +446,16 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
+            public void ElseIf(bool condition)
+            {
+                throw new NotSupportedException();
+            }
+
+            public void Else()
+            {
+                throw new NotSupportedException();
+            }
+
             public void EndIf()
             {
                 throw new NotSupportedException();
@@ -526,10 +536,9 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
-
             public bool AreEqual(object left, object right)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 

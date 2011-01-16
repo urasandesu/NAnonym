@@ -56,7 +56,8 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
         public static void ExpressEmit(this ReflectiveMethodDesigner gen, Expression<Func<SRE::ILGenerator>> ilIdentifier, Action<ReflectiveILEmitter> expression)
         {
             var ilName = TypeSavable.GetName(ilIdentifier);
-            expression(new ReflectiveILEmitter(gen, ilName));
+            var _gen = new ReflectiveILEmitter(gen, ilName);
+            expression(_gen);
 
             var lastDirectives = gen.Directives.Skip(gen.Directives.Count - 3).ToArray();
 
@@ -77,7 +78,7 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 
             if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
             {
-                gen.Eval(_ => _.Ld<SRE::ILGenerator>(ilName).Emit(SRE::OpCodes.Ret));
+                _gen.Emit(_ => _.End());
             }
         }
     }
