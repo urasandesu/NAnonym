@@ -52,7 +52,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public static readonly MethodInfo ReservedWordXInfo_T = TypeSavable.GetInstanceMethod<IMethodReservedWords, object, object>(_ => _.X).GetGenericMethodDefinition();
         public static readonly MethodInfo ReservedWordXInfo_object = TypeSavable.GetInstanceMethod<IMethodReservedWords, object, object>(_ => _.X<object>).GetGenericMethodDefinition();
-        
+
         readonly IMethodBaseGenerator method;
         protected readonly EvalState state;
 
@@ -147,6 +147,7 @@ namespace Urasandesu.NAnonym.ILTools
                     return;
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Convert:
+                case ExpressionType.TypeAs:
                     EvalUnary(method, (UnaryExpression)exp, state);
                     return;
                 case ExpressionType.ConvertChecked:
@@ -214,8 +215,6 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.Subtract:
                     throw new NotImplementedException();
                 case ExpressionType.SubtractChecked:
-                    throw new NotImplementedException();
-                case ExpressionType.TypeAs:
                     throw new NotImplementedException();
                 case ExpressionType.TypeIs:
                     throw new NotImplementedException();
@@ -1121,17 +1120,29 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.Convert:
                     if (exp.Type.IsSubclassOf(typeof(ValueType)))
                     {
-                        if (exp.Type == typeof(int))
+                        if (exp.Operand.Type.IsAssignableWithoutGenericArgumentsFrom(typeof(Nullable<>)))
                         {
-                            method.Body.ILOperator.Emit(OpCodes.Conv_I4);
-                        }
-                        else if (exp.Type == typeof(sbyte))
-                        {
-                            method.Body.ILOperator.Emit(OpCodes.Conv_I2);
+                            var nullableValue = exp.Operand.Type.GetProperty("Value");
+                            var nullableget_Value = nullableValue.GetGetMethod();
+                            var local = method.Body.ILOperator.AddLocal(exp.Operand.Type);
+                            method.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                            method.Body.ILOperator.Emit(OpCodes.Ldloca, local);
+                            method.Body.ILOperator.Emit(OpCodes.Callvirt, nullableget_Value);
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            if (exp.Type == typeof(int))
+                            {
+                                method.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                            }
+                            else if (exp.Type == typeof(sbyte))
+                            {
+                                method.Body.ILOperator.Emit(OpCodes.Conv_I2);
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
                         }
                     }
                     else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
@@ -1148,6 +1159,13 @@ namespace Urasandesu.NAnonym.ILTools
                 case ExpressionType.ArrayLength:
                     method.Body.ILOperator.Emit(OpCodes.Ldlen);
                     method.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                    break;
+                case ExpressionType.TypeAs:
+                    method.Body.ILOperator.Emit(OpCodes.Isinst, exp.Type);
+                    if (exp.Type.IsValueType)
+                    {
+                        method.Body.ILOperator.Emit(OpCodes.Unbox_Any, exp.Type);
+                    }
                     break;
                 default:
                     throw new NotImplementedException();

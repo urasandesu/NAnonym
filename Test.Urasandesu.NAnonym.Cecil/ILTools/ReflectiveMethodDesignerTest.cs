@@ -60,24 +60,28 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
         public void FixtureSetUp()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
+            TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
         [NewDomainTestFixtureTearDown]
         public void FixtureTearDown()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
+            TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
         [NewDomainSetUp]
         public void SetUp()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
+            TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
         [NewDomainTearDown]
         public void TearDown()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
+            TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
         [NewDomainTest]
@@ -519,8 +523,12 @@ Parameter[0] Type = Int32
                 func1Parameters2.ExpressBody(
                 gen =>
                 {
-                    int value = default(int);
-                    gen.Eval(_ => _.Return(value + value * value));
+                    var value = default(int);
+                    var objValue = default(object);
+                    var value2 = default(int?);
+                    gen.Eval(_ => _.Alloc(objValue).As(value));
+                    gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
+                    gen.Eval(_ => _.Return(value + value * value + (int)value2));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -533,7 +541,7 @@ Parameter[0] Type = Int32
                     target =>
                     {
                         object result = target.Method.Invoke(target.Instance, new object[] { 10 });
-                        Assert.AreEqual(110, result);
+                        Assert.AreEqual(120, result);
                     };
 
                 return testInfo;
@@ -1503,9 +1511,12 @@ ValueProperty: 10
         [NewDomainTest]
         public void Hoge()
         {
-            var propertyTestClass1 = new PropertyTestClass1();
-            propertyTestClass1.ValueProperty = 10;
-            TestHelper.WriteLog("ValueProperty: {0}", propertyTestClass1.ValueProperty);
+            var value = 10;
+            var objValue = default(object);
+            objValue = 10;
+            var value2 = default(int?);
+            value2 = objValue as int?;
+            Console.WriteLine("{0}", value + (int)value2);
             //TestHelper.UsingTempFile(tempFileName =>
             //{
             //    var t = typeof(Func<string, int>);

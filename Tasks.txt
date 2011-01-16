@@ -16,7 +16,6 @@
 
 
 
-// DOING: as 演算子実装
 // DOING: else if/else 文実装
 // DOING: 条件 AND 演算子実装
 // DOING: ビットごとの排他的OR演算子実装
@@ -85,3 +84,4 @@
 // DONE: 動的メソッドを利用したサンプルの作成
 // DONE: 式ツリーを利用したサンプルの作成
 // DONE: ReflectiveMethodDesigner 実装
+// DONE: as 演算子実装
