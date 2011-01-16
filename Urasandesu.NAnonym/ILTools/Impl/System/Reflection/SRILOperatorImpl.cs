@@ -163,7 +163,8 @@ namespace Urasandesu.NAnonym.ILTools
 
         public void Emit(OpCode opcode, short arg)
         {
-            throw new NotImplementedException();
+            ilGenerator.Emit(opcode.ToClr(), arg);
+            directives.Add(new SRDirectiveGeneratorImpl(opcode, arg));
         }
 
         public void Emit(OpCode opcode, string str)

@@ -501,6 +501,11 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotSupportedException();
             }
 
+            public T LdArg<T>(int variableIndex)
+            {
+                throw new NotSupportedException();
+            }
+
             public IMethodAllocReservedWords<T> St<T>(string variableName)
             {
                 throw new NotSupportedException();

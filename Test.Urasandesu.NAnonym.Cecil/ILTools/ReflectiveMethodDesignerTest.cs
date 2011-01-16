@@ -530,8 +530,15 @@ Parameter[0] Type = Int32
                     gen.Eval(_ => _.If(value != 20 && value != 30 && value != 40 && value != 50));
                     {
                         gen.Eval(_ => _.Alloc(objValue).As(value));
-                        gen.Eval(_ => _.Alloc(value2).As(objValue as int?));
-                        gen.Eval(_ => _.Return(value + value * value + (int)value2));
+                        gen.Eval(_ => _.If(_.Alloc(value2).As(objValue as int?) != null));
+                        {
+                            gen.Eval(_ => _.Return(value + value * value + (int)value2));
+                        }
+                        gen.Eval(_ => _.Else());
+                        {
+                            gen.Eval(_ => _.Return(value + value * value * value));
+                        }
+                        gen.Eval(_ => _.EndIf());
                     }
                     gen.Eval(_ => _.ElseIf(value == 20));
                     {

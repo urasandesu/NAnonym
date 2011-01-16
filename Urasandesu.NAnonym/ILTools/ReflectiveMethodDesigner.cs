@@ -878,11 +878,11 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.Arguments.Count == 2)
             {
-                extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
+                extractExp = CreateExtractExp_T(exp.Arguments[1], typeof(int));
                 EvalExtract(method, extractExp, state);
             }
 
-            extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
+            extractExp = CreateExtractExp_T(exp.Arguments[0], exp.Arguments[0].Type);
             EvalExtract(method, extractExp, state);
 
             if (0 < state.ExtractInfoStack.Count)
@@ -921,40 +921,24 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalLdArg(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             var extractExp = default(MethodCallExpression);
-
-            if (exp.Arguments.Count == 2)
-            {
-                extractExp = CreateExtractExp1(exp.Arguments[1], typeof(int));
-                EvalExtract(method, extractExp, state);
-            }
-
-            extractExp = CreateExtractExp1(exp.Arguments[0], exp.Arguments[0].Type);
+            extractExp = CreateExtractExp_T(exp.Arguments[0], exp.Arguments[0].Type);
             EvalExtract(method, extractExp, state);
 
             if (0 < state.ExtractInfoStack.Count)
             {
                 var extractInfo = state.ExtractInfoStack.Pop();
-                var shiftCount = -1;
-                if (0 < state.ExtractInfoStack.Count)
-                {
-                    var _extractInfo = state.ExtractInfoStack.Pop();
-                    shiftCount = (int)_extractInfo.Value;
-                }
-
                 if (extractInfo.Type == typeof(int[]))
                 {
                     ((int[])extractInfo.Value).
                     ForEach(index =>
                     {
                         var fieldInfo = new ParameterIndexResolvableInfo(index, typeof(object));
-                        if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
                         EvalMember(method, Expression.Field(null, fieldInfo), state);
                     });
                 }
                 else
                 {
                     var fieldInfo = new ParameterIndexResolvableInfo((int)extractInfo.Value, extractInfo.Type);
-                    if (-1 < shiftCount) state.ShiftInfoStack.Push(new ShiftInfo(shiftCount));
                     EvalMember(method, Expression.Field(null, fieldInfo), state);
                 }
             }
@@ -994,6 +978,7 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Stloc, localGen);
+                    method.Body.ILOperator.Emit(OpCodes.Ldloc, localGen);
                 }
                 else if ((parameterGen = method.Parameters.FirstOrDefault(_parameterGen => _parameterGen.Name == allocInfo.Name)) != null)
                 {
@@ -1001,14 +986,18 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Starg, parameterGen);
+                    method.Body.ILOperator.Emit(OpCodes.Ldarg, parameterGen);
                 }
-                else if ((fieldGen = method.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
+                else if (method.DeclaringType != null &&
+                    (fieldGen = method.DeclaringType.Fields.FirstOrDefault(_fieldGen => _fieldGen.Name == allocInfo.Name)) != null)
                 {
                     method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
                     state.CandidateReflectiveDesigningStack.Push(stExp);
                     EvalExpression(method, stExp, state);
                     EvalAdjustState(method, stExp, state);
                     method.Body.ILOperator.Emit(OpCodes.Stfld, fieldGen);
+                    method.Body.ILOperator.Emit(OpCodes.Ldarg_0);
+                    method.Body.ILOperator.Emit(OpCodes.Ldfld, fieldGen);
                 }
                 else
                 {
@@ -1017,13 +1006,13 @@ namespace Urasandesu.NAnonym.ILTools
                     EvalAdjustState(method, stExp, state);
                     var local = method.Body.ILOperator.AddLocal(allocInfo.Name, allocInfo.Type);
                     method.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                    method.Body.ILOperator.Emit(OpCodes.Ldloc, local);
                 }
             }
             else
             {
                 throw new NotImplementedException();
             }
-            state.ProhibitsLastAutoPop = true;
         }
 
         protected virtual void EvalSt(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
@@ -1600,7 +1589,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected MethodCallExpression CreateExtractExp1(Expression constant, Type type)
+        protected MethodCallExpression CreateExtractExp_T(Expression constant, Type type)
         {
             return Expression.Call(Expression.Constant(ReservedWords), ReservedWordXInfo_T.MakeGenericMethod(type), new Expression[] { constant });
         }
@@ -1995,6 +1984,11 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             public object[] LdArg(int[] variableIndexes)
+            {
+                throw new NotSupportedException();
+            }
+
+            public T LdArg<T>(int variableIndex)
             {
                 throw new NotSupportedException();
             }

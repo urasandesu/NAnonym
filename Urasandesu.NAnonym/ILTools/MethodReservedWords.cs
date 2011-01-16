@@ -109,6 +109,9 @@ namespace Urasandesu.NAnonym.ILTools
         [MethodReservedWordLdArg]
         object[] LdArg(int[] variableIndexes);
 
+        [MethodReservedWordLdArg]
+        T LdArg<T>(int variableIndex);
+
         [MethodReservedWordSt]
         IMethodAllocReservedWords<T> St<T>(string variableName);
 
