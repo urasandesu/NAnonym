@@ -163,8 +163,8 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
             class3GlobalClass.Setup(o =>
             {
                 var simpleType1 = default(SimpleType1);
-                o.DefineField(() => simpleType1).As(_ => new SimpleType1());
-                o.HideMethod<int, int, int>(_ => _.Add).By(
+                o.DefineField(() => simpleType1).As(() => new SimpleType1());
+                o.HideMethod<int, int, int>(that => that.Add).By(
                 (x, y) =>
                 {
                     int result = simpleType1.Increase() + x + y;

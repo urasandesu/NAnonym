@@ -34,9 +34,11 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public interface IFieldDeclaration : IMemberDeclaration
     {
-        Type FieldType { get; }
+        ITypeDeclaration FieldType { get; }
         bool IsPublic { get; }
         bool IsStatic { get; }
+        object GetValue(object obj);
+        void SetValue(object obj, object value);
     }
 
 }

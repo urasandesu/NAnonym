@@ -33,111 +33,128 @@ using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.ILTools
 {
+    [ILReservedWords]
     [MethodReservedWords]
-    public interface IMethodReservedWords
+    public class Dsl
     {
+        protected Dsl() { }
+
+        [ILReservedWordLd]
+        public static T Load<T>(FieldInfo field){ throw new NotSupportedException(); }
+
+        [ILReservedWordLd]
+        public static T Load<T>(object instance, IFieldDeclaration field){ throw new NotSupportedException(); }
+
+        [ILReservedWordSt]
+        public static IILAllocReservedWords<T> Store<T>(FieldInfo field){ throw new NotSupportedException(); }
+
         [MethodReservedWordBase]
-        void Base();
+        public static void Base(){ throw new NotSupportedException(); }
 
         [MethodReservedWordThis]
-        object This();
+        public static object This(){ throw new NotSupportedException(); }
 
-        [MethodReservedWordDupAddOne]
-        T DupAddOne<T>(T variable);
+        [MethodReservedWordIncrement]
+        public static T Increment<T>(T variable){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordAddOneDup]
-        T AddOneDup<T>(T variable);
+        public static T AddOneDup<T>(T variable){ throw new NotSupportedException(); }
 
-        [MethodReservedWordSubOneDup]
-        T SubOneDup<T>(T variable);
+        [MethodReservedWordDecrement]
+        public static T Decrement<T>(T variable){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordNew]
-        object New(ConstructorInfo constructor, object parameter);
+        public static object New(ConstructorInfo constructor, object parameter){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordNew]
-        T New<T>(ConstructorInfo constructor, params object[] parameters);
+        public static T New<T>(ConstructorInfo constructor, params object[] parameters){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordInvoke]
-        object Invoke(MethodInfo method, params object[] parameters);
+        public static object Invoke(MethodInfo method, params object[] parameters){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordInvoke]
-        object Invoke(object variable, MethodInfo method, params object[] parameters);
+        public static object Invoke(object variable, object method, params object[] parameters){ throw new NotSupportedException(); }
 
-        [MethodReservedWordFtn]
-        object Ftn(object variable, IMethodDeclaration methodDecl);
+        [MethodReservedWordLoadPtr]
+        public static IntPtr LoadPtr(object variable, IMethodDeclaration methodDecl) { throw new NotSupportedException(); }
 
-        [MethodReservedWordFtn]
-        object Ftn(IMethodDeclaration methodDecl);
+        [MethodReservedWordLoadPtr]
+        public static IntPtr LoadPtr(IMethodDeclaration methodDecl) { throw new NotSupportedException(); }
 
-        [MethodReservedWordFtn]
-        object Ftn(MethodInfo methodInfo);
+        [MethodReservedWordLoadPtr]
+        public static IntPtr LoadPtr(MethodInfo methodInfo){ throw new NotSupportedException(); }
 
         [MethodReservedWordIf]
-        void If(bool condition);
+        public static void If(bool condition){ throw new NotSupportedException(); }
 
         [MethodReservedWordElseIf]
-        void ElseIf(bool condition);
+        public static void ElseIf(bool condition){ throw new NotSupportedException(); }
 
         [MethodReservedWordElse]
-        void Else();
+        public static void Else(){ throw new NotSupportedException(); }
 
         [MethodReservedWordEndIf]
-        void EndIf();
+        public static void EndIf(){ throw new NotSupportedException(); }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodReservedWordEnd]
-        void End();
+        public static void End(){ throw new NotSupportedException(); }
 
         [MethodReservedWordReturn]
-        void Return<T>(T variable);
+        public static void Return<T>(T variable){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLd]
-        T Ld<T>(string variableName);
+        [MethodReservedWordLoad]
+        public static T Load<T>(string variableName){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLd]
-        object Ld(string variableName);
+        [MethodReservedWordLoad]
+        public static object Load(string variableName){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLd]
-        object[] Ld(string[] variableNames);
+        [MethodReservedWordLoad]
+        public static object[] Load(string[] variableNames){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLd]
-        object[] Ld(string[] variableNames, int shift);
+        [MethodReservedWordLoad]
+        public static object[] Load(string[] variableNames, int shift){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLdArg]
-        object LdArg(int variableIndex);
+        [MethodReservedWordLoadArgument]
+        public static object LoadArgument(int variableIndex){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLdArg]
-        object[] LdArg(int[] variableIndexes);
+        [MethodReservedWordLoadArgument]
+        public static object[] LoadArguments(int[] variableIndexes){ throw new NotSupportedException(); }
 
-        [MethodReservedWordLdArg]
-        T LdArg<T>(int variableIndex);
+        [MethodReservedWordLoadArgument]
+        public static T LoadArgument<T>(int variableIndex){ throw new NotSupportedException(); }
 
-        [MethodReservedWordSt]
-        IMethodAllocReservedWords<T> St<T>(string variableName);
+        [MethodReservedWordStore]
+        public static IMethodAllocReservedWords<T> Store<T>(string variableName){ throw new NotSupportedException(); }
 
-        [MethodReservedWordSt]
-        IMethodAllocReservedWords St(string variableName);
+        [MethodReservedWordStore]
+        public static IMethodAllocReservedWords Store(string variableName){ throw new NotSupportedException(); }
 
-        [MethodReservedWordAlloc]
-        IMethodAllocReservedWords<T> Alloc<T>(T variable);
+        [MethodReservedWordAllocate]
+        public static IMethodAllocReservedWords<T> Allocate<T>(T variable){ throw new NotSupportedException(); }
 
-        [MethodReservedWordAlloc]
-        IMethodAllocReservedWords Alloc(object variable);
+        [MethodReservedWordAllocate]
+        public static IMethodAllocReservedWords Allocate(object variable){ throw new NotSupportedException(); }
 
-        [MethodReservedWordX]
-        T X<T>(T constant);
+        [MethodReservedWordExtract]
+        public static T Extract<T>(T constant){ throw new NotSupportedException(); }
 
-        [MethodReservedWordX]
-        T X<T>(object constant);
+        [MethodReservedWordExtract]
+        public static T Extract<T>(object constant){ throw new NotSupportedException(); }
 
-        [MethodReservedWordCm]
-        TValue Cm<TValue>(TValue constMember, Type declaringType);
+        [MethodReservedWordConstMember]
+        public static TValue ConstMember<TValue>(TValue constMember, Type declaringType){ throw new NotSupportedException(); }
 
         [MethodReservedWordAreEqual]
-        bool AreEqual(object left, object right);
+        public static bool AreEqual(object left, object right){ throw new NotSupportedException(); }
     }
 
-    [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class MethodReservedWordsAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
@@ -147,22 +164,25 @@ namespace Urasandesu.NAnonym.ILTools
     public sealed class MethodReservedWordThisAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordDupAddOneAttribute : Attribute { }
+    public sealed class MethodReservedWordIncrementAttribute : Attribute { }
 
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordAddOneDupAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordSubOneDupAttribute : Attribute { }
+    public sealed class MethodReservedWordDecrementAttribute : Attribute { }
 
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordNewAttribute : Attribute { }
 
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordInvokeAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordFtnAttribute : Attribute { }
+    public sealed class MethodReservedWordLoadPtrAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordIfAttribute : Attribute { }
@@ -183,22 +203,22 @@ namespace Urasandesu.NAnonym.ILTools
     public sealed class MethodReservedWordReturnAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordLdAttribute : Attribute { }
+    public sealed class MethodReservedWordLoadAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordStAttribute : Attribute { }
+    public sealed class MethodReservedWordStoreAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordAllocAttribute : Attribute { }
+    public sealed class MethodReservedWordAllocateAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordXAttribute : Attribute { }
+    public sealed class MethodReservedWordExtractAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordCmAttribute : Attribute { }
+    public sealed class MethodReservedWordConstMemberAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public sealed class MethodReservedWordLdArgAttribute : Attribute { }
+    public sealed class MethodReservedWordLoadArgumentAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public sealed class MethodReservedWordAreEqualAttribute : Attribute { }

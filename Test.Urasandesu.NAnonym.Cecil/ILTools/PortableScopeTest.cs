@@ -73,7 +73,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 carryPortableScopeTest01CtorDef.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var portableScopeALocal = CreateTempVariable("a", typeof(int), carryPortableScopeTest01CtorDef);
@@ -90,7 +90,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 portableScopeAAttributeCtorDef.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var portableScopeAAttribute = CreateTempAttribute(portableScopeAAttributeCtorDef, portableScopeA);
@@ -126,7 +126,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 carryPortableScopeTest02CtorDef.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var portableScopeALocal = CreateTempVariable("a", typeof(int), carryPortableScopeTest02CtorDef);
@@ -143,7 +143,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 portableScopeAAttributeCtorDef.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var portableScopeAAttribute = CreateTempAttribute(portableScopeAAttributeCtorDef, portableScopeA);

@@ -36,6 +36,7 @@ using Urasandesu.NAnonym.Linq;
 using MC = Mono.Cecil;
 using SR = System.Reflection;
 using UNI = Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools;
 
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
@@ -117,7 +118,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             ctor.ExpressBody(
             gen =>
             {
-                gen.Eval(_ => _.Base());
+                gen.Eval(() => Dsl.Base());
             });
         }
 

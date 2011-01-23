@@ -53,31 +53,31 @@ namespace Urasandesu.NAnonym.ILTools
                 var operand = directive.ClrOperand;
  
                 if (operand == null && directive.RawOperand == null)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes))));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes))));
                 else if (operand is byte)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((byte)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((byte)operand)));
                 else if (operand is ConstructorInfo)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((ConstructorInfo)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((ConstructorInfo)operand)));
                 else if (operand is double)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((double)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((double)operand)));
                 else if (operand is FieldInfo)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((FieldInfo)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((FieldInfo)operand)));
                 else if (operand is float)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((float)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((float)operand)));
                 else if (operand is int)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((int)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((int)operand)));
                 else if (operand is long)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((long)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((long)operand)));
                 else if (operand is MethodInfo)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((MethodInfo)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((MethodInfo)operand)));
                 else if (operand is sbyte)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((sbyte)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((sbyte)operand)));
                 else if (operand is short)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((short)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((short)operand)));
                 else if (operand is string)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((string)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((string)operand)));
                 else if (operand is Type)
-                    gen.Eval(_ => _.Ld<ILGenerator>(ilGenName).Emit(_.Cm(opcode, typeof(SRE::OpCodes)), _.X((Type)operand)));
+                    gen.Eval(() => Dsl.Load<ILGenerator>(ilGenName).Emit(Dsl.ConstMember(opcode, typeof(SRE::OpCodes)), Dsl.Extract((Type)operand)));
                 else
                     throw new NotSupportedException();
             }

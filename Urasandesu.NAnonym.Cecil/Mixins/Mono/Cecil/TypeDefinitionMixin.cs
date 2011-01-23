@@ -538,7 +538,7 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             ctorDef.ExpressBody(
             gen =>
             {
-                gen.Eval(_ => _.Base());
+                gen.Eval(() => Dsl.Base());
             });
             return ctorDef;
         }

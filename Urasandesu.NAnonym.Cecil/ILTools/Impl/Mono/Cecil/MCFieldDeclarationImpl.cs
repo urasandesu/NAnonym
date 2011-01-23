@@ -31,27 +31,27 @@
 using System;
 using Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.ILTools;
 using UNI = Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
-    class MCFieldDeclarationImpl : MCMemberDeclarationImpl, UNI::IFieldDeclaration
+    class MCFieldDeclarationImpl : MCMemberDeclarationImpl, IFieldDeclaration
     {
         readonly FieldReference fieldRef;
         readonly FieldDefinition fieldDef;
+
+        MCTypeDeclarationImpl fieldTypeDecl;
+
         public MCFieldDeclarationImpl(FieldReference fieldRef)
             : base(fieldRef)
         {
             this.fieldRef = fieldRef;
             fieldDef = fieldRef.Resolve();
+            fieldTypeDecl = new MCTypeDeclarationImpl(fieldRef.FieldType);
         }
 
         internal FieldReference FieldRef { get { return fieldRef; } }
-
-        public Type FieldType
-        {
-            get { return fieldRef.FieldType.ToType(); }
-        }
 
         public bool IsStatic
         {
@@ -61,6 +61,21 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         public bool IsPublic
         {
             get { return fieldDef.IsPublic; }
+        }
+
+        public object GetValue(object obj)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void SetValue(object obj, object value)
+        {
+            throw new NotSupportedException();
+        }
+
+        ITypeDeclaration IFieldDeclaration.FieldType
+        {
+            get { return fieldTypeDecl; }
         }
     }
 }

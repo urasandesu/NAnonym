@@ -50,7 +50,7 @@ namespace Urasandesu.NAnonym.DW
         {
         }
 
-        public void As(Expression<Func<IMethodReservedWords, T>> initializer)
+        public void As(Expression<Func<T>> initializer)
         {
             base.As(initializer);
         }
@@ -65,7 +65,7 @@ namespace Urasandesu.NAnonym.DW
 
         public void As(int arg)
         {
-            Expression<Func<IMethodReservedWords, int>> initializer = _ => _.X(arg);
+            Expression<Func<int>> initializer = () => Dsl.Extract(arg);
             base.As(initializer);
         }
     }

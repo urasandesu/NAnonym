@@ -59,17 +59,17 @@ namespace Urasandesu.NAnonym.DW
             var injectionDefiner = bodyWeaver.ParentBuilder.ParentDefiner;
             var injection = injectionDefiner.Parent;
 
-            gen.Eval(_ => _.If(_.Ld(injectionDefiner.CachedConstructor.Name) == null));
+            gen.Eval(() => Dsl.If(Dsl.Load(injectionDefiner.CachedConstructor.Name) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod(
+                gen.Eval(() => Dsl.Allocate(dynamicMethod).As(new DynamicMethod(
                                                             "dynamicMethod",
                                                             typeof(void),
-                                                            new Type[] { _.X(injection.DeclaringType) },
-                                                            _.X(injection.DeclaringType),
+                                                            new Type[] { Dsl.Extract(injection.DeclaringType) },
+                                                            Dsl.Extract(injection.DeclaringType),
                                                             true)));
                 var il = default(ILGenerator);
-                gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
+                gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
                 foreach (var injectionField in injection.FieldSet)
                 {
                     var targetField = TypeSavable.GetFieldInfo(injectionField.FieldReference);
@@ -78,40 +78,40 @@ namespace Urasandesu.NAnonym.DW
                         injectionDefiner.InitializedDeclaringTypeConstructor[targetField.DeclaringType] = true;
 
                         var declaringTypeConstructor = default(ConstructorInfo);
-                        gen.Eval(_ => _.Alloc(declaringTypeConstructor).As(
-                                               _.X(targetField.DeclaringType).GetConstructor(
+                        gen.Eval(() => Dsl.Allocate(declaringTypeConstructor).As(
+                                               Dsl.Extract(targetField.DeclaringType).GetConstructor(
                                                                     BindingFlags.Public | BindingFlags.Instance,
                                                                     null,
                                                                     Type.EmptyTypes,
                                                                     null)));
 
-                        gen.Eval(_ => _.St<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)).As(
-                                               _.X(injection.DeclaringType).GetField(
-                                                                    _.X(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)),
+                        gen.Eval(() => Dsl.Store<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)).As(
+                                               Dsl.Extract(injection.DeclaringType).GetField(
+                                                                    Dsl.Extract(injection.GetFieldNameForDeclaringType(targetField.DeclaringType)),
                                                                     BindingFlags.Instance | BindingFlags.NonPublic)));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, declaringTypeConstructor));
-                        gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, _.Ld<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
+                        gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg_0));
+                        gen.Eval(() => il.Emit(SRE::OpCodes.Newobj, declaringTypeConstructor));
+                        gen.Eval(() => il.Emit(SRE::OpCodes.Stfld, Dsl.Load<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
                     }
 
-                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_0));
-                    gen.Eval(_ => il.Emit(SRE::OpCodes.Ldfld, _.Ld<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
+                    gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg_0));
+                    gen.Eval(() => il.Emit(SRE::OpCodes.Ldfld, Dsl.Load<FieldInfo>(injection.GetFieldNameForDeclaringType(targetField.DeclaringType))));
                     var actualTargetField = default(FieldInfo);
-                    gen.Eval(_ => _.Alloc(actualTargetField).As(
-                                           _.X(targetField.DeclaringType).GetField(
-                                                                    _.X(targetField.Name),
+                    gen.Eval(() => Dsl.Allocate(actualTargetField).As(
+                                           Dsl.Extract(targetField.DeclaringType).GetField(
+                                                                    Dsl.Extract(targetField.Name),
                                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)));
 
                     var macro = new ExpressiveGeneratorMacro(gen);
                     macro.EvalEmitDirectives(TypeSavable.GetName(() => il), gen.ToDirectives(injectionField.Initializer));
 
-                    gen.Eval(_ => il.Emit(SRE::OpCodes.Stfld, actualTargetField));
+                    gen.Eval(() => il.Emit(SRE::OpCodes.Stfld, actualTargetField));
                 }
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St<Action>(injectionDefiner.CachedConstructor.Name).As((Action)dynamicMethod.CreateDelegate(typeof(Action), _.This())));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ret));
+                gen.Eval(() => Dsl.Store<Action>(injectionDefiner.CachedConstructor.Name).As((Action)dynamicMethod.CreateDelegate(typeof(Action), Dsl.This())));
             }
-            gen.Eval(_ => _.EndIf());
-            gen.Eval(_ => _.Ld<Action>(injectionDefiner.CachedConstructor.Name).Invoke());
+            gen.Eval(() => Dsl.EndIf());
+            gen.Eval(() => Dsl.Load<Action>(injectionDefiner.CachedConstructor.Name).Invoke());
         }
     }
 }

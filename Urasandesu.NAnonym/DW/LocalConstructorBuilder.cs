@@ -50,7 +50,7 @@ namespace Urasandesu.NAnonym.DW
             {
                 var bodyWeaver = new LocalConstructorBodyWeaver(gen, this);
                 bodyWeaver.Apply();
-                gen.Eval(_ => _.Base());
+                gen.Eval(() => Dsl.Base());
             });
         }
     }

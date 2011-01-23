@@ -147,6 +147,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         #endregion
+
+
+        public bool IsValueType
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

@@ -73,6 +73,22 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get { throw new NotImplementedException(); }
         }
+
+
+        public object GetValue(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetValue(object obj, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        ITypeDeclaration IFieldDeclaration.FieldType
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

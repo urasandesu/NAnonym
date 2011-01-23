@@ -33,21 +33,21 @@ using System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    [MethodReservedWords]
-    [ILReservedWords]
-    public interface IILReservedWords : IMethodReservedWords
-    {
-        [ILReservedWordLd]
-        T Ld<T>(FieldInfo field);
+    //[MethodReservedWords]
+    //[ILReservedWords]
+    //public interface IILReservedWords : IMethodReservedWords
+    //{
+    //    [ILReservedWordLd]
+    //    T Load<T>(FieldInfo field);
 
-        [ILReservedWordLd]
-        T Ld<T>(object instance, IFieldDeclaration field);
+    //    [ILReservedWordLd]
+    //    T Load<T>(object instance, IFieldDeclaration field);
 
-        [ILReservedWordSt]
-        IILAllocReservedWords<T> St<T>(FieldInfo field);
-    }
+    //    [ILReservedWordSt]
+    //    IILAllocReservedWords<T> Store<T>(FieldInfo field);
+    //}
 
-    [AttributeUsage(AttributeTargets.Interface, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class ILReservedWordsAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]

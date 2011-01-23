@@ -41,6 +41,7 @@ using System.Reflection;
 using Mono.Cecil.Cil;
 using UNI = Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -95,7 +96,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             bodyExpression(gen);
             if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)
             {
-                gen.Eval(_ => _.End());
+                gen.Eval(() => Dsl.End());
             }
             return this;
         }

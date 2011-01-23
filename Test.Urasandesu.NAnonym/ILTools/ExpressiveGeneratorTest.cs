@@ -86,8 +86,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
-                    gen.Eval(_ => Console.WriteLine("Hello, dynamic assembly !!"));
+                    gen.Eval(() => Dsl.Base());
+                    gen.Eval(() => Console.WriteLine("Hello, dynamic assembly !!"));
                 });
 
                 var emitTest01 = emitTest01Builder.CreateType();
@@ -110,7 +110,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 tempDynamicMethod.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException("aiueo"));
+                    gen.Eval(() => TestHelper.ThrowException("aiueo"));
                 });
 
                 var temp = (Action)tempDynamicMethod.CreateDelegate(typeof(Action));
@@ -151,7 +151,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorConstructorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var sample1 = default(ISample1);
@@ -172,10 +172,10 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.Append("Hello, World!! "));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.Append("Hello, World!! "));
+                    gen.Eval(() => stringBuilder.Append(Dsl.Load<string>(valueParameterName)));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
 
@@ -219,7 +219,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorConstructorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var sample2 = default(ISample2);
@@ -240,11 +240,11 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
-                    gen.Eval(_ => stringBuilder.Append(_.Ld<string>(valueParameterName)));
-                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.Append(Dsl.Load<string>(valueParameterName)));
+                    gen.Eval(() => stringBuilder.Append(Dsl.Load<string>(valueParameterName)));
+                    gen.Eval(() => stringBuilder.Append(Dsl.Load<string>(valueParameterName)));
+                    gen.Eval(() => Dsl.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
 
@@ -284,7 +284,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorConstructorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var sample2 = default(ISample2);
@@ -305,11 +305,11 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", _.Ld<string>(valueParameterName)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.X(cacheField.Name)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.X(cacheField.FieldType.FullName)));
-                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", Dsl.Load<string>(valueParameterName)));
+                    gen.Eval(() => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", Dsl.Extract(cacheField.Name)));
+                    gen.Eval(() => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", Dsl.Extract(cacheField.FieldType.FullName)));
+                    gen.Eval(() => Dsl.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder });
 
@@ -358,8 +358,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorConstructorBuilder.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
-                    gen.Eval(_ => _.Alloc(fieldValue).As(10));
+                    gen.Eval(() => Dsl.Base());
+                    gen.Eval(() => Dsl.Allocate(fieldValue).As(10));
                 },
                 new FieldBuilder[] { fieldValueFieldBuilder });
 
@@ -381,9 +381,9 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(valueParameterName), fieldValue));
-                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", Dsl.Load<string>(valueParameterName), fieldValue));
+                    gen.Eval(() => Dsl.Return(stringBuilder.ToString()));
                 },
                 new ParameterBuilder[] { valueParameterBuilder },
                 new FieldBuilder[] { fieldValueFieldBuilder });
@@ -425,8 +425,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 ctorConstructorGen.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
-                    gen.Eval(_ => _.Alloc(fieldValue).As(10));
+                    gen.Eval(() => Dsl.Base());
+                    gen.Eval(() => Dsl.Allocate(fieldValue).As(10));
                 });
 
 
@@ -449,9 +449,9 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", _.Ld<string>(valueParameterName), fieldValue));
-                    gen.Eval(_ => _.Return(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("Parameter = {0}, FieldValue = {1}", Dsl.Load<string>(valueParameterName), fieldValue));
+                    gen.Eval(() => Dsl.Return(stringBuilder.ToString()));
                 });
 
                 var emitTest07 = ((SRTypeGeneratorImpl)emitTest07TypeGen).Source.CreateType();

@@ -16,7 +16,14 @@
 
 
 
-// DOING: NAnonym を利用したサンプルの作成。
+// DOING: DSL 構文定義再考察
+//        →_ に頼る構文はまずい。VB.NET、F# 等、これを特殊記号として扱う言語はしばしばある。
+//        →短すぎるメソッド名は悪。
+//        →Invoke、New を排除。
+//        →FieldInfo へのアクセスに関しても、リフレクションを用いてアクセスする方式に。
+//        →EvalAdjustState って、EvalExpression するとき必要になるんじゃないの？
+//        →Increment 名がおかしい。
+//        →MethodReservedWord** を DSL** に。
 // DOING: ExpressiveGenerator を使って記述する DSL について現状の方針とかまとめておく。
 // DOING: C# 魔改造 03 -Auto Generation Holic- みたいなエントリ書く。+ CodeDom と便利ツール… + 式木と有用なエントリ… + IL と便利ツール… + そして Cecil へ…
 
@@ -85,3 +92,4 @@
 // DONE: 条件 AND 演算子実装
 // DONE: ビットごとの排他的OR演算子実装
 // DONE: 3項条件演算子実装
+// DONE: NAnonym を利用したサンプルの作成。

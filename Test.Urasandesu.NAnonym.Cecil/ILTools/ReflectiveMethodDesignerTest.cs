@@ -51,6 +51,7 @@ using MCC = Mono.Cecil.Cil;
 using OpCodes = Urasandesu.NAnonym.ILTools.OpCodes;
 using SR = System.Reflection;
 using TypeAnalyzer = Urasandesu.NAnonym.Cecil.ILTools.TypeAnalyzer;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
@@ -109,7 +110,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 action1Def2.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException("Hello, World!!"));
+                    gen.Eval(() => TestHelper.ThrowException("Hello, World!!"));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -164,8 +165,8 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     int i = default(int);
-                    gen.Eval(_ => _.Alloc(i).As(100));
-                    gen.Eval(_ => TestHelper.ThrowException("i.ToString() = {0}", i.ToString()));
+                    gen.Eval(() => Dsl.Allocate(i).As(100));
+                    gen.Eval(() => TestHelper.ThrowException("i.ToString() = {0}", i.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -221,8 +222,8 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     string s = default(string);
-                    gen.Eval(_ => _.Alloc(s).As(new string('a', 10)));
-                    gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
+                    gen.Eval(() => Dsl.Allocate(s).As(new string('a', 10)));
+                    gen.Eval(() => TestHelper.ThrowException("s.ToString() = {0}", s.Substring(0, 5)));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -277,8 +278,8 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 gen =>
                 {
                     string s = new string('a', 10);
-                    gen.Eval(_ => _.Alloc(s).As(new string('a', 10)));
-                    gen.Eval(_ => TestHelper.ThrowException("s.ToString() = {0}", s.ToUpper()));
+                    gen.Eval(() => Dsl.Allocate(s).As(new string('a', 10)));
+                    gen.Eval(() => TestHelper.ThrowException("s.ToString() = {0}", s.ToUpper()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -332,7 +333,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 action2LocalVariableDef5.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(SR::Emit.OpCodes.Brtrue));
+                    gen.Eval(() => TestHelper.ThrowException(SR::Emit.OpCodes.Brtrue));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -388,15 +389,15 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 {
                     var stringBuilder = default(StringBuilder);
                     int one = default(int);
-                    gen.Eval(_ => _.Alloc(one).As(1));
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("1 + 1 = {0}", one + 1)));
+                    gen.Eval(() => Dsl.Allocate(one).As(1));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("1 + 1 = {0}", one + 1)));
                     int i = default(int);
-                    gen.Eval(_ => _.Alloc(i).As(default(int)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", _.AddOneDup(i))));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", _.DupAddOne(i))));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", _.SubOneDup(i))));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(i).As(default(int)));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("++i = {0}", Dsl.AddOneDup(i))));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("i++ = {0}", Dsl.Increment(i))));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("--i = {0}", Dsl.Decrement(i))));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -457,14 +458,14 @@ i++ = 1
                 gen =>
                 {
                     var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
+                    gen.Eval(() => Dsl.Allocate(dynamicMethod).As(new DynamicMethod("dynamicMethod", typeof(string), new Type[] { typeof(int) }, true)));
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Name = {0}", dynamicMethod.Name)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter[0] Type = {0}", dynamicMethod.GetParameters()[0])));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("Name = {0}", dynamicMethod.Name)));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("Return Type = {0}", dynamicMethod.ReturnType)));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter Length = {0}", dynamicMethod.GetParameters().Length)));
+                    gen.Eval(() => stringBuilder.AppendFormat("{0}\r\n", string.Format("Parameter[0] Type = {0}", dynamicMethod.GetParameters()[0])));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -527,32 +528,32 @@ Parameter[0] Type = Int32
                     var value = default(int);
                     var objValue = default(object);
                     var value2 = default(int?);
-                    gen.Eval(_ => _.If(value != 20 && value != 30 && value != 40 && value != 50));
+                    gen.Eval(() => Dsl.If(value != 20 && value != 30 && value != 40 && value != 50));
                     {
-                        gen.Eval(_ => _.Alloc(objValue).As(value));
-                        gen.Eval(_ => _.If(_.Alloc(value2).As(objValue as int?) != null));
+                        gen.Eval(() => Dsl.Allocate(objValue).As(value));
+                        gen.Eval(() => Dsl.If(Dsl.Allocate(value2).As(objValue as int?) != null));
                         {
-                            gen.Eval(_ => _.Return(value + value * value + (int)value2));
+                            gen.Eval(() => Dsl.Return(value + value * value + (int)value2));
                         }
-                        gen.Eval(_ => _.Else());
+                        gen.Eval(() => Dsl.Else());
                         {
-                            gen.Eval(_ => _.Return(value + value * value * value));
+                            gen.Eval(() => Dsl.Return(value + value * value * value));
                         }
-                        gen.Eval(_ => _.EndIf());
+                        gen.Eval(() => Dsl.EndIf());
                     }
-                    gen.Eval(_ => _.ElseIf(value == 20));
+                    gen.Eval(() => Dsl.ElseIf(value == 20));
                     {
-                        gen.Eval(_ => _.Return(value));
+                        gen.Eval(() => Dsl.Return(value));
                     }
-                    gen.Eval(_ => _.ElseIf(value == 40));
+                    gen.Eval(() => Dsl.ElseIf(value == 40));
                     {
-                        gen.Eval(_ => _.Return(value ^ value ^ value));
+                        gen.Eval(() => Dsl.Return(value ^ value ^ value));
                     }
-                    gen.Eval(_ => _.Else());
+                    gen.Eval(() => Dsl.Else());
                     {
-                        gen.Eval(_ => _.Return(value == 30 ? value + value : value * value));
+                        gen.Eval(() => Dsl.Return(value == 30 ? value + value : value * value));
                     }
-                    gen.Eval(_ => _.EndIf());
+                    gen.Eval(() => Dsl.EndIf());
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -610,8 +611,8 @@ Parameter[0] Type = Int32
                 {
                     int value = default(int);
                     double d = default(double);
-                    gen.Eval(_ => _.Alloc(d).As(0d));
-                    gen.Eval(_ => _.Return(value + value * (int)d));
+                    gen.Eval(() => Dsl.Allocate(d).As(0d));
+                    gen.Eval(() => Dsl.Return(value + value * (int)d));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -658,7 +659,7 @@ Parameter[0] Type = Int32
                 action2LocalVariableDef8.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException("GetValue(10) = {0}", TestHelper.GetValue(10).ToString()));
+                    gen.Eval(() => TestHelper.ThrowException("GetValue(10) = {0}", TestHelper.GetValue(10).ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -713,7 +714,7 @@ Parameter[0] Type = Int32
                 gen =>
                 {
                     var ctor3 = default(ConstructorInfo);
-                    gen.Eval(_ => _.Alloc(ctor3).As(typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
+                    gen.Eval(() => Dsl.Allocate(ctor3).As(typeof(System.Func<,>).MakeGenericType(typeof(String), typeof(String)).GetConstructor(
                                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                         null,
                                                         new Type[] 
@@ -722,15 +723,15 @@ Parameter[0] Type = Int32
                                                             typeof(IntPtr) 
                                                         }, null)));
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Name = {0}\r\n", ctor3.Name));
-                    gen.Eval(_ => stringBuilder.AppendFormat("IsPublic = {0}\r\n", ctor3.IsPublic));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("Name = {0}\r\n", ctor3.Name));
+                    gen.Eval(() => stringBuilder.AppendFormat("IsPublic = {0}\r\n", ctor3.IsPublic));
                     var parameterInfos = default(ParameterInfo[]);
-                    gen.Eval(_ => _.Alloc(parameterInfos).As(ctor3.GetParameters()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(parameterInfos).As(ctor3.GetParameters()));
+                    gen.Eval(() => stringBuilder.AppendFormat("Parameter Count = {0}\r\n", parameterInfos.Length));
+                    gen.Eval(() => stringBuilder.AppendFormat("Parameter[0] = {0}\r\n", parameterInfos[0]));
+                    gen.Eval(() => stringBuilder.AppendFormat("Parameter[1] = {0}\r\n", parameterInfos[1]));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -795,7 +796,7 @@ Parameter[1] = IntPtr method
                 action2LocalVariableDef10.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(i + (int)d));
+                    gen.Eval(() => TestHelper.ThrowException(i + (int)d));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -858,7 +859,7 @@ Parameter[1] = IntPtr method
                 action2LocalVariableDef11.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(a));
+                    gen.Eval(() => TestHelper.ThrowException(a));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -946,7 +947,7 @@ Parameter[1] = IntPtr method
                 action2SameDomain1Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(i * (int)d));
+                    gen.Eval(() => TestHelper.ThrowException(i * (int)d));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1007,8 +1008,8 @@ Parameter[1] = IntPtr method
                 action2SameDomain2Def.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(_.X(s)));   // Expand により、この場で式ツリーが展開される。
-                    //gen.Eval(_ => TestHelper.ThrowException(_.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
+                    gen.Eval(() => TestHelper.ThrowException(Dsl.Extract(s)));   // Expand により、この場で式ツリーが展開される。
+                    //gen.Eval(() => TestHelper.ThrowException(Dsl.Expand(() => new { Key = 1, Value = "aiueo" })));    // オブジェクトは展開できない。リテラルとして CIL に埋め込めるものだけ。
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1060,10 +1061,10 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", _.X(cacheField.Name)));
-                    gen.Eval(_ => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", _.X(cacheField.FieldType.FullName)));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => stringBuilder.AppendFormat("Cached Field Name: {0}\r\n", Dsl.Extract(cacheField.Name)));
+                    gen.Eval(() => stringBuilder.AppendFormat("Cached Field Type: {0}\r\n", Dsl.Extract(cacheField.FieldType.FullName)));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -1124,7 +1125,7 @@ Parameter[1] = IntPtr method
                     var a = new KeyValuePair<int, string>(1, "aiueo");
                     var b = default(DateTime);                                  // 別の AppDomain で値を作成してみる。
 
-                    gen.Eval(_ => TestHelper.ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
+                    gen.Eval(() => TestHelper.ThrowException(string.Format("{0}, {1}", a, b.ToString("yyyy/MM/dd"))));
 
                     scope.SetValue(() => a, a);
                 });
@@ -1211,11 +1212,11 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
                     var methodToCall = default(Func<string, string>);
-                    gen.Eval(_ => _.Alloc(methodToCall).As(null));
-                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall == null = {0}", methodToCall == null));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(methodToCall).As(null));
+                    gen.Eval(() => stringBuilder.AppendFormat("methodToCall == null = {0}", methodToCall == null));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -1278,15 +1279,15 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var stringBuilder = default(StringBuilder);
-                    gen.Eval(_ => _.Alloc(stringBuilder).As(new StringBuilder()));
-                    gen.Eval(_ => _.If(methodToCall20 == null));
+                    gen.Eval(() => Dsl.Allocate(stringBuilder).As(new StringBuilder()));
+                    gen.Eval(() => Dsl.If(methodToCall20 == null));
                     var methodToCall = default(Func<string, string>);
-                    gen.Eval(_ => _.Alloc(methodToCall).As(null));
-                    gen.Eval(_ => _.Alloc(methodToCall).As(new Func<string, string>(TestHelper.GetValue)));
-                    gen.Eval(_ => _.Alloc(methodToCall20).As(methodToCall));
-                    gen.Eval(_ => _.EndIf());
-                    gen.Eval(_ => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall20("aiueo")));
-                    gen.Eval(_ => TestHelper.ThrowException(stringBuilder.ToString()));
+                    gen.Eval(() => Dsl.Allocate(methodToCall).As(null));
+                    gen.Eval(() => Dsl.Allocate(methodToCall).As(new Func<string, string>(TestHelper.GetValue)));
+                    gen.Eval(() => Dsl.Allocate(methodToCall20).As(methodToCall));
+                    gen.Eval(() => Dsl.EndIf());
+                    gen.Eval(() => stringBuilder.AppendFormat("methodToCall(\"aiueo\") = {0}", methodToCall20("aiueo")));
+                    gen.Eval(() => TestHelper.ThrowException(stringBuilder.ToString()));
                 });
 
                 methodTestClassDef.Module.Assembly.Write(tempFileName);
@@ -1340,7 +1341,7 @@ Parameter[1] = IntPtr method
                 ctorGen.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => _.Base());
+                    gen.Eval(() => Dsl.Base());
                 });
 
                 var action2SameDomain1Gen = 
@@ -1355,7 +1356,7 @@ Parameter[1] = IntPtr method
                 action2SameDomain1Gen.ExpressBody(
                 gen =>
                 {
-                    gen.Eval(_ => TestHelper.ThrowException(i * (int)d));
+                    gen.Eval(() => TestHelper.ThrowException(i * (int)d));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1398,17 +1399,17 @@ Parameter[1] = IntPtr method
                 gen =>
                 {
                     var dynamicMethod = default(DynamicMethod);
-                    gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("DynamicMethod", typeof(string), null, true)));
+                    gen.Eval(() => Dsl.Allocate(dynamicMethod).As(new DynamicMethod("DynamicMethod", typeof(string), null, true)));
 
                     var il = default(ILGenerator);
-                    gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
+                    gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
 
                     gen.ExpressEmit(() => il,
                     _gen =>
                     {
                         var staticObjectFieldInfo = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
-                        _gen.Emit(_ => _.St<string>(staticObjectFieldInfo).As("testtest"));
-                        _gen.Emit(_ => _.Return(_.Ld<string>(staticObjectFieldInfo)));
+                        _gen.Emit(() => Dsl.Store<string>(staticObjectFieldInfo).As("testtest"));
+                        _gen.Emit(() => Dsl.Return(Dsl.Load<string>(staticObjectFieldInfo)));
 
                         // MEMO: インスタンスメソッドを同じ構文で扱いたい…。
                         // MEMO: 現状だと↓。null かどうかの判別は難しいか…。
@@ -1416,14 +1417,14 @@ Parameter[1] = IntPtr method
                         //       ⇒引数の型が文字列の場合は通常の処理、FieldInfo の場合は、Emit の処理という流れにはできる！
                         //var instanceObjectFieldInfo = typeof(FieldTestClass1).GetFieldInstanceNonPublic("objectField");
                         //var fieldTestClass1 = default(FieldTestClass1);
-                        //_gen.Emit(_ => _.Alloc(fieldTestClass1).As(new FieldTestClass1()));
-                        //_gen.Emit(_ => _.St<string>(fieldTestClass1, instanceObjectFieldInfo).As("testtesttest"));
-                        //_gen.Emit(_ => TestHelper.ThrowException(_.Ld<string>(fieldTestClass1, instanceObjectFieldInfo)));
+                        //_gen.Emit(() => Dsl.Alloc(fieldTestClass1).As(new FieldTestClass1()));
+                        //_gen.Emit(() => Dsl.St<string>(fieldTestClass1, instanceObjectFieldInfo).As("testtesttest"));
+                        //_gen.Emit(() => TestHelper.ThrowException(Dsl.Ld<string>(fieldTestClass1, instanceObjectFieldInfo)));
                     });
 
                     var func = default(Func<string>);
-                    gen.Eval(_ => _.Alloc(func).As((Func<string>)dynamicMethod.CreateDelegate(typeof(Func<string>))));
-                    gen.Eval(_ => _.Return(func()));
+                    gen.Eval(() => Dsl.Allocate(func).As((Func<string>)dynamicMethod.CreateDelegate(typeof(Func<string>))));
+                    gen.Eval(() => Dsl.Return(func()));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1458,19 +1459,19 @@ Parameter[1] = IntPtr method
                 {
                     var getValueInfo = typeof(TestHelper).GetMethod("GetValue", new Type[] { typeof(int) });
                     var value = default(object);
-                    gen.Eval(_ => _.Alloc(value).As(getValueInfo.Invoke(null, new object[] { 20 })));
+                    gen.Eval(() => Dsl.Allocate(value).As(getValueInfo.Invoke(null, new object[] { 20 })));
 
                     var writeLogInfo = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
-                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "testtest", new object[] { } }));
+                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "testtest", new object[] { } }));
 
                     var propertyTestClass1 = default(PropertyTestClass1);
                     var propertyTestClass1CtorInfo = typeof(PropertyTestClass1).GetConstructor(Type.EmptyTypes);
-                    gen.Eval(_ => _.Alloc(propertyTestClass1).As((PropertyTestClass1)propertyTestClass1CtorInfo.Invoke(null)));
-                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "{0}", new object[] { propertyTestClass1 } }));
+                    gen.Eval(() => Dsl.Allocate(propertyTestClass1).As((PropertyTestClass1)propertyTestClass1CtorInfo.Invoke(null)));
+                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "{0}", new object[] { propertyTestClass1 } }));
 
                     var valuePropertyInfo = typeof(PropertyTestClass1).GetProperty("ValueProperty");
-                    gen.Eval(_ => valuePropertyInfo.SetValue(propertyTestClass1, 10, null));
-                    gen.Eval(_ => writeLogInfo.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { valuePropertyInfo.GetValue(propertyTestClass1, null) } }));
+                    gen.Eval(() => valuePropertyInfo.SetValue(propertyTestClass1, 10, null));
+                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { valuePropertyInfo.GetValue(propertyTestClass1, null) } }));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1510,9 +1511,9 @@ ValueProperty: 10
                 {
                     var i = default(int);
                     var name = "i";
-                    gen.Eval(_ => _.Alloc(i).As(100));
-                    gen.Eval(_ => _.St<int>(name).As(50));
-                    gen.Eval(_ => TestHelper.ThrowException(_.Ld<int>(name)));
+                    gen.Eval(() => Dsl.Allocate(i).As(100));
+                    gen.Eval(() => Dsl.Store<int>(name).As(50));
+                    gen.Eval(() => TestHelper.ThrowException(Dsl.Load<int>(name)));
                 });
 
                 tempAssemblyDef.Write(tempFileName);

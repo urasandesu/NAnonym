@@ -45,5 +45,6 @@ namespace Urasandesu.NAnonym.ILTools
         ReadOnlyCollection<IMethodDeclaration> Methods { get; }
         IConstructorDeclaration GetConstructor(Type[] types);
         new Type Source { get; }
+        bool IsValueType { get; }
     }
 }

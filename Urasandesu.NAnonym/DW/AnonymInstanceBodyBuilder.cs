@@ -36,6 +36,7 @@ using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.DW
 {
@@ -51,35 +52,39 @@ namespace Urasandesu.NAnonym.DW
             var bodyDefiner = ParentBodyDefiner.ParentBody;
             var definer = bodyDefiner.ParentBuilder.ParentDefiner;
 
-            var weaveMethod = definer.WeaveMethod;
+            var wm = definer.WeaveMethod;
             var gen = bodyDefiner.Gen;
             var ownerType = definer.Parent.ConstructorWeaver.DeclaringType;
-            var cachedMethod = definer.CachedMethod;
-            var cachedSetting = definer.CachedSetting;
-            var returnType = weaveMethod.Source.ReturnType;
-            var parameterTypes = definer.ParameterTypes;
-            var delegateInvoke = weaveMethod.DelegateType.GetMethodInstancePublic("Invoke", parameterTypes);
+            var cache = definer.CachedMethod;
+            var src = wm.Source;
+            var dst = wm.Destination;
+            var setting = definer.CachedSetting;
+            var retType = wm.Source.ReturnType;
+            var paramTypes = definer.ParameterTypes;
+            var dlgInvoke = wm.DelegateType.GetMethodInstancePublic("Invoke", paramTypes);
 
-            gen.Eval(_ => _.If(_.Ld(cachedMethod.Name) == null));
+            gen.Eval(() => Dsl.If(Dsl.Load(cache.Name) == null));
             {
-                var dynamicMethod = default(DynamicMethod);
-                var dynamicMethodParameterTypes = new Type[] { ownerType }.Concat(parameterTypes).ToArray();
-                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod("dynamicMethod", _.X(returnType), _.X(dynamicMethodParameterTypes), _.X(ownerType), true)));
+                var dm = default(DynamicMethod);
+                var dmParamTypes = new Type[] { ownerType }.Concat(paramTypes).ToArray();
+                gen.Eval(() => Dsl.Allocate(dm).As(new DynamicMethod("", Dsl.Extract(retType), Dsl.Extract(dmParamTypes), Dsl.Extract(ownerType), true)));
 
                 var il = default(ILGenerator);
-                gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
+                gen.Eval(() => Dsl.Allocate(il).As(dm.GetILGenerator()));
                 gen.ExpressEmit(() => il,
                 _gen =>
                 {
                     // Not use the index 0 because it is reference of 'this'.
-                    var variableIndexes = weaveMethod.Source.GetParameters().Select((parameter, index) => index + 1).ToArray();
-                    _gen.Emit(_ => _.Return(_.Invoke(_.Ld<Delegate>(_.This(), cachedSetting), _.X(weaveMethod.Destination), _.LdArg(variableIndexes))));
+                    var varIndexes = src.GetParameters().Select((_, index) => index + 1).ToArray();
+                    //_gen.Emit(() => Dsl.Return(dst.Invoke(Dsl.Load<Delegate>(Dsl.This(), setting), new object[] { Dsl.LoadArguments(varIndexes) })));
+                    _gen.Emit(() => Dsl.Return(dst.Invoke(setting.GetValue(Dsl.This()), new object[] { Dsl.LoadArguments(varIndexes) })));
                 });
 
-                gen.Eval(_ => _.St(cachedMethod.Name).As(dynamicMethod.CreateDelegate(_.X(weaveMethod.DelegateType), _.This())));
+                gen.Eval(() => Dsl.Store(cache.Name).As(dm.CreateDelegate(Dsl.Extract(wm.DelegateType), Dsl.This())));
             }
-            gen.Eval(_ => _.EndIf());
-            gen.Eval(_ => _.Return(_.Invoke(_.Ld(cachedMethod.Name), _.X(delegateInvoke), _.Ld(weaveMethod.Source.ParameterNames()))));
+            gen.Eval(() => Dsl.EndIf());
+            //gen.Eval(() => Dsl.Return(Dsl.Invoke(Dsl.Load(cache.Name), Dsl.Extract(dlgInvoke), Dsl.Load(src.ParameterNames()))));
+            gen.Eval(() => Dsl.Return(dlgInvoke.Invoke(Dsl.Load(cache.Name), new object[] { Dsl.Load(src.ParameterNames()) })));
         }
     }
 }

@@ -42,31 +42,31 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public class ReflectiveILEmitter : ReflectiveDesignerDecorator
     {
-        IILReservedWords reservedWords = new ILReservedWords();
-        IILAllocReservedWords allocReservedWords = new ILAllocReservedWords();
+        //IMethodReservedWords reservedWords = new ILReservedWords();
+        //IILAllocReservedWords allocReservedWords = new ILAllocReservedWords();
 
         public ReflectiveILEmitter(ReflectiveMethodDesigner gen, string ilName)
             : base(new MethodBaseEmitterDecorator(gen, ilName))
         {
         }
 
-        protected override IMethodReservedWords ReservedWords
-        {
-            get
-            {
-                return reservedWords;
-            }
-        }
+        //protected override IMethodReservedWords ReservedWords
+        //{
+        //    get
+        //    {
+        //        return reservedWords;
+        //    }
+        //}
 
-        protected override IMethodAllocReservedWords AllocReservedWords
-        {
-            get
-            {
-                return allocReservedWords;
-            }
-        }
+        //protected override IMethodAllocReservedWords AllocReservedWords
+        //{
+        //    get
+        //    {
+        //        return allocReservedWords;
+        //    }
+        //}
 
-        public void Emit(Expression<Action<IILReservedWords>> exp)
+        public void Emit(Expression<Action> exp)
         {
             Eval(Method, exp.Body, state);
         }
@@ -75,11 +75,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
             if (exp.Object == null)
             {
-                base.EvalMethodCall(method, exp, state);
-            }
-            else
-            {
-                if (exp.Object.Type.IsDefined(typeof(ILReservedWordsAttribute), false))
+                if (exp.Method.DeclaringType.IsDefined(typeof(ILReservedWordsAttribute), false))
                 {
                     if (exp.Method.IsDefined(typeof(ILReservedWordLdAttribute), false)) EvalEmitLd(method, exp, state);
                     else if (exp.Method.IsDefined(typeof(ILReservedWordStAttribute), false)) EvalEmitSt(method, exp, state);
@@ -88,7 +84,14 @@ namespace Urasandesu.NAnonym.ILTools
                         base.EvalMethodCall(method, exp, state);
                     }
                 }
-                else if (exp.Object.Type.IsDefined(typeof(ILAllocReservedWordsAttribute), false))
+                else
+                {
+                    base.EvalMethodCall(method, exp, state);
+                }
+            }
+            else
+            {
+                if (exp.Object.Type.IsDefined(typeof(ILAllocReservedWordsAttribute), false))
                 {
                     if (exp.Method.IsDefined(typeof(MethodAllocReservedWordAsAttribute), false)) EvalEmitAllocAs(method, exp, state);
                     else
@@ -108,15 +111,14 @@ namespace Urasandesu.NAnonym.ILTools
             if (exp.Arguments.Count == 2)
             {
                 EvalExpression(method, exp.Arguments[0], state);
-                if (0 < state.ExtractInfoStack.Count)
+                if (0 < state.ExtractInfos.Count)
                 {
                     throw new NotImplementedException();
                 }
             }
 
             var extractExp = Expression.Call(
-                                Expression.Constant(ReservedWords),
-                                ReservedWordXInfo_T.MakeGenericMethod(exp.Arguments[exp.Arguments.Count - 1].Type),
+                                DslExtract_T.MakeGenericMethod(exp.Arguments[exp.Arguments.Count - 1].Type),
                                 new Expression[] 
                                 { 
                                     exp.Arguments[exp.Arguments.Count - 1]
@@ -127,9 +129,9 @@ namespace Urasandesu.NAnonym.ILTools
 
             var opcode = exp.Arguments.Count == 1 ? OpCodes.Ldsfld : OpCodes.Ldfld;
 
-            if (0 < state.ExtractInfoStack.Count)
+            if (0 < state.ExtractInfos.Count)
             {
-                var extractInfo = state.ExtractInfoStack.Pop();
+                var extractInfo = state.ExtractInfos.Pop();
                 var fieldInfo = default(FieldInfo);
                 var fieldDecl = default(IFieldDeclaration);
                 if ((fieldInfo = extractInfo.Value as FieldInfo) != null)
@@ -156,8 +158,7 @@ namespace Urasandesu.NAnonym.ILTools
             if (exp.Arguments.Count == 1)
             {
                 var extractExp = Expression.Call(
-                                    Expression.Constant(ReservedWords),
-                                    ReservedWordXInfo_object.MakeGenericMethod(typeof(FieldInfo)),
+                                    DslExtract_object.MakeGenericMethod(typeof(FieldInfo)),
                                     new Expression[] 
                                     { 
                                         exp.Arguments[0]
@@ -165,11 +166,11 @@ namespace Urasandesu.NAnonym.ILTools
                                  );
 
                 EvalExtract(method, extractExp, state);
-                if (0 < state.ExtractInfoStack.Count)
+                if (0 < state.ExtractInfos.Count)
                 {
-                    var extractInfo = state.ExtractInfoStack.Pop();
+                    var extractInfo = state.ExtractInfos.Pop();
                     var fieldInfo = (FieldInfo)extractInfo.Value;
-                    state.AllocInfoStack.Push(new EmitAllocInfo(fieldInfo));
+                    state.AllocInfos.Push(new EmitAllocInfo(fieldInfo));
                 }
                 else
                 {
@@ -189,9 +190,9 @@ namespace Urasandesu.NAnonym.ILTools
         protected virtual void EvalEmitAllocAs(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
         {
             EvalExpression(method, exp.Object, state);
-            if (0 < state.AllocInfoStack.Count)
+            if (0 < state.AllocInfos.Count)
             {
-                var allocInfo = (EmitAllocInfo)state.AllocInfoStack.Pop();
+                var allocInfo = (EmitAllocInfo)state.AllocInfos.Pop();
 
                 EvalExpression(method, exp.Arguments[0], state);
                 method.Body.ILOperator.Emit(OpCodes.Stsfld, allocInfo.Field);
@@ -269,61 +270,61 @@ namespace Urasandesu.NAnonym.ILTools
             public override ILocalGenerator AddLocal(Type localType) 
             {
                 var local = new LocalEmitterDecorator(this, localType);
-                Gen.Eval(_ => _.St<LocalBuilder>(local.Name).As(_.Ld<ILGenerator>(ILName).DeclareLocal(_.X(localType))));
+                Gen.Eval(() => Dsl.Store<LocalBuilder>(local.Name).As(Dsl.Load<ILGenerator>(ILName).DeclareLocal(Dsl.Extract(localType))));
                 return local;
             }
             public override ILocalGenerator AddLocal(Type localType, bool pinned) { throw new NotImplementedException(); }
             public override ILabelGenerator AddLabel() 
             {
                 var label = new LabelEmitterDecorator(this);
-                Gen.Eval(_ => _.St<Label>(label.Name).As(_.Ld<ILGenerator>(ILName).DefineLabel()));
+                Gen.Eval(() => Dsl.Store<Label>(label.Name).As(Dsl.Load<ILGenerator>(ILName).DefineLabel()));
                 return label;
             }
-            public override void Emit(OpCode opcode) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)))); }
+            public override void Emit(OpCode opcode) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)))); }
             public override void Emit(OpCode opcode, byte arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, ConstructorInfo con) 
             {
                 var local = new LocalEmitterDecorator(this, typeof(ConstructorInfo));
-                Gen.Eval(_ => _.St<ConstructorInfo>(local.Name).As(_.X(con.DeclaringType).GetConstructor(_.X(con.ExportBinding()), null, _.X(con.ParameterTypes()), null)));
-                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<ConstructorInfo>(local.Name))); 
+                Gen.Eval(() => Dsl.Store<ConstructorInfo>(local.Name).As(Dsl.Extract(con.DeclaringType).GetConstructor(Dsl.Extract(con.ExportBinding()), null, Dsl.Extract(con.ParameterTypes()), null)));
+                Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<ConstructorInfo>(local.Name))); 
             }
             public override void Emit(OpCode opcode, double arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, FieldInfo field) 
             {
                 var local = new LocalEmitterDecorator(this, typeof(FieldInfo));
-                Gen.Eval(_ => _.St<FieldInfo>(local.Name).As(_.X(field.DeclaringType).GetField(_.X(field.Name), _.X(field.ExportBinding()))));
-                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<FieldInfo>(local.Name))); 
+                Gen.Eval(() => Dsl.Store<FieldInfo>(local.Name).As(Dsl.Extract(field.DeclaringType).GetField(Dsl.Extract(field.Name), Dsl.Extract(field.ExportBinding()))));
+                Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<FieldInfo>(local.Name))); 
             }
             public override void Emit(OpCode opcode, float arg) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, int arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
-            public override void Emit(OpCode opcode, ILabelDeclaration label) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<Label>(label.Name))); }
+            public override void Emit(OpCode opcode, int arg) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract(arg))); }
+            public override void Emit(OpCode opcode, ILabelDeclaration label) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<Label>(label.Name))); }
             public override void Emit(OpCode opcode, ILabelDeclaration[] labels) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, ILocalDeclaration local) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<LocalBuilder>(local.Name))); }
+            public override void Emit(OpCode opcode, ILocalDeclaration local) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<LocalBuilder>(local.Name))); }
             public override void Emit(OpCode opcode, long arg) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, MethodInfo meth) 
             {
                 var local = new LocalEmitterDecorator(this, typeof(MethodInfo));
-                Gen.Eval(_ => _.St<MethodInfo>(local.Name).As(_.X(meth.DeclaringType).GetMethod(_.X(meth.Name), _.X(meth.ExportBinding()), null, _.X(meth.ParameterTypes()), null)));
-                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<MethodInfo>(local.Name))); 
+                Gen.Eval(() => Dsl.Store<MethodInfo>(local.Name).As(Dsl.Extract(meth.DeclaringType).GetMethod(Dsl.Extract(meth.Name), Dsl.Extract(meth.ExportBinding()), null, Dsl.Extract(meth.ParameterTypes()), null)));
+                Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<MethodInfo>(local.Name))); 
             }
-            public override void Emit(OpCode opcode, sbyte arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
-            public override void Emit(OpCode opcode, short arg) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(arg))); }
-            public override void Emit(OpCode opcode, string str) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(str))); }
-            public override void Emit(OpCode opcode, Type cls) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X(cls))); }
+            public override void Emit(OpCode opcode, sbyte arg) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract(arg))); }
+            public override void Emit(OpCode opcode, short arg) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract(arg))); }
+            public override void Emit(OpCode opcode, string str) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract(str))); }
+            public override void Emit(OpCode opcode, Type cls) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract(cls))); }
             public override void Emit(OpCode opcode, IConstructorDeclaration constructorDecl) { throw new NotImplementedException(); }
             public override void Emit(OpCode opcode, IMethodDeclaration methodDecl) { throw new NotImplementedException(); }
-            public override void Emit(OpCode opcode, IParameterDeclaration parameterDecl) { Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.X<short>(parameterDecl.Position))); }
+            public override void Emit(OpCode opcode, IParameterDeclaration parameterDecl) { Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Extract<short>(parameterDecl.Position))); }
             public override void Emit(OpCode opcode, IFieldDeclaration fieldDecl) 
             {
                 var local = new LocalEmitterDecorator(this, typeof(MethodInfo));
-                Gen.Eval(_ => _.St<FieldInfo>(local.Name).As(_.X(fieldDecl.DeclaringType.Source).GetField(_.X(fieldDecl.Name), _.X(fieldDecl.ExportBinding()))));
-                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).Emit(_.Cm(opcode.ToClr(), typeof(SRE::OpCodes)), _.Ld<FieldInfo>(local.Name)));
+                Gen.Eval(() => Dsl.Store<FieldInfo>(local.Name).As(Dsl.Extract(fieldDecl.DeclaringType.Source).GetField(Dsl.Extract(fieldDecl.Name), Dsl.Extract(fieldDecl.ExportBinding()))));
+                Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).Emit(Dsl.ConstMember(opcode.ToClr(), typeof(SRE::OpCodes)), Dsl.Load<FieldInfo>(local.Name)));
             }
             public override void Emit(OpCode opcode, IPortableScopeItem scopeItem) { throw new NotImplementedException(); }
             public override void SetLabel(ILabelDeclaration loc) 
             {
                 var label = (LabelEmitterDecorator)loc;
-                Gen.Eval(_ => _.Ld<ILGenerator>(ILName).MarkLabel(_.Ld<Label>(label.Name)));
+                Gen.Eval(() => Dsl.Load<ILGenerator>(ILName).MarkLabel(Dsl.Load<Label>(label.Name)));
             }
         }
 
@@ -364,188 +365,6 @@ namespace Urasandesu.NAnonym.ILTools
             public FieldInfo Field { get; private set; }
         }
 
-        class ILReservedWords : IILReservedWords
-        {
-            public T Ld<T>(FieldInfo field)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T Ld<T>(object instance, IFieldDeclaration field)
-            {
-                throw new NotSupportedException();
-            }
-
-            public IILAllocReservedWords<T> St<T>(FieldInfo field)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Base()
-            {
-                throw new NotSupportedException();
-            }
-
-            public object This()
-            {
-                throw new NotSupportedException();
-            }
-
-            public T DupAddOne<T>(T variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T AddOneDup<T>(T variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T SubOneDup<T>(T variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object New(ConstructorInfo constructor, object parameter)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T New<T>(ConstructorInfo constructor, params object[] parameters)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Invoke(MethodInfo method, params object[] parameters)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Invoke(object variable, MethodInfo method, params object[] parameters)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Ftn(object variable, IMethodDeclaration methodDecl)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Ftn(IMethodDeclaration methodDecl)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Ftn(MethodInfo methodInfo)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void If(bool condition)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void ElseIf(bool condition)
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Else()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void EndIf()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void End()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Return<T>(T variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T Ld<T>(string variableName)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object Ld(string variableName)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object[] Ld(string[] variableNames)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object[] Ld(string[] variableNames, int shift)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object LdArg(int variableIndex)
-            {
-                throw new NotSupportedException();
-            }
-
-            public object[] LdArg(int[] variableIndexes)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T LdArg<T>(int variableIndex)
-            {
-                throw new NotSupportedException();
-            }
-
-            public IMethodAllocReservedWords<T> St<T>(string variableName)
-            {
-                throw new NotSupportedException();
-            }
-
-            public IMethodAllocReservedWords St(string variableName)
-            {
-                throw new NotSupportedException();
-            }
-
-            public IMethodAllocReservedWords<T> Alloc<T>(T variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public IMethodAllocReservedWords Alloc(object variable)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T X<T>(T constant)
-            {
-                throw new NotSupportedException();
-            }
-
-            public T X<T>(object constant)
-            {
-                throw new NotSupportedException();
-            }
-
-            public TValue Cm<TValue>(TValue constMember, Type declaringType)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool AreEqual(object left, object right)
-            {
-                throw new NotSupportedException();
-            }
-        }
 
         class ILAllocReservedWords : IILAllocReservedWords
         {

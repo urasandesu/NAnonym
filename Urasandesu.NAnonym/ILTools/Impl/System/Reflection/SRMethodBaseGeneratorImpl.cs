@@ -121,7 +121,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             bodyExpression(gen);
             if (gen.Directives.Last().OpCode != OpCodes.Ret)
             {
-                gen.Eval(_ => _.End());
+                gen.Eval(() => Dsl.End());
             }
             return this;
         }

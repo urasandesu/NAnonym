@@ -59,18 +59,18 @@ namespace Urasandesu.NAnonym.DW
             var parameterTypes = definer.ParameterTypes;
             var baseMethod = definer.BaseMethod;
 
-            gen.Eval(_ => _.If(_.Ld(cachedMethod.Name) == null));
+            gen.Eval(() => Dsl.If(Dsl.Load(cachedMethod.Name) == null));
             {
                 var dynamicMethod = default(DynamicMethod);
-                gen.Eval(_ => _.Alloc(dynamicMethod).As(new DynamicMethod(
+                gen.Eval(() => Dsl.Allocate(dynamicMethod).As(new DynamicMethod(
                                                             "dynamicMethod",
-                                                            _.X(returnType),
-                                                            _.X(parameterTypes),
+                                                            Dsl.Extract(returnType),
+                                                            Dsl.Extract(parameterTypes),
                                                             true)));
 
                 var delegateConstructor = default(ConstructorInfo);
                 var invokeForLocal = default(MethodInfo);
-                gen.Eval(_ => _.Alloc(delegateConstructor).As(_.X(weaveMethod.DelegateType).GetConstructor(
+                gen.Eval(() => Dsl.Allocate(delegateConstructor).As(Dsl.Extract(weaveMethod.DelegateType).GetConstructor(
                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                                     null,
                                                     new Type[] 
@@ -78,23 +78,23 @@ namespace Urasandesu.NAnonym.DW
                                                         typeof(Object), 
                                                         typeof(IntPtr) 
                                                     }, null)));
-                gen.Eval(_ => _.Alloc(invokeForLocal).As(_.X(weaveMethod.DelegateType).GetMethod(
+                gen.Eval(() => Dsl.Allocate(invokeForLocal).As(Dsl.Extract(weaveMethod.DelegateType).GetMethod(
                                                     "Invoke",
                                                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                                    null, _.X(parameterTypes), null)));
+                                                    null, Dsl.Extract(parameterTypes), null)));
 
                 var cacheField = default(FieldInfo);
-                gen.Eval(_ => _.Alloc(cacheField).As(Type.GetType(_.X(anonymousStaticMethodCache.DeclaringType.AssemblyQualifiedName)).GetField(
-                                                    _.X(anonymousStaticMethodCache.Name),
+                gen.Eval(() => Dsl.Allocate(cacheField).As(Type.GetType(Dsl.Extract(anonymousStaticMethodCache.DeclaringType.AssemblyQualifiedName)).GetField(
+                                                    Dsl.Extract(anonymousStaticMethodCache.Name),
                                                     BindingFlags.NonPublic | BindingFlags.Static)));
 
                 var targetMethod = default(MethodInfo);
-                gen.Eval(_ => _.Alloc(targetMethod).As(Type.GetType(_.X(weaveMethod.Destination.DeclaringType.AssemblyQualifiedName)).GetMethod(
-                                                    _.X(weaveMethod.Destination.Name),
+                gen.Eval(() => Dsl.Allocate(targetMethod).As(Type.GetType(Dsl.Extract(weaveMethod.Destination.DeclaringType.AssemblyQualifiedName)).GetMethod(
+                                                    Dsl.Extract(weaveMethod.Destination.Name),
                                                     BindingFlags.NonPublic | BindingFlags.Static)));
 
                 var beforeSourceConstructor = default(ConstructorInfo);
-                gen.Eval(_ => _.Alloc(beforeSourceConstructor).As(_.X(parameterTypes[0]).GetConstructor(
+                gen.Eval(() => Dsl.Allocate(beforeSourceConstructor).As(Dsl.Extract(parameterTypes[0]).GetConstructor(
                                                     BindingFlags.Instance | BindingFlags.Public,
                                                     null,
                                                     new Type[]
@@ -104,24 +104,24 @@ namespace Urasandesu.NAnonym.DW
                                                     }, null)));
 
                 var il = default(ILGenerator);
-                gen.Eval(_ => _.Alloc(il).As(dynamicMethod.GetILGenerator()));
+                gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
                 var label = default(Label);
-                gen.Eval(_ => _.Alloc(label).As(il.DefineLabel()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Brtrue_S, label));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldnull));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldftn, targetMethod));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, delegateConstructor));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Stsfld, cacheField));
-                gen.Eval(_ => il.MarkLabel(label));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
+                gen.Eval(() => Dsl.Allocate(label).As(il.DefineLabel()));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Brtrue_S, label));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ldnull));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ldftn, targetMethod));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Newobj, delegateConstructor));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Stsfld, cacheField));
+                gen.Eval(() => il.MarkLabel(label));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ldsfld, cacheField));
 
                 
                 // TODO: この辺実装中。
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ldtoken, _.This().GetType()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Call, (MethodInfo)MethodBase.GetCurrentMethod()));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Newobj, beforeSourceConstructor));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ldtoken, Dsl.This().GetType()));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Call, MethodInfoMixin.GetTypeFromHandleInfo));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Call, (MethodInfo)MethodBase.GetCurrentMethod()));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Newobj, beforeSourceConstructor));
                 
                 
                 for (int parametersIndex = 0; parametersIndex < parameterTypes.Length; parametersIndex++)
@@ -129,37 +129,37 @@ namespace Urasandesu.NAnonym.DW
                     switch (parametersIndex)
                     {
                         case 0:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_1));
+                            gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg_1));
                             break;
                         case 1:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_2));
+                            gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg_2));
                             break;
                         case 2:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg_3));
+                            gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg_3));
                             break;
                         case 3:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)4));
+                            gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg, (short)4));
                             break;
                         case 4:
-                            gen.Eval(_ => il.Emit(SRE::OpCodes.Ldarg, (short)5));
+                            gen.Eval(() => il.Emit(SRE::OpCodes.Ldarg, (short)5));
                             break;
                         default:
                             throw new NotSupportedException();
                     }
                 }
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Callvirt, invokeForLocal));
-                gen.Eval(_ => il.Emit(SRE::OpCodes.Ret));
-                gen.Eval(_ => _.St(cachedMethod.Name).As(dynamicMethod.CreateDelegate(_.X(weaveMethod.DelegateType))));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Callvirt, invokeForLocal));
+                gen.Eval(() => il.Emit(SRE::OpCodes.Ret));
+                gen.Eval(() => Dsl.Store(cachedMethod.Name).As(dynamicMethod.CreateDelegate(Dsl.Extract(weaveMethod.DelegateType))));
             }
-            gen.Eval(_ => _.EndIf());
+            gen.Eval(() => Dsl.EndIf());
             var invokeForInvoke = weaveMethod.DelegateType.GetMethod(
                                                     "Invoke",
                                                     BindingFlags.Public | BindingFlags.Instance,
                                                     null,
                                                     parameterTypes,
                                                     null);
-            gen.Eval(_ => _.Invoke(_.Ld(cachedMethod.Name), _.X(invokeForInvoke), _.Ld(weaveMethod.Source.ParameterNames())));
-            gen.Eval(_ => _.Return(_.Invoke(_.This(), (MethodInfo)_.Ftn(_.This(), _.X(baseMethod)), _.Ld(weaveMethod.Source.ParameterNames()))));
+            gen.Eval(() => Dsl.Invoke(Dsl.Load(cachedMethod.Name), Dsl.Extract(invokeForInvoke), Dsl.Load(weaveMethod.Source.ParameterNames())));
+            gen.Eval(() => Dsl.Return(Dsl.Invoke(Dsl.This(), Dsl.LoadPtr(Dsl.This(), baseMethod), Dsl.Load(weaveMethod.Source.ParameterNames()))));
         }
     }
 }

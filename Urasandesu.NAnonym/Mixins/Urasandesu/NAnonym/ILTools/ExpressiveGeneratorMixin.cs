@@ -49,7 +49,7 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             expression(gen);
             if (gen.Directives.Last().OpCode != OpCodes.Ret)
             {
-                gen.Eval(_ => _.End());
+                gen.Eval(() => Dsl.End());
             }
         }
 
@@ -78,8 +78,16 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 
             if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
             {
-                _gen.Emit(_ => _.End());
+                _gen.Emit(() => Dsl.End());
             }
+        }
+    }
+
+    public static class ITypeDeclarationMixin
+    {
+        public static bool Equivalent(this ITypeDeclaration x, Type y)
+        {
+            return x.AssemblyQualifiedName == y.AssemblyQualifiedName;
         }
     }
 
