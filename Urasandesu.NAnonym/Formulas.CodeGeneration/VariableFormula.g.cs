@@ -45,6 +45,7 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
             NodeType = NodeType.Variable;
             VariableName = default(string);
+            Local = default(ILocalDeclaration);
         }
 
         public const string NameOfVariableName = "VariableName";
@@ -55,6 +56,16 @@ namespace Urasandesu.NAnonym.Formulas
             set 
             {
                 SetValue(NameOfVariableName, value, ref variableName);
+            }
+        }
+        public const string NameOfLocal = "Local";
+        ILocalDeclaration local;
+        public ILocalDeclaration Local 
+        { 
+            get { return local; } 
+            set 
+            {
+                SetValue(NameOfLocal, value, ref local);
             }
         }
 
@@ -79,6 +90,11 @@ namespace Urasandesu.NAnonym.Formulas
             sb.Append(NameOfVariableName);
             sb.Append("\": ");
             AppendValueTo(VariableName, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLocal);
+            sb.Append("\": ");
+            AppendValueTo(Local, sb);
         }
     }
 }

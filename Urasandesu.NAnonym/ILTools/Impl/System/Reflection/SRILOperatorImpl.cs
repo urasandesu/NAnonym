@@ -217,6 +217,12 @@ namespace Urasandesu.NAnonym.ILTools
         {
             get { return readonlyDirectives; }
         }
+
+
+        public ILocalGenerator AddLocal(string name, ITypeDeclaration localType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -124,6 +124,13 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             return methodBaseGen.CarryPortableScope();
         }
+
+
+        public UNI::IMethodBaseGenerator ExpressBody2(Action<UNI::ReflectiveMethodDesigner2> bodyExpression)
+        {
+            methodBaseGen.ExpressBody2(bodyExpression);
+            return this;
+        }
     }
 }
 

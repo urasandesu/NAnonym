@@ -37,6 +37,7 @@ namespace Urasandesu.NAnonym.ILTools
     {
         object Source { get; }
         ILocalGenerator AddLocal(string name, Type localType);
+        ILocalGenerator AddLocal(string name, ITypeDeclaration localType);
         ILocalGenerator AddLocal(Type localType);
         ILocalGenerator AddLocal(Type localType, bool pinned);
         ILabelGenerator AddLabel();

@@ -41,6 +41,7 @@ namespace Urasandesu.NAnonym.ILTools
         new ReadOnlyCollection<IParameterGenerator> Parameters { get; }
         IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
         IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression);
+        IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression);
         IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName);
         PortableScope CarryPortableScope();
     }

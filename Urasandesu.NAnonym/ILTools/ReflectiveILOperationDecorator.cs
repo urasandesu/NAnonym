@@ -70,5 +70,11 @@ namespace Urasandesu.NAnonym.ILTools
         public virtual void Emit(OpCode opcode, IFieldDeclaration fieldDecl) { Gen.ILOperator.Emit(opcode, fieldDecl); }
         public virtual void Emit(OpCode opcode, IPortableScopeItem scopeItem) { Gen.ILOperator.Emit(opcode, scopeItem); }
         public virtual void SetLabel(ILabelDeclaration loc) { Gen.ILOperator.SetLabel(loc); }
+
+
+        public ILocalGenerator AddLocal(string name, ITypeDeclaration localType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

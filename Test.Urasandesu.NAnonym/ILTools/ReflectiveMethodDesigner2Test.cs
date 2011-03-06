@@ -16,7 +16,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         [Test]
         public void EvalTest01()
         {
-            var gen = new ReflectiveMethodDesigner2();
+            var gen = new ReflectiveMethodDesigner2(null);
             var value = default(int);
             var objValue = default(object);
             var value2 = default(int?);
@@ -57,7 +57,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         [Test]
         public void EvalTest02()
         {
-            var gen = new ReflectiveMethodDesigner2();
+            var gen = new ReflectiveMethodDesigner2(null);
 
             var writeLog = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
             gen.Eval(() => writeLog.Invoke(null, new object[] { "testtest", new object[] { } }));
@@ -96,7 +96,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         [Test]
         public void EvalTest03()
         {
-            var gen = new ReflectiveMethodDesigner2();
+            var gen = new ReflectiveMethodDesigner2(null);
             var opcode1 = default(OpCode);
             var opcode2 = OpCodes.Add_Ovf;
             gen.Eval(() => Dsl.Allocate(opcode1).As(Dsl.ConstMember(OpCodes.Add, typeof(OpCodes))));

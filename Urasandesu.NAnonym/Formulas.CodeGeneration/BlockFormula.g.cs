@@ -46,7 +46,7 @@ namespace Urasandesu.NAnonym.Formulas
             NodeType = NodeType.Block;
             ParentBlock = default(BlockFormula);
             ChildBlocks = new FormulaCollection<BlockFormula>();
-            Variables = new FormulaCollection<Formula>();
+            Variables = new FormulaCollection<VariableFormula>();
             Formulas = new FormulaCollection<Formula>();
             Result = default(Formula);
         }
@@ -72,8 +72,8 @@ namespace Urasandesu.NAnonym.Formulas
             }
         }
         public const string NameOfVariables = "Variables";
-        FormulaCollection<Formula> variables;
-        public FormulaCollection<Formula> Variables 
+        FormulaCollection<VariableFormula> variables;
+        public FormulaCollection<VariableFormula> Variables 
         { 
             get { return variables; } 
             set 

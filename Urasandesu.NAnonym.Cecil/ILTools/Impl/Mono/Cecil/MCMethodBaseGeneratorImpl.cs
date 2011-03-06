@@ -111,6 +111,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             var scope = new UNI::PortableScope(this);
             return scope;
         }
+
+
+        public IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression)
+        {
+            var gen = new ReflectiveMethodDesigner2();
+            bodyExpression(gen);
+            gen.Eval(() => Dsl.End());
+            gen.Current.Accept(new ILBuilder(this));
+            return this;
+        }
     }
 }
 

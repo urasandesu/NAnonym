@@ -126,6 +126,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             throw new NotImplementedException();
         }
+
+
+        public IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
