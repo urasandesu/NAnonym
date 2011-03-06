@@ -43,9 +43,22 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         ITypeDeclaration declaringType;
 
         public SRMemberDeclarationImpl(MemberInfo memberInfo)
+            : this(memberInfo, null)
+        {
+        }
+
+        public SRMemberDeclarationImpl(MemberInfo memberInfo, ITypeDeclaration declaringType)
             : base(true)
         {
             this.source = memberInfo;
+            if (declaringType == null)
+            {
+                this.declaringType = Source.DeclaringType == null ? default(ITypeDeclaration) : new SRTypeDeclarationImpl(Source.DeclaringType);
+            }
+            else
+            {
+                this.declaringType = declaringType;
+            }
         }
 
         internal MemberInfo Source { get { return (MemberInfo)((IMemberDeclaration)this).Source; } }
@@ -66,11 +79,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get 
             {
-                if (declaringType == null)
-                {
-                    declaringType = Source.DeclaringType == null ? default(ITypeDeclaration) : new SRTypeDeclarationImpl(Source.DeclaringType);
-                }
-                return declaringType; 
+                return declaringType;
             }
         }
     }

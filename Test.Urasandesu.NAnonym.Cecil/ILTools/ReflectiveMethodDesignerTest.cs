@@ -1457,21 +1457,39 @@ Parameter[1] = IntPtr method
                 reflectiveDesigner1Gen.ExpressBody(
                 gen =>
                 {
-                    var getValueInfo = typeof(TestHelper).GetMethod("GetValue", new Type[] { typeof(int) });
-                    var value = default(object);
-                    gen.Eval(() => Dsl.Allocate(value).As(getValueInfo.Invoke(null, new object[] { 20 })));
+                    //var writeLog = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "testtest", new object[] { } }));
 
-                    var writeLogInfo = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
-                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "testtest", new object[] { } }));
+                    //var p1 = default(PropertyTestClass1);
+                    //var p1Ci = typeof(PropertyTestClass1).GetConstructor(Type.EmptyTypes);
+                    //gen.Eval(() => Dsl.Allocate(p1).As((PropertyTestClass1)p1Ci.Invoke(null)));
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "{0}", new object[] { p1 } }));
 
-                    var propertyTestClass1 = default(PropertyTestClass1);
-                    var propertyTestClass1CtorInfo = typeof(PropertyTestClass1).GetConstructor(Type.EmptyTypes);
-                    gen.Eval(() => Dsl.Allocate(propertyTestClass1).As((PropertyTestClass1)propertyTestClass1CtorInfo.Invoke(null)));
-                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "{0}", new object[] { propertyTestClass1 } }));
+                    //var p1ValueProperty = typeof(PropertyTestClass1).GetProperty("ValueProperty");
+                    //gen.Eval(() => p1ValueProperty.SetValue(p1, 10, null));
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { p1ValueProperty.GetValue(p1, null) } }));
 
-                    var valuePropertyInfo = typeof(PropertyTestClass1).GetProperty("ValueProperty");
-                    gen.Eval(() => valuePropertyInfo.SetValue(propertyTestClass1, 10, null));
-                    gen.Eval(() => writeLogInfo.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { valuePropertyInfo.GetValue(propertyTestClass1, null) } }));
+                    //var p1ObjectProperty = typeof(PropertyTestClass1).GetProperty("ObjectProperty");
+                    //gen.Eval(() => p1ObjectProperty.SetValue(p1, "a", null));
+                    //gen.Eval(() => p1ObjectProperty.SetValue(p1, p1ObjectProperty.GetValue(p1, null), null));
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "ObjectProperty: {0}", new object[] { p1ObjectProperty.GetValue(p1, null) } }));
+
+                    var f2 = default(FieldTestClass2);
+                    gen.Eval(() => Dsl.Allocate(f2).As(new FieldTestClass2()));
+                    var f2ValueField = typeof(FieldTestClass2).GetField("ValueField");
+                    gen.Eval(() => f2ValueField.SetValue(f2, 30));
+                    gen.Eval(() => f2ValueField.SetValue(f2, f2ValueField.GetValue(f2)));
+                    gen.Eval(() => TestHelper.WriteLog("ValueField: {0}", (int)f2ValueField.GetValue(f2)));
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "ValueField: {0}", new object[] { f2ValueField.GetValue(f2) } }));
+
+                    //var p2 = default(PropertyTestClass2);
+                    //var p2Ci = typeof(PropertyTestClass2).GetConstructor(new Type[] { typeof(int), typeof(string) });
+                    //gen.Eval(() => Dsl.Allocate(p2).As((PropertyTestClass2)p2Ci.Invoke(new object[] { p1ValueProperty.GetValue(p1, null), p1ObjectProperty.GetValue(p1, null) })));
+                    //gen.Eval(() => writeLog.Invoke(null, new object[] { "({0}, {1})", new object[] { p2.ValueProperty, p2.ObjectProperty } }));
+
+                    //var getValue = typeof(TestHelper).GetMethod("GetValue", new Type[] { typeof(int) });
+                    //var value = default(int);
+                    //gen.Eval(() => Dsl.Allocate(value).As((int)getValue.Invoke(null, new object[] { f2ValueField.GetValue(f2) })));
                 });
 
                 tempAssemblyDef.Write(tempFileName);
@@ -1482,10 +1500,16 @@ Parameter[1] = IntPtr method
                 var generativeEmit1 = emitTest24.GetMethod(reflectiveDesigner1Gen.Name);
                 generativeEmit1.Invoke(instance, null);
                 Assert.AreEqual(
-@"testtest
-Test.Urasandesu.NAnonym.Etc.PropertyTestClass1
-ValueProperty: 10
+@"ValueField: 30
 ", SimpleLogWriter.Instance.ReadToEnd());
+//                Assert.AreEqual(
+//@"testtest
+//Test.Urasandesu.NAnonym.Etc.PropertyTestClass1
+//ValueProperty: 10
+//ObjectProperty: a
+//ValueField: 30
+//(10, a)
+//", SimpleLogWriter.Instance.ReadToEnd());
             });
         }
 

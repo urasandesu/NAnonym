@@ -33,14 +33,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
     public static class PropertyInfoMixin
     {
+        public static readonly MethodInfo SetValue_object_object_objects = TypeSavable.GetInstanceMethod<PropertyInfo, object, object, object[]>(_ => _.SetValue);
+        public static readonly MethodInfo GetValue_object_objects = TypeSavable.GetInstanceMethod<PropertyInfo, object, object[], object>(_ => _.GetValue);
+
         public static bool IsStatic(this PropertyInfo source)
         {
             return (source.CanRead && source.GetGetMethod().IsStatic) || (source.CanWrite && source.GetSetMethod().IsStatic);
+        }
+
+        public static IPropertyDeclaration ToPropertyDecl(this PropertyInfo source)
+        {
+            return new SRPropertyDeclarationImpl(source);
+        }
+
+        public static IPropertyDeclaration ToPropertyDecl(this PropertyInfo source, ITypeDeclaration declaringType)
+        {
+            return new SRPropertyDeclarationImpl(source, declaringType);
         }
     }
 }

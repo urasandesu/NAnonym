@@ -44,5 +44,15 @@ namespace Test.Urasandesu.NAnonym.Etc
         static string staticObjectField;
         static Func<string> staticGenericField;
     }
+
+    public class FieldTestClass2
+    {
+        public int ValueField;
+        public string ObjectField;
+        public Func<string> GenericField;
+        public static int StaticValueField;
+        public static string StaticObjectField;
+        public static Func<string> StaticGenericField;
+    }
 }
 

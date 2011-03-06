@@ -33,11 +33,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
     public static class FieldInfoMixin
     {
+        public static readonly MethodInfo SetValue_object_object = TypeSavable.GetInstanceMethod<FieldInfo, object, object>(_ => _.SetValue);
+        public static readonly MethodInfo GetValue_object = TypeSavable.GetInstanceMethod<FieldInfo, object, object>(_ => _.GetValue);
+
         public static BindingFlags ExportBinding(this FieldInfo fieldInfo)
         {
             BindingFlags bindingAttr = BindingFlags.Default;
@@ -61,6 +66,16 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
             }
 
             return bindingAttr;
+        }
+
+        public static IFieldDeclaration ToFieldDecl(this FieldInfo source)
+        {
+            return new SRFieldDeclarationImpl(source);
+        }
+
+        public static IFieldDeclaration ToFieldDecl(this FieldInfo source, ITypeDeclaration declaringType)
+        {
+            return new SRFieldDeclarationImpl(source, declaringType);
         }
     }
 }

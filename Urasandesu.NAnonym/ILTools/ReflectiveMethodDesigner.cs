@@ -98,19 +98,28 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        protected virtual void EvalArgumentsWithoutConversion(IMethodBaseGenerator method, ReadOnlyCollection<Expression> exps, EvalState state)
+        protected virtual void EvalArgumentsWithParametricValueEval(IMethodBaseGenerator method, ReadOnlyCollection<Expression> exps, EvalState state)
         {
-            foreach (var exp in exps)
+            var @params = default(ParameterInfo[]);
+            var prevExp = state.CallStack.FirstOrDefault();
+            if (prevExp != null && state.ParametricConstructorInfos.ContainsKey(prevExp))
             {
-                if (exp.NodeType == ExpressionType.Convert)
-                {
-                    EvalExpression(method, ((UnaryExpression)exp).Operand, state);
-                }
-                else
-                {
-                    EvalExpression(method, exp, state);
-                }
+                var ci = state.ParametricConstructorInfos[prevExp];
+                @params = ci.GetParameters();
             }
+            else if (prevExp != null && state.ParametricMethodInfos.ContainsKey(prevExp))
+            {
+                var mi = state.ParametricMethodInfos[prevExp];
+                @params = mi.GetParameters();
+            }
+
+            exps.ForEach((exp, i) =>
+            {
+                var _exp = exp.NodeType == ExpressionType.Convert ? ((UnaryExpression)exp).Operand : exp;
+                if (@params != null) state.ParametricParameterInfos.Add(prevExp, @params[i]);
+                EvalExpression(method, _exp, state);
+                if (@params != null) state.ParametricParameterInfos.Remove(prevExp);
+            });
         }
 
         protected virtual void EvalExpression(IMethodBaseGenerator method, Expression exp, EvalState state)
@@ -576,6 +585,8 @@ namespace Urasandesu.NAnonym.ILTools
                 mi = (MethodInfo)state.ExtractInfos.Pop().Value;
             }
 
+            state.ParametricMethodInfos.Add(exp, mi);
+
             if (!mi.IsStatic)
             {
                 EvalExpression(method, exp.Arguments[0], state);
@@ -583,7 +594,7 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
             {
-                EvalArguments(method, ((NewArrayExpression)exp.Arguments[1]).Expressions, state);
+                EvalArgumentsWithParametricValueEval(method, ((NewArrayExpression)exp.Arguments[1]).Expressions, state);
             }
             else
             {
@@ -599,8 +610,10 @@ namespace Urasandesu.NAnonym.ILTools
                 method.Body.ILOperator.Emit(OpCodes.Callvirt, mi);
             }
 
+            state.ParametricMethodInfos.Remove(exp);
+
             state.ProhibitsLastAutoPop = mi.ReturnType == typeof(void);
-            state.MethodInfoDesignedInfos.Push(mi);
+            state.ReturneeMethodInfos.Push(mi);
         }
 
         protected virtual void EvalConstructorInfoInvoke_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
@@ -622,7 +635,7 @@ namespace Urasandesu.NAnonym.ILTools
 
             if (exp.Arguments[0].NodeType == ExpressionType.NewArrayInit)
             {
-                EvalArgumentsWithoutConversion(method, ((NewArrayExpression)exp.Arguments[0]).Expressions, state);
+                EvalArgumentsWithParametricValueEval(method, ((NewArrayExpression)exp.Arguments[0]).Expressions, state);
             }
             else if (exp.Arguments[0].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[0]).Value == null)
             {
@@ -766,14 +779,7 @@ namespace Urasandesu.NAnonym.ILTools
                 EvalExpression(method, exp.Arguments[0], state);
             }
 
-            if (exp.Arguments[1].NodeType == ExpressionType.Convert)
-            {
-                EvalExpression(method, ((UnaryExpression)exp.Arguments[1]).Operand, state);
-            }
-            else
-            {
-                EvalExpression(method, exp.Arguments[1], state);
-            }
+            EvalExpression(method, exp.Arguments[1], state);
 
             if (fi.IsStatic)
             {
@@ -802,15 +808,15 @@ namespace Urasandesu.NAnonym.ILTools
                 pi = (PropertyInfo)state.ExtractInfos.Pop().Value;
             }
 
+            state.ParametricPropertyInfos.Add(exp, pi);
+
             var setter = pi.GetSetMethod(true);
             if (!setter.IsStatic)
             {
                 EvalExpression(method, exp.Arguments[0], state);
             }
 
-            if (pi.PropertyType.IsValueType && 
-                exp.Arguments[1].NodeType == ExpressionType.Convert && 
-                ((UnaryExpression)exp.Arguments[1]).Operand.Type.IsSubclassOf(typeof(ValueType)))
+            if (exp.Arguments[1].NodeType == ExpressionType.Convert)
             {
                 EvalExpression(method, ((UnaryExpression)exp.Arguments[1]).Operand, state);
             }
@@ -840,6 +846,8 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 method.Body.ILOperator.Emit(OpCodes.Callvirt, setter);
             }
+
+            state.ParametricPropertyInfos.Remove(exp);
         }
 
         protected virtual void EvalPropertyInfoGetValue_object_objects(IMethodBaseGenerator method, MethodCallExpression exp, EvalState state)
@@ -885,7 +893,7 @@ namespace Urasandesu.NAnonym.ILTools
                 method.Body.ILOperator.Emit(OpCodes.Callvirt, getter);
             }
 
-            state.PropertyInfoDesignedInfos.Push(pi);
+            state.ReturneePropertyInfos.Push(pi);
         }
 
         // TODO: ここも EvalExtract 暗黙的に呼ぶようにする。
@@ -1188,7 +1196,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalAdjustState(IMethodBaseGenerator method, Expression exp, EvalState state)
         {
-            // Adjust ExtractInfoStack. 
+            // Adjust the extract info. 
             if (0 < state.ExtractInfos.Count)
             {
                 var extractInfo = state.ExtractInfos.Pop();
@@ -1210,68 +1218,77 @@ namespace Urasandesu.NAnonym.ILTools
             }
 
             // Adjust the return type.
-            var designingExp = default(Expression);
-            if (0 < state.CallStack.Count)
+            var prevExp = state.CallStack.ElementAtOrDefault(1);
+            //var adjustingExp = default(UnaryExpression);
+            if (0 < state.ReturneeMethodInfos.Count)
             {
-                designingExp = state.CallStack.Pop();
-            }
-
-            var adjustingConvertExp = default(UnaryExpression);
-            if (0 < state.MethodInfoDesignedInfos.Count)
-            {
-                var mi = state.MethodInfoDesignedInfos.Pop();
-                if (designingExp != null && mi.ReturnType != typeof(void) && designingExp.Type != mi.ReturnType)
+                var mi = state.ReturneeMethodInfos.Pop();
+                if (prevExp != null && mi.ReturnType != typeof(void) && prevExp.Type != mi.ReturnType)
                 {
-                    var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], mi.DeclaringType);
-                    var mockParamExps = ToMockParameterExpressions(mi.GetParameters());
-                    var mockMethodCallExp = Expression.Call(mockObjectExp, mi, mockParamExps);
-                    adjustingConvertExp = Expression.Convert(mockMethodCallExp, designingExp.Type);
+                    //var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], mi.DeclaringType);
+                    //var mockParamExps = ToMockParameterExpressions(mi.GetParameters());
+                    //var mockMethodCallExp = Expression.Call(mockObjectExp, mi, mockParamExps);
+                    //adjustingExp = Expression.Convert(mockMethodCallExp, prevExp.Type);
                 }
             }
             else if (0 < state.ReturneeConstructorInfos.Count)
             {
                 var ci = state.ReturneeConstructorInfos.Pop();
-                if (designingExp != null && designingExp.Type != ci.DeclaringType)
+                if (prevExp != null && prevExp.Type != ci.DeclaringType)
                 {
-                    var mockParamExps = ToMockParameterExpressions(ci.GetParameters());
-                    var mockNewExp = Expression.New(ci, mockParamExps);
-                    adjustingConvertExp = Expression.Convert(mockNewExp, designingExp.Type);
+                    //var mockParamExps = ToMockParameterExpressions(ci.GetParameters());
+                    //var mockNewExp = Expression.New(ci, mockParamExps);
+                    //adjustingExp = Expression.Convert(mockNewExp, prevExp.Type);
                 }
             }
             else if (0 < state.FieldDeclDesignedInfos.Count)
             {
                 var fd = state.FieldDeclDesignedInfos.Pop();
-                if (designingExp != null && fd.FieldType.Equivalent(designingExp.Type))
+                if (prevExp != null && fd.FieldType.Equivalent(prevExp.Type))
                 {
-                    var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], fd.DeclaringType.Source);
-                    var mockFieldExp = Expression.Field(mockObjectExp, fd.Name);
-                    adjustingConvertExp = Expression.Convert(mockFieldExp, designingExp.Type);
+                    //var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], fd.DeclaringType.Source);
+                    //var mockFieldExp = Expression.Field(mockObjectExp, fd.Name);
+                    //adjustingExp = Expression.Convert(mockFieldExp, prevExp.Type);
                 }
             }
             else if (0 < state.ReturneeFieldInfos.Count)
             {
-                var fi = state.ReturneeFieldInfos.Pop();
-                if (designingExp != null && designingExp.Type != fi.FieldType)
+                var fi = prevExp.NodeType == ExpressionType.Convert ? state.ReturneeFieldInfos.Peek() : state.ReturneeFieldInfos.Pop();
+
+                if (prevExp != null && state.ParametricFieldInfos.ContainsKey(prevExp))
                 {
-                    var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], fi.DeclaringType);
-                    var mockFieldExp = Expression.Field(mockObjectExp, fi);
-                    adjustingConvertExp = Expression.Convert(mockFieldExp, designingExp.Type);
+                    if (!state.ParametricFieldInfos[prevExp].FieldType.IsAssignableFrom(fi.FieldType))
+                    {
+                        throw new InvalidCastException();
+                    }
+                }
+                else if (prevExp != null && !prevExp.Type.IsAssignableFrom(fi.FieldType))
+                {
+                    throw new InvalidCastException();
+                    //var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], fi.DeclaringType);
+                    //var mockFieldExp = Expression.Field(mockObjectExp, fi);
+                    //adjustingExp = Expression.Convert(mockFieldExp, prevExp.Type);
                 }
             }
-            else if (0 < state.PropertyInfoDesignedInfos.Count)
+            else if (0 < state.ReturneePropertyInfos.Count)
             {
-                var pi = state.PropertyInfoDesignedInfos.Pop();
-                if (designingExp != null && designingExp.Type != pi.PropertyType)
+                var pi = state.ReturneePropertyInfos.Pop();
+                if (prevExp != null && prevExp.Type != pi.PropertyType)
                 {
-                    var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], pi.DeclaringType);
-                    var mockPropertyExp = Expression.Property(mockObjectExp, pi);
-                    adjustingConvertExp = Expression.Convert(mockPropertyExp, designingExp.Type);
+                    //var mockObjectExp = Expression.Convert(((MethodCallExpression)exp).Arguments[0], pi.DeclaringType);
+                    //var mockPropertyExp = Expression.Property(mockObjectExp, pi);
+                    //adjustingExp = Expression.Convert(mockPropertyExp, prevExp.Type);
                 }
             }
 
-            if (adjustingConvertExp != null)
+            //if (adjustingExp != null)
+            //{
+            //    EvalUnaryWithoutOperandEvaluation(method, adjustingExp, state);
+            //}
+            // Adjust the call stack.
+            if (0 < state.CallStack.Count)
             {
-                //EvalUnaryWithoutOperandEvaluation(method, adjustingConvertExp, state);
+                state.CallStack.Pop();
             }
         }
 
@@ -1403,7 +1420,6 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else
             {
-                // TODO: exp.Value がオブジェクト型の場合はどうするのだ？
                 throw new NotImplementedException();
             }
         }
@@ -1419,43 +1435,7 @@ namespace Urasandesu.NAnonym.ILTools
             switch (exp.NodeType)
             {
                 case ExpressionType.Convert:
-                    if (exp.Type.IsSubclassOf(typeof(ValueType)))
-                    {
-                        if (exp.Operand.Type.IsAssignableWithoutGenericArgumentsFrom(typeof(Nullable<>)))
-                        {
-                            var nullableValue = exp.Operand.Type.GetProperty("Value");
-                            var nullableget_Value = nullableValue.GetGetMethod();
-                            var local = method.Body.ILOperator.AddLocal(exp.Operand.Type);
-                            method.Body.ILOperator.Emit(OpCodes.Stloc, local);
-                            method.Body.ILOperator.Emit(OpCodes.Ldloca, local);
-                            method.Body.ILOperator.Emit(OpCodes.Callvirt, nullableget_Value);
-                        }
-                        else
-                        {
-                            if (exp.Type == typeof(int))
-                            {
-                                method.Body.ILOperator.Emit(OpCodes.Conv_I4);
-                            }
-                            else if (exp.Type == typeof(sbyte))
-                            {
-                                method.Body.ILOperator.Emit(OpCodes.Conv_I2);
-                            }
-                            else
-                            {
-                                throw new NotImplementedException();
-                            }
-                        }
-                    }
-                    else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
-                    {
-                        // TODO: implicit operator や explicit operator の実装。
-                        method.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
-                    }
-                    else
-                    {
-                        // TODO: implicit operator や explicit operator の実装。
-                        method.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
-                    }
+                    EvalConvertWithoutOperandEval(method, exp, state);
                     break;
                 case ExpressionType.ArrayLength:
                     method.Body.ILOperator.Emit(OpCodes.Ldlen);
@@ -1470,6 +1450,96 @@ namespace Urasandesu.NAnonym.ILTools
                     break;
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        protected virtual void EvalConvertWithoutOperandEval(IMethodBaseGenerator method, UnaryExpression exp, EvalState state)
+        {
+            var operandType = exp.Operand.Type;
+            if (0 < state.ReturneeFieldInfos.Count)
+            {
+                var fi = state.ReturneeFieldInfos.Pop();
+                operandType = fi.FieldType;
+            }
+
+            var prevExp = state.CallStack.ElementAtOrDefault(1);
+            if (prevExp != null && state.ParametricPropertyInfos.ContainsKey(prevExp))
+            {
+                var pi = state.ParametricPropertyInfos[prevExp];
+                if (pi.PropertyType != exp.Operand.Type)
+                {
+                    var convertExp = Expression.Convert(exp.Operand, pi.PropertyType);
+                    EvalConvertWithoutOperandAndParametricValueEval(method, convertExp, state);
+                }
+            }
+            else if (prevExp != null && state.ParametricFieldInfos.ContainsKey(prevExp))
+            {
+                var fi = state.ParametricFieldInfos[prevExp];
+                if (fi.FieldType == operandType)
+                {
+                    // the conversion is not necessary.
+
+                    //var convertExp = Expression.Convert(exp.Operand, fi.FieldType);
+                    //EvalConvertWithoutOperandAndParametricValueEval(method, convertExp, state);
+                }
+                else
+                {
+                    EvalConvertWithoutOperandAndParametricValueEval(method, exp, state);
+                }
+            }
+            else if (prevExp != null && state.ParametricParameterInfos.ContainsKey(prevExp))
+            {
+                var pa = state.ParametricParameterInfos[prevExp];
+                if (pa.ParameterType != exp.Operand.Type)
+                {
+                    var convertExp = Expression.Convert(exp.Operand, pa.ParameterType);
+                    EvalConvertWithoutOperandAndParametricValueEval(method, convertExp, state);
+                }
+            }
+            else if (exp.Type != operandType)
+            {
+                EvalConvertWithoutOperandAndParametricValueEval(method, exp, state);
+            }
+        }
+
+        protected virtual void EvalConvertWithoutOperandAndParametricValueEval(IMethodBaseGenerator method, UnaryExpression exp, EvalState state)
+        {
+            if (exp.Type.IsSubclassOf(typeof(ValueType)))
+            {
+                if (exp.Operand.Type.EquivalentWithoutGenericArguments(typeof(Nullable<>)))
+                {
+                    var nullableValue = exp.Operand.Type.GetProperty("Value");
+                    var nullableget_Value = nullableValue.GetGetMethod();
+                    var local = method.Body.ILOperator.AddLocal(exp.Operand.Type);
+                    method.Body.ILOperator.Emit(OpCodes.Stloc, local);
+                    method.Body.ILOperator.Emit(OpCodes.Ldloca, local);
+                    method.Body.ILOperator.Emit(OpCodes.Callvirt, nullableget_Value);
+                }
+                else
+                {
+                    if (exp.Type == typeof(int))
+                    {
+                        method.Body.ILOperator.Emit(OpCodes.Conv_I4);
+                    }
+                    else if (exp.Type == typeof(sbyte))
+                    {
+                        method.Body.ILOperator.Emit(OpCodes.Conv_I2);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+            else if (exp.Operand.Type.IsSubclassOf(typeof(ValueType)) && !exp.Type.IsSubclassOf(typeof(ValueType)))
+            {
+                // TODO: implicit operator や explicit operator の実装。
+                method.Body.ILOperator.Emit(OpCodes.Box, exp.Operand.Type);
+            }
+            else
+            {
+                // TODO: implicit operator や explicit operator の実装。
+                method.Body.ILOperator.Emit(OpCodes.Castclass, exp.Type);
             }
         }
 
@@ -1707,13 +1777,16 @@ namespace Urasandesu.NAnonym.ILTools
                 AllocInfos = new Stack<AllocInfo>();
                 ShiftInfos = new Stack<ShiftInfo>();
                 CallStack = new Stack<Expression>();
-                MethodInfoDesignedInfos = new Stack<MethodInfo>();
+                ParametricParameterInfos = new Dictionary<Expression, ParameterInfo>();
+                ParametricMethodInfos = new Dictionary<Expression, MethodInfo>();
+                ReturneeMethodInfos = new Stack<MethodInfo>();
                 ParametricConstructorInfos = new Dictionary<Expression, ConstructorInfo>();
                 ReturneeConstructorInfos = new Stack<ConstructorInfo>();
                 FieldDeclDesignedInfos = new Stack<IFieldDeclaration>();
                 ParametricFieldInfos = new Dictionary<Expression, FieldInfo>();
                 ReturneeFieldInfos = new Stack<FieldInfo>();
-                PropertyInfoDesignedInfos = new Stack<PropertyInfo>();
+                ParametricPropertyInfos = new Dictionary<Expression, PropertyInfo>();
+                ReturneePropertyInfos = new Stack<PropertyInfo>();
             }
 
             public bool ProhibitsLastAutoPop { get; set; }
@@ -1724,8 +1797,11 @@ namespace Urasandesu.NAnonym.ILTools
             public Stack<ShiftInfo> ShiftInfos { get; private set; }
 
             public Stack<Expression> CallStack { get; private set; }
-            
-            public Stack<MethodInfo> MethodInfoDesignedInfos { get; private set; }
+
+            public Dictionary<Expression, ParameterInfo> ParametricParameterInfos { get; private set; }
+
+            public Dictionary<Expression, MethodInfo> ParametricMethodInfos { get; private set; }
+            public Stack<MethodInfo> ReturneeMethodInfos { get; private set; }
             
             public Dictionary<Expression, ConstructorInfo> ParametricConstructorInfos { get; private set; }
             public Stack<ConstructorInfo> ReturneeConstructorInfos { get; private set; }
@@ -1734,8 +1810,9 @@ namespace Urasandesu.NAnonym.ILTools
             
             public Dictionary<Expression, FieldInfo> ParametricFieldInfos { get; private set; }
             public Stack<FieldInfo> ReturneeFieldInfos { get; private set; }
-            
-            public Stack<PropertyInfo> PropertyInfoDesignedInfos { get; private set; }
+
+            public Dictionary<Expression, PropertyInfo> ParametricPropertyInfos { get; private set; }
+            public Stack<PropertyInfo> ReturneePropertyInfos { get; private set; }
         }
 
         protected class IfInfo

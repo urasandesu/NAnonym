@@ -32,6 +32,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System
 {
@@ -69,6 +71,25 @@ namespace Urasandesu.NAnonym.Mixins.System
         public static FieldInfo GetFieldInstanceNonPublic(this Type type, string name)
         {
             return type.GetField(name, InstanceNonPublic);
+        }
+
+        public static bool IsAssignableFrom(this Type source, ITypeDeclaration target)
+        {
+            if (source.Equivalent(target))
+            {
+                return true;
+            }
+            else
+            {
+                return source.IsAssignableFrom(target.BaseType);
+            }
+        }
+
+        public static bool Equivalent(this Type source, ITypeDeclaration target)
+        {
+            if (source == null && target == null) return true;
+            if (source == null || target == null) return false;
+            return source.AssemblyQualifiedName == target.AssemblyQualifiedName;
         }
 
         public static bool Equivalent(this Type source, Type target)
@@ -126,6 +147,11 @@ namespace Urasandesu.NAnonym.Mixins.System
             {
                 return source.GetGenericTypeDefinition().IsAssignableFrom(target.GetGenericTypeDefinition());
             }
+        }
+
+        public static ITypeDeclaration ToTypeDecl(this Type source)
+        {
+            return new SRTypeDeclarationImpl(source);
         }
     }
 }

@@ -31,14 +31,20 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {
     public static class MethodInfoMixin
     {
+
+
         public static readonly MethodInfo GetTypeFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeTypeHandle, Type>(() => Type.GetTypeFromHandle);
         public static readonly MethodInfo GetMethodFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeMethodHandle, MethodBase>(() => MethodBase.GetMethodFromHandle);
         public static readonly MethodInfo GetFieldFromHandleInfo = TypeSavable.GetStaticMethod<RuntimeFieldHandle, FieldInfo>(() => FieldInfo.GetFieldFromHandle);
+
+        public static readonly MethodInfo Invoke_object_objects = TypeSavable.GetInstanceMethod<MethodInfo, object, object[], object>(_ => _.Invoke);
 
         public static bool Equivalent(this MethodInfo source, MethodInfo target)
         {
@@ -71,6 +77,11 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
                        target.ParameterTypes().Where(parameterType => !parameterType.IsGenericParameter).Equivalent(
                             source.ParameterTypes().Where(parameterType => !parameterType.IsGenericParameter));
             }
+        }
+
+        public static IMethodDeclaration ToMethodDecl(this MethodInfo source)
+        {
+            return new SRMethodDeclarationImpl(source);
         }
     }
 }

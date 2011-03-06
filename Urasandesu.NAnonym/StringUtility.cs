@@ -146,6 +146,11 @@ namespace Urasandesu.NAnonym
                 return fileFullPathOrUri;
             }
         }
+
+        public static string ToCamel(this string s)
+        {
+            return string.IsNullOrEmpty(s) ? s : s.Substring(0, 1).ToLower() + (s.Length < 2 ? string.Empty : s.Substring(1));
+        }
     }
 }
 

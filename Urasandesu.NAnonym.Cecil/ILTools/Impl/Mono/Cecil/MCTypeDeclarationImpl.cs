@@ -200,6 +200,27 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { return typeDef.IsValueType; }
         }
+
+
+        public bool IsAssignableFrom(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReadOnlyCollection<ITypeDeclaration> Interfaces
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public ITypeDeclaration MakeArrayType()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITypeDeclaration GetElementType()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

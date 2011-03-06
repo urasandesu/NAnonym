@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.Linq
 {
@@ -96,6 +97,37 @@ namespace Urasandesu.NAnonym.Linq
         {
             if (source == null) return;
             source.ForEach(predicateWithAction);
+        }
+
+        public static string NullableJoinToString<TSource>(this IEnumerable<TSource> source, string separator)
+        {
+            return source.NullableJoinToString(separator, _ => _.ToString());
+        }
+
+        public static string NullableJoinToString<TSource>(this IEnumerable<TSource> source, string separator, Func<TSource, string> toString)
+        {
+            return source.NullableJoinToString(string.Empty, separator, toString, string.Empty);
+        }
+
+        public static string NullableJoinToString<TSource>(this IEnumerable<TSource> source, string prefix, string separator, Func<TSource, string> toString, string suffix)
+        {
+            if (source == null) return source.NullableToString();
+            return source.JoinToString(prefix, separator, toString, suffix);
+        }
+
+        public static string JoinToString<TSource>(this IEnumerable<TSource> source, string separator)
+        {
+            return source.JoinToString(separator, _ => _.ToString());
+        }
+
+        public static string JoinToString<TSource>(this IEnumerable<TSource> source, string separator, Func<TSource, string> toString)
+        {
+            return source.JoinToString(string.Empty, separator, toString, string.Empty);
+        }
+
+        public static string JoinToString<TSource>(this IEnumerable<TSource> source, string prefix, string separator, Func<TSource, string> toString, string suffix)
+        {
+            return prefix + string.Join(separator, source.Select(toString).ToArray()) + suffix;
         }
 
         public static IEnumerable<TSource> Negate<TSource>(
@@ -398,7 +430,6 @@ namespace Urasandesu.NAnonym.Linq
             return destinationList;
         }
 
-
         public static IList<TDestination> TransformEnumerateOnly<TSource, TDestination>(
             this IList<TSource> source, Func<TSource, TDestination> selector)
         {
@@ -409,6 +440,21 @@ namespace Urasandesu.NAnonym.Linq
             this IList<TSource> source, Func<TSource, TDestination> selector, Func<TDestination, TSource> reSelector)
         {
             return new Transformer<TSource, TDestination>(source, selector, reSelector);
+        }
+
+        public static IList<TResult> Cast<TResult>(this IList source)
+        {
+            return new TransformerEnumerateOnly<TResult>(source, _ => (TResult)_);
+        }
+
+        public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
+        {
+            return new ReadOnlyCollection<TSource>(source.ToArray());
+        }
+
+        public static ReadOnlyCollection<TResult> ToReadOnlyWithCast<TResult>(this IList source)
+        {
+            return new ReadOnlyCollection<TResult>(source.Cast<TResult>());
         }
 
         public static int GetAggregatedHashCode<T>(this IEnumerable<T> source)
@@ -550,6 +596,60 @@ namespace Urasandesu.NAnonym.Linq
         {
             if (source == null) return;
             source.Clear();
+        }
+
+        public static void Push<TSource>(this IList<TSource> source, TSource item)
+        {
+            source.Add(item);
+        }
+
+        public static TSource Pop<TSource>(this IList<TSource> source)
+        {
+            var item = source[source.Count - 1];
+            source.RemoveAt(source.Count - 1);
+            return item;
+        }
+
+        public static TSource Peek<TSource>(this IList<TSource> source)
+        {
+            return source[source.Count - 1];
+        }
+
+        public static void MoveTo<TSource>(this IList<TSource> source, TSource[] array)
+        {
+            var arrayIndex = 0;
+            while (0 < source.Count)
+            {
+                var item = source[0];
+                source.RemoveAt(0);
+                array[arrayIndex++] = item;
+            }
+        }
+
+        [Obsolete]
+        public static List<TSource> Move<TSource>(this List<TSource> source)
+        {
+            var destination = new List<TSource>(source.Count);
+            while (0 < source.Count)
+            {
+                var item = source[0];
+                source.RemoveAt(0);
+                destination.Add(item);
+            }
+            return destination;
+        }
+
+        [Obsolete]
+        public static TList Move<TList>(this TList source) where TList : IList, new()
+        {
+            var destination = new TList();
+            while (0 < source.Count)
+            {
+                var item = source[0];
+                source.RemoveAt(0);
+                destination.Add(item);
+            }
+            return destination;
         }
     }
 }

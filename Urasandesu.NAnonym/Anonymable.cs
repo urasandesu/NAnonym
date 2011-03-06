@@ -257,6 +257,23 @@ namespace Urasandesu.NAnonym
                 }
             }
         }
+
+        public static string NullableToString<T>(this T obj)
+        {
+            if (typeof(T).IsValueType)
+            {
+                return obj.ToString();
+            }
+            else
+            {
+                return obj.IsDefault() ? "null" : obj.ToString();
+            }
+        }
+
+        public static Type NullableGetType<T>(this T obj)
+        {
+            return obj.IsDefault() ? typeof(T) : obj.GetType();
+        }
     }
 
     public static class Tuple

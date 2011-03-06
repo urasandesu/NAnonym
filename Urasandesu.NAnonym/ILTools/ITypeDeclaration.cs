@@ -46,5 +46,9 @@ namespace Urasandesu.NAnonym.ILTools
         IConstructorDeclaration GetConstructor(Type[] types);
         new Type Source { get; }
         bool IsValueType { get; }
+        bool IsAssignableFrom(ITypeDeclaration that);
+        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
+        ITypeDeclaration MakeArrayType();
+        ITypeDeclaration GetElementType();
     }
 }

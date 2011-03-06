@@ -1,0 +1,304 @@
+﻿<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Urasandesu.NAnonym" #>
+<#@ import namespace="Urasandesu.NAnonym.Linq" #>
+<#@ import namespace="Urasandesu.NAnonym.Formulas" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="Urasandesu.NAnonym.dll" #>
+<#+
+/* 
+ * File: FormulaTemplate.tt
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2010 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+public class FormulaTemplate : Template
+{
+    public FormulaTemplate()
+        : base()
+    {
+        TemplateProperties = new List<FormulaTemplateProperty>();
+    }
+    
+    public string BaseTypeName { get; set; }
+    public string TypeName { get; set; }
+    public bool IsAbstract { get; set; }
+    public NodeType NodeType { get; set; }
+    public List<FormulaTemplateProperty> TemplateProperties { get; set; }
+    
+    public override string TransformText()
+    {
+#>
+/* 
+ * File: <#= TypeName #>.g.cs
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2010 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+ 
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Urasandesu.NAnonym.ILTools;
+using System.ComponentModel;
+
+namespace Urasandesu.NAnonym.Formulas
+{
+    public <#= IsAbstract ? "abstract " : "" #>partial class <#= TypeName #> : <#= BaseTypeName #>
+    {
+<#+ 
+        if (BaseTypeName == "INotifyPropertyChanged")
+        {
+#>
+        public <#= TypeName #>()
+            : base()
+        {
+            InitializeForCodeGeneration();
+            Initialize();
+        }
+<#+ 
+        }
+#>
+
+        protected <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void InitializeForCodeGeneration()
+        {
+<#+ 
+        if (BaseTypeName != "INotifyPropertyChanged")
+        {
+#>
+            base.InitializeForCodeGeneration();
+            NodeType = NodeType.<#= NodeType.ToString() #>;
+<#+ 
+        }
+#>
+<#+ 
+            foreach (var property in TemplateProperties)
+            {
+#>
+            <#= property.Name #> = <#= property.Default #>;
+<#+ 
+            }
+#>
+        }
+
+<#+ 
+        foreach (var property in TemplateProperties)
+        {
+#>
+        public const string NameOf<#= property.Name #> = "<#= property.Name #>";
+        <#= property.TypeName #> <#= property.Name.ToCamel() #>;
+        public <#= property.HideBySig ? "new " : "" #><#= property.TypeName #> <#= property.Name #> 
+        { 
+            get { return <#= property.Name.ToCamel() #>; } 
+            set 
+            {
+<#+ 
+            if (-1 < property.TypeName.IndexOf("Formula"))
+            {
+                if (property.ProhibitsNotification)
+                {
+#>
+                SetFormulaWithoutNotification(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+<#+ 
+                }
+                else
+                {
+#>
+                SetFormula(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+<#+ 
+                }
+            }
+            else
+            {
+                if (property.ProhibitsNotification)
+                {
+#>
+                SetValueWithoutNotification(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+<#+ 
+                }
+                else
+                {
+#>
+                SetValue(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+<#+ 
+                }
+            }
+#>
+<#+ 
+            if (property.HideBySig)
+            {
+#>
+                base.<#= property.Name #> = value;
+<#+ 
+            }
+#>
+            }
+        }
+<#+ 
+            if (property.HasToStringValueIfDefault)
+            {
+#>
+        public abstract string <#= property.Name #>ToStringValueIfDefault { get; }
+<#+ 
+            }
+#>
+<#+ 
+        }
+        
+        if (!IsAbstract)
+        {
+#>
+
+
+        public override Formula Accept(IFormulaVisitor visitor)
+        {
+            return visitor.Visit(this);
+        }
+<#+ 
+        }
+#>
+
+
+        protected <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void PinCore()
+        {
+<#+ 
+            foreach (var property in TemplateProperties.Where(_ => -1 < _.TypeName.IndexOf("Formula")))
+            {
+#>
+            Formula.Pin(<#= property.Name #>);
+<#+ 
+            }
+#>
+<#+ 
+            if (BaseTypeName != "INotifyPropertyChanged")
+            {
+#>
+            base.PinCore();
+<#+  
+            }
+#>
+        }
+
+
+        public <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void AppendTo(StringBuilder sb)
+        {
+<#+ 
+        if (BaseTypeName != "INotifyPropertyChanged")
+        {
+#>
+            base.AppendTo(sb);
+<#+ 
+        }
+#>
+<#+
+		TemplateProperties.Where(_ => !_.ProhibitsToString).ForEach(
+        (property, propertyIndex) =>
+        {
+            if (BaseTypeName != "INotifyPropertyChanged" || 0 < propertyIndex)
+            {
+#>
+            sb.Append(", ");
+<#+
+            }            
+            WriteAppendingProperty(property);
+        });
+#>
+        }
+    }
+}
+
+<#+
+        
+        return this.GenerationEnvironment.ToString();
+    }
+    
+    void WriteAppendingProperty(FormulaTemplateProperty property)
+    {
+#>
+            sb.Append("\"");
+            sb.Append(NameOf<#= property.Name #>);
+            sb.Append("\": ");
+<#+ 
+        if (-1 < property.TypeName.IndexOf("Formula"))
+        {
+#>
+            if (<#= property.Name #> == null)
+            {
+                sb.Append("null");
+            }
+            else
+            {
+                <#= property.Name #>.AppendWithBracketTo(sb);
+            }
+<#+  
+        }
+        else
+        {
+#>
+<#+ 
+            if (!property.HasToStringValueIfDefault)
+            {
+#>
+            AppendValueTo(<#= property.Name #>, sb);
+<#+ 
+            }
+            else
+            {
+#>
+            AppendValueTo(<#= property.Name #>, sb, <#= property.Name #>ToStringValueIfDefault);
+<#+ 
+            }
+#>
+<#+ 
+        }
+#>
+<#+ 
+    }
+}
+#>

@@ -36,6 +36,95 @@ using System.Collections;
 
 namespace Urasandesu.NAnonym.Linq
 {
+    public class TransformerEnumerateOnly<TResult> : IList<TResult>
+    {
+        protected readonly IList source;
+        protected readonly Func<object, TResult> selector;
+        public TransformerEnumerateOnly(IList source, Func<object, TResult> selector)
+        {
+            Required.NotDefault(source, () => source);
+            Required.NotDefault(selector, () => selector);
+
+            this.source = source;
+            this.selector = selector;
+        }
+
+        public virtual int IndexOf(TResult item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void Insert(int index, TResult item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void RemoveAt(int index)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual TResult this[int index]
+        {
+            get
+            {
+                return selector(source[index]);
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public virtual void Add(TResult item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual bool Contains(TResult item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void CopyTo(TResult[] array, int arrayIndex)
+        {
+            for (int i = arrayIndex; i < Count; i++)
+            {
+                array[i] = this[i];
+            }
+        }
+
+        public int Count
+        {
+            get { return source.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return source.IsReadOnly; }
+        }
+
+        public virtual bool Remove(TResult item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public IEnumerator<TResult> GetEnumerator()
+        {
+            return source.Cast<object>().Select(selector).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+    }
+
     public class TransformerEnumerateOnly<TSource, TDestination> : IList<TDestination>
     {
         protected readonly IList<TSource> source;

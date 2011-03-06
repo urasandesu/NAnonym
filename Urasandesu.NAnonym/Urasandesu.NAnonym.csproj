@@ -43,12 +43,145 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
+    <Compile Include="Formulas.CodeGeneration\AddFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\AndAlsoFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\AssignFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\BinaryFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\BlockFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\CallFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ConditionalFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ConstantFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ConvertFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\EndFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\EqualFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ExclusiveOrFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\FieldFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\Formula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\FormulaAdapter.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\FormulaNoActionVisitor.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\MemberFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\MultiplyFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\NewArrayInitFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\NewFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\NotEqualFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\PropertyFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ReflectiveCallFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ReflectiveFieldFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ReflectiveNewFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ReflectivePropertyFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ReturnFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\TypeAsFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\UnaryFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\VariableFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas\AddFormula.cs" />
+    <Compile Include="Formulas\AndAlsoFormula.cs" />
+    <Compile Include="Formulas\AssignFormula.cs" />
+    <Compile Include="Formulas\BinaryFormula.cs" />
+    <Compile Include="Formulas\BlockFormula.cs" />
+    <Compile Include="Formulas\CallFormula.cs" />
+    <Compile Include="Formulas\ConditionalFormula.cs" />
+    <Compile Include="Formulas\ConstantFormula.cs" />
+    <Compile Include="Formulas\ConvertDecreaser.cs" />
+    <Compile Include="Formulas\ConvertFormula.cs" />
+    <Compile Include="Formulas\ConvertIncreaser.cs" />
+    <Compile Include="Formulas\EqualFormula.cs" />
+    <Compile Include="Formulas\ExclusiveOrFormula.cs" />
+    <Compile Include="Formulas\ExpressionToFormula.cs" />
+    <Compile Include="Formulas\ExpressionToFormulaState.cs" />
+    <Compile Include="Formulas\ExpressionToInlineValue.cs" />
+    <Compile Include="Formulas\ExpressionToInlineValueState.cs" />
+    <Compile Include="Formulas\FieldFormula.cs" />
+    <Compile Include="Formulas\Formula.cs" />
+    <Compile Include="Formulas\FormulaCollection.cs" />
+    <Compile Include="Formulas\MultiplyFormula.cs" />
+    <Compile Include="Formulas\NewArrayInitFormula.cs" />
+    <Compile Include="Formulas\NewFormula.cs" />
+    <Compile Include="Formulas\NodeType.cs" />
+    <Compile Include="Formulas\NotEqualFormula.cs" />
+    <Compile Include="Formulas\PropertyFormula.cs" />
+    <Compile Include="Formulas\ReflectiveCallFormula.cs" />
+    <Compile Include="Formulas\ReflectiveFieldFormula.cs" />
+    <Compile Include="Formulas\ReflectiveNewFormula.cs" />
+    <Compile Include="Formulas\ReflectivePropertyFormula.cs" />
+    <Compile Include="Formulas\ReturnFormula.cs" />
+    <Compile Include="Formulas\TypeAsFormula.cs" />
+    <Compile Include="Formulas\VariableFormula.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
+    <Compile Include="ILTools\IPropertyDeclaration.cs" />
+    <Compile Include="ILTools\IPropertyGenerator.cs" />
     <Compile Include="ILTools\ReflectiveLabelDecorator.cs" />
     <Compile Include="ILTools\ReflectiveLocalDecorator.cs" />
     <Compile Include="ILTools\MethodReservedWords.cs" />
+    <Compile Include="ILTools\ReflectiveMethodDesigner2.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
@@ -176,6 +309,7 @@
     <Compile Include="ILTools\ITypeDeclaration.cs" />
     <Compile Include="ILTools\ITypeGenerator.cs" />
     <Compile Include="Mixins\System\AppDomainMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\ConstructorInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\ConstructorBuilderMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />
@@ -227,7 +361,33 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Formulas.CodeGeneration\FormulaAdapterTemplate.tt">
+    </None>
+    <None Include="Formulas.CodeGeneration\FormulaGenerator.tt">
+    </None>
+    <None Include="Formulas.CodeGeneration\FormulaNoActionVisitorTemplate.tt">
+    </None>
+    <None Include="Formulas.CodeGeneration\Formulas.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Formulas1.txt</LastGenOutput>
+    </None>
+    <None Include="Formulas.CodeGeneration\FormulaTemplate.tt">
+    </None>
+    <None Include="Formulas.CodeGeneration\FormulaTemplateProperty.tt">
+    </None>
+    <None Include="Formulas.CodeGeneration\FormulaVisitorTemplate.tt">
+    </None>
     <None Include="Resources\MemberInitExpressionHelper.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Formulas.CodeGeneration\Formulas1.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -237,4 +397,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(SolutionDir)$(TargetFileName).locked" del "$(SolutionDir)$(TargetFileName).locked"
+if exist "$(SolutionDir)$(TargetFileName)" if not exist "$(SolutionDir)$(TargetFileName).locked" move "$(SolutionDir)$(TargetFileName)" "$(SolutionDir)$(TargetFileName).locked"</PreBuildEvent>
+    <PostBuildEvent>copy /y "$(TargetPath)" "$(SolutionDir)$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

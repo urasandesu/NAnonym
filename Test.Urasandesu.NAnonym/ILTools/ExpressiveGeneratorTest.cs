@@ -46,6 +46,7 @@ using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using System.Linq.Expressions;
+using System.ComponentModel;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -460,6 +461,36 @@ namespace Test.Urasandesu.NAnonym.ILTools
                 string message = instance.Print("aiueo");
                 Assert.AreEqual("Parameter = aiueo, FieldValue = 10", message);
             });
+        }
+    }
+
+    [TestFixture]
+    public class SRTypeDeclarationImplTest
+    {
+        [Test]
+        public void IsAssignableFromTest01()
+        {
+            var objectTypeDecl = new SRTypeDeclarationImpl(typeof(object));
+            var intTypeDecl = new SRTypeDeclarationImpl(typeof(int));
+            Assert.IsTrue(objectTypeDecl.IsAssignableFrom(intTypeDecl));
+        }
+
+        [Test]
+        public void IsAssignableFromTest02()
+        {
+            //Assert.IsFalse(typeof(double).IsAssignableFrom(typeof(int)));
+            //Assert.IsFalse(typeof(long).IsAssignableFrom(typeof(int)));
+
+
+            var i = 10;
+            //var a = (Expression<Func<double>>)(() => i);
+            //Assert.IsTrue(TypeDescriptor.GetConverter(typeof(int)).CanConvertTo(typeof(double)));
+
+            var d = 10d;
+            d = i;
+            //var doubleTypeDecl = new SRTypeDeclarationImpl(typeof(double));
+            //var intTypeDecl = new SRTypeDeclarationImpl(typeof(int));
+            //Assert.IsFalse(doubleTypeDecl.IsAssignableFrom(intTypeDecl));
         }
     }
 }

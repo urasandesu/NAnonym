@@ -34,6 +34,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -43,26 +44,19 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         readonly ITypeDeclaration baseTypeDecl;
         IModuleDeclaration moduleDecl;
-        List<IFieldDeclaration> listFields;
         ReadOnlyCollection<IFieldDeclaration> fields;
+        ReadOnlyCollection<ITypeDeclaration> interfaces;
+
         public SRTypeDeclarationImpl(Type type)
             : base(type)
         {
             this.type = type;
-            baseTypeDecl = type == typeof(object) ? null : new SRTypeDeclarationImpl(type.BaseType);
+            baseTypeDecl = type == typeof(object) || type.BaseType == null ? null : new SRTypeDeclarationImpl(type.BaseType);
             var moduleBuilder = ExportModule(type);
             if (moduleBuilder != null)
             {
                 moduleDecl = new SRModuleGeneratorImple(moduleBuilder);
             }
-            listFields = new List<IFieldDeclaration>();
-            if (!(type is TypeBuilder))
-            {
-                listFields.AddRange(type.GetFields(
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)
-                    .Select(field => (IFieldDeclaration)new SRFieldDeclarationImpl(field)));
-            }
-            fields = new ReadOnlyCollection<IFieldDeclaration>(listFields);
         }
 
         static ModuleBuilder ExportModule(Type type)
@@ -77,10 +71,10 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public string FullName
         {
-            get { throw new NotImplementedException(); }
+            get { return type.FullName; }
         }
 
-        public string AssemblyQualifiedName { get { throw new NotImplementedException(); } }
+        public string AssemblyQualifiedName { get { return type.AssemblyQualifiedName; } }
 
         public ITypeDeclaration BaseType
         {
@@ -94,7 +88,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return new SRConstructorDeclarationImpl(type.GetConstructor(types));
         }
 
-        #region ITypeDeclaration メンバ
+
 
 
         public IFieldDeclaration[] GetFields(global::System.Reflection.BindingFlags attr)
@@ -107,18 +101,32 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             return new SRFieldDeclarationImpl(type.GetField(name, bindingAttr));
         }
 
-        #endregion
 
-        #region ITypeDeclaration メンバ
+
+
 
         public ReadOnlyCollection<IFieldDeclaration> Fields
         {
-            get { return fields; }
+            get 
+            {
+                if (fields == null)
+                {
+                    var listFields = new List<IFieldDeclaration>();
+                    if (!(type is TypeBuilder))
+                    {
+                        var bindingAttr = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+                        listFields.AddRange(type.GetFields(bindingAttr).Select(field => field.ToFieldDecl(this)));
+                    }
+                    fields = new ReadOnlyCollection<IFieldDeclaration>(listFields);
+                }
+
+                return fields; 
+            }
         }
 
-        #endregion
 
-        #region ITypeDeclaration メンバ
+
+
 
 
         public ReadOnlyCollection<IConstructorDeclaration> Constructors
@@ -126,9 +134,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
 
-        #region ITypeDeclaration メンバ
+
+
 
 
         public ReadOnlyCollection<IMethodDeclaration> Methods
@@ -136,9 +144,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
 
-        #region ITypeDeclaration メンバ
+
+
 
 
         public new Type Source
@@ -146,12 +154,67 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             get { return (Type)base.Source; }
         }
 
-        #endregion
+
 
 
         public bool IsValueType
         {
-            get { throw new NotImplementedException(); }
+            get { return Source.IsValueType; }
+        }
+
+        public override string ToString()
+        {
+            return type.ToString();
+        }
+
+
+        public bool IsAssignableFrom(ITypeDeclaration that)
+        {
+            var srthat = default(SRTypeDeclarationImpl);
+            if ((srthat = that as SRTypeDeclarationImpl) != null)
+            {
+                return Source.IsAssignableFrom(srthat.Source);
+            }
+            else
+            {
+                if (FullName == that.FullName)
+                {
+                    return true;
+                }
+                else if (IsAssignableFrom(that.BaseType))
+                {
+                    return true;
+                }
+                else
+                {
+                    return that.Interfaces.Any(_ => FullName == _.FullName);
+                }
+            }
+        }
+
+        public ReadOnlyCollection<ITypeDeclaration> Interfaces
+        {
+            get 
+            {
+                if (interfaces == null)
+                {
+                    var _interfaces = Source.GetInterfaces().Select(_ => (ITypeDeclaration)new SRTypeDeclarationImpl(_)).ToList();
+                    interfaces = new ReadOnlyCollection<ITypeDeclaration>(_interfaces);
+                }
+                return interfaces;
+            }
+        }
+
+
+        public ITypeDeclaration MakeArrayType()
+        {
+            return new SRTypeDeclarationImpl(Source.MakeArrayType());
+        }
+
+
+        public ITypeDeclaration GetElementType()
+        {
+            return new SRTypeDeclarationImpl(Source.GetElementType());
         }
     }
 }

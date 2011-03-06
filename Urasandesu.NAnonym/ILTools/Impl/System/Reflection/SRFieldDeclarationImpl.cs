@@ -40,25 +40,34 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     class SRFieldDeclarationImpl : SRMemberDeclarationImpl, IFieldDeclaration
     {
         FieldInfo fieldInfo;
+        ITypeDeclaration fieldType;
         public SRFieldDeclarationImpl(FieldInfo fieldInfo)
-            : base(fieldInfo)
+            : this(fieldInfo, null)
+        {
+        }
+
+        public SRFieldDeclarationImpl(FieldInfo fieldInfo, ITypeDeclaration declaringType)
+            : base(fieldInfo, declaringType)
         {
             this.fieldInfo = fieldInfo;
         }
 
-        string IMemberDeclaration.Name
-        {
-            get { return fieldInfo.Name; }
-        }
-
-        void IManuallyDeserializable.OnDeserialized(StreamingContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         internal FieldInfo FieldInfo { get { return fieldInfo; } }
 
-        public Type FieldType
+        public ITypeDeclaration FieldType
+        {
+            get 
+            {
+                if (fieldType == null)
+                {
+                    fieldType = new SRTypeDeclarationImpl(fieldInfo.FieldType);
+                }
+
+                return fieldType; 
+            }
+        }
+
+        public bool IsPublic
         {
             get { throw new NotImplementedException(); }
         }
@@ -67,13 +76,6 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             get { throw new NotImplementedException(); }
         }
-
-
-        public bool IsPublic
-        {
-            get { throw new NotImplementedException(); }
-        }
-
 
         public object GetValue(object obj)
         {
@@ -85,9 +87,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        ITypeDeclaration IFieldDeclaration.FieldType
+        public override string ToString()
         {
-            get { throw new NotImplementedException(); }
+            return fieldInfo.ToString();
         }
     }
 }

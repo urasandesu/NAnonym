@@ -39,22 +39,25 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     class SRMethodDeclarationImpl : SRMethodBaseDeclarationImpl, IMethodDeclaration
     {
         readonly MethodInfo methodInfo;
+        ITypeDeclaration returnType;
         public SRMethodDeclarationImpl(MethodInfo methodInfo)
             : base(methodInfo)
         {
             this.methodInfo = methodInfo;
+            returnType = new SRTypeDeclarationImpl(methodInfo.ReturnType);
         }
 
         public MethodInfo MethodInfo { get { return (MethodInfo)base.MethodBase; } }
 
-        #region IMethodDeclaration メンバ
-
         public ITypeDeclaration ReturnType
         {
-            get { throw new NotImplementedException(); }
+            get { return returnType; }
         }
 
-        #endregion
+        public override string ToString()
+        {
+            return methodInfo.ToString();
+        }
     }
 }
 

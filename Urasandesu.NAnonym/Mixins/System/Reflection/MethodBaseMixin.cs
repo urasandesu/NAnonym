@@ -31,6 +31,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System.Reflection
 {

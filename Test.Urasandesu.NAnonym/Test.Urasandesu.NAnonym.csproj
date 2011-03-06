@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnonymouslyableTest.cs" />
+    <Compile Include="ILTools\ReflectiveMethodDesigner2Test.cs" />
     <Compile Include="NewDomainTester.cs" />
     <Compile Include="ILTools\ExpressiveGeneratorTest.cs" />
     <Compile Include="DW\DependencyUtilTest.cs" />

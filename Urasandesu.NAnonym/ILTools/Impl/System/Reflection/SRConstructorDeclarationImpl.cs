@@ -55,6 +55,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         public ConstructorInfo ConstructorInfo { get { return constructorInfo; } }
+
+        public override string ToString()
+        {
+            return constructorInfo.ToString();
+        }
     }
 }
 

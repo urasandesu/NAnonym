@@ -40,5 +40,17 @@ namespace Test.Urasandesu.NAnonym.Etc
         public int ValueProperty { get; set; }
         public string ObjectProperty { get; set; }
     }
+
+    public class PropertyTestClass2
+    {
+        public PropertyTestClass2(int valueProperty, string objectProperty)
+        {
+            this.ValueProperty = valueProperty;
+            this.ObjectProperty = objectProperty;
+        }
+
+        public int ValueProperty { get; set; }
+        public string ObjectProperty { get; set; }
+    }
 }
 
