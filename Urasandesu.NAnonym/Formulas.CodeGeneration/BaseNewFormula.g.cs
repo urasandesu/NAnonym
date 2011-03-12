@@ -1,5 +1,5 @@
 /* 
- * File: ConvertFormula.g.cs
+ * File: BaseNewFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -37,13 +37,13 @@ using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ConvertFormula : UnaryFormula
+    public partial class BaseNewFormula : NewFormula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Convert;
+            NodeType = NodeType.BaseNew;
         }
 
 

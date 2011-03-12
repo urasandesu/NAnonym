@@ -70,9 +70,9 @@ namespace Urasandesu.NAnonym.Formulas
         }
 
 
-        public override Formula Accept(IFormulaVisitor visitor)
+        public override void Accept(IFormulaVisitor visitor)
         {
-            return visitor.Visit(this);
+            visitor.Visit(this);
         }
 
 

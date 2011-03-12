@@ -58,6 +58,9 @@
     <Compile Include="Formulas.CodeGeneration\AssignFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\BaseNewFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\BinaryFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -98,6 +101,9 @@
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\LocalFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\MemberFormula.g.cs">
@@ -145,6 +151,7 @@
     <Compile Include="Formulas\AddFormula.cs" />
     <Compile Include="Formulas\AndAlsoFormula.cs" />
     <Compile Include="Formulas\AssignFormula.cs" />
+    <Compile Include="Formulas\BaseNewFormula.cs" />
     <Compile Include="Formulas\BinaryFormula.cs" />
     <Compile Include="Formulas\BlockFormula.cs" />
     <Compile Include="Formulas\CallFormula.cs" />
@@ -161,7 +168,9 @@
     <Compile Include="Formulas\ExpressionToInlineValueState.cs" />
     <Compile Include="Formulas\FieldFormula.cs" />
     <Compile Include="Formulas\Formula.cs" />
+    <Compile Include="Formulas\FormulaAsValueCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
+    <Compile Include="Formulas\LocalFormula.cs" />
     <Compile Include="Formulas\MultiplyFormula.cs" />
     <Compile Include="Formulas\NewArrayInitFormula.cs" />
     <Compile Include="Formulas\NewFormula.cs" />
@@ -175,6 +184,7 @@
     <Compile Include="Formulas\ReturnFormula.cs" />
     <Compile Include="Formulas\TypeAsFormula.cs" />
     <Compile Include="Formulas\VariableFormula.cs" />
+    <Compile Include="Formulas\VariableResolver.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
     <Compile Include="ILTools\IPropertyDeclaration.cs" />
     <Compile Include="ILTools\IPropertyGenerator.cs" />

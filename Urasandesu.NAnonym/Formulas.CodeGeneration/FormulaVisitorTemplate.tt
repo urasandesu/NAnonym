@@ -83,7 +83,7 @@ namespace Urasandesu.NAnonym.Formulas
         foreach (var template in Templates)
         {
 #>
-        Formula Visit(<#= template.Value.TypeName #> formula);
+        void Visit(<#= template.Value.TypeName #> formula);
 <#+ 
         }
 #>

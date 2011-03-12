@@ -92,8 +92,9 @@ namespace Urasandesu.NAnonym.Formulas
         foreach (var template in Templates)
         {
 #>
-        public virtual Formula Visit(<#= template.Value.TypeName #> formula)
+        public virtual void Visit(<#= template.Value.TypeName #> formula)
         {
+            visitor.Visit(formula);
 <#+ 
 			if (template.Value.BaseTypeName != "INotifyPropertyChanged")
 			{
@@ -110,7 +111,6 @@ namespace Urasandesu.NAnonym.Formulas
 <#+ 
 			}
 #>
-            return visitor.Visit(formula);
         }
 <#+ 
         }

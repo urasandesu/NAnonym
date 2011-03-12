@@ -40,7 +40,7 @@ namespace Urasandesu.NAnonym.Formulas
     {
         protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == FormulaCollection<Formula>.NameOfCount && sender == Formulas)
+            if (e.PropertyName == FormulaCollection.NameOfCount && sender == Formulas)
             {
                 Result = Formulas == null || Formulas.Count == 0 ? null : Formulas[Formulas.Count - 1];
             }

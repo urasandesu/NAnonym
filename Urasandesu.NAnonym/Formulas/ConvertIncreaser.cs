@@ -43,50 +43,50 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 
-        public override Formula Visit(BinaryFormula formula)
+        public override void Visit(BinaryFormula formula)
         {
             IncreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, increased => formula.Right = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(UnaryFormula formula)
+        public override void Visit(UnaryFormula formula)
         {
             IncreaseIfNecessary(formula.Operand, _ => _.TypeDeclaration, increased => formula.Operand = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(ConditionalFormula formula)
+        public override void Visit(ConditionalFormula formula)
         {
             IncreaseIfNecessary(formula.Test, _ => _.TypeDeclaration, increased => formula.Test = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(ReturnFormula formula)
+        public override void Visit(ReturnFormula formula)
         {
             IncreaseIfNecessary(formula.Body, _ => _.TypeDeclaration, increased => formula.Body = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(CallFormula formula)
+        public override void Visit(CallFormula formula)
         {
             IncreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, increased => formula.Instance = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(NewArrayInitFormula formula)
+        public override void Visit(NewArrayInitFormula formula)
         {
             var expectedType = formula.TypeDeclaration.GetElementType();
             for (int i = 0; i < formula.Formulas.Count; i++)
             {
                 IncreaseIfNecessary(formula.Formulas[i], _ => expectedType, increased => formula.Formulas[i] = increased);
             }
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(MemberFormula formula)
+        public override void Visit(MemberFormula formula)
         {
             IncreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, increased => formula.Instance = increased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
         void IncreaseIfNecessary(Formula formula, Func<Formula, ITypeDeclaration> getExpectedType, Action<Formula> increase)

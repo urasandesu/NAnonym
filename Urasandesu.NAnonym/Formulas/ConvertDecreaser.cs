@@ -44,50 +44,50 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 
-        public override Formula Visit(BinaryFormula formula)
+        public override void Visit(BinaryFormula formula)
         {
             DecreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, decreased => formula.Right = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(UnaryFormula formula)
+        public override void Visit(UnaryFormula formula)
         {
             DecreaseIfNecessary(formula.Operand, _ => _.TypeDeclaration, decreased => formula.Operand = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(ConditionalFormula formula)
+        public override void Visit(ConditionalFormula formula)
         {
             DecreaseIfNecessary(formula.Test, _ => _.TypeDeclaration, decreased => formula.Test = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(ReturnFormula formula)
+        public override void Visit(ReturnFormula formula)
         {
             DecreaseIfNecessary(formula.Body, _ => _.TypeDeclaration, decreased => formula.Body = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(CallFormula formula)
+        public override void Visit(CallFormula formula)
         {
             DecreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, decreased => formula.Instance = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(NewArrayInitFormula formula)
+        public override void Visit(NewArrayInitFormula formula)
         {
             var expectedType = formula.TypeDeclaration.GetElementType();
             for (int i = 0; i < formula.Formulas.Count; i++)
             {
                 DecreaseIfNecessary(formula.Formulas[i], _ => expectedType, decreased => formula.Formulas[i] = decreased);
             }
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
-        public override Formula Visit(MemberFormula formula)
+        public override void Visit(MemberFormula formula)
         {
             DecreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, decreased => formula.Instance = decreased);
-            return base.Visit(formula);
+            base.Visit(formula);
         }
 
         void DecreaseIfNecessary(Formula formula, Func<Formula, ITypeDeclaration> getExpectedType, Action<Formula> decrease)

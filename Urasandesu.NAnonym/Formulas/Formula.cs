@@ -93,6 +93,11 @@ namespace Urasandesu.NAnonym.Formulas
             SetValueWithoutNotification(propertyName, formula, ref result);
         }
 
+        protected void SetFormulaAsValue<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
+        {
+            SetValue(propertyName, formula, ref result);
+        }
+
         protected void SetReferrerWithoutNotification(Formula target, Formula referrer)
         {
             if (target != null)
@@ -215,7 +220,7 @@ namespace Urasandesu.NAnonym.Formulas
             sb.Append("}");
         }
 
-        public abstract Formula Accept(IFormulaVisitor visitor);
+        public abstract void Accept(IFormulaVisitor visitor);
     }
 }
 

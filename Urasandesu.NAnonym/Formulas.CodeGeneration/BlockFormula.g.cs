@@ -45,8 +45,8 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
             NodeType = NodeType.Block;
             ParentBlock = default(BlockFormula);
-            ChildBlocks = new FormulaCollection<BlockFormula>();
-            Variables = new FormulaCollection<VariableFormula>();
+            ChildBlocks = new FormulaAsValueCollection<BlockFormula>();
+            Locals = new FormulaAsValueCollection<LocalFormula>();
             Formulas = new FormulaCollection<Formula>();
             Result = default(Formula);
         }
@@ -62,23 +62,23 @@ namespace Urasandesu.NAnonym.Formulas
             }
         }
         public const string NameOfChildBlocks = "ChildBlocks";
-        FormulaCollection<BlockFormula> childBlocks;
-        public FormulaCollection<BlockFormula> ChildBlocks 
+        FormulaAsValueCollection<BlockFormula> childBlocks;
+        public FormulaAsValueCollection<BlockFormula> ChildBlocks 
         { 
             get { return childBlocks; } 
             set 
             {
-                SetFormula(NameOfChildBlocks, value, ref childBlocks);
+                SetFormulaAsValue(NameOfChildBlocks, value, ref childBlocks);
             }
         }
-        public const string NameOfVariables = "Variables";
-        FormulaCollection<VariableFormula> variables;
-        public FormulaCollection<VariableFormula> Variables 
+        public const string NameOfLocals = "Locals";
+        FormulaAsValueCollection<LocalFormula> locals;
+        public FormulaAsValueCollection<LocalFormula> Locals 
         { 
-            get { return variables; } 
+            get { return locals; } 
             set 
             {
-                SetFormula(NameOfVariables, value, ref variables);
+                SetFormulaAsValue(NameOfLocals, value, ref locals);
             }
         }
         public const string NameOfFormulas = "Formulas";
@@ -98,14 +98,14 @@ namespace Urasandesu.NAnonym.Formulas
             get { return result; } 
             set 
             {
-                SetFormula(NameOfResult, value, ref result);
+                SetFormulaAsValue(NameOfResult, value, ref result);
             }
         }
 
 
-        public override Formula Accept(IFormulaVisitor visitor)
+        public override void Accept(IFormulaVisitor visitor)
         {
-            return visitor.Visit(this);
+            visitor.Visit(this);
         }
 
 
@@ -113,7 +113,7 @@ namespace Urasandesu.NAnonym.Formulas
         {
             Formula.Pin(ParentBlock);
             Formula.Pin(ChildBlocks);
-            Formula.Pin(Variables);
+            Formula.Pin(Locals);
             Formula.Pin(Formulas);
             Formula.Pin(Result);
             base.PinCore();
@@ -125,27 +125,15 @@ namespace Urasandesu.NAnonym.Formulas
             base.AppendTo(sb);
             sb.Append(", ");
             sb.Append("\"");
-            sb.Append(NameOfChildBlocks);
+            sb.Append(NameOfLocals);
             sb.Append("\": ");
-            if (ChildBlocks == null)
+            if (Locals == null)
             {
                 sb.Append("null");
             }
             else
             {
-                ChildBlocks.AppendWithBracketTo(sb);
-            }
-            sb.Append(", ");
-            sb.Append("\"");
-            sb.Append(NameOfVariables);
-            sb.Append("\": ");
-            if (Variables == null)
-            {
-                sb.Append("null");
-            }
-            else
-            {
-                Variables.AppendWithBracketTo(sb);
+                Locals.AppendWithBracketTo(sb);
             }
             sb.Append(", ");
             sb.Append("\"");

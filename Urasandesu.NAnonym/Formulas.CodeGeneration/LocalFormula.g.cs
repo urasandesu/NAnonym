@@ -1,5 +1,5 @@
 /* 
- * File: ConvertFormula.g.cs
+ * File: LocalFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -37,15 +37,37 @@ using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ConvertFormula : UnaryFormula
+    public partial class LocalFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Convert;
+            NodeType = NodeType.Local;
+            LocalName = default(string);
+            Local = default(ILocalDeclaration);
         }
 
+        public const string NameOfLocalName = "LocalName";
+        string localName;
+        public string LocalName 
+        { 
+            get { return localName; } 
+            set 
+            {
+                SetValue(NameOfLocalName, value, ref localName);
+            }
+        }
+        public const string NameOfLocal = "Local";
+        ILocalDeclaration local;
+        public ILocalDeclaration Local 
+        { 
+            get { return local; } 
+            set 
+            {
+                SetValue(NameOfLocal, value, ref local);
+            }
+        }
 
 
         public override void Accept(IFormulaVisitor visitor)
@@ -63,6 +85,16 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLocalName);
+            sb.Append("\": ");
+            AppendValueTo(LocalName, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLocal);
+            sb.Append("\": ");
+            AppendValueTo(Local, sb);
         }
     }
 }

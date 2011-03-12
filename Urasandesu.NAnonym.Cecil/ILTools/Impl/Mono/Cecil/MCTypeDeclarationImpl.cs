@@ -84,8 +84,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             this.typeRef = typeRef;
             typeDef = typeRef.Resolve();
             typeFullName = typeDef.FullName;
-            this.moduleDecl = moduleDecl != null ? moduleDecl : new MCModuleGeneratorImpl(typeRef.Module);
-            baseTypeDecl = typeDef.BaseType == null || typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType, moduleDecl);
+            this.moduleDecl = moduleDecl;
             fields = new ReadOnlyCollection<IFieldDeclaration>(typeDef.Fields.TransformEnumerateOnly(fieldDef => (IFieldDeclaration)new MCFieldGeneratorImpl(fieldDef)));
             InitializeMembersIfNecessary(this);
         }
@@ -123,10 +122,27 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public ITypeDeclaration BaseType
         {
-            get { return baseTypeDecl; }
+            get 
+            {
+                if (baseTypeDecl == null)
+                {
+                    baseTypeDecl = typeDef.BaseType == null || typeRef.Equivalent(typeof(object)) ? null : new MCTypeDeclarationImpl(typeDef.BaseType, moduleDecl);
+                }
+                return baseTypeDecl; 
+            }
         }
 
-        public IModuleDeclaration Module { get { return moduleDecl; } }
+        public IModuleDeclaration Module 
+        { 
+            get 
+            {
+                if (moduleDecl == null)
+                {
+                    moduleDecl = new MCModuleGeneratorImpl(typeRef.Module);
+                }
+                return moduleDecl; 
+            } 
+        }
 
         public IConstructorDeclaration GetConstructor(Type[] types)
         {

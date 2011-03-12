@@ -37,33 +37,35 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public interface IFormulaVisitor
     {
-        Formula Visit(BinaryFormula formula);
-        Formula Visit(AssignFormula formula);
-        Formula Visit(NotEqualFormula formula);
-        Formula Visit(AddFormula formula);
-        Formula Visit(MultiplyFormula formula);
-        Formula Visit(AndAlsoFormula formula);
-        Formula Visit(EqualFormula formula);
-        Formula Visit(ExclusiveOrFormula formula);
-        Formula Visit(BlockFormula formula);
-        Formula Visit(ConstantFormula formula);
-        Formula Visit(Formula formula);
-        Formula Visit(VariableFormula formula);
-        Formula Visit(UnaryFormula formula);
-        Formula Visit(ConvertFormula formula);
-        Formula Visit(TypeAsFormula formula);
-        Formula Visit(ConditionalFormula formula);
-        Formula Visit(ReturnFormula formula);
-        Formula Visit(CallFormula formula);
-        Formula Visit(ReflectiveCallFormula formula);
-        Formula Visit(NewArrayInitFormula formula);
-        Formula Visit(NewFormula formula);
-        Formula Visit(ReflectiveNewFormula formula);
-        Formula Visit(MemberFormula formula);
-        Formula Visit(PropertyFormula formula);
-        Formula Visit(ReflectivePropertyFormula formula);
-        Formula Visit(FieldFormula formula);
-        Formula Visit(ReflectiveFieldFormula formula);
-        Formula Visit(EndFormula formula);
+        void Visit(BinaryFormula formula);
+        void Visit(AssignFormula formula);
+        void Visit(NotEqualFormula formula);
+        void Visit(AddFormula formula);
+        void Visit(MultiplyFormula formula);
+        void Visit(AndAlsoFormula formula);
+        void Visit(EqualFormula formula);
+        void Visit(ExclusiveOrFormula formula);
+        void Visit(BlockFormula formula);
+        void Visit(ConstantFormula formula);
+        void Visit(Formula formula);
+        void Visit(VariableFormula formula);
+        void Visit(LocalFormula formula);
+        void Visit(UnaryFormula formula);
+        void Visit(ConvertFormula formula);
+        void Visit(TypeAsFormula formula);
+        void Visit(ConditionalFormula formula);
+        void Visit(ReturnFormula formula);
+        void Visit(CallFormula formula);
+        void Visit(ReflectiveCallFormula formula);
+        void Visit(NewArrayInitFormula formula);
+        void Visit(NewFormula formula);
+        void Visit(BaseNewFormula formula);
+        void Visit(ReflectiveNewFormula formula);
+        void Visit(MemberFormula formula);
+        void Visit(PropertyFormula formula);
+        void Visit(ReflectivePropertyFormula formula);
+        void Visit(FieldFormula formula);
+        void Visit(ReflectiveFieldFormula formula);
+        void Visit(EndFormula formula);
     }
 }

@@ -157,6 +157,14 @@ namespace Urasandesu.NAnonym.Formulas
             state.CurrentBlock.Formulas.Push(new NewFormula(exp.Constructor, arguments));
         }
 
+        public static void EvalBase(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            EvalArguments(exp.Arguments, state);
+            var arguments = new Formula[state.Arguments.Count];
+            state.Arguments.MoveTo(arguments);
+            state.CurrentBlock.Formulas.Push(new BaseNewFormula(arguments));
+        }
+
         public static void EvalNewArray(NewArrayExpression exp, ExpressionToFormulaState state)
         {
             switch (exp.NodeType)
@@ -285,58 +293,54 @@ namespace Urasandesu.NAnonym.Formulas
             state.CurrentBlock.Formulas.Push(notEqual);
         }
 
-        public static IEnumerable<VariableFormula> GetDefinedVariables(BlockFormula currentBlock)
-        {
-            if (currentBlock == null) yield break;
+        //public static IEnumerable<VariableFormula> GetDefinedVariables(BlockFormula currentBlock)
+        //{
+        //    if (currentBlock == null) yield break;
 
-            foreach (var variable in currentBlock.Variables)
-            {
-                yield return variable;
-            }
+        //    foreach (var variable in currentBlock.Variables)
+        //    {
+        //        yield return variable;
+        //    }
 
-            foreach (var variable in GetDefinedVariables(currentBlock.ParentBlock))
-            {
-                yield return variable;
-            }
-        }
+        //    foreach (var variable in GetDefinedVariables(currentBlock.ParentBlock))
+        //    {
+        //        yield return variable;
+        //    }
+        //}
 
         public static void EvalMember(MemberExpression exp, ExpressionToFormulaState state)
         {
             if (exp.Expression == null || exp.Expression.NodeType == ExpressionType.Constant)
             {
-                var variable = GetDefinedVariables(state.CurrentBlock).FirstOrDefault(_ => _.VariableName == exp.Member.Name);
-                if (variable == null)
+                var fi = default(FieldInfo);
+                if ((fi = exp.Member as FieldInfo) != null)
                 {
-                    throw new InvalidOperationException(string.Format("The variable \"{0}\" has not defined yet.", exp.Member.Name));
+                    state.CurrentBlock.Formulas.Push(new VariableFormula(fi.Name, fi.FieldType));
                 }
-                state.CurrentBlock.Formulas.Push(variable);
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
             else
             {
-                try
+                var fi = default(FieldInfo);
+                var pi = default(PropertyInfo);
+                if ((fi = exp.Member as FieldInfo) != null)
                 {
-                    var fi = default(FieldInfo);
-                    var pi = default(PropertyInfo);
-                    if ((fi = exp.Member as FieldInfo) != null)
-                    {
-                        EvalExpression(exp.Expression, state);
-                        var instance = state.CurrentBlock.Formulas.Pop();
-                        state.CurrentBlock.Formulas.Push(new FieldFormula(instance, fi));
-                    }
-                    else if ((pi = exp.Member as PropertyInfo) != null)
-                    {
-                        EvalExpression(exp.Expression, state);
-                        var instance = state.CurrentBlock.Formulas.Pop();
-                        state.CurrentBlock.Formulas.Push(new PropertyFormula(instance, pi));
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    EvalExpression(exp.Expression, state);
+                    var instance = state.CurrentBlock.Formulas.Pop();
+                    state.CurrentBlock.Formulas.Push(new FieldFormula(instance, fi));
                 }
-                catch (InvalidOperationException e)
+                else if ((pi = exp.Member as PropertyInfo) != null)
                 {
-                    throw new InvalidOperationException(string.Format("The variable \"{0}\" has not defined yet.", exp.Member.Name), e);
+                    EvalExpression(exp.Expression, state);
+                    var instance = state.CurrentBlock.Formulas.Pop();
+                    state.CurrentBlock.Formulas.Push(new PropertyFormula(instance, pi));
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
             }
         }
@@ -393,6 +397,7 @@ namespace Urasandesu.NAnonym.Formulas
             }
             else
             {
+                // TODO: 定数として使えるのは…だけ、それ以外は Allocate してね、的な。
                 throw new InvalidOperationException("The variable has not defined yet.");
             }
         }
@@ -411,6 +416,7 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordReturnAttribute), false)) EvalReturn(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordConstMemberAttribute), false)) EvalConstMember(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordEndAttribute), false)) EvalEnd(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordBaseAttribute), false)) EvalBase(exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -657,7 +663,6 @@ namespace Urasandesu.NAnonym.Formulas
                 var fi = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                 var variable = new VariableFormula(fi.Name, fi.FieldType);
                 state.CurrentBlock.Formulas.Push(variable);
-                state.CurrentBlock.Variables.Push(variable);
             }
             else
             {

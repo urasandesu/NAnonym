@@ -45,10 +45,12 @@ namespace Urasandesu.NAnonym.Test
 
         public NewDomainTestInfo(string friendlyName)
         {
+            //AppDomain.CurrentDomain.Load(
             FriendlyName = string.IsNullOrEmpty(friendlyName) ? "NewDomain" : friendlyName;
         }
 
         public string FriendlyName { get; set; }
+        public byte[] RawAssembly { get; set; }
         public string AssemblyFileName { get; set; }
         public string TypeFullName { get; set; }
         public string MethodName { get; set; }

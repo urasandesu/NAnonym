@@ -223,6 +223,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             il.Append(((MCLabelDeclarationImpl)loc).Target);
         }
+
+
+        public Urasandesu.NAnonym.ILTools.ILocalGenerator AddLocal(string name, Urasandesu.NAnonym.ILTools.ITypeDeclaration localType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

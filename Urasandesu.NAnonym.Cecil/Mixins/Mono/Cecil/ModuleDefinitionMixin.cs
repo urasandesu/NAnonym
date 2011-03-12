@@ -39,6 +39,7 @@ using SR = System.Reflection;
 using Urasandesu.NAnonym.Cecil.Mixins.System;
 using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Cecil.Mixins.System.Reflection;
+using System.Diagnostics;
 
 namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
 {

@@ -36,6 +36,7 @@ public class FormulaTemplateProperty
     public bool HasToStringValueIfDefault { get; set; }
     public bool HideBySig { get; set; }
     public bool ProhibitsNotification { get; set; }
+    public bool AsValue { get; set; }
     public bool ProhibitsDefaultAccepting { get; set; }
 }
 #>

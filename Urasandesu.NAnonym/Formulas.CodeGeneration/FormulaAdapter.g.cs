@@ -44,157 +44,168 @@ namespace Urasandesu.NAnonym.Formulas
             Required.NotDefault(visitor, () => visitor);
             this.visitor = visitor;
         }
-        public virtual Formula Visit(BinaryFormula formula)
+        public virtual void Visit(BinaryFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Left != null) formula.Left.Accept(this);
             if (formula.Right != null) formula.Right.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(AssignFormula formula)
+        public virtual void Visit(AssignFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(NotEqualFormula formula)
+        public virtual void Visit(NotEqualFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(AddFormula formula)
+        public virtual void Visit(AddFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(MultiplyFormula formula)
+        public virtual void Visit(MultiplyFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(AndAlsoFormula formula)
+        public virtual void Visit(AndAlsoFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(EqualFormula formula)
+        public virtual void Visit(EqualFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ExclusiveOrFormula formula)
+        public virtual void Visit(ExclusiveOrFormula formula)
         {
+            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(BlockFormula formula)
+        public virtual void Visit(BlockFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Formulas != null) formula.Formulas.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ConstantFormula formula)
+        public virtual void Visit(ConstantFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(Formula formula)
+        public virtual void Visit(Formula formula)
         {
-            return visitor.Visit(formula);
+            visitor.Visit(formula);
         }
-        public virtual Formula Visit(VariableFormula formula)
+        public virtual void Visit(VariableFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
-            return visitor.Visit(formula);
+            if (formula.Resolved != null) formula.Resolved.Accept(this);
         }
-        public virtual Formula Visit(UnaryFormula formula)
+        public virtual void Visit(LocalFormula formula)
         {
+            visitor.Visit(formula);
+            Visit((Formula)formula);
+        }
+        public virtual void Visit(UnaryFormula formula)
+        {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Operand != null) formula.Operand.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ConvertFormula formula)
+        public virtual void Visit(ConvertFormula formula)
         {
+            visitor.Visit(formula);
             Visit((UnaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(TypeAsFormula formula)
+        public virtual void Visit(TypeAsFormula formula)
         {
+            visitor.Visit(formula);
             Visit((UnaryFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ConditionalFormula formula)
+        public virtual void Visit(ConditionalFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Test != null) formula.Test.Accept(this);
             if (formula.IfTrue != null) formula.IfTrue.Accept(this);
             if (formula.IfFalse != null) formula.IfFalse.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ReturnFormula formula)
+        public virtual void Visit(ReturnFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Body != null) formula.Body.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(CallFormula formula)
+        public virtual void Visit(CallFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Instance != null) formula.Instance.Accept(this);
             if (formula.Arguments != null) formula.Arguments.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ReflectiveCallFormula formula)
+        public virtual void Visit(ReflectiveCallFormula formula)
         {
+            visitor.Visit(formula);
             Visit((CallFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(NewArrayInitFormula formula)
+        public virtual void Visit(NewArrayInitFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Formulas != null) formula.Formulas.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(NewFormula formula)
+        public virtual void Visit(NewFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Arguments != null) formula.Arguments.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ReflectiveNewFormula formula)
+        public virtual void Visit(BaseNewFormula formula)
         {
+            visitor.Visit(formula);
             Visit((NewFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(MemberFormula formula)
+        public virtual void Visit(ReflectiveNewFormula formula)
         {
+            visitor.Visit(formula);
+            Visit((NewFormula)formula);
+        }
+        public virtual void Visit(MemberFormula formula)
+        {
+            visitor.Visit(formula);
             Visit((Formula)formula);
             if (formula.Instance != null) formula.Instance.Accept(this);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(PropertyFormula formula)
+        public virtual void Visit(PropertyFormula formula)
         {
+            visitor.Visit(formula);
             Visit((MemberFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ReflectivePropertyFormula formula)
+        public virtual void Visit(ReflectivePropertyFormula formula)
         {
+            visitor.Visit(formula);
             Visit((PropertyFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(FieldFormula formula)
+        public virtual void Visit(FieldFormula formula)
         {
+            visitor.Visit(formula);
             Visit((MemberFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(ReflectiveFieldFormula formula)
+        public virtual void Visit(ReflectiveFieldFormula formula)
         {
+            visitor.Visit(formula);
             Visit((FieldFormula)formula);
-            return visitor.Visit(formula);
         }
-        public virtual Formula Visit(EndFormula formula)
+        public virtual void Visit(EndFormula formula)
         {
+            visitor.Visit(formula);
             Visit((Formula)formula);
-            return visitor.Visit(formula);
         }
     }
 }

@@ -45,7 +45,8 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
             NodeType = NodeType.Variable;
             VariableName = default(string);
-            Local = default(ILocalDeclaration);
+            VariableIndex = default(int);
+            Resolved = default(Formula);
         }
 
         public const string NameOfVariableName = "VariableName";
@@ -58,26 +59,37 @@ namespace Urasandesu.NAnonym.Formulas
                 SetValue(NameOfVariableName, value, ref variableName);
             }
         }
-        public const string NameOfLocal = "Local";
-        ILocalDeclaration local;
-        public ILocalDeclaration Local 
+        public const string NameOfVariableIndex = "VariableIndex";
+        int variableIndex;
+        public int VariableIndex 
         { 
-            get { return local; } 
+            get { return variableIndex; } 
             set 
             {
-                SetValue(NameOfLocal, value, ref local);
+                SetValue(NameOfVariableIndex, value, ref variableIndex);
+            }
+        }
+        public const string NameOfResolved = "Resolved";
+        Formula resolved;
+        public Formula Resolved 
+        { 
+            get { return resolved; } 
+            set 
+            {
+                SetFormulaAsValue(NameOfResolved, value, ref resolved);
             }
         }
 
 
-        public override Formula Accept(IFormulaVisitor visitor)
+        public override void Accept(IFormulaVisitor visitor)
         {
-            return visitor.Visit(this);
+            visitor.Visit(this);
         }
 
 
         protected override void PinCore()
         {
+            Formula.Pin(Resolved);
             base.PinCore();
         }
 
@@ -92,9 +104,21 @@ namespace Urasandesu.NAnonym.Formulas
             AppendValueTo(VariableName, sb);
             sb.Append(", ");
             sb.Append("\"");
-            sb.Append(NameOfLocal);
+            sb.Append(NameOfVariableIndex);
             sb.Append("\": ");
-            AppendValueTo(Local, sb);
+            AppendValueTo(VariableIndex, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfResolved);
+            sb.Append("\": ");
+            if (Resolved == null)
+            {
+                sb.Append("null");
+            }
+            else
+            {
+                Resolved.AppendWithBracketTo(sb);
+            }
         }
     }
 }

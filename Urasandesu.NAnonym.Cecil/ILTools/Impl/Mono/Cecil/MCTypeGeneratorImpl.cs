@@ -115,11 +115,16 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                              SR::MethodAttributes.SpecialName | SR::MethodAttributes.RTSpecialName;
 
             var ctor = AddConstructor(attributes, SR::CallingConventions.HasThis, Type.EmptyTypes);
-            ctor.ExpressBody(
+            ctor.ExpressBody2(
             gen =>
             {
                 gen.Eval(() => Dsl.Base());
             });
+            //ctor.ExpressBody(
+            //gen =>
+            //{
+            //    gen.Eval(() => Dsl.Base());
+            //});
         }
 
         public UNI::IConstructorGenerator AddConstructor(SR::MethodAttributes attributes, SR::CallingConventions callingConvention, Type[] parameterTypes)

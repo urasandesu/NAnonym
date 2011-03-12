@@ -42,9 +42,19 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public partial class NewFormula : Formula
     {
-        public NewFormula(ConstructorInfo ci, Formula[] arguments)
+        public NewFormula(Formula[] arguments)
+            : this(default(IConstructorDeclaration), arguments)
         {
-            Constructor = ci.ToConstructorDecl();
+        }
+
+        public NewFormula(ConstructorInfo ci, Formula[] arguments)
+            : this(ci.ToConstructorDecl(), arguments)
+        {
+        }
+
+        public NewFormula(IConstructorDeclaration ci, Formula[] arguments)
+        {
+            Constructor = ci;
             arguments.AddRangeTo(Arguments);
         }
 

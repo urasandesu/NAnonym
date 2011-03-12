@@ -56,7 +56,18 @@ namespace Urasandesu.NAnonym.Test
             {
                 if (assembly == null)
                 {
-                    assembly = Assembly.LoadFile(testInfo.AssemblyFileName);
+                    if (!string.IsNullOrEmpty(testInfo.AssemblyFileName))
+                    {
+                        assembly = Assembly.LoadFile(testInfo.AssemblyFileName);
+                    }
+                    else if (testInfo.RawAssembly != null && 0 < testInfo.RawAssembly.Length)
+                    {
+                        assembly = Assembly.Load(testInfo.RawAssembly);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("The parameter \"AssemblyFileName\" or \"RawAssembly\" must be set.");
+                    }
                 }
                 return assembly;
             }

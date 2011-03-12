@@ -147,6 +147,12 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormulaWithoutNotification(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
 <#+ 
                 }
+				else if (property.AsValue)
+				{
+#>
+                SetFormulaAsValue(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+<#+ 
+				}
                 else
                 {
 #>
@@ -196,9 +202,9 @@ namespace Urasandesu.NAnonym.Formulas
 #>
 
 
-        public override Formula Accept(IFormulaVisitor visitor)
+        public override void Accept(IFormulaVisitor visitor)
         {
-            return visitor.Visit(this);
+            visitor.Visit(this);
         }
 <#+ 
         }

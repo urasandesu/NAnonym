@@ -40,10 +40,20 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Formulas
 {
+    public class FormulaCollection
+    {
+        protected FormulaCollection()
+        {
+        }
+
+        public const string NameOfCount = "Count";
+        public const string NameOfItem = "Item[]";
+    }
+
     public class FormulaCollection<TFormula> :
         Formula, IList<TFormula>, ICollection<TFormula>, IEnumerable<TFormula>, INotifyCollectionChanged where TFormula : Formula
     {
-        IList<TFormula> list;
+        protected IList<TFormula> list;
 
         public FormulaCollection()
         {
@@ -65,7 +75,7 @@ namespace Urasandesu.NAnonym.Formulas
             return list.IndexOf(item);
         }
 
-        public void Insert(int index, TFormula item)
+        public virtual void Insert(int index, TFormula item)
         {
             list.Insert(index, item);
             SetReferrerWithoutNotification(item, this);
@@ -75,7 +85,7 @@ namespace Urasandesu.NAnonym.Formulas
             ReceiveCollectionAdded(item, index);
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             var removingItem = list[index];
             list.RemoveAt(index);
@@ -86,7 +96,7 @@ namespace Urasandesu.NAnonym.Formulas
             ReceiveCollectionRemoved(removingItem, index);
         }
 
-        public TFormula this[int index]
+        public virtual TFormula this[int index]
         {
             get
             {
@@ -110,7 +120,7 @@ namespace Urasandesu.NAnonym.Formulas
             Insert(Count, item);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             foreach (var removingItem in list)
             {
@@ -143,7 +153,7 @@ namespace Urasandesu.NAnonym.Formulas
             get { return list.IsReadOnly; }
         }
 
-        public bool Remove(TFormula item)
+        public virtual bool Remove(TFormula item)
         {
             var success = list.Remove(item);
             if (success)
@@ -169,16 +179,14 @@ namespace Urasandesu.NAnonym.Formulas
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public const string NameOfCount = "Count";
         protected void OnCountPropertyChanged()
         {
-            ReceivePropertyChanged(NameOfCount);
+            ReceivePropertyChanged(FormulaCollection.NameOfCount);
         }
 
-        public const string NameOfItem = "Item[]";
         protected void OnItemPropertyChanged()
         {
-            ReceivePropertyChanged(NameOfItem);
+            ReceivePropertyChanged(FormulaCollection.NameOfItem);
         }
 
         public override bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
@@ -271,9 +279,9 @@ namespace Urasandesu.NAnonym.Formulas
             sb.Append("]");
         }
 
-        public override Formula Accept(IFormulaVisitor visitor)
+        public override void Accept(IFormulaVisitor visitor)
         {
-            return list.Select(_ => _.Accept(visitor)).LastOrDefault();
+            list.ForEach(_ => _.Accept(visitor));
         }
     }
 }
