@@ -43,9 +43,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Anonymable.cs" />
@@ -53,6 +50,9 @@
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\AndAlsoFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\ArithmeticBinaryFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\AssignFormula.g.cs">
@@ -103,7 +103,13 @@
     <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\LessThanFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\LocalFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\LogicalBinaryFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\MemberFormula.g.cs">
@@ -152,10 +158,8 @@
     <Compile Include="Formulas\AndAlsoFormula.cs" />
     <Compile Include="Formulas\AssignFormula.cs" />
     <Compile Include="Formulas\BaseNewFormula.cs" />
-    <Compile Include="Formulas\BinaryFormula.cs" />
     <Compile Include="Formulas\BlockFormula.cs" />
     <Compile Include="Formulas\CallFormula.cs" />
-    <Compile Include="Formulas\ConditionalFormula.cs" />
     <Compile Include="Formulas\ConstantFormula.cs" />
     <Compile Include="Formulas\ConvertDecreaser.cs" />
     <Compile Include="Formulas\ConvertFormula.cs" />
@@ -170,6 +174,7 @@
     <Compile Include="Formulas\Formula.cs" />
     <Compile Include="Formulas\FormulaAsValueCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
+    <Compile Include="Formulas\LessThanFormula.cs" />
     <Compile Include="Formulas\LocalFormula.cs" />
     <Compile Include="Formulas\MultiplyFormula.cs" />
     <Compile Include="Formulas\NewArrayInitFormula.cs" />
@@ -185,6 +190,7 @@
     <Compile Include="Formulas\TypeAsFormula.cs" />
     <Compile Include="Formulas\VariableFormula.cs" />
     <Compile Include="Formulas\VariableResolver.cs" />
+    <Compile Include="ILTools\ILBuilder.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
     <Compile Include="ILTools\IPropertyDeclaration.cs" />
     <Compile Include="ILTools\IPropertyGenerator.cs" />
@@ -192,6 +198,8 @@
     <Compile Include="ILTools\ReflectiveLocalDecorator.cs" />
     <Compile Include="ILTools\MethodReservedWords.cs" />
     <Compile Include="ILTools\ReflectiveMethodDesigner2.cs" />
+    <Compile Include="ILTools\TypeResolver.cs" />
+    <Compile Include="ILTools\ReturnCheckException.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
@@ -351,6 +359,7 @@
     <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ExpressiveGeneratorMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
+    <Compile Include="NAnonymException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

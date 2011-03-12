@@ -57,15 +57,6 @@ namespace Urasandesu.NAnonym.Formulas
             Constructor = ci;
             arguments.AddRangeTo(Arguments);
         }
-
-        protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == NameOfConstructor)
-            {
-                TypeDeclaration = Constructor == null ? null : Constructor.DeclaringType;
-            }
-            return base.ReceivePropertyChangedCore(sender, e);
-        }
     }
 }
 

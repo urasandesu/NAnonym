@@ -46,6 +46,7 @@ public class FormulaTemplate : Template
     public string TypeName { get; set; }
     public bool IsAbstract { get; set; }
     public NodeType NodeType { get; set; }
+    public string TypeDeclaration { get; set; }
     public List<FormulaTemplateProperty> TemplateProperties { get; set; }
     
     public override string TransformText()
@@ -87,13 +88,14 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public <#= IsAbstract ? "abstract " : "" #>partial class <#= TypeName #> : <#= BaseTypeName #>
+    public <#= IsAbstract ? "abstract " : "" #>partial class <#= TypeName #><#= BaseTypeName == null ? "" : ":" + BaseTypeName #>
     {
 <#+ 
-        if (BaseTypeName == "INotifyPropertyChanged")
+        if (BaseTypeName == null)
         {
 #>
         public <#= TypeName #>()
@@ -106,14 +108,29 @@ namespace Urasandesu.NAnonym.Formulas
         }
 #>
 
-        protected <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void InitializeForCodeGeneration()
+        protected <#= BaseTypeName == null ? "virtual" : "override" #> void InitializeForCodeGeneration()
         {
 <#+ 
-        if (BaseTypeName != "INotifyPropertyChanged")
+        if (BaseTypeName != null)
         {
 #>
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.<#= NodeType.ToString() #>;
+<#+ 
+			if (NodeType != NodeType.None)
+			{
+#>
+			NodeType = NodeType.<#= NodeType.ToString() #>;
+<#+ 
+			}
+#>
+<#+ 
+			if (!string.IsNullOrEmpty(TypeDeclaration))
+			{
+#>
+			TypeDeclaration = <#= TypeDeclaration #>;
+<#+ 
+			}
+#>
 <#+ 
         }
 #>
@@ -141,13 +158,7 @@ namespace Urasandesu.NAnonym.Formulas
 <#+ 
             if (-1 < property.TypeName.IndexOf("Formula"))
             {
-                if (property.ProhibitsNotification)
-                {
-#>
-                SetFormulaWithoutNotification(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
-<#+ 
-                }
-				else if (property.AsValue)
+				if (property.AsValue)
 				{
 #>
                 SetFormulaAsValue(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
@@ -162,18 +173,9 @@ namespace Urasandesu.NAnonym.Formulas
             }
             else
             {
-                if (property.ProhibitsNotification)
-                {
-#>
-                SetValueWithoutNotification(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
-<#+ 
-                }
-                else
-                {
 #>
                 SetValue(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
 <#+ 
-                }
             }
 #>
 <#+ 
@@ -211,7 +213,7 @@ namespace Urasandesu.NAnonym.Formulas
 #>
 
 
-        protected <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void PinCore()
+        protected <#= BaseTypeName == null ? "virtual" : "override" #> void PinCore()
         {
 <#+ 
             foreach (var property in TemplateProperties.Where(_ => -1 < _.TypeName.IndexOf("Formula")))
@@ -222,7 +224,7 @@ namespace Urasandesu.NAnonym.Formulas
             }
 #>
 <#+ 
-            if (BaseTypeName != "INotifyPropertyChanged")
+            if (BaseTypeName != null)
             {
 #>
             base.PinCore();
@@ -232,10 +234,10 @@ namespace Urasandesu.NAnonym.Formulas
         }
 
 
-        public <#= BaseTypeName == "INotifyPropertyChanged" ? "virtual" : "override" #> void AppendTo(StringBuilder sb)
+        public <#= BaseTypeName == null ? "virtual" : "override" #> void AppendTo(StringBuilder sb)
         {
 <#+ 
-        if (BaseTypeName != "INotifyPropertyChanged")
+        if (BaseTypeName != null)
         {
 #>
             base.AppendTo(sb);
@@ -246,7 +248,7 @@ namespace Urasandesu.NAnonym.Formulas
 		TemplateProperties.Where(_ => !_.ProhibitsToString).ForEach(
         (property, propertyIndex) =>
         {
-            if (BaseTypeName != "INotifyPropertyChanged" || 0 < propertyIndex)
+            if (BaseTypeName != null || 0 < propertyIndex)
             {
 #>
             sb.Append(", ");

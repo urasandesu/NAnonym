@@ -45,15 +45,6 @@ namespace Urasandesu.NAnonym.Formulas
             Instance = instance;
             Member = fi.ToFieldDecl();
         }
-
-        protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == NameOfMember)
-            {
-                TypeDeclaration = Member == null ? null : Member.FieldType;
-            }
-            return base.ReceivePropertyChangedCore(sender, e);
-        }
     }
 }
 

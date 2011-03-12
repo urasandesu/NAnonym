@@ -34,16 +34,17 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AddFormula : BinaryFormula
+    public partial class AddFormula:ArithmeticBinaryFormula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Add;
+			NodeType = NodeType.Add;
         }
 
 

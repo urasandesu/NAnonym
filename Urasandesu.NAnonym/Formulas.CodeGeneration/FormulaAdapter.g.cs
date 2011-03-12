@@ -38,7 +38,7 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public abstract class FormulaAdapter : IFormulaVisitor
     {
-        IFormulaVisitor visitor;
+        readonly protected IFormulaVisitor visitor;
         public FormulaAdapter(IFormulaVisitor visitor)
         {
             Required.NotDefault(visitor, () => visitor);
@@ -48,8 +48,28 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Left != null) formula.Left.Accept(this);
-            if (formula.Right != null) formula.Right.Accept(this);
+            if (formula.Left != null) VisitBinaryLeft(formula.Left);
+            if (formula.Right != null) VisitBinaryRight(formula.Right);
+        }
+        public virtual void VisitBinaryLeft(Formula formula)
+		{
+			visitor.VisitBinaryLeft(formula);
+			formula.Accept(this);
+		}
+        public virtual void VisitBinaryRight(Formula formula)
+		{
+			visitor.VisitBinaryRight(formula);
+			formula.Accept(this);
+		}
+        public virtual void Visit(ArithmeticBinaryFormula formula)
+        {
+            visitor.Visit(formula);
+            Visit((BinaryFormula)formula);
+        }
+        public virtual void Visit(LogicalBinaryFormula formula)
+        {
+            visitor.Visit(formula);
+            Visit((BinaryFormula)formula);
         }
         public virtual void Visit(AssignFormula formula)
         {
@@ -59,39 +79,49 @@ namespace Urasandesu.NAnonym.Formulas
         public virtual void Visit(NotEqualFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((LogicalBinaryFormula)formula);
         }
         public virtual void Visit(AddFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((ArithmeticBinaryFormula)formula);
         }
         public virtual void Visit(MultiplyFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((ArithmeticBinaryFormula)formula);
         }
         public virtual void Visit(AndAlsoFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((LogicalBinaryFormula)formula);
         }
         public virtual void Visit(EqualFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((LogicalBinaryFormula)formula);
         }
         public virtual void Visit(ExclusiveOrFormula formula)
         {
             visitor.Visit(formula);
-            Visit((BinaryFormula)formula);
+            Visit((ArithmeticBinaryFormula)formula);
+        }
+        public virtual void Visit(LessThanFormula formula)
+        {
+            visitor.Visit(formula);
+            Visit((LogicalBinaryFormula)formula);
         }
         public virtual void Visit(BlockFormula formula)
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Formulas != null) formula.Formulas.Accept(this);
+            if (formula.Formulas != null) VisitBlockFormulas(formula.Formulas);
         }
+        public virtual void VisitBlockFormulas(FormulaCollection<Formula> formula)
+		{
+			visitor.VisitBlockFormulas(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(ConstantFormula formula)
         {
             visitor.Visit(formula);
@@ -105,8 +135,13 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Resolved != null) formula.Resolved.Accept(this);
+            if (formula.Resolved != null) VisitVariableResolved(formula.Resolved);
         }
+        public virtual void VisitVariableResolved(Formula formula)
+		{
+			visitor.VisitVariableResolved(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(LocalFormula formula)
         {
             visitor.Visit(formula);
@@ -116,8 +151,13 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Operand != null) formula.Operand.Accept(this);
+            if (formula.Operand != null) VisitUnaryOperand(formula.Operand);
         }
+        public virtual void VisitUnaryOperand(Formula formula)
+		{
+			visitor.VisitUnaryOperand(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(ConvertFormula formula)
         {
             visitor.Visit(formula);
@@ -132,23 +172,53 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Test != null) formula.Test.Accept(this);
-            if (formula.IfTrue != null) formula.IfTrue.Accept(this);
-            if (formula.IfFalse != null) formula.IfFalse.Accept(this);
+            if (formula.Test != null) VisitConditionalTest(formula.Test);
+            if (formula.IfTrue != null) VisitConditionalIfTrue(formula.IfTrue);
+            if (formula.IfFalse != null) VisitConditionalIfFalse(formula.IfFalse);
         }
+        public virtual void VisitConditionalTest(Formula formula)
+		{
+			visitor.VisitConditionalTest(formula);
+			formula.Accept(this);
+		}
+        public virtual void VisitConditionalIfTrue(Formula formula)
+		{
+			visitor.VisitConditionalIfTrue(formula);
+			formula.Accept(this);
+		}
+        public virtual void VisitConditionalIfFalse(Formula formula)
+		{
+			visitor.VisitConditionalIfFalse(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(ReturnFormula formula)
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Body != null) formula.Body.Accept(this);
+            if (formula.Body != null) VisitReturnBody(formula.Body);
         }
+        public virtual void VisitReturnBody(Formula formula)
+		{
+			visitor.VisitReturnBody(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(CallFormula formula)
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Instance != null) formula.Instance.Accept(this);
-            if (formula.Arguments != null) formula.Arguments.Accept(this);
+            if (formula.Instance != null) VisitCallInstance(formula.Instance);
+            if (formula.Arguments != null) VisitCallArguments(formula.Arguments);
         }
+        public virtual void VisitCallInstance(Formula formula)
+		{
+			visitor.VisitCallInstance(formula);
+			formula.Accept(this);
+		}
+        public virtual void VisitCallArguments(FormulaCollection<Formula> formula)
+		{
+			visitor.VisitCallArguments(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(ReflectiveCallFormula formula)
         {
             visitor.Visit(formula);
@@ -158,14 +228,24 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Formulas != null) formula.Formulas.Accept(this);
+            if (formula.Formulas != null) VisitNewArrayInitFormulas(formula.Formulas);
         }
+        public virtual void VisitNewArrayInitFormulas(FormulaCollection<Formula> formula)
+		{
+			visitor.VisitNewArrayInitFormulas(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(NewFormula formula)
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Arguments != null) formula.Arguments.Accept(this);
+            if (formula.Arguments != null) VisitNewArguments(formula.Arguments);
         }
+        public virtual void VisitNewArguments(FormulaCollection<Formula> formula)
+		{
+			visitor.VisitNewArguments(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(BaseNewFormula formula)
         {
             visitor.Visit(formula);
@@ -180,8 +260,13 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Instance != null) formula.Instance.Accept(this);
+            if (formula.Instance != null) VisitMemberInstance(formula.Instance);
         }
+        public virtual void VisitMemberInstance(Formula formula)
+		{
+			visitor.VisitMemberInstance(formula);
+			formula.Accept(this);
+		}
         public virtual void Visit(PropertyFormula formula)
         {
             visitor.Visit(formula);
@@ -206,6 +291,12 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
             Visit((Formula)formula);
+            if (formula.Block != null) VisitEndBlock(formula.Block);
         }
+        public virtual void VisitEndBlock(BlockFormula formula)
+		{
+			visitor.VisitEndBlock(formula);
+			formula.Accept(this);
+		}
     }
 }

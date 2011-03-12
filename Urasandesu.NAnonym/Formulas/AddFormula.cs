@@ -35,7 +35,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AddFormula : BinaryFormula
+    public partial class AddFormula : ArithmeticBinaryFormula
     {
         public override string MethodToStringValueIfDefault
         {

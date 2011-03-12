@@ -87,6 +87,14 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 <#+ 
+			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
+			{
+#>
+        public void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= property.TypeName #> formula)
+		{
+		}
+<#+
+			}
         }
 #>
     }

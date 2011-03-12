@@ -34,16 +34,16 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class MemberFormula : Formula
+    public abstract partial class MemberFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.None;
             Instance = default(Formula);
             Member = default(IMemberDeclaration);
         }

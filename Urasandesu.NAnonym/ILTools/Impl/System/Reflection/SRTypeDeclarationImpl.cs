@@ -216,6 +216,27 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         {
             return new SRTypeDeclarationImpl(Source.GetElementType());
         }
+
+        public override bool Equals(object obj)
+        {
+            var srObj = default(SRTypeDeclarationImpl);
+            if ((srObj = obj as SRTypeDeclarationImpl) != null)
+            {
+                return Source.Equals(srObj.Source);
+            }
+            else
+            {
+                var typeDecl = default(ITypeDeclaration);
+                if ((typeDecl = obj as ITypeDeclaration) != null)
+                {
+                    return FullName == typeDecl.FullName;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }
 

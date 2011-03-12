@@ -82,7 +82,7 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public abstract class FormulaAdapter : IFormulaVisitor
     {
-        IFormulaVisitor visitor;
+        readonly protected IFormulaVisitor visitor;
         public FormulaAdapter(IFormulaVisitor visitor)
         {
             Required.NotDefault(visitor, () => visitor);
@@ -96,7 +96,7 @@ namespace Urasandesu.NAnonym.Formulas
         {
             visitor.Visit(formula);
 <#+ 
-			if (template.Value.BaseTypeName != "INotifyPropertyChanged")
+			if (template.Value.BaseTypeName != null)
 			{
 #>
             Visit((<#= template.Value.BaseTypeName #>)formula);
@@ -104,15 +104,25 @@ namespace Urasandesu.NAnonym.Formulas
 			}
 #>
 <#+ 
-			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && -1 < _.TypeName.IndexOf("Formula")))
+			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
 			{
 #>
-            if (formula.<#= property.Name #> != null) formula.<#= property.Name #>.Accept(this);
+            if (formula.<#= property.Name #> != null) Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula.<#= property.Name #>);
 <#+ 
 			}
 #>
         }
 <#+ 
+			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
+			{
+#>
+        public virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= property.TypeName #> formula)
+		{
+			visitor.Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula);
+			formula.Accept(this);
+		}
+<#+
+			}
         }
 #>
     }

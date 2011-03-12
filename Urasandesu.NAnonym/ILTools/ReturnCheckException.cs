@@ -1,5 +1,5 @@
-/* 
- * File: AndAlsoFormula.g.cs
+﻿/* 
+ * File: ReflectiveMethodDesigner.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,45 +26,29 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Urasandesu.NAnonym.ILTools;
-using System.ComponentModel;
+using Urasandesu.NAnonym.Formulas;
+using System.Linq.Expressions;
+using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
-namespace Urasandesu.NAnonym.Formulas
+namespace Urasandesu.NAnonym.ILTools
 {
-    public partial class AndAlsoFormula:LogicalBinaryFormula
+    [Serializable]
+    public class ReturnCheckException : NAnonymException
     {
-
-        protected override void InitializeForCodeGeneration()
-        {
-            base.InitializeForCodeGeneration();
-			NodeType = NodeType.AndAlso;
-        }
-
-
-
-        public override void Accept(IFormulaVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-
-        protected override void PinCore()
-        {
-            base.PinCore();
-        }
-
-
-        public override void AppendTo(StringBuilder sb)
-        {
-            base.AppendTo(sb);
-        }
+        public ReturnCheckException() { }
+        public ReturnCheckException(string message) : base(message) { }
+        public ReturnCheckException(string message, Exception inner) : base(message, inner) { }
+        protected ReturnCheckException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
     }
 }
-

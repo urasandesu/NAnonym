@@ -34,16 +34,17 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class BaseNewFormula : NewFormula
+    public partial class BaseNewFormula:NewFormula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.BaseNew;
+			NodeType = NodeType.BaseNew;
         }
 
 

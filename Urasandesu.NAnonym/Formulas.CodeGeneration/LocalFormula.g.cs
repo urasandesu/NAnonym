@@ -34,16 +34,17 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class LocalFormula : Formula
+    public partial class LocalFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Local;
+			NodeType = NodeType.Local;
             LocalName = default(string);
             Local = default(ILocalDeclaration);
         }

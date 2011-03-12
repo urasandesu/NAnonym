@@ -42,15 +42,6 @@ namespace Urasandesu.NAnonym.Formulas
         {
             Body = body;
         }
-
-        protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == NameOfBody)
-            {
-                TypeDeclaration = Body == null ? null : Body.TypeDeclaration;
-            }
-            return base.ReceivePropertyChangedCore(sender, e);
-        }
     }
 }
 

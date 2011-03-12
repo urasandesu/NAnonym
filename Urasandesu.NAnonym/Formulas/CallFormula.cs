@@ -48,15 +48,6 @@ namespace Urasandesu.NAnonym.Formulas
             Method = mi.ToMethodDecl();
             arguments.AddRangeTo(Arguments);
         }
-
-        protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == NameOfMethod)
-            {
-                TypeDeclaration = Method == null ? null : Method.ReturnType;
-            }
-            return base.ReceivePropertyChangedCore(sender, e);
-        }
     }
 }
 

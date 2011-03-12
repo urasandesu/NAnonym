@@ -1,5 +1,5 @@
 /* 
- * File: AndAlsoFormula.g.cs
+ * File: ArithmeticBinaryFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,21 +38,14 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AndAlsoFormula:LogicalBinaryFormula
+    public abstract partial class ArithmeticBinaryFormula:BinaryFormula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-			NodeType = NodeType.AndAlso;
         }
 
-
-
-        public override void Accept(IFormulaVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
 
 
         protected override void PinCore()

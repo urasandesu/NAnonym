@@ -34,16 +34,17 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ReflectivePropertyFormula : PropertyFormula
+    public partial class ReflectivePropertyFormula:PropertyFormula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.ReflectiveProperty;
+			NodeType = NodeType.ReflectiveProperty;
         }
 
 

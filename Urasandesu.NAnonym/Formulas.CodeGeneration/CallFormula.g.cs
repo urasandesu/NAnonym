@@ -34,16 +34,17 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class CallFormula : Formula
+    public partial class CallFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Call;
+			NodeType = NodeType.Call;
             Instance = default(Formula);
             Method = default(IMethodDeclaration);
             Arguments = new FormulaCollection<Formula>();

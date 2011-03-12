@@ -34,17 +34,19 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ReturnFormula : Formula
+    public partial class ReturnFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Return;
+			NodeType = NodeType.Return;
             Body = default(Formula);
+            Block = default(BlockFormula);
         }
 
         public const string NameOfBody = "Body";
@@ -55,6 +57,16 @@ namespace Urasandesu.NAnonym.Formulas
             set 
             {
                 SetFormula(NameOfBody, value, ref body);
+            }
+        }
+        public const string NameOfBlock = "Block";
+        BlockFormula block;
+        public BlockFormula Block 
+        { 
+            get { return block; } 
+            set 
+            {
+                SetFormulaAsValue(NameOfBlock, value, ref block);
             }
         }
 
@@ -68,6 +80,7 @@ namespace Urasandesu.NAnonym.Formulas
         protected override void PinCore()
         {
             Formula.Pin(Body);
+            Formula.Pin(Block);
             base.PinCore();
         }
 

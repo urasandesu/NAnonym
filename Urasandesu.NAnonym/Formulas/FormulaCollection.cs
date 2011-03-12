@@ -51,7 +51,7 @@ namespace Urasandesu.NAnonym.Formulas
     }
 
     public class FormulaCollection<TFormula> :
-        Formula, IList<TFormula>, ICollection<TFormula>, IEnumerable<TFormula>, INotifyCollectionChanged where TFormula : Formula
+        Formula, IList<TFormula>, ICollection<TFormula>, IEnumerable<TFormula> where TFormula : Formula
     {
         protected IList<TFormula> list;
 
@@ -78,22 +78,14 @@ namespace Urasandesu.NAnonym.Formulas
         public virtual void Insert(int index, TFormula item)
         {
             list.Insert(index, item);
-            SetReferrerWithoutNotification(item, this);
-            Subscribe(item);
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionAdded(item, index);
+            SetReferrer(item, this);
         }
 
         public virtual void RemoveAt(int index)
         {
             var removingItem = list[index];
             list.RemoveAt(index);
-            SetReferrerWithoutNotification(removingItem, null);
-            Unsubscribe(removingItem);
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionRemoved(removingItem, index);
+            SetReferrer(removingItem, null);
         }
 
         public virtual TFormula this[int index]
@@ -106,12 +98,8 @@ namespace Urasandesu.NAnonym.Formulas
             {
                 var replacingItem = list[index];
                 list[index] = value;
-                SetReferrerWithoutNotification(replacingItem, null);
-                Unsubscribe(replacingItem);
-                SetReferrerWithoutNotification(value, Referrer);
-                Subscribe(value);
-                OnItemPropertyChanged();
-                ReceiveCollectionReplaced(value, replacingItem, index);
+                SetReferrer(replacingItem, null);
+                SetReferrer(value, Referrer);
             }
         }
 
@@ -124,13 +112,9 @@ namespace Urasandesu.NAnonym.Formulas
         {
             foreach (var removingItem in list)
             {
-                SetReferrerWithoutNotification(removingItem, null);
-                Unsubscribe(removingItem);
+                SetReferrer(removingItem, null);
             }
             list.Clear();
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionReset();
         }
 
         public bool Contains(TFormula item)
@@ -158,11 +142,7 @@ namespace Urasandesu.NAnonym.Formulas
             var success = list.Remove(item);
             if (success)
             {
-                SetReferrerWithoutNotification(item, null);
-                Unsubscribe(item);
-                OnCountPropertyChanged();
-                OnItemPropertyChanged();
-                ReceiveCollectionRemoved(item);
+                SetReferrer(item, null);
             }
             return success;
         }
@@ -175,82 +155,6 @@ namespace Urasandesu.NAnonym.Formulas
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        protected void OnCountPropertyChanged()
-        {
-            ReceivePropertyChanged(FormulaCollection.NameOfCount);
-        }
-
-        protected void OnItemPropertyChanged()
-        {
-            ReceivePropertyChanged(FormulaCollection.NameOfItem);
-        }
-
-        public override bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType == typeof(CollectionChangedEventManager))
-            {
-                return ReceiveCollectionChangedWithReentrantGuard(sender, (NotifyCollectionChangedEventArgs)e);
-            }
-            else
-            {
-                return base.ReceiveWeakEvent(managerType, sender, e);
-            }
-        }
-
-        bool duringCollectionChanged;
-        bool ReceiveCollectionChangedWithReentrantGuard(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (duringCollectionChanged) return true;
-            try
-            {
-                duringCollectionChanged = true;
-                return ReceiveCollectionChangedCore(sender, e);
-            }
-            finally
-            {
-                duringCollectionChanged = false;
-            }
-        }
-
-        protected bool ReceiveCollectionReset()
-        {
-            return ReceiveCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        protected bool ReceiveCollectionAdded(TFormula item, int index)
-        {
-            return ReceiveCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
-        }
-
-        protected bool ReceiveCollectionRemoved(TFormula item)
-        {
-            return ReceiveCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
-        }
-
-        protected bool ReceiveCollectionRemoved(TFormula item, int index)
-        {
-            return ReceiveCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
-        }
-
-        protected bool ReceiveCollectionReplaced(TFormula newItem, TFormula oldItem, int index)
-        {
-            return ReceiveCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, index));
-        }
-
-        protected bool ReceiveCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            return ReceiveCollectionChangedCore(this, e);
-        }
-
-        protected virtual bool ReceiveCollectionChangedCore(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (CollectionChanged == null) return true;
-            CollectionChanged(sender, e);
-            return true;
         }
 
         protected override void PinCore()

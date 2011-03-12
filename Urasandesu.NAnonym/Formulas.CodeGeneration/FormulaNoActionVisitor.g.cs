@@ -40,6 +40,18 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(BinaryFormula formula)
         {
         }
+        public void VisitBinaryLeft(Formula formula)
+		{
+		}
+        public void VisitBinaryRight(Formula formula)
+		{
+		}
+        public void Visit(ArithmeticBinaryFormula formula)
+        {
+        }
+        public void Visit(LogicalBinaryFormula formula)
+        {
+        }
         public void Visit(AssignFormula formula)
         {
         }
@@ -61,9 +73,15 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(ExclusiveOrFormula formula)
         {
         }
+        public void Visit(LessThanFormula formula)
+        {
+        }
         public void Visit(BlockFormula formula)
         {
         }
+        public void VisitBlockFormulas(FormulaCollection<Formula> formula)
+		{
+		}
         public void Visit(ConstantFormula formula)
         {
         }
@@ -73,12 +91,18 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(VariableFormula formula)
         {
         }
+        public void VisitVariableResolved(Formula formula)
+		{
+		}
         public void Visit(LocalFormula formula)
         {
         }
         public void Visit(UnaryFormula formula)
         {
         }
+        public void VisitUnaryOperand(Formula formula)
+		{
+		}
         public void Visit(ConvertFormula formula)
         {
         }
@@ -88,21 +112,45 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(ConditionalFormula formula)
         {
         }
+        public void VisitConditionalTest(Formula formula)
+		{
+		}
+        public void VisitConditionalIfTrue(Formula formula)
+		{
+		}
+        public void VisitConditionalIfFalse(Formula formula)
+		{
+		}
         public void Visit(ReturnFormula formula)
         {
         }
+        public void VisitReturnBody(Formula formula)
+		{
+		}
         public void Visit(CallFormula formula)
         {
         }
+        public void VisitCallInstance(Formula formula)
+		{
+		}
+        public void VisitCallArguments(FormulaCollection<Formula> formula)
+		{
+		}
         public void Visit(ReflectiveCallFormula formula)
         {
         }
         public void Visit(NewArrayInitFormula formula)
         {
         }
+        public void VisitNewArrayInitFormulas(FormulaCollection<Formula> formula)
+		{
+		}
         public void Visit(NewFormula formula)
         {
         }
+        public void VisitNewArguments(FormulaCollection<Formula> formula)
+		{
+		}
         public void Visit(BaseNewFormula formula)
         {
         }
@@ -112,6 +160,9 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(MemberFormula formula)
         {
         }
+        public void VisitMemberInstance(Formula formula)
+		{
+		}
         public void Visit(PropertyFormula formula)
         {
         }
@@ -127,5 +178,8 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(EndFormula formula)
         {
         }
+        public void VisitEndBlock(BlockFormula formula)
+		{
+		}
     }
 }

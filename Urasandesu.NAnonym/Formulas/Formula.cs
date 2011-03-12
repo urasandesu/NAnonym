@@ -39,11 +39,10 @@ using System.Collections.ObjectModel;
 using System.Collections;
 using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Windows;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class Formula : INotifyPropertyChanged, IWeakEventListener
+    public abstract partial class Formula
     {
         protected virtual void Initialize()
         {
@@ -62,111 +61,27 @@ namespace Urasandesu.NAnonym.Formulas
         protected void SetValue<T>(string propertyName, T value, ref T result)
         {
             CheckCanModify(this);
-
-            result = value;
-
-            if (Referrer != null)
-            {
-                Referrer.ReceivePropertyChanged(propertyName);
-            }
-            ReceivePropertyChanged(propertyName);
-        }
-
-        protected void SetValueWithoutNotification<T>(string propertyName, T value, ref T result)
-        {
-            CheckCanModify(this);
-
             result = value;
         }
 
         protected void SetFormula<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
         {
-            SetReferrerWithoutNotification(result, null);
-            Unsubscribe(result);
+            SetReferrer(result, null);
             SetValue(propertyName, formula, ref result);
-            Subscribe(result);
-            SetReferrerWithoutNotification(result, this);
+            SetReferrer(result, this);
         }
-
-        protected void SetFormulaWithoutNotification<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
-        {
-            SetValueWithoutNotification(propertyName, formula, ref result);
-        }
-
         protected void SetFormulaAsValue<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
         {
             SetValue(propertyName, formula, ref result);
         }
 
-        protected void SetReferrerWithoutNotification(Formula target, Formula referrer)
+        protected void SetReferrer(Formula target, Formula referrer)
         {
             if (target != null)
             {
                 CheckCanModify(target.Referrer);
                 target.referrer = referrer;
             }
-        }
-
-        protected virtual void Subscribe(Formula target)
-        {
-            if (target != null)
-            {
-                PropertyChangedEventManager.AddListener(target, this, string.Empty);
-            }
-        }
-
-        protected virtual void Unsubscribe(Formula target)
-        {
-            if (target != null)
-            {
-                PropertyChangedEventManager.RemoveListener(target, this, string.Empty);
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType == typeof(PropertyChangedEventManager))
-            {
-                return ReceivePropertyChangedWithReentrantGuard(sender, (PropertyChangedEventArgs)e);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        bool duringPropertyChanged;
-        bool ReceivePropertyChangedWithReentrantGuard(object sender, PropertyChangedEventArgs e)
-        {
-            if (duringPropertyChanged) return true;
-            try
-            {
-                duringPropertyChanged = true;
-                return ReceivePropertyChangedCore(sender, e);
-            }
-            finally
-            {
-                duringPropertyChanged = false;
-            }
-        }
-
-        protected bool ReceivePropertyChanged(string propertyName)
-        {
-            return ReceivePropertyChanged(new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool ReceivePropertyChanged(PropertyChangedEventArgs e)
-        {
-            return ReceivePropertyChangedCore(this, e);
-        }
-
-        protected virtual bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (PropertyChanged == null) return true;
-            PropertyChanged(sender, e);
-            return true;
         }
 
         public static void Pin(Formula item)

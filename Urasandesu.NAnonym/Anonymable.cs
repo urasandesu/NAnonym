@@ -347,17 +347,5 @@ namespace Urasandesu.NAnonym
         }
     }
 
-    // MEMO: とりあえずこのライブラリ用の例外。
-    [Serializable]
-    public class NAnonymException : Exception
-    {
-        public NAnonymException() { }
-        public NAnonymException(string message) : base(message) { }
-        public NAnonymException(string message, Exception inner) : base(message, inner) { }
-        protected NAnonymException(
-          SerializationInfo info,
-          StreamingContext context)
-            : base(info, context) { }
-    }
 }
 

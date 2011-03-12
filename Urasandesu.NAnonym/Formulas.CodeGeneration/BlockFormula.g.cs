@@ -34,21 +34,21 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class BlockFormula : Formula
+    public partial class BlockFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.Block;
+			NodeType = NodeType.Block;
             ParentBlock = default(BlockFormula);
             ChildBlocks = new FormulaAsValueCollection<BlockFormula>();
             Locals = new FormulaAsValueCollection<LocalFormula>();
             Formulas = new FormulaCollection<Formula>();
-            Result = default(Formula);
         }
 
         public const string NameOfParentBlock = "ParentBlock";
@@ -58,7 +58,7 @@ namespace Urasandesu.NAnonym.Formulas
             get { return parentBlock; } 
             set 
             {
-                SetFormulaWithoutNotification(NameOfParentBlock, value, ref parentBlock);
+                SetFormulaAsValue(NameOfParentBlock, value, ref parentBlock);
             }
         }
         public const string NameOfChildBlocks = "ChildBlocks";
@@ -91,16 +91,6 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormula(NameOfFormulas, value, ref formulas);
             }
         }
-        public const string NameOfResult = "Result";
-        Formula result;
-        public Formula Result 
-        { 
-            get { return result; } 
-            set 
-            {
-                SetFormulaAsValue(NameOfResult, value, ref result);
-            }
-        }
 
 
         public override void Accept(IFormulaVisitor visitor)
@@ -115,7 +105,6 @@ namespace Urasandesu.NAnonym.Formulas
             Formula.Pin(ChildBlocks);
             Formula.Pin(Locals);
             Formula.Pin(Formulas);
-            Formula.Pin(Result);
             base.PinCore();
         }
 
@@ -146,18 +135,6 @@ namespace Urasandesu.NAnonym.Formulas
             else
             {
                 Formulas.AppendWithBracketTo(sb);
-            }
-            sb.Append(", ");
-            sb.Append("\"");
-            sb.Append(NameOfResult);
-            sb.Append("\": ");
-            if (Result == null)
-            {
-                sb.Append("null");
-            }
-            else
-            {
-                Result.AppendWithBracketTo(sb);
             }
         }
     }

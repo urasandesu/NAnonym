@@ -45,18 +45,11 @@ namespace Urasandesu.NAnonym.Formulas
         public override void Insert(int index, TFormula item)
         {
             list.Insert(index, item);
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionAdded(item, index);
         }
 
         public override void RemoveAt(int index)
         {
-            var removingItem = list[index];
             list.RemoveAt(index);
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionRemoved(removingItem, index);
         }
 
         public override TFormula this[int index]
@@ -67,31 +60,18 @@ namespace Urasandesu.NAnonym.Formulas
             }
             set
             {
-                var replacingItem = list[index];
                 list[index] = value;
-                OnItemPropertyChanged();
-                ReceiveCollectionReplaced(value, replacingItem, index);
             }
         }
 
         public override void Clear()
         {
             list.Clear();
-            OnCountPropertyChanged();
-            OnItemPropertyChanged();
-            ReceiveCollectionReset();
         }
 
         public override bool Remove(TFormula item)
         {
-            var success = list.Remove(item);
-            if (success)
-            {
-                OnCountPropertyChanged();
-                OnItemPropertyChanged();
-                ReceiveCollectionRemoved(item);
-            }
-            return success;
+            return list.Remove(item);
         }
 
         public override void Accept(IFormulaVisitor visitor)

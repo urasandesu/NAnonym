@@ -1,5 +1,5 @@
-/* 
- * File: ConditionalFormula.cs
+﻿/* 
+ * File: NAnonymException.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,27 +26,25 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
+using System.Runtime.Serialization;
 
-namespace Urasandesu.NAnonym.Formulas
+namespace Urasandesu.NAnonym
 {
-    public partial class ConditionalFormula : Formula
+    [Serializable]
+    public class NAnonymException : Exception
     {
-        protected override bool ReceivePropertyChangedCore(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == NameOfIfTrue ||
-                sender != this && e.PropertyName == ConditionalFormula.NameOfTypeDeclaration)
-            {
-                TypeDeclaration = IfTrue == null ? null : IfTrue.TypeDeclaration;
-            }
-            return base.ReceivePropertyChangedCore(sender, e);
-        }
+        public NAnonymException() { }
+        public NAnonymException(string message) : base(message) { }
+        public NAnonymException(string message, Exception inner) : base(message, inner) { }
+        protected NAnonymException(
+          SerializationInfo info,
+          StreamingContext context)
+            : base(info, context) { }
     }
 }
-

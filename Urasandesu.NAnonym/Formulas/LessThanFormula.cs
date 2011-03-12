@@ -1,5 +1,5 @@
-/* 
- * File: AndAlsoFormula.g.cs
+﻿/* 
+ * File: LessThanFormula.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -38,33 +38,11 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AndAlsoFormula:LogicalBinaryFormula
+    public partial class LessThanFormula : LogicalBinaryFormula
     {
-
-        protected override void InitializeForCodeGeneration()
+        public override string MethodToStringValueIfDefault
         {
-            base.InitializeForCodeGeneration();
-			NodeType = NodeType.AndAlso;
-        }
-
-
-
-        public override void Accept(IFormulaVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-
-        protected override void PinCore()
-        {
-            base.PinCore();
-        }
-
-
-        public override void AppendTo(StringBuilder sb)
-        {
-            base.AppendTo(sb);
+            get { return "\"<\""; }
         }
     }
 }
-

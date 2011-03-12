@@ -34,10 +34,11 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class Formula : INotifyPropertyChanged
+    public abstract partial class Formula
     {
         public Formula()
             : base()

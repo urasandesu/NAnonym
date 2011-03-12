@@ -34,18 +34,30 @@ using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class EndFormula : Formula
+    public partial class EndFormula:Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            NodeType = NodeType.End;
+			NodeType = NodeType.End;
+            Block = default(BlockFormula);
         }
 
+        public const string NameOfBlock = "Block";
+        BlockFormula block;
+        public BlockFormula Block 
+        { 
+            get { return block; } 
+            set 
+            {
+                SetFormula(NameOfBlock, value, ref block);
+            }
+        }
 
 
         public override void Accept(IFormulaVisitor visitor)
@@ -56,6 +68,7 @@ namespace Urasandesu.NAnonym.Formulas
 
         protected override void PinCore()
         {
+            Formula.Pin(Block);
             base.PinCore();
         }
 
@@ -63,6 +76,18 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfBlock);
+            sb.Append("\": ");
+            if (Block == null)
+            {
+                sb.Append("null");
+            }
+            else
+            {
+                Block.AppendWithBracketTo(sb);
+            }
         }
     }
 }

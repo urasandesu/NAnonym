@@ -47,6 +47,21 @@
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Right", TypeName = "Formula", Default = "default(Formula)" });
     fg.Templates.Add(ft.TypeName, ft);
 
+    // ArithmeticBinaryFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "BinaryFormula";
+    ft.TypeName = "ArithmeticBinaryFormula";
+    ft.IsAbstract = true;
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // LogicalBinaryFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "BinaryFormula";
+    ft.TypeName = "LogicalBinaryFormula";
+    ft.IsAbstract = true;
+	ft.TypeDeclaration = "typeof(bool).ToTypeDecl()";
+    fg.Templates.Add(ft.TypeName, ft);
+
     // AssignFormula
     ft = new FormulaTemplate();
     ft.BaseTypeName = "BinaryFormula";
@@ -56,44 +71,51 @@
 
     // NotEqualFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "LogicalBinaryFormula";
     ft.TypeName = "NotEqualFormula";
     ft.NodeType = NodeType.NotEqual;
     fg.Templates.Add(ft.TypeName, ft);
 
     // AddFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "ArithmeticBinaryFormula";
     ft.TypeName = "AddFormula";
     ft.NodeType = NodeType.Add;
     fg.Templates.Add(ft.TypeName, ft);
 
     // MultiplyFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "ArithmeticBinaryFormula";
     ft.TypeName = "MultiplyFormula";
     ft.NodeType = NodeType.Multiply;
     fg.Templates.Add(ft.TypeName, ft);
 
     // AndAlsoFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "LogicalBinaryFormula";
     ft.TypeName = "AndAlsoFormula";
     ft.NodeType = NodeType.AndAlso;
     fg.Templates.Add(ft.TypeName, ft);
 
     // EqualFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "LogicalBinaryFormula";
     ft.TypeName = "EqualFormula";
     ft.NodeType = NodeType.Equal;
     fg.Templates.Add(ft.TypeName, ft);
 
     // ExclusiveOrFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "ArithmeticBinaryFormula";
     ft.TypeName = "ExclusiveOrFormula";
     ft.NodeType = NodeType.ExclusiveOr;
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // LessThanFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "LogicalBinaryFormula";
+    ft.TypeName = "LessThanFormula";
+    ft.NodeType = NodeType.LessThan;
     fg.Templates.Add(ft.TypeName, ft);
 
     // BlockFormula
@@ -101,11 +123,10 @@
     ft.BaseTypeName = "Formula";
     ft.TypeName = "BlockFormula";
     ft.NodeType = NodeType.Block;
-    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "ParentBlock", TypeName = "BlockFormula", Default = "default(BlockFormula)", ProhibitsToString = true, ProhibitsNotification = true, ProhibitsDefaultAccepting = true });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "ParentBlock", TypeName = "BlockFormula", Default = "default(BlockFormula)", ProhibitsToString = true, ProhibitsDefaultAccepting = true, AsValue = true });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "ChildBlocks", TypeName = "FormulaAsValueCollection<BlockFormula>", Default = "new FormulaAsValueCollection<BlockFormula>()", ProhibitsToString = true, ProhibitsDefaultAccepting = true, AsValue = true });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Locals", TypeName = "FormulaAsValueCollection<LocalFormula>", Default = "new FormulaAsValueCollection<LocalFormula>()", ProhibitsDefaultAccepting = true, AsValue = true });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Formulas", TypeName = "FormulaCollection<Formula>", Default = "new FormulaCollection<Formula>()" });
-    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Result", TypeName = "Formula", Default = "default(Formula)", ProhibitsDefaultAccepting = true, AsValue = true });
     fg.Templates.Add(ft.TypeName, ft);
 
     // ConstantFormula
@@ -118,7 +139,6 @@
 
     // Formula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "INotifyPropertyChanged";
     ft.TypeName = "Formula";
     ft.IsAbstract = true;
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Referrer", TypeName = "Formula", Default = "default(Formula)", ProhibitsToString = true, ProhibitsDefaultAccepting = true });
@@ -184,6 +204,7 @@
     ft.TypeName = "ReturnFormula";
     ft.NodeType = NodeType.Return;
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Body", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Block", TypeName = "BlockFormula", Default = "default(BlockFormula)", ProhibitsToString = true, ProhibitsDefaultAccepting = true, AsValue = true });
     fg.Templates.Add(ft.TypeName, ft);
 
     // CallFormula
@@ -278,6 +299,7 @@
     ft.BaseTypeName = "Formula";
     ft.TypeName = "EndFormula";
     ft.NodeType = NodeType.End;
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Block", TypeName = "BlockFormula", Default = "default(BlockFormula)" });
     fg.Templates.Add(ft.TypeName, ft);
 
 	fg.Run();

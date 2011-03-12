@@ -85,6 +85,7 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.ExclusiveOr:
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
+                case ExpressionType.LessThan:
                     EvalBinary((BinaryExpression)exp, state);
                     return;
                 case ExpressionType.GreaterThan:
@@ -96,8 +97,6 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.Lambda:
                     throw new NotImplementedException();
                 case ExpressionType.LeftShift:
-                    throw new NotImplementedException();
-                case ExpressionType.LessThan:
                     throw new NotImplementedException();
                 case ExpressionType.LessThanOrEqual:
                     throw new NotImplementedException();
@@ -228,9 +227,22 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.NotEqual:
                     EvalNotEqual(exp, state);
                     return;
+                case ExpressionType.LessThan:
+                    EvalLessThan(exp, state);
+                    return;
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static void EvalLessThan(BinaryExpression exp, ExpressionToFormulaState state)
+        {
+            EvalExpression(exp.Left, state);
+            var left = state.CurrentBlock.Formulas.Pop();
+            EvalExpression(exp.Right, state);
+            var right = state.CurrentBlock.Formulas.Pop();
+            var lessThan = new LessThanFormula() { Left = left, Right = right };
+            state.CurrentBlock.Formulas.Push(lessThan);
         }
 
         public static void EvalExclusiveOr(BinaryExpression exp, ExpressionToFormulaState state)
@@ -456,8 +468,9 @@ namespace Urasandesu.NAnonym.Formulas
 
         public static void EvalEnd(MethodCallExpression exp, ExpressionToFormulaState state)
         {
-            var end = new EndFormula() { TypeDeclaration = state.CurrentBlock.TypeDeclaration };
-            state.CurrentBlock.Formulas.Push(end);
+            var end = new EndFormula();
+            end.Block = state.CurrentBlock;
+            state.EntryPoint = end;
             state.IsEnded = true;
         }
 
@@ -644,7 +657,9 @@ namespace Urasandesu.NAnonym.Formulas
         {
             EvalExpression(exp.Arguments[0], state);
             var body = state.CurrentBlock.Formulas.Pop();
-            state.CurrentBlock.Formulas.Push(new ReturnFormula(body));
+            var @return = new ReturnFormula(body);
+            @return.Block = state.CurrentBlock;
+            state.CurrentBlock.Formulas.Push(@return);
         }
 
         public static void EvalAllocAs(MethodCallExpression exp, ExpressionToFormulaState state)
