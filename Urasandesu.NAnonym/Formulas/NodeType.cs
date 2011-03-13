@@ -95,6 +95,7 @@ namespace Urasandesu.NAnonym.Formulas
         ReflectiveField,
         Local,
         BaseNew,
+        Argument,
     }
 }
 

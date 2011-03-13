@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class BaseNewFormula:NewFormula
+    public partial class BaseNewFormula : NewFormula
     {
 
         protected override void InitializeForCodeGeneration()

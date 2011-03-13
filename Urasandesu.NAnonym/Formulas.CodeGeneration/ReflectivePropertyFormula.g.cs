@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ReflectivePropertyFormula:PropertyFormula
+    public partial class ReflectivePropertyFormula : PropertyFormula
     {
 
         protected override void InitializeForCodeGeneration()

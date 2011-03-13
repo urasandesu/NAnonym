@@ -46,86 +46,255 @@ namespace Urasandesu.NAnonym.Formulas
         }
         public virtual void Visit(BinaryFormula formula)
         {
-            visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Left != null) VisitBinaryLeft(formula.Left);
-            if (formula.Right != null) VisitBinaryRight(formula.Right);
+            visitor.Visit(formula);
         }
-        public virtual void VisitBinaryLeft(Formula formula)
-		{
-			visitor.VisitBinaryLeft(formula);
-			formula.Accept(this);
-		}
-        public virtual void VisitBinaryRight(Formula formula)
-		{
-			visitor.VisitBinaryRight(formula);
-			formula.Accept(this);
-		}
         public virtual void Visit(ArithmeticBinaryFormula formula)
         {
-            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
+            visitor.Visit(formula);
         }
         public virtual void Visit(LogicalBinaryFormula formula)
         {
-            visitor.Visit(formula);
             Visit((BinaryFormula)formula);
+            visitor.Visit(formula);
         }
         public virtual void Visit(AssignFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitAssignRight(formula, formula.Right);
+            if (formula.Left != null) VisitAssignLeft(formula, formula.Left);
             Visit((BinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitAssignRight(AssignFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(AssignFormula)) return;
+			VisitAssignRightCore(formula, right);
+			visitor.VisitAssignRight(formula, right);
+		}
+        protected virtual void VisitAssignRightCore(AssignFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitAssignLeft(AssignFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(AssignFormula)) return;
+			VisitAssignLeftCore(formula, left);
+			visitor.VisitAssignLeft(formula, left);
+		}
+        protected virtual void VisitAssignLeftCore(AssignFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(NotEqualFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitNotEqualRight(formula, formula.Right);
+            if (formula.Left != null) VisitNotEqualLeft(formula, formula.Left);
             Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitNotEqualRight(NotEqualFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(NotEqualFormula)) return;
+			VisitNotEqualRightCore(formula, right);
+			visitor.VisitNotEqualRight(formula, right);
+		}
+        protected virtual void VisitNotEqualRightCore(NotEqualFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitNotEqualLeft(NotEqualFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(NotEqualFormula)) return;
+			VisitNotEqualLeftCore(formula, left);
+			visitor.VisitNotEqualLeft(formula, left);
+		}
+        protected virtual void VisitNotEqualLeftCore(NotEqualFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(AddFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitAddRight(formula, formula.Right);
+            if (formula.Left != null) VisitAddLeft(formula, formula.Left);
             Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitAddRight(AddFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(AddFormula)) return;
+			VisitAddRightCore(formula, right);
+			visitor.VisitAddRight(formula, right);
+		}
+        protected virtual void VisitAddRightCore(AddFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitAddLeft(AddFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(AddFormula)) return;
+			VisitAddLeftCore(formula, left);
+			visitor.VisitAddLeft(formula, left);
+		}
+        protected virtual void VisitAddLeftCore(AddFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(MultiplyFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitMultiplyRight(formula, formula.Right);
+            if (formula.Left != null) VisitMultiplyLeft(formula, formula.Left);
             Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitMultiplyRight(MultiplyFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(MultiplyFormula)) return;
+			VisitMultiplyRightCore(formula, right);
+			visitor.VisitMultiplyRight(formula, right);
+		}
+        protected virtual void VisitMultiplyRightCore(MultiplyFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitMultiplyLeft(MultiplyFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(MultiplyFormula)) return;
+			VisitMultiplyLeftCore(formula, left);
+			visitor.VisitMultiplyLeft(formula, left);
+		}
+        protected virtual void VisitMultiplyLeftCore(MultiplyFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(AndAlsoFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitAndAlsoRight(formula, formula.Right);
+            if (formula.Left != null) VisitAndAlsoLeft(formula, formula.Left);
             Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(AndAlsoFormula)) return;
+			VisitAndAlsoRightCore(formula, right);
+			visitor.VisitAndAlsoRight(formula, right);
+		}
+        protected virtual void VisitAndAlsoRightCore(AndAlsoFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitAndAlsoLeft(AndAlsoFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(AndAlsoFormula)) return;
+			VisitAndAlsoLeftCore(formula, left);
+			visitor.VisitAndAlsoLeft(formula, left);
+		}
+        protected virtual void VisitAndAlsoLeftCore(AndAlsoFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(EqualFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitEqualRight(formula, formula.Right);
+            if (formula.Left != null) VisitEqualLeft(formula, formula.Left);
             Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitEqualRight(EqualFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(EqualFormula)) return;
+			VisitEqualRightCore(formula, right);
+			visitor.VisitEqualRight(formula, right);
+		}
+        protected virtual void VisitEqualRightCore(EqualFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitEqualLeft(EqualFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(EqualFormula)) return;
+			VisitEqualLeftCore(formula, left);
+			visitor.VisitEqualLeft(formula, left);
+		}
+        protected virtual void VisitEqualLeftCore(EqualFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(ExclusiveOrFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitExclusiveOrRight(formula, formula.Right);
+            if (formula.Left != null) VisitExclusiveOrLeft(formula, formula.Left);
             Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(ExclusiveOrFormula)) return;
+			VisitExclusiveOrRightCore(formula, right);
+			visitor.VisitExclusiveOrRight(formula, right);
+		}
+        protected virtual void VisitExclusiveOrRightCore(ExclusiveOrFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitExclusiveOrLeft(ExclusiveOrFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(ExclusiveOrFormula)) return;
+			VisitExclusiveOrLeftCore(formula, left);
+			visitor.VisitExclusiveOrLeft(formula, left);
+		}
+        protected virtual void VisitExclusiveOrLeftCore(ExclusiveOrFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(LessThanFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Right != null) VisitLessThanRight(formula, formula.Right);
+            if (formula.Left != null) VisitLessThanLeft(formula, formula.Left);
             Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitLessThanRight(LessThanFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(LessThanFormula)) return;
+			VisitLessThanRightCore(formula, right);
+			visitor.VisitLessThanRight(formula, right);
+		}
+        protected virtual void VisitLessThanRightCore(LessThanFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void VisitLessThanLeft(LessThanFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(LessThanFormula)) return;
+			VisitLessThanLeftCore(formula, left);
+			visitor.VisitLessThanLeft(formula, left);
+		}
+        protected virtual void VisitLessThanLeftCore(LessThanFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void Visit(BlockFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Formulas != null) VisitBlockFormulas(formula, formula.Formulas);
             Visit((Formula)formula);
-            if (formula.Formulas != null) VisitBlockFormulas(formula.Formulas);
+            visitor.Visit(formula);
         }
-        public virtual void VisitBlockFormulas(FormulaCollection<Formula> formula)
+        public virtual void VisitBlockFormulas(BlockFormula formula, FormulaCollection<Formula> formulas)
 		{
-			visitor.VisitBlockFormulas(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(BlockFormula)) return;
+			VisitBlockFormulasCore(formula, formulas);
+			visitor.VisitBlockFormulas(formula, formulas);
+		}
+        protected virtual void VisitBlockFormulasCore(BlockFormula formula, FormulaCollection<Formula> formulas)
+		{
+			formulas.Accept(this);
 		}
         public virtual void Visit(ConstantFormula formula)
         {
-            visitor.Visit(formula);
             Visit((Formula)formula);
+            visitor.Visit(formula);
         }
         public virtual void Visit(Formula formula)
         {
@@ -133,170 +302,323 @@ namespace Urasandesu.NAnonym.Formulas
         }
         public virtual void Visit(VariableFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Resolved != null) VisitVariableResolved(formula, formula.Resolved);
             Visit((Formula)formula);
-            if (formula.Resolved != null) VisitVariableResolved(formula.Resolved);
+            visitor.Visit(formula);
         }
-        public virtual void VisitVariableResolved(Formula formula)
+        public virtual void VisitVariableResolved(VariableFormula formula, Formula resolved)
 		{
-			visitor.VisitVariableResolved(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(VariableFormula)) return;
+			VisitVariableResolvedCore(formula, resolved);
+			visitor.VisitVariableResolved(formula, resolved);
+		}
+        protected virtual void VisitVariableResolvedCore(VariableFormula formula, Formula resolved)
+		{
+			resolved.Accept(this);
 		}
         public virtual void Visit(LocalFormula formula)
         {
-            visitor.Visit(formula);
             Visit((Formula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void Visit(ArgumentFormula formula)
+        {
+            Visit((Formula)formula);
+            visitor.Visit(formula);
         }
         public virtual void Visit(UnaryFormula formula)
         {
-            visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Operand != null) VisitUnaryOperand(formula.Operand);
+            visitor.Visit(formula);
         }
-        public virtual void VisitUnaryOperand(Formula formula)
-		{
-			visitor.VisitUnaryOperand(formula);
-			formula.Accept(this);
-		}
         public virtual void Visit(ConvertFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Operand != null) VisitConvertOperand(formula, formula.Operand);
             Visit((UnaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitConvertOperand(ConvertFormula formula, Formula operand)
+		{
+		    if (formula.GetType() != typeof(ConvertFormula)) return;
+			VisitConvertOperandCore(formula, operand);
+			visitor.VisitConvertOperand(formula, operand);
+		}
+        protected virtual void VisitConvertOperandCore(ConvertFormula formula, Formula operand)
+		{
+			operand.Accept(this);
+		}
         public virtual void Visit(TypeAsFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Operand != null) VisitTypeAsOperand(formula, formula.Operand);
             Visit((UnaryFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitTypeAsOperand(TypeAsFormula formula, Formula operand)
+		{
+		    if (formula.GetType() != typeof(TypeAsFormula)) return;
+			VisitTypeAsOperandCore(formula, operand);
+			visitor.VisitTypeAsOperand(formula, operand);
+		}
+        protected virtual void VisitTypeAsOperandCore(TypeAsFormula formula, Formula operand)
+		{
+			operand.Accept(this);
+		}
         public virtual void Visit(ConditionalFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Test != null) VisitConditionalTest(formula, formula.Test);
+            if (formula.IfTrue != null) VisitConditionalIfTrue(formula, formula.IfTrue);
+            if (formula.IfFalse != null) VisitConditionalIfFalse(formula, formula.IfFalse);
             Visit((Formula)formula);
-            if (formula.Test != null) VisitConditionalTest(formula.Test);
-            if (formula.IfTrue != null) VisitConditionalIfTrue(formula.IfTrue);
-            if (formula.IfFalse != null) VisitConditionalIfFalse(formula.IfFalse);
+            visitor.Visit(formula);
         }
-        public virtual void VisitConditionalTest(Formula formula)
+        public virtual void VisitConditionalTest(ConditionalFormula formula, Formula test)
 		{
-			visitor.VisitConditionalTest(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(ConditionalFormula)) return;
+			VisitConditionalTestCore(formula, test);
+			visitor.VisitConditionalTest(formula, test);
 		}
-        public virtual void VisitConditionalIfTrue(Formula formula)
+        protected virtual void VisitConditionalTestCore(ConditionalFormula formula, Formula test)
 		{
-			visitor.VisitConditionalIfTrue(formula);
-			formula.Accept(this);
+			test.Accept(this);
 		}
-        public virtual void VisitConditionalIfFalse(Formula formula)
+        public virtual void VisitConditionalIfTrue(ConditionalFormula formula, Formula ifTrue)
 		{
-			visitor.VisitConditionalIfFalse(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(ConditionalFormula)) return;
+			VisitConditionalIfTrueCore(formula, ifTrue);
+			visitor.VisitConditionalIfTrue(formula, ifTrue);
+		}
+        protected virtual void VisitConditionalIfTrueCore(ConditionalFormula formula, Formula ifTrue)
+		{
+			ifTrue.Accept(this);
+		}
+        public virtual void VisitConditionalIfFalse(ConditionalFormula formula, Formula ifFalse)
+		{
+		    if (formula.GetType() != typeof(ConditionalFormula)) return;
+			VisitConditionalIfFalseCore(formula, ifFalse);
+			visitor.VisitConditionalIfFalse(formula, ifFalse);
+		}
+        protected virtual void VisitConditionalIfFalseCore(ConditionalFormula formula, Formula ifFalse)
+		{
+			ifFalse.Accept(this);
 		}
         public virtual void Visit(ReturnFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Body != null) VisitReturnBody(formula, formula.Body);
             Visit((Formula)formula);
-            if (formula.Body != null) VisitReturnBody(formula.Body);
+            visitor.Visit(formula);
         }
-        public virtual void VisitReturnBody(Formula formula)
+        public virtual void VisitReturnBody(ReturnFormula formula, Formula body)
 		{
-			visitor.VisitReturnBody(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(ReturnFormula)) return;
+			VisitReturnBodyCore(formula, body);
+			visitor.VisitReturnBody(formula, body);
+		}
+        protected virtual void VisitReturnBodyCore(ReturnFormula formula, Formula body)
+		{
+			body.Accept(this);
 		}
         public virtual void Visit(CallFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitCallInstance(formula, formula.Instance);
+            if (formula.Arguments != null) VisitCallArguments(formula, formula.Arguments);
             Visit((Formula)formula);
-            if (formula.Instance != null) VisitCallInstance(formula.Instance);
-            if (formula.Arguments != null) VisitCallArguments(formula.Arguments);
+            visitor.Visit(formula);
         }
-        public virtual void VisitCallInstance(Formula formula)
+        public virtual void VisitCallInstance(CallFormula formula, Formula instance)
 		{
-			visitor.VisitCallInstance(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(CallFormula)) return;
+			VisitCallInstanceCore(formula, instance);
+			visitor.VisitCallInstance(formula, instance);
 		}
-        public virtual void VisitCallArguments(FormulaCollection<Formula> formula)
+        protected virtual void VisitCallInstanceCore(CallFormula formula, Formula instance)
 		{
-			visitor.VisitCallArguments(formula);
-			formula.Accept(this);
+			instance.Accept(this);
+		}
+        public virtual void VisitCallArguments(CallFormula formula, FormulaCollection<Formula> arguments)
+		{
+		    if (formula.GetType() != typeof(CallFormula)) return;
+			VisitCallArgumentsCore(formula, arguments);
+			visitor.VisitCallArguments(formula, arguments);
+		}
+        protected virtual void VisitCallArgumentsCore(CallFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
 		}
         public virtual void Visit(ReflectiveCallFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitReflectiveCallInstance(formula, formula.Instance);
+            if (formula.Arguments != null) VisitReflectiveCallArguments(formula, formula.Arguments);
             Visit((CallFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitReflectiveCallInstance(ReflectiveCallFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(ReflectiveCallFormula)) return;
+			VisitReflectiveCallInstanceCore(formula, instance);
+			visitor.VisitReflectiveCallInstance(formula, instance);
+		}
+        protected virtual void VisitReflectiveCallInstanceCore(ReflectiveCallFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
+        public virtual void VisitReflectiveCallArguments(ReflectiveCallFormula formula, FormulaCollection<Formula> arguments)
+		{
+		    if (formula.GetType() != typeof(ReflectiveCallFormula)) return;
+			VisitReflectiveCallArgumentsCore(formula, arguments);
+			visitor.VisitReflectiveCallArguments(formula, arguments);
+		}
+        protected virtual void VisitReflectiveCallArgumentsCore(ReflectiveCallFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
+		}
         public virtual void Visit(NewArrayInitFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Formulas != null) VisitNewArrayInitFormulas(formula, formula.Formulas);
             Visit((Formula)formula);
-            if (formula.Formulas != null) VisitNewArrayInitFormulas(formula.Formulas);
+            visitor.Visit(formula);
         }
-        public virtual void VisitNewArrayInitFormulas(FormulaCollection<Formula> formula)
+        public virtual void VisitNewArrayInitFormulas(NewArrayInitFormula formula, FormulaCollection<Formula> formulas)
 		{
-			visitor.VisitNewArrayInitFormulas(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(NewArrayInitFormula)) return;
+			VisitNewArrayInitFormulasCore(formula, formulas);
+			visitor.VisitNewArrayInitFormulas(formula, formulas);
+		}
+        protected virtual void VisitNewArrayInitFormulasCore(NewArrayInitFormula formula, FormulaCollection<Formula> formulas)
+		{
+			formulas.Accept(this);
 		}
         public virtual void Visit(NewFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Arguments != null) VisitNewArguments(formula, formula.Arguments);
             Visit((Formula)formula);
-            if (formula.Arguments != null) VisitNewArguments(formula.Arguments);
+            visitor.Visit(formula);
         }
-        public virtual void VisitNewArguments(FormulaCollection<Formula> formula)
+        public virtual void VisitNewArguments(NewFormula formula, FormulaCollection<Formula> arguments)
 		{
-			visitor.VisitNewArguments(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(NewFormula)) return;
+			VisitNewArgumentsCore(formula, arguments);
+			visitor.VisitNewArguments(formula, arguments);
+		}
+        protected virtual void VisitNewArgumentsCore(NewFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
 		}
         public virtual void Visit(BaseNewFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Arguments != null) VisitBaseNewArguments(formula, formula.Arguments);
             Visit((NewFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitBaseNewArguments(BaseNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+		    if (formula.GetType() != typeof(BaseNewFormula)) return;
+			VisitBaseNewArgumentsCore(formula, arguments);
+			visitor.VisitBaseNewArguments(formula, arguments);
+		}
+        protected virtual void VisitBaseNewArgumentsCore(BaseNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
+		}
         public virtual void Visit(ReflectiveNewFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Arguments != null) VisitReflectiveNewArguments(formula, formula.Arguments);
             Visit((NewFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitReflectiveNewArguments(ReflectiveNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+		    if (formula.GetType() != typeof(ReflectiveNewFormula)) return;
+			VisitReflectiveNewArgumentsCore(formula, arguments);
+			visitor.VisitReflectiveNewArguments(formula, arguments);
+		}
+        protected virtual void VisitReflectiveNewArgumentsCore(ReflectiveNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
+		}
         public virtual void Visit(MemberFormula formula)
         {
-            visitor.Visit(formula);
             Visit((Formula)formula);
-            if (formula.Instance != null) VisitMemberInstance(formula.Instance);
+            visitor.Visit(formula);
         }
-        public virtual void VisitMemberInstance(Formula formula)
-		{
-			visitor.VisitMemberInstance(formula);
-			formula.Accept(this);
-		}
         public virtual void Visit(PropertyFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitPropertyInstance(formula, formula.Instance);
             Visit((MemberFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitPropertyInstance(PropertyFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(PropertyFormula)) return;
+			VisitPropertyInstanceCore(formula, instance);
+			visitor.VisitPropertyInstance(formula, instance);
+		}
+        protected virtual void VisitPropertyInstanceCore(PropertyFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
         public virtual void Visit(ReflectivePropertyFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitReflectivePropertyInstance(formula, formula.Instance);
             Visit((PropertyFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitReflectivePropertyInstance(ReflectivePropertyFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(ReflectivePropertyFormula)) return;
+			VisitReflectivePropertyInstanceCore(formula, instance);
+			visitor.VisitReflectivePropertyInstance(formula, instance);
+		}
+        protected virtual void VisitReflectivePropertyInstanceCore(ReflectivePropertyFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
         public virtual void Visit(FieldFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitFieldInstance(formula, formula.Instance);
             Visit((MemberFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitFieldInstance(FieldFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(FieldFormula)) return;
+			VisitFieldInstanceCore(formula, instance);
+			visitor.VisitFieldInstance(formula, instance);
+		}
+        protected virtual void VisitFieldInstanceCore(FieldFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
         public virtual void Visit(ReflectiveFieldFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.Instance != null) VisitReflectiveFieldInstance(formula, formula.Instance);
             Visit((FieldFormula)formula);
+            visitor.Visit(formula);
         }
+        public virtual void VisitReflectiveFieldInstance(ReflectiveFieldFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(ReflectiveFieldFormula)) return;
+			VisitReflectiveFieldInstanceCore(formula, instance);
+			visitor.VisitReflectiveFieldInstance(formula, instance);
+		}
+        protected virtual void VisitReflectiveFieldInstanceCore(ReflectiveFieldFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
         public virtual void Visit(EndFormula formula)
         {
-            visitor.Visit(formula);
+            if (formula.EntryBlock != null) VisitEndEntryBlock(formula, formula.EntryBlock);
             Visit((Formula)formula);
-            if (formula.Block != null) VisitEndBlock(formula.Block);
+            visitor.Visit(formula);
         }
-        public virtual void VisitEndBlock(BlockFormula formula)
+        public virtual void VisitEndEntryBlock(EndFormula formula, BlockFormula entryBlock)
 		{
-			visitor.VisitEndBlock(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(EndFormula)) return;
+			VisitEndEntryBlockCore(formula, entryBlock);
+			visitor.VisitEndEntryBlock(formula, entryBlock);
+		}
+        protected virtual void VisitEndEntryBlockCore(EndFormula formula, BlockFormula entryBlock)
+		{
+			entryBlock.Accept(this);
 		}
     }
 }

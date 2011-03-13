@@ -92,6 +92,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             methodBaseGen.ExpressBody2(bodyExpression);
             return this;
         }
+
+
+        public Urasandesu.NAnonym.ILTools.IMethodBaseGenerator ExpressBody2(Action<Urasandesu.NAnonym.ILTools.ReflectiveMethodDesigner2> bodyExpression, Urasandesu.NAnonym.ILTools.ITypeDeclaration returnType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

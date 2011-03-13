@@ -305,21 +305,6 @@ namespace Urasandesu.NAnonym.Formulas
             state.CurrentBlock.Formulas.Push(notEqual);
         }
 
-        //public static IEnumerable<VariableFormula> GetDefinedVariables(BlockFormula currentBlock)
-        //{
-        //    if (currentBlock == null) yield break;
-
-        //    foreach (var variable in currentBlock.Variables)
-        //    {
-        //        yield return variable;
-        //    }
-
-        //    foreach (var variable in GetDefinedVariables(currentBlock.ParentBlock))
-        //    {
-        //        yield return variable;
-        //    }
-        //}
-
         public static void EvalMember(MemberExpression exp, ExpressionToFormulaState state)
         {
             if (exp.Expression == null || exp.Expression.NodeType == ExpressionType.Constant)
@@ -327,7 +312,9 @@ namespace Urasandesu.NAnonym.Formulas
                 var fi = default(FieldInfo);
                 if ((fi = exp.Member as FieldInfo) != null)
                 {
-                    state.CurrentBlock.Formulas.Push(new VariableFormula(fi.Name, fi.FieldType));
+                    var variable = new VariableFormula(fi.Name, fi.FieldType);
+                    variable.Block = state.CurrentBlock;
+                    state.CurrentBlock.Formulas.Push(variable);
                 }
                 else
                 {
@@ -429,6 +416,7 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordConstMemberAttribute), false)) EvalConstMember(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordEndAttribute), false)) EvalEnd(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordBaseAttribute), false)) EvalBase(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordLoadArgumentAttribute), false)) EvalLoadArgument(exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -459,17 +447,44 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method == FieldInfoMixin.GetValue_object) EvalFieldInfoGetValue_object(exp, state);
                     else
                     {
-                        throw new NotImplementedException();
-                        //EvalInstanceMethodCall(exp, state);
+                        EvalInstanceMethodCall(exp, state);
                     }
                 }
             }
         }
 
+        public static void EvalLoadArgument(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            exp.Arguments[0].ConvertTo(state.InlineValueState);
+            int position = (int)state.InlineValueState.Result;
+            var variable = new VariableFormula(position, exp.Method.ReturnType);
+            variable.Block = state.CurrentBlock;
+            var argument = new ArgumentFormula(position);
+            argument.TypeDeclaration = variable.TypeDeclaration;
+            variable.Resolved = argument;
+            state.CurrentBlock.Formulas.Push(variable);
+        }
+
+        public static void EvalInstanceMethodCall(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            var instance = default(Formula);
+            if (exp.Object != null)
+            {
+                EvalExpression(exp.Object, state);
+                instance = state.CurrentBlock.Formulas.Pop();
+            }
+            EvalArguments(exp.Arguments, state);
+            var arguments = new Formula[state.Arguments.Count];
+            state.Arguments.MoveTo(arguments);
+            state.CurrentBlock.Formulas.Push(new CallFormula(instance, exp.Method, arguments));
+        }
+
         public static void EvalEnd(MethodCallExpression exp, ExpressionToFormulaState state)
         {
             var end = new EndFormula();
-            end.Block = state.CurrentBlock;
+            end.EntryBlock = state.CurrentBlock;
+            state.Returns.AddRangeTo(end.Returns);
+            end.Returns.ForEach(_ => _.End = end);
             state.EntryPoint = end;
             state.IsEnded = true;
         }
@@ -658,8 +673,8 @@ namespace Urasandesu.NAnonym.Formulas
             EvalExpression(exp.Arguments[0], state);
             var body = state.CurrentBlock.Formulas.Pop();
             var @return = new ReturnFormula(body);
-            @return.Block = state.CurrentBlock;
             state.CurrentBlock.Formulas.Push(@return);
+            state.Returns.Add(@return);
         }
 
         public static void EvalAllocAs(MethodCallExpression exp, ExpressionToFormulaState state)
@@ -677,6 +692,7 @@ namespace Urasandesu.NAnonym.Formulas
             {
                 var fi = (FieldInfo)((MemberExpression)exp.Arguments[0]).Member;
                 var variable = new VariableFormula(fi.Name, fi.FieldType);
+                variable.Block = state.CurrentBlock;
                 state.CurrentBlock.Formulas.Push(variable);
             }
             else

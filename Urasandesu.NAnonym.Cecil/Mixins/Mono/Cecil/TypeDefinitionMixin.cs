@@ -542,6 +542,11 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             });
             return ctorDef;
         }
+
+        public static bool IsAssignableFrom(this TypeDefinition source, TypeDefinition obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

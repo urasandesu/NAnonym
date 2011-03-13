@@ -37,15 +37,15 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Formulas
 {
     public class TypeResolver : FormulaAdapter
     {
         static readonly ITypeDeclaration VoidType = typeof(void).ToTypeDecl();
         static readonly ITypeDeclaration BoolType = typeof(bool).ToTypeDecl();
         readonly bool isReturnTypeVoid;
-        BlockFormula entryPoint;
         ITypeDeclaration returnType;
         
         public TypeResolver(IFormulaVisitor visitor, ITypeDeclaration returnType)
@@ -70,13 +70,20 @@ namespace Urasandesu.NAnonym.ILTools
         public override void Visit(AssignFormula formula)
         {
             base.Visit(formula);
-            formula.TypeDeclaration = formula.Left.TypeDeclaration;
+            if (formula.Referrer.Referrer.NodeType == NodeType.Block)
+            {
+                formula.TypeDeclaration = VoidType;
+            }
+            else
+            {
+                formula.TypeDeclaration = formula.Left.TypeDeclaration;
+            }
         }
 
         public override void Visit(BlockFormula formula)
         {
             base.Visit(formula);
-            formula.TypeDeclaration = formula.Result.TypeDeclaration;
+            formula.TypeDeclaration = formula.Result == null ? VoidType : formula.Result.TypeDeclaration;
         }
 
         public override void Visit(ConditionalFormula formula)
@@ -84,13 +91,21 @@ namespace Urasandesu.NAnonym.ILTools
             base.Visit(formula);
             if (formula.IfTrue != null && formula.IfFalse != null)
             {
-                if (!formula.IfTrue.TypeDeclaration.Equals(formula.IfFalse.TypeDeclaration))
+                if (!formula.IfTrue.TypeDeclaration.Equals(VoidType) && 
+                    !formula.IfFalse.TypeDeclaration.Equals(VoidType))
                 {
-                    throw new ReturnCheckException(string.Format(
-                        "The IfTrue block type \"{0}\" is incompatible to IfFalse block type \"{1}\"", 
-                        formula.IfTrue.TypeDeclaration, formula.IfFalse.TypeDeclaration));
+                    if (!formula.IfTrue.TypeDeclaration.NullableEquals(formula.IfFalse.TypeDeclaration))
+                    {
+                        throw new TypeCheckException(string.Format(
+                            "The IfTrue return type, \"{0}\" is incompatible to IfFalse return type, \"{1}\".",
+                            formula.IfTrue.TypeDeclaration, formula.IfFalse.TypeDeclaration));
+                    }
+                    formula.TypeDeclaration = formula.IfTrue.TypeDeclaration;
                 }
-                formula.TypeDeclaration = formula.IfTrue.TypeDeclaration;
+                else
+                {
+                    formula.TypeDeclaration = VoidType;
+                }
             }
             else if (formula.IfTrue != null)
             {
@@ -130,39 +145,32 @@ namespace Urasandesu.NAnonym.ILTools
         {
             base.Visit(formula);
             formula.TypeDeclaration = formula.Body == null ? null : formula.Body.TypeDeclaration;
+            if (isReturnTypeVoid)
+            {
+                if (!formula.TypeDeclaration.Equals(VoidType))
+                {
+                    throw new TypeCheckException(string.Format(
+                        "This method doesn't have return type but it contains return type, \"{0}\".", formula.TypeDeclaration));
+                }
+            }
         }
 
         public override void Visit(EndFormula formula)
         {
             base.Visit(formula);
-            formula.TypeDeclaration = formula.Block.TypeDeclaration;
+            formula.TypeDeclaration = formula.EntryBlock.TypeDeclaration;
+            if (!isReturnTypeVoid)
+            {
+                if (formula.TypeDeclaration.Equals(VoidType))
+                {
+                    throw new TypeCheckException("The method has path that doesn't return value.");
+                }
+                else if (!returnType.IsAssignableFrom(formula.TypeDeclaration))
+                {
+                    throw new TypeCheckException(string.Format(
+                        "The return type, \"{0}\" can't convert to \"{1}\".", formula.TypeDeclaration, returnType));
+                }
+            }
         }
-
-        //public override void Visit(BlockFormula formula)
-        //{
-        //    if (entryPoint == null)
-        //    {
-        //        entryPoint = formula;
-        //        if (!isReturnTypeVoid && !returnType.IsAssignableFrom(entryPoint.TypeDeclaration))
-        //        {
-        //            throw new ReturnCheckException(string.Format("The return type \"{0}\" can't convert to \"{1}\"", entryPoint.TypeDeclaration, returnType));
-        //        }
-        //    }
-
-        //    base.Visit(formula);
-        //}
-
-        //public override void Visit(ReturnFormula formula)
-        //{
-        //    if (isReturnTypeVoid)
-        //    {
-        //        if (!formula.TypeDeclaration.Equals(VoidType))
-        //        {
-        //            throw new ReturnCheckException(string.Format("The return type \"{0}\" can't convert to \"{1}\"", formula.TypeDeclaration, VoidType));
-        //        }
-        //    }
-
-        //    base.Visit(formula);
-        //}
     }
 }

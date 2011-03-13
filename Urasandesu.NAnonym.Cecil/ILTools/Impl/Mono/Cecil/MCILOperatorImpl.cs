@@ -49,6 +49,7 @@ using UN = Urasandesu.NAnonym;
 using UNI = Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.Mixins.Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil.Cil;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -92,6 +93,23 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         public UNI::ILocalGenerator AddLocal(string name, Type localType)
         {
             var variableDef = new VariableDefinition(name, moduleDef.Import(localType));
+            bodyDef.Variables.Add(variableDef);
+            return new MCLocalGeneratorImpl(variableDef);
+        }
+
+        public UNI::ILocalGenerator AddLocal(string name, UNI::ITypeDeclaration localType)
+        {
+            var srimpl = default(SRTypeDeclarationImpl);
+            var mcimpl = default(MCTypeDeclarationImpl);
+            var variableDef = default(VariableDefinition);
+            if ((srimpl = localType as SRTypeDeclarationImpl) != null)
+            {
+                variableDef = new VariableDefinition(name, moduleDef.Import(srimpl.type));
+            }
+            else if ((mcimpl = localType as MCTypeDeclarationImpl) != null)
+            {
+                variableDef = new VariableDefinition(name, mcimpl.typeRef);
+            }
             bodyDef.Variables.Add(variableDef);
             return new MCLocalGeneratorImpl(variableDef);
         }
@@ -222,12 +240,6 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         public void SetLabel(UNI::ILabelDeclaration loc)
         {
             il.Append(((MCLabelDeclarationImpl)loc).Target);
-        }
-
-
-        public Urasandesu.NAnonym.ILTools.ILocalGenerator AddLocal(string name, Urasandesu.NAnonym.ILTools.ITypeDeclaration localType)
-        {
-            throw new NotImplementedException();
         }
     }
 }

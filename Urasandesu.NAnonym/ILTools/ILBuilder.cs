@@ -35,6 +35,7 @@ using System.Text;
 using Urasandesu.NAnonym.Formulas;
 using System.Linq.Expressions;
 using System.Reflection;
+using Urasandesu.NAnonym.Linq;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 
@@ -45,18 +46,21 @@ namespace Urasandesu.NAnonym.ILTools
         IMethodBaseGenerator methodGen;
         IMethodBodyGenerator bodyGen;
         IILOperator il;
-        public ILBuilder(IMethodBaseGenerator methodGen)
-            : base(new FormulaNoActionVisitor())
+        public ILBuilder(IMethodBaseGenerator methodGen, ITypeDeclaration returnType)
+            : base(new NoActionVisitor())
         {
             this.methodGen = methodGen;
             bodyGen = methodGen.Body;
             il = bodyGen.ILOperator;
+
+            ReturnType = returnType;
         }
 
-        public IMethodBaseGenerator MethodGenerator { get { return methodGen; } }
+        public ITypeDeclaration ReturnType { get; private set; }
 
         public override void Visit(BaseNewFormula formula)
         {
+            base.Visit(formula);
             il.Emit(OpCodes.Ldarg_0);
             var ci = default(IConstructorDeclaration);
             if (methodGen.DeclaringType.BaseType != null)
@@ -68,7 +72,6 @@ namespace Urasandesu.NAnonym.ILTools
                 throw new NotImplementedException();
             }
             il.Emit(OpCodes.Call, ci);
-            base.Visit(formula);
         }
 
         public override void Visit(BlockFormula formula)
@@ -82,6 +85,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         public override void Visit(ConstantFormula formula)
         {
+            base.Visit(formula);
             string s = default(string);
             short? ns = default(short?);
             int? ni = default(int?);
@@ -158,19 +162,94 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public override void Visit(AddFormula formula)
+        {
             base.Visit(formula);
+            il.Emit(OpCodes.Add);
+        }
+
+        public override void Visit(MultiplyFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Mul);
         }
 
         public override void Visit(ReturnFormula formula)
         {
             base.Visit(formula);
-            il.Emit(OpCodes.Ret);
+            var label = il.AddLabel();
+            formula.Label = label;
+            il.Emit(OpCodes.Br, label);
         }
 
         public override void Visit(EndFormula formula)
         {
             base.Visit(formula);
+            formula.Returns.ForEach(_ => il.SetLabel(_.Label));
             il.Emit(OpCodes.Ret);
+        }
+
+        protected override void VisitAssignLeftCore(AssignFormula formula, Formula left)
+        {
+            if (left.NodeType == NodeType.Variable)
+            {
+                var variable = (VariableFormula)left;
+                if (variable.Resolved.NodeType == NodeType.Local)
+                {
+                    var local = (LocalFormula)variable.Resolved;
+                    il.Emit(OpCodes.Stloc, local.Local);
+                    if (!formula.TypeDeclaration.Equals(typeof(void).ToTypeDecl()))
+                    {
+                        il.Emit(OpCodes.Ldloc, local.Local);
+                    }
+                }
+                else
+                {
+                    base.VisitAssignLeftCore(formula, left);
+                }
+            }
+            else
+            {
+                base.VisitAssignLeftCore(formula, left);
+            }
+        }
+
+        public override void Visit(LocalFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Ldloc, formula.Local);
+        }
+
+        public override void Visit(ArgumentFormula formula)
+        {
+            base.Visit(formula);
+            var parameter = default(IParameterDeclaration);
+            if (methodGen.IsStatic)
+            {
+                if (-1 < formula.ArgumentPosition)
+                {
+                    parameter = methodGen.Parameters.ElementAtOrDefault(formula.ArgumentPosition);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                if (-1 < formula.ArgumentPosition)
+                {
+                    parameter = methodGen.Parameters.ElementAtOrDefault(formula.ArgumentPosition - 1);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            il.Emit(OpCodes.Ldarg, parameter);
         }
     }
 }

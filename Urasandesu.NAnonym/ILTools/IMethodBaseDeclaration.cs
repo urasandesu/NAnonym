@@ -38,6 +38,7 @@ namespace Urasandesu.NAnonym.ILTools
         IMethodBodyDeclaration Body { get; }
         ReadOnlyCollection<IParameterDeclaration> Parameters { get; }
         IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value);
+        bool IsStatic { get; }
     }
 
 }

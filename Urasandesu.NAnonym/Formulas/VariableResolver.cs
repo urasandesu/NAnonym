@@ -12,60 +12,36 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 
-        public override void Visit(AssignFormula formula)
-        {
-            if (formula.Left != null)
-            {
-                if (formula.Left.NodeType == NodeType.Variable)
-                {
-                    var variable = (VariableFormula)formula.Left;
-                    if (variable.Resolved == null)
-                    {
-                        // そもそも VariableFormula に現在の Block 記憶させちゃえば良くね？
-                        var currentBlock = GetCurrentBlock(variable);
-                        var local = GetDefinedLocals(currentBlock).FirstOrDefault(_ => _.LocalName == variable.VariableName);
-                        if (local == null)
-                        {
-                            local = new LocalFormula(variable.VariableName, variable.TypeDeclaration);
-                            currentBlock.Locals.Add(local);
-                        }
-                        variable.Resolved = local;
-                    }
-                }
-            }
-            base.Visit(formula);
-        }
-
         public override void Visit(VariableFormula formula)
         {
+            base.Visit(formula);
             if (formula.Resolved == null)
             {
-                var currentBlock = GetCurrentBlock(formula);
-                var local = GetDefinedLocals(currentBlock).FirstOrDefault(_ => _.LocalName == formula.VariableName);
-                if (local == null)
+                if (formula.Referrer.NodeType == NodeType.Assign)
                 {
-                    throw new InvalidOperationException(string.Format("The variable \"{0}\" has not defined.", formula.VariableName));
+                    var local = GetDefinedLocals(formula.Block).FirstOrDefault(_ => _.LocalName == formula.VariableName);
+                    if (local == null)
+                    {
+                        local = new LocalFormula(formula.VariableName, formula.TypeDeclaration);
+                        formula.Block.Locals.Add(local);
+                    }
+                    formula.Resolved = local;
                 }
-                formula.Resolved = local;
-            }
-            base.Visit(formula);
-        }
-
-        BlockFormula GetCurrentBlock(Formula formula)
-        {
-            var block = default(BlockFormula);
-
-            if (formula == null || formula.Referrer == null) return block;
-
-            if ((block = formula.Referrer as BlockFormula) != null)
-            {
-                return block;
-            }
-            else
-            {
-                return GetCurrentBlock(formula.Referrer);
+                else
+                {
+                    // Fully resolving.
+                    var local = GetDefinedLocals(formula.Block).FirstOrDefault(_ => _.LocalName == formula.VariableName);
+                    if (local == null)
+                    {
+                        throw new InvalidOperationException(string.Format("The variable \"{0}\" has not defined.", formula.VariableName));
+                    }
+                    formula.Resolved = local;
+                }
             }
         }
+
+
+
 
         IEnumerable<LocalFormula> GetDefinedLocals(BlockFormula block)
         {

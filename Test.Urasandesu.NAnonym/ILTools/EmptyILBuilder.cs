@@ -34,8 +34,8 @@ namespace Test.Urasandesu.NAnonym.ILTools
 {
     class EmptyILBuilder : ILBuilder
     {
-        public EmptyILBuilder(IMethodBaseGenerator methodGen)
-            : base(methodGen)
+        public EmptyILBuilder(IMethodBaseGenerator methodGen, ITypeDeclaration returnType)
+            : base(methodGen, returnType)
         {
         }
 

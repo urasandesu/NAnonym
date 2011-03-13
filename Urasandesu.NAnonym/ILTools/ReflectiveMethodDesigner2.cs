@@ -67,7 +67,7 @@ namespace Urasandesu.NAnonym.ILTools
             // Resolve the reference of types, variables and members.
             {
                 var visitor = default(IFormulaVisitor);
-                visitor = new FormulaNoActionVisitor();
+                visitor = new NoActionVisitor();
                 visitor = new VariableResolver(visitor);
                 visitor = new TypeResolver(visitor, GetReturnType());
                 entryPoint.Accept(visitor);
@@ -76,7 +76,7 @@ namespace Urasandesu.NAnonym.ILTools
             // Optimize the intermediate formula.
             {
                 var visitor = default(IFormulaVisitor);
-                visitor = new FormulaNoActionVisitor();
+                visitor = new NoActionVisitor();
                 visitor = new ConvertDecreaser(visitor);
                 visitor = new ConvertIncreaser(visitor);
                 entryPoint.Accept(visitor);
@@ -92,14 +92,13 @@ namespace Urasandesu.NAnonym.ILTools
         public ILBuilder ILBuilder { get; set; }
         public ITypeDeclaration GetReturnType()
         {
-            var methodGen = default(IMethodGenerator);
-            if (ILBuilder == null || (methodGen = ILBuilder.MethodGenerator as IMethodGenerator) == null)
+            if (ILBuilder == null)
             {
                 return typeof(void).ToTypeDecl();
             }
             else
             {
-                return methodGen.ReturnType;
+                return ILBuilder.ReturnType;
             }
         }
 

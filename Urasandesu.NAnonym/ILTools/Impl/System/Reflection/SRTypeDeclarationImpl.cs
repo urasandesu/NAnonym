@@ -40,7 +40,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     class SRTypeDeclarationImpl : SRMemberDeclarationImpl, ITypeDeclaration
     {
-        readonly Type type;
+        internal readonly Type type;
 
         readonly ITypeDeclaration baseTypeDecl;
         IModuleDeclaration moduleDecl;

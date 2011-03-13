@@ -1,5 +1,5 @@
-/* 
- * File: IMethodBaseGenerator.cs
+﻿/* 
+ * File: ArgumentFormula.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,24 +26,25 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System.Collections.ObjectModel;
-using System.Reflection;
+
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Formulas
 {
-    public interface IMethodBaseGenerator : IMethodBaseDeclaration, IMemberGenerator
+    public partial class ArgumentFormula : Formula
     {
-        new IMethodBodyGenerator Body { get; }
-        new ITypeGenerator DeclaringType { get; }
-        new ReadOnlyCollection<IParameterGenerator> Parameters { get; }
-        IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
-        IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression);
-        IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType);
-        IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName);
-        PortableScope CarryPortableScope();
-    }
+        public ArgumentFormula(string argumentName)
+        {
+            ArgumentName = argumentName;
+        }
 
+        public ArgumentFormula(int argumentPosition)
+        {
+            ArgumentPosition = argumentPosition;
+        }
+    }
 }

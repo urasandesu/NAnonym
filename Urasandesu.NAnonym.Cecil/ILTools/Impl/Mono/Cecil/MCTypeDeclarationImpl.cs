@@ -45,7 +45,7 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
     class MCTypeDeclarationImpl : MCMemberDeclarationImpl, ITypeDeclaration
     {
         [NonSerialized]
-        TypeReference typeRef;
+        internal TypeReference typeRef;
 
         [NonSerialized]
         TypeDefinition typeDef;
@@ -220,7 +220,26 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public bool IsAssignableFrom(ITypeDeclaration that)
         {
-            throw new NotImplementedException();
+            var mcthat = default(MCTypeDeclarationImpl);
+            if ((mcthat = that as MCTypeDeclarationImpl) != null)
+            {
+                return typeDef.IsAssignableFrom(mcthat.typeDef);
+            }
+            else
+            {
+                if (FullName == that.FullName)
+                {
+                    return true;
+                }
+                else if (IsAssignableFrom(that.BaseType))
+                {
+                    return true;
+                }
+                else
+                {
+                    return that.Interfaces.Any(_ => FullName == _.FullName);
+                }
+            }
         }
 
         public ReadOnlyCollection<ITypeDeclaration> Interfaces

@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class NotEqualFormula:LogicalBinaryFormula
+    public partial class NotEqualFormula : LogicalBinaryFormula
     {
 
         protected override void InitializeForCodeGeneration()

@@ -1,5 +1,7 @@
+﻿<#@ import namespace="System.Collections.Generic" #>
+<#+
 /* 
- * File: IMethodBaseGenerator.cs
+ * File: AbstractFormulaVisitorTemplate.tt
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,24 +28,23 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
-
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System;
-
-namespace Urasandesu.NAnonym.ILTools
+public abstract class AbstractFormulaVisitorTemplate : Template
 {
-    public interface IMethodBaseGenerator : IMethodBaseDeclaration, IMemberGenerator
+    public AbstractFormulaVisitorTemplate(Dictionary<string, FormulaTemplate> templates)
     {
-        new IMethodBodyGenerator Body { get; }
-        new ITypeGenerator DeclaringType { get; }
-        new ReadOnlyCollection<IParameterGenerator> Parameters { get; }
-        IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
-        IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression);
-        IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType);
-        IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName);
-        PortableScope CarryPortableScope();
+        Templates = templates;
     }
 
+    public Dictionary<string, FormulaTemplate> Templates { get; private set; }
+	
+	protected IEnumerable<FormulaTemplateProperty> GetProperties(FormulaTemplate template)
+	{
+		var properties = Enumerable.Empty<FormulaTemplateProperty>();
+		if (!string.IsNullOrEmpty(template.BaseTypeName) && Templates.ContainsKey(template.BaseTypeName))
+		{
+			properties = properties.Concat(GetProperties(Templates[template.BaseTypeName]));
+		}
+		return properties.Concat(template.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")));
+	}
 }
+#>

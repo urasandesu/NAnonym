@@ -38,27 +38,17 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class BinaryFormula:Formula
+    public abstract partial class BinaryFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            Left = default(Formula);
             Method = default(IMethodDeclaration);
             Right = default(Formula);
+            Left = default(Formula);
         }
 
-        public const string NameOfLeft = "Left";
-        Formula left;
-        public Formula Left 
-        { 
-            get { return left; } 
-            set 
-            {
-                SetFormula(NameOfLeft, value, ref left);
-            }
-        }
         public const string NameOfMethod = "Method";
         IMethodDeclaration method;
         public IMethodDeclaration Method 
@@ -80,12 +70,22 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormula(NameOfRight, value, ref right);
             }
         }
+        public const string NameOfLeft = "Left";
+        Formula left;
+        public Formula Left 
+        { 
+            get { return left; } 
+            set 
+            {
+                SetFormula(NameOfLeft, value, ref left);
+            }
+        }
 
 
         protected override void PinCore()
         {
-            Formula.Pin(Left);
             Formula.Pin(Right);
+            Formula.Pin(Left);
             base.PinCore();
         }
 
@@ -93,18 +93,6 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
-            sb.Append(NameOfLeft);
-            sb.Append("\": ");
-            if (Left == null)
-            {
-                sb.Append("null");
-            }
-            else
-            {
-                Left.AppendWithBracketTo(sb);
-            }
             sb.Append(", ");
             sb.Append("\"");
             sb.Append(NameOfMethod);
@@ -121,6 +109,18 @@ namespace Urasandesu.NAnonym.Formulas
             else
             {
                 Right.AppendWithBracketTo(sb);
+            }
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLeft);
+            sb.Append("\": ");
+            if (Left == null)
+            {
+                sb.Append("null");
+            }
+            else
+            {
+                Left.AppendWithBracketTo(sb);
             }
         }
     }

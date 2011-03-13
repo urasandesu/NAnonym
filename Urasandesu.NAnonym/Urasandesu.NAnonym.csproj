@@ -52,6 +52,9 @@
     <Compile Include="Formulas.CodeGeneration\AndAlsoFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\ArgumentFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\ArithmeticBinaryFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -97,9 +100,6 @@
     <Compile Include="Formulas.CodeGeneration\FormulaAdapter.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
-    <Compile Include="Formulas.CodeGeneration\FormulaNoActionVisitor.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
     <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -122,6 +122,9 @@
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\NewFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\NoActionVisitor.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\NotEqualFormula.g.cs">
@@ -156,6 +159,7 @@
     </Compile>
     <Compile Include="Formulas\AddFormula.cs" />
     <Compile Include="Formulas\AndAlsoFormula.cs" />
+    <Compile Include="Formulas\ArgumentFormula.cs" />
     <Compile Include="Formulas\AssignFormula.cs" />
     <Compile Include="Formulas\BaseNewFormula.cs" />
     <Compile Include="Formulas\BlockFormula.cs" />
@@ -198,8 +202,8 @@
     <Compile Include="ILTools\ReflectiveLocalDecorator.cs" />
     <Compile Include="ILTools\MethodReservedWords.cs" />
     <Compile Include="ILTools\ReflectiveMethodDesigner2.cs" />
-    <Compile Include="ILTools\TypeResolver.cs" />
-    <Compile Include="ILTools\ReturnCheckException.cs" />
+    <Compile Include="Formulas\TypeResolver.cs" />
+    <Compile Include="Formulas\TypeCheckException.cs" />
     <Compile Include="InstanceAction.cs" />
     <Compile Include="ActionWithPrev.cs" />
     <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
@@ -380,11 +384,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Formulas.CodeGeneration\AbstractFormulaVisitorTemplate.tt">
+    </None>
     <None Include="Formulas.CodeGeneration\FormulaAdapterTemplate.tt">
     </None>
     <None Include="Formulas.CodeGeneration\FormulaGenerator.tt">
     </None>
-    <None Include="Formulas.CodeGeneration\FormulaNoActionVisitorTemplate.tt">
+    <None Include="Formulas.CodeGeneration\NoActionVisitorTemplate.tt">
     </None>
     <None Include="Formulas.CodeGeneration\Formulas.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

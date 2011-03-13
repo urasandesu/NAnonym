@@ -92,7 +92,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public <#= IsAbstract ? "abstract " : "" #>partial class <#= TypeName #><#= BaseTypeName == null ? "" : ":" + BaseTypeName #>
+    public <#= IsAbstract ? "abstract " : "" #>partial class <#= TypeName #><#= BaseTypeName == null ? "" : " : " + BaseTypeName #>
     {
 <#+ 
         if (BaseTypeName == null)

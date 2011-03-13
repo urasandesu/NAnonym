@@ -91,5 +91,17 @@ namespace Urasandesu.NAnonym.ILTools
         {
             throw new NotImplementedException();
         }
+
+
+        public IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool IsStatic
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

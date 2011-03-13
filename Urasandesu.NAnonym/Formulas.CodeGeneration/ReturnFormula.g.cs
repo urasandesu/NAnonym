@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class ReturnFormula:Formula
+    public partial class ReturnFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
@@ -46,7 +46,8 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
 			NodeType = NodeType.Return;
             Body = default(Formula);
-            Block = default(BlockFormula);
+            End = default(EndFormula);
+            Label = default(ILabelDeclaration);
         }
 
         public const string NameOfBody = "Body";
@@ -59,14 +60,24 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormula(NameOfBody, value, ref body);
             }
         }
-        public const string NameOfBlock = "Block";
-        BlockFormula block;
-        public BlockFormula Block 
+        public const string NameOfEnd = "End";
+        EndFormula end;
+        public EndFormula End 
         { 
-            get { return block; } 
+            get { return end; } 
             set 
             {
-                SetFormulaAsValue(NameOfBlock, value, ref block);
+                SetFormulaAsValue(NameOfEnd, value, ref end);
+            }
+        }
+        public const string NameOfLabel = "Label";
+        ILabelDeclaration label;
+        public ILabelDeclaration Label 
+        { 
+            get { return label; } 
+            set 
+            {
+                SetValue(NameOfLabel, value, ref label);
             }
         }
 
@@ -80,7 +91,7 @@ namespace Urasandesu.NAnonym.Formulas
         protected override void PinCore()
         {
             Formula.Pin(Body);
-            Formula.Pin(Block);
+            Formula.Pin(End);
             base.PinCore();
         }
 
@@ -100,6 +111,11 @@ namespace Urasandesu.NAnonym.Formulas
             {
                 Body.AppendWithBracketTo(sb);
             }
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLabel);
+            sb.Append("\": ");
+            AppendValueTo(Label, sb);
         }
     }
 }

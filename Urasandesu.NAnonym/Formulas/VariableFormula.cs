@@ -43,6 +43,12 @@ namespace Urasandesu.NAnonym.Formulas
             VariableName = variableName;
             TypeDeclaration = type.ToTypeDecl();
         }
+
+        public VariableFormula(int variableIndex, Type type)
+        {
+            VariableIndex = variableIndex;
+            TypeDeclaration = type.ToTypeDecl();
+        }
     }
 }
 

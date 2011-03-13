@@ -42,6 +42,7 @@ using Mono.Cecil.Cil;
 using UNI = Urasandesu.NAnonym.ILTools;
 using SR = System.Reflection;
 using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -115,8 +116,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression)
         {
+            return ExpressBody2(bodyExpression, typeof(void).ToTypeDecl());
+        }
+
+
+        public IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType)
+        {
             var gen = new ReflectiveMethodDesigner2();
-            gen.ILBuilder = new ILBuilder(this);
+            gen.ILBuilder = new ILBuilder(this, returnType);
             bodyExpression(gen);
             gen.Eval(() => Dsl.End());
             return this;

@@ -51,7 +51,7 @@
     <Compile Include="ILTools\EmptyILBuilder.cs" />
     <Compile Include="ILTools\MockILOperator.cs" />
     <Compile Include="ILTools\MockMethodBodyGenerator.cs" />
-    <Compile Include="ILTools\MockMethodGenerator.cs" />
+    <Compile Include="ILTools\MockMethodBaseGenerator.cs" />
     <Compile Include="ILTools\MockTypeGenerator.cs" />
     <Compile Include="ILTools\ReflectiveMethodDesigner2Test.cs" />
     <Compile Include="NewDomainTester.cs" />

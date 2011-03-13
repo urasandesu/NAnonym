@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ReflectiveMethodDesigner.cs
+ * File: TypeCheckException.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,15 +38,15 @@ using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Formulas
 {
     [Serializable]
-    public class ReturnCheckException : NAnonymException
+    public class TypeCheckException : NAnonymException
     {
-        public ReturnCheckException() { }
-        public ReturnCheckException(string message) : base(message) { }
-        public ReturnCheckException(string message, Exception inner) : base(message, inner) { }
-        protected ReturnCheckException(
+        public TypeCheckException() { }
+        public TypeCheckException(string message) : base(message) { }
+        public TypeCheckException(string message, Exception inner) : base(message, inner) { }
+        protected TypeCheckException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }

@@ -26,13 +26,15 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
+
+using System;
 namespace Urasandesu.NAnonym.ILTools
 {
     public interface IMethodGenerator : IMethodDeclaration, IMethodBaseGenerator
     {
         new ITypeGenerator ReturnType { get; }
+        IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression);
     }
 
 }

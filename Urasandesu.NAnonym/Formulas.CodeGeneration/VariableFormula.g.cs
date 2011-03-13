@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class VariableFormula:Formula
+    public partial class VariableFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
@@ -46,8 +46,9 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
 			NodeType = NodeType.Variable;
             VariableName = default(string);
-            VariableIndex = default(int);
+            VariableIndex = -1;
             Resolved = default(Formula);
+            Block = default(BlockFormula);
         }
 
         public const string NameOfVariableName = "VariableName";
@@ -80,6 +81,16 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormulaAsValue(NameOfResolved, value, ref resolved);
             }
         }
+        public const string NameOfBlock = "Block";
+        BlockFormula block;
+        public BlockFormula Block 
+        { 
+            get { return block; } 
+            set 
+            {
+                SetFormulaAsValue(NameOfBlock, value, ref block);
+            }
+        }
 
 
         public override void Accept(IFormulaVisitor visitor)
@@ -91,6 +102,7 @@ namespace Urasandesu.NAnonym.Formulas
         protected override void PinCore()
         {
             Formula.Pin(Resolved);
+            Formula.Pin(Block);
             base.PinCore();
         }
 

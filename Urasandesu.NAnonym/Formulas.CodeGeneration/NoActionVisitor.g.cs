@@ -1,5 +1,5 @@
 /* 
- * File: FormulaNoActionVisitor.g.cs
+ * File: NoActionVisitor.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -35,17 +35,11 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public class FormulaNoActionVisitor : IFormulaVisitor
+    public class NoActionVisitor : IFormulaVisitor
     {
         public void Visit(BinaryFormula formula)
         {
         }
-        public void VisitBinaryLeft(Formula formula)
-		{
-		}
-        public void VisitBinaryRight(Formula formula)
-		{
-		}
         public void Visit(ArithmeticBinaryFormula formula)
         {
         }
@@ -55,31 +49,79 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(AssignFormula formula)
         {
         }
+        public void VisitAssignRight(AssignFormula formula, Formula right)
+		{
+		}
+        public void VisitAssignLeft(AssignFormula formula, Formula left)
+		{
+		}
         public void Visit(NotEqualFormula formula)
         {
         }
+        public void VisitNotEqualRight(NotEqualFormula formula, Formula right)
+		{
+		}
+        public void VisitNotEqualLeft(NotEqualFormula formula, Formula left)
+		{
+		}
         public void Visit(AddFormula formula)
         {
         }
+        public void VisitAddRight(AddFormula formula, Formula right)
+		{
+		}
+        public void VisitAddLeft(AddFormula formula, Formula left)
+		{
+		}
         public void Visit(MultiplyFormula formula)
         {
         }
+        public void VisitMultiplyRight(MultiplyFormula formula, Formula right)
+		{
+		}
+        public void VisitMultiplyLeft(MultiplyFormula formula, Formula left)
+		{
+		}
         public void Visit(AndAlsoFormula formula)
         {
         }
+        public void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
+		{
+		}
+        public void VisitAndAlsoLeft(AndAlsoFormula formula, Formula left)
+		{
+		}
         public void Visit(EqualFormula formula)
         {
         }
+        public void VisitEqualRight(EqualFormula formula, Formula right)
+		{
+		}
+        public void VisitEqualLeft(EqualFormula formula, Formula left)
+		{
+		}
         public void Visit(ExclusiveOrFormula formula)
         {
         }
+        public void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
+		{
+		}
+        public void VisitExclusiveOrLeft(ExclusiveOrFormula formula, Formula left)
+		{
+		}
         public void Visit(LessThanFormula formula)
         {
         }
+        public void VisitLessThanRight(LessThanFormula formula, Formula right)
+		{
+		}
+        public void VisitLessThanLeft(LessThanFormula formula, Formula left)
+		{
+		}
         public void Visit(BlockFormula formula)
         {
         }
-        public void VisitBlockFormulas(FormulaCollection<Formula> formula)
+        public void VisitBlockFormulas(BlockFormula formula, FormulaCollection<Formula> formulas)
 		{
 		}
         public void Visit(ConstantFormula formula)
@@ -91,94 +133,121 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(VariableFormula formula)
         {
         }
-        public void VisitVariableResolved(Formula formula)
+        public void VisitVariableResolved(VariableFormula formula, Formula resolved)
 		{
 		}
         public void Visit(LocalFormula formula)
         {
         }
+        public void Visit(ArgumentFormula formula)
+        {
+        }
         public void Visit(UnaryFormula formula)
         {
         }
-        public void VisitUnaryOperand(Formula formula)
-		{
-		}
         public void Visit(ConvertFormula formula)
         {
         }
+        public void VisitConvertOperand(ConvertFormula formula, Formula operand)
+		{
+		}
         public void Visit(TypeAsFormula formula)
         {
         }
+        public void VisitTypeAsOperand(TypeAsFormula formula, Formula operand)
+		{
+		}
         public void Visit(ConditionalFormula formula)
         {
         }
-        public void VisitConditionalTest(Formula formula)
+        public void VisitConditionalTest(ConditionalFormula formula, Formula test)
 		{
 		}
-        public void VisitConditionalIfTrue(Formula formula)
+        public void VisitConditionalIfTrue(ConditionalFormula formula, Formula ifTrue)
 		{
 		}
-        public void VisitConditionalIfFalse(Formula formula)
+        public void VisitConditionalIfFalse(ConditionalFormula formula, Formula ifFalse)
 		{
 		}
         public void Visit(ReturnFormula formula)
         {
         }
-        public void VisitReturnBody(Formula formula)
+        public void VisitReturnBody(ReturnFormula formula, Formula body)
 		{
 		}
         public void Visit(CallFormula formula)
         {
         }
-        public void VisitCallInstance(Formula formula)
+        public void VisitCallInstance(CallFormula formula, Formula instance)
 		{
 		}
-        public void VisitCallArguments(FormulaCollection<Formula> formula)
+        public void VisitCallArguments(CallFormula formula, FormulaCollection<Formula> arguments)
 		{
 		}
         public void Visit(ReflectiveCallFormula formula)
         {
         }
+        public void VisitReflectiveCallInstance(ReflectiveCallFormula formula, Formula instance)
+		{
+		}
+        public void VisitReflectiveCallArguments(ReflectiveCallFormula formula, FormulaCollection<Formula> arguments)
+		{
+		}
         public void Visit(NewArrayInitFormula formula)
         {
         }
-        public void VisitNewArrayInitFormulas(FormulaCollection<Formula> formula)
+        public void VisitNewArrayInitFormulas(NewArrayInitFormula formula, FormulaCollection<Formula> formulas)
 		{
 		}
         public void Visit(NewFormula formula)
         {
         }
-        public void VisitNewArguments(FormulaCollection<Formula> formula)
+        public void VisitNewArguments(NewFormula formula, FormulaCollection<Formula> arguments)
 		{
 		}
         public void Visit(BaseNewFormula formula)
         {
         }
+        public void VisitBaseNewArguments(BaseNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+		}
         public void Visit(ReflectiveNewFormula formula)
         {
         }
+        public void VisitReflectiveNewArguments(ReflectiveNewFormula formula, FormulaCollection<Formula> arguments)
+		{
+		}
         public void Visit(MemberFormula formula)
         {
         }
-        public void VisitMemberInstance(Formula formula)
-		{
-		}
         public void Visit(PropertyFormula formula)
         {
         }
+        public void VisitPropertyInstance(PropertyFormula formula, Formula instance)
+		{
+		}
         public void Visit(ReflectivePropertyFormula formula)
         {
         }
+        public void VisitReflectivePropertyInstance(ReflectivePropertyFormula formula, Formula instance)
+		{
+		}
         public void Visit(FieldFormula formula)
         {
         }
+        public void VisitFieldInstance(FieldFormula formula, Formula instance)
+		{
+		}
         public void Visit(ReflectiveFieldFormula formula)
         {
         }
+        public void VisitReflectiveFieldInstance(ReflectiveFieldFormula formula, Formula instance)
+		{
+		}
         public void Visit(EndFormula formula)
         {
         }
-        public void VisitEndBlock(BlockFormula formula)
+        public void VisitEndEntryBlock(EndFormula formula, BlockFormula entryBlock)
 		{
 		}
     }

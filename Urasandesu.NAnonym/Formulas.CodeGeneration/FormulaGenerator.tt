@@ -1,8 +1,4 @@
 ﻿<#@ import namespace="System.Collections.Generic" #>
-<#@ include file="FormulaTemplate.tt" #>
-<#@ include file="FormulaVisitorTemplate.tt" #>
-<#@ include file="FormulaAdapterTemplate.tt" #>
-<#@ include file="FormulaNoActionVisitorTemplate.tt" #>
 <#+
 /* 
  * File: FormulaGenerator.tt
@@ -54,8 +50,8 @@ public class FormulaGenerator : Generator
         var adapterTemplate = new FormulaAdapterTemplate(Templates);
         adapterTemplate.RenderToFile("FormulaAdapter.g.cs");
         
-        var noActionVisitorTemplate = new FormulaNoActionVisitorTemplate(Templates);
-        noActionVisitorTemplate.RenderToFile("FormulaNoActionVisitor.g.cs");
+        var noActionVisitorTemplate = new NoActionVisitorTemplate(Templates);
+        noActionVisitorTemplate.RenderToFile("NoActionVisitor.g.cs");
     }
 }
 #>

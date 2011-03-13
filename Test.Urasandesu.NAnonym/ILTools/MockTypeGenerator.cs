@@ -32,12 +32,18 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
     class MockTypeGenerator : ITypeGenerator
     {
         ITypeDeclaration type;
+        public MockTypeGenerator(Type type)
+            : this(type.ToTypeDecl())
+        {
+        }
+
         public MockTypeGenerator(ITypeDeclaration type)
         {
             this.type = type;
@@ -186,6 +192,16 @@ namespace Test.Urasandesu.NAnonym.ILTools
         public void OnDeserialized(StreamingContext context)
         {
             throw new NotImplementedException();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return type.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return type.GetHashCode();
         }
 
         public override string ToString()

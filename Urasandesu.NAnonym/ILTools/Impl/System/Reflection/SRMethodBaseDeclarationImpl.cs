@@ -66,6 +66,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         }
 
         #endregion
+
+
+        public bool IsStatic
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }
 

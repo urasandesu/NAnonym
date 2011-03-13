@@ -49,6 +49,7 @@ namespace Urasandesu.NAnonym.Formulas
             Conditions = new Collection<ConditionalFormula>();
             InlineValueState = new ExpressionToInlineValueState();
             ConstMembersCache = new Dictionary<Type, Dictionary<object, FieldInfo>>();
+            Returns = new Collection<ReturnFormula>();
         }
 
         public void PushBlock()
@@ -73,6 +74,7 @@ namespace Urasandesu.NAnonym.Formulas
         public Collection<ConditionalFormula> Conditions { get; private set; }
         public ExpressionToInlineValueState InlineValueState { get; private set; }
         public Dictionary<Type, Dictionary<object, FieldInfo>> ConstMembersCache { get; private set; }
+        public Collection<ReturnFormula> Returns { get; private set; }
         public EndFormula EntryPoint { get; set; }
         public bool IsEnded { get; set; }
     }

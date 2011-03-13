@@ -1,7 +1,7 @@
 ﻿<#@ import namespace="System.Collections.Generic" #>
 <#+
 /* 
- * File: FormulaNoActionVisitorTemplate.tt
+ * File: NoActionVisitorTemplate.tt
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,20 +28,18 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-public class FormulaNoActionVisitorTemplate : Template
+public class NoActionVisitorTemplate : AbstractFormulaVisitorTemplate
 {
-    public FormulaNoActionVisitorTemplate(Dictionary<string, FormulaTemplate> template)
+    public NoActionVisitorTemplate(Dictionary<string, FormulaTemplate> template)
+		: base(template)
     {
-        Templates = template;
     }
-
-    public Dictionary<string, FormulaTemplate> Templates { get; private set; }
     
     public override string TransformText()
     {
 #>
 /* 
- * File: FormulaNoActionVisitor.g.cs
+ * File: NoActionVisitor.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -77,7 +75,7 @@ using System.Text;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public class FormulaNoActionVisitor : IFormulaVisitor
+    public class NoActionVisitor : IFormulaVisitor
     {
 <#+ 
         foreach (var template in Templates)
@@ -87,13 +85,16 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 <#+ 
-			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
+			if (!template.Value.IsAbstract)
 			{
+				foreach (var property in GetProperties(template.Value))
+				{
 #>
-        public void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= property.TypeName #> formula)
+        public void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
 		{
 		}
 <#+
+				}
 			}
         }
 #>

@@ -134,6 +134,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             Initialize(methodDef, ILEmitMode.Normal, null);
             base.OnDeserializedManually(new StreamingContext(context.State, methodDef));
         }
+
+
+        public bool IsStatic
+        {
+            get { return methodDef.IsStatic; }
+        }
     }
 }
 

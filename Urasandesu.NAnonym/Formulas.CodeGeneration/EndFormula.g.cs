@@ -38,24 +38,35 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class EndFormula:Formula
+    public partial class EndFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
 			NodeType = NodeType.End;
-            Block = default(BlockFormula);
+            EntryBlock = default(BlockFormula);
+            Returns = new FormulaAsValueCollection<ReturnFormula>();
         }
 
-        public const string NameOfBlock = "Block";
-        BlockFormula block;
-        public BlockFormula Block 
+        public const string NameOfEntryBlock = "EntryBlock";
+        BlockFormula entryBlock;
+        public BlockFormula EntryBlock 
         { 
-            get { return block; } 
+            get { return entryBlock; } 
             set 
             {
-                SetFormula(NameOfBlock, value, ref block);
+                SetFormula(NameOfEntryBlock, value, ref entryBlock);
+            }
+        }
+        public const string NameOfReturns = "Returns";
+        FormulaAsValueCollection<ReturnFormula> returns;
+        public FormulaAsValueCollection<ReturnFormula> Returns 
+        { 
+            get { return returns; } 
+            set 
+            {
+                SetFormulaAsValue(NameOfReturns, value, ref returns);
             }
         }
 
@@ -68,7 +79,8 @@ namespace Urasandesu.NAnonym.Formulas
 
         protected override void PinCore()
         {
-            Formula.Pin(Block);
+            Formula.Pin(EntryBlock);
+            Formula.Pin(Returns);
             base.PinCore();
         }
 
@@ -78,15 +90,15 @@ namespace Urasandesu.NAnonym.Formulas
             base.AppendTo(sb);
             sb.Append(", ");
             sb.Append("\"");
-            sb.Append(NameOfBlock);
+            sb.Append(NameOfEntryBlock);
             sb.Append("\": ");
-            if (Block == null)
+            if (EntryBlock == null)
             {
                 sb.Append("null");
             }
             else
             {
-                Block.AppendWithBracketTo(sb);
+                EntryBlock.AppendWithBracketTo(sb);
             }
         }
     }

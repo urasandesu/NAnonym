@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class LessThanFormula:LogicalBinaryFormula
+    public partial class LessThanFormula : LogicalBinaryFormula
     {
 
         protected override void InitializeForCodeGeneration()

@@ -1,5 +1,5 @@
 /* 
- * File: TypeAsFormula.g.cs
+ * File: ArgumentFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,15 +38,48 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class TypeAsFormula : UnaryFormula
+    public partial class ArgumentFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-			NodeType = NodeType.TypeAs;
+			NodeType = NodeType.Argument;
+            ArgumentName = default(string);
+            ArgumentPosition = -1;
+            Argument = default(IParameterDeclaration);
         }
 
+        public const string NameOfArgumentName = "ArgumentName";
+        string argumentName;
+        public string ArgumentName 
+        { 
+            get { return argumentName; } 
+            set 
+            {
+                SetValue(NameOfArgumentName, value, ref argumentName);
+            }
+        }
+        public const string NameOfArgumentPosition = "ArgumentPosition";
+        int argumentPosition;
+        public int ArgumentPosition 
+        { 
+            get { return argumentPosition; } 
+            set 
+            {
+                SetValue(NameOfArgumentPosition, value, ref argumentPosition);
+            }
+        }
+        public const string NameOfArgument = "Argument";
+        IParameterDeclaration argument;
+        public IParameterDeclaration Argument 
+        { 
+            get { return argument; } 
+            set 
+            {
+                SetValue(NameOfArgument, value, ref argument);
+            }
+        }
 
 
         public override void Accept(IFormulaVisitor visitor)
@@ -64,6 +97,21 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfArgumentName);
+            sb.Append("\": ");
+            AppendValueTo(ArgumentName, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfArgumentPosition);
+            sb.Append("\": ");
+            AppendValueTo(ArgumentPosition, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfArgument);
+            sb.Append("\": ");
+            AppendValueTo(Argument, sb);
         }
     }
 }

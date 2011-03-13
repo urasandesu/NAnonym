@@ -30,14 +30,12 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-public class FormulaAdapterTemplate : Template
+public class FormulaAdapterTemplate : AbstractFormulaVisitorTemplate
 {
     public FormulaAdapterTemplate(Dictionary<string, FormulaTemplate> template)
+		: base(template)
     {
-        Templates = template;
     }
-
-    public Dictionary<string, FormulaTemplate> Templates { get; private set; }
     
     public override string TransformText()
     {
@@ -94,7 +92,17 @@ namespace Urasandesu.NAnonym.Formulas
 #>
         public virtual void Visit(<#= template.Value.TypeName #> formula)
         {
-            visitor.Visit(formula);
+<#+ 
+			if (!template.Value.IsAbstract)
+			{
+				foreach (var property in GetProperties(template.Value))
+				{
+#>
+            if (formula.<#= property.Name #> != null) Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula, formula.<#= property.Name #>);
+<#+ 
+				}
+			}
+#>
 <#+ 
 			if (template.Value.BaseTypeName != null)
 			{
@@ -103,25 +111,26 @@ namespace Urasandesu.NAnonym.Formulas
 <#+ 
 			}
 #>
-<#+ 
-			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
-			{
-#>
-            if (formula.<#= property.Name #> != null) Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula.<#= property.Name #>);
-<#+ 
-			}
-#>
+            visitor.Visit(formula);
         }
 <#+ 
-			foreach (var property in template.Value.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")))
+			if (!template.Value.IsAbstract)
 			{
+				foreach (var property in GetProperties(template.Value))
+				{
 #>
-        public virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= property.TypeName #> formula)
+        public virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
 		{
-			visitor.Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula);
-			formula.Accept(this);
+		    if (formula.GetType() != typeof(<#= template.Value.TypeName #>)) return;
+			Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>Core(formula, <#= property.Name.ToCamel() #>);
+			visitor.Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula, <#= property.Name.ToCamel() #>);
+		}
+        protected virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>Core(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
+		{
+			<#= property.Name.ToCamel() #>.Accept(this);
 		}
 <#+
+				}
 			}
         }
 #>

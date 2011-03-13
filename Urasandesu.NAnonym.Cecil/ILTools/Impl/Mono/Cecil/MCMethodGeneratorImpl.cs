@@ -128,7 +128,14 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public UNI::IMethodBaseGenerator ExpressBody2(Action<UNI::ReflectiveMethodDesigner2> bodyExpression)
         {
-            methodBaseGen.ExpressBody2(bodyExpression);
+            methodBaseGen.ExpressBody2(bodyExpression, ReturnType);
+            return this;
+        }
+
+
+        public UNI::IMethodBaseGenerator ExpressBody2(Action<UNI::ReflectiveMethodDesigner2> bodyExpression, UNI::ITypeDeclaration returnType)
+        {
+            methodBaseGen.ExpressBody2(bodyExpression, returnType);
             return this;
         }
     }
