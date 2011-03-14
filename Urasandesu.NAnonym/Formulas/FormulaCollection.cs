@@ -26,16 +26,12 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.ObjectModel;
+
 using System.Collections;
-using Urasandesu.NAnonym;
-using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Formulas
@@ -153,24 +149,9 @@ namespace Urasandesu.NAnonym.Formulas
             base.PinCore();
         }
 
-        public override void AppendWithBracketTo(StringBuilder sb)
+        public override void AppendWithStartEndTo(StringBuilder sb)
         {
-            sb.Append("[");
-            var oneOrMore = false;
-            foreach (var formula in list)
-            {
-                if (!oneOrMore)
-                {
-                    oneOrMore = true;
-                    formula.AppendWithBracketTo(sb);
-                }
-                else
-                {
-                    sb.Append(", ");
-                    formula.AppendWithBracketTo(sb);
-                }
-            }
-            sb.Append("]");
+            NodeToString.AppendListWithStartEndTo(this, sb);
         }
 
         public override void Accept(IFormulaVisitor visitor)

@@ -93,34 +93,34 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfMethod);
-            sb.Append("\": ");
-            AppendValueTo(Method, sb, MethodToStringValueIfDefault);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Method, sb, MethodToStringValueIfDefault);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfRight);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Right == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Right.AppendWithBracketTo(sb);
+                Right.AppendWithStartEndTo(sb);
             }
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfLeft);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Left == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Left.AppendWithBracketTo(sb);
+                Left.AppendWithStartEndTo(sb);
             }
         }
     }

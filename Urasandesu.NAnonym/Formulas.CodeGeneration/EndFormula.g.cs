@@ -88,17 +88,17 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfEntryBlock);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (EntryBlock == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                EntryBlock.AppendWithBracketTo(sb);
+                EntryBlock.AppendWithStartEndTo(sb);
             }
         }
     }

@@ -97,21 +97,21 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfArgumentName);
-            sb.Append("\": ");
-            AppendValueTo(ArgumentName, sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(ArgumentName, sb);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfArgumentPosition);
-            sb.Append("\": ");
-            AppendValueTo(ArgumentPosition, sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(ArgumentPosition, sb);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfArgument);
-            sb.Append("\": ");
-            AppendValueTo(Argument, sb);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Argument, sb);
         }
     }
 }

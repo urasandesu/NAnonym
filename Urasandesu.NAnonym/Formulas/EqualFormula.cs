@@ -39,7 +39,14 @@ namespace Urasandesu.NAnonym.Formulas
     {
         public override string MethodToStringValueIfDefault
         {
-            get { return "\"==\""; }
+            get 
+            {
+                var sb = new StringBuilder();
+                sb.Append(NodeToString.StartOfString);
+                sb.Append("==");
+                sb.Append(NodeToString.EndOfString);
+                return sb.ToString();
+            }
         }
     }
 }

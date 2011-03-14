@@ -1,5 +1,5 @@
-/* 
- * File: AddFormula.cs
+﻿/* 
+ * File: NodeToJson.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,28 +26,71 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AddFormula : ArithmeticBinaryFormula
+    public class NodeToJson : NodeToString
     {
-        public override string MethodToStringValueIfDefault
+        public override string NullString
         {
-            get 
-            {
-                var sb = new StringBuilder();
-                sb.Append(NodeToString.StartOfString);
-                sb.Append("+");
-                sb.Append(NodeToString.EndOfString);
-                return sb.ToString();
-            }
+            get { return "null"; }
+        }
+
+        public override string StartOfName
+        {
+            get { return "\""; }
+        }
+
+        public override string EndOfName
+        {
+            get { return "\": "; }
+        }
+
+        public override string StartOfNumber
+        {
+            get { return string.Empty; }
+        }
+
+        public override string EndOfNumber
+        {
+            get { return string.Empty; }
+        }
+
+        public override string StartOfString
+        {
+            get { return "\""; }
+        }
+
+        public override string EndOfString
+        {
+            get { return "\""; }
+        }
+
+        public override string StartOfObject
+        {
+            get { return "{"; }
+        }
+
+        public override string EndOfObject
+        {
+            get { return "}"; }
+        }
+
+        public override string StartOfCollection
+        {
+            get { return "["; }
+        }
+
+        public override string EndOfCollection
+        {
+            get { return "]"; }
+        }
+
+        public override string Delimiter
+        {
+            get { return ", "; }
         }
     }
 }
-

@@ -99,34 +99,34 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfInstance);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Instance == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Instance.AppendWithBracketTo(sb);
+                Instance.AppendWithStartEndTo(sb);
             }
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfMethod);
-            sb.Append("\": ");
-            AppendValueTo(Method, sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Method, sb);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfArguments);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Arguments == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Arguments.AppendWithBracketTo(sb);
+                Arguments.AppendWithStartEndTo(sb);
             }
         }
     }

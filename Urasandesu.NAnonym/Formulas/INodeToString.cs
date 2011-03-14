@@ -1,5 +1,5 @@
-/* 
- * File: AddFormula.cs
+﻿/* 
+ * File: INodeToString.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,28 +26,30 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AddFormula : ArithmeticBinaryFormula
+    public interface INodeToString
     {
-        public override string MethodToStringValueIfDefault
-        {
-            get 
-            {
-                var sb = new StringBuilder();
-                sb.Append(NodeToString.StartOfString);
-                sb.Append("+");
-                sb.Append(NodeToString.EndOfString);
-                return sb.ToString();
-            }
-        }
+        void AppendValueTo<TValue>(TValue value, StringBuilder sb);
+        void AppendValueTo<TValue>(TValue value, StringBuilder sb, string ifDefault);
+        void AppendListWithStartEndTo<TNode>(IList<TNode> list, StringBuilder sb) where TNode : Node;
+        void AppendWithStartEndTo(Node node, StringBuilder sb);
+        string NullString { get; }
+        string StartOfName { get; }
+        string EndOfName { get; }
+        string StartOfNumber { get; }
+        string EndOfNumber { get; }
+        string StartOfString { get; }
+        string EndOfString { get; }
+        string StartOfObject { get; }
+        string EndOfObject { get; }
+        string StartOfCollection { get; }
+        string EndOfCollection { get; }
+        string Delimiter { get; }
     }
 }
-

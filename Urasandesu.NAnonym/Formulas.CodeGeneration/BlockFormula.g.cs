@@ -112,29 +112,29 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfLocals);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Locals == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Locals.AppendWithBracketTo(sb);
+                Locals.AppendWithStartEndTo(sb);
             }
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfFormulas);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Formulas == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Formulas.AppendWithBracketTo(sb);
+                Formulas.AppendWithStartEndTo(sb);
             }
         }
     }

@@ -270,7 +270,7 @@ namespace Urasandesu.NAnonym.Formulas
             if (BaseTypeName != null || 0 < propertyIndex)
             {
 #>
-            sb.Append(", ");
+            sb.Append(NodeToString.Delimiter);
 <#+
             }            
             WriteAppendingProperty(property);
@@ -288,20 +288,20 @@ namespace Urasandesu.NAnonym.Formulas
     void WriteAppendingProperty(FormulaTemplateProperty property)
     {
 #>
-            sb.Append("\"");
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOf<#= property.Name #>);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
 <#+ 
         if (property.IsNode)
         {
 #>
             if (<#= property.Name #> == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                <#= property.Name #>.AppendWithBracketTo(sb);
+                <#= property.Name #>.AppendWithStartEndTo(sb);
             }
 <#+  
         }
@@ -312,13 +312,13 @@ namespace Urasandesu.NAnonym.Formulas
             if (!property.HasToStringValueIfDefault)
             {
 #>
-            AppendValueTo(<#= property.Name #>, sb);
+            NodeToString.AppendValueTo(<#= property.Name #>, sb);
 <#+ 
             }
             else
             {
 #>
-            AppendValueTo(<#= property.Name #>, sb, <#= property.Name #>ToStringValueIfDefault);
+            NodeToString.AppendValueTo(<#= property.Name #>, sb, <#= property.Name #>ToStringValueIfDefault);
 <#+ 
             }
 #>

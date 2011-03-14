@@ -76,11 +76,11 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfMember);
-            sb.Append("\": ");
-            AppendValueTo(Member, sb);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Member, sb);
         }
     }
 }

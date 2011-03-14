@@ -82,15 +82,15 @@ namespace Urasandesu.NAnonym.Formulas
 
         public virtual void AppendTo(StringBuilder sb)
         {
-            sb.Append("\"");
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfNodeType);
-            sb.Append("\": ");
-            AppendValueTo(NodeType, sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(NodeType, sb);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfTypeDeclaration);
-            sb.Append("\": ");
-            AppendValueTo(TypeDeclaration, sb);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(TypeDeclaration, sb);
         }
     }
 }

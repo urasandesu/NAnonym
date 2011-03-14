@@ -100,41 +100,41 @@ namespace Urasandesu.NAnonym.Formulas
         public override void AppendTo(StringBuilder sb)
         {
             base.AppendTo(sb);
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfTest);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (Test == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                Test.AppendWithBracketTo(sb);
+                Test.AppendWithStartEndTo(sb);
             }
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfIfTrue);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (IfTrue == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                IfTrue.AppendWithBracketTo(sb);
+                IfTrue.AppendWithStartEndTo(sb);
             }
-            sb.Append(", ");
-            sb.Append("\"");
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfIfFalse);
-            sb.Append("\": ");
+            sb.Append(NodeToString.EndOfName);
             if (IfFalse == null)
             {
-                sb.Append("null");
+                sb.Append(NodeToString.NullString);
             }
             else
             {
-                IfFalse.AppendWithBracketTo(sb);
+                IfFalse.AppendWithStartEndTo(sb);
             }
         }
     }

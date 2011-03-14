@@ -179,6 +179,8 @@
     <Compile Include="Formulas\ExpressionToInlineValueState.cs" />
     <Compile Include="Formulas\FieldFormula.cs" />
     <Compile Include="Formulas\Formula.cs" />
+    <Compile Include="Formulas\INodeToString.cs" />
+    <Compile Include="Formulas\Node.cs" />
     <Compile Include="Formulas\NodeCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
     <Compile Include="Formulas\LessThanFormula.cs" />
@@ -186,6 +188,8 @@
     <Compile Include="Formulas\MultiplyFormula.cs" />
     <Compile Include="Formulas\NewArrayInitFormula.cs" />
     <Compile Include="Formulas\NewFormula.cs" />
+    <Compile Include="Formulas\NodeToJson.cs" />
+    <Compile Include="Formulas\NodeToString.cs" />
     <Compile Include="Formulas\NodeType.cs" />
     <Compile Include="Formulas\NotEqualFormula.cs" />
     <Compile Include="Formulas\PropertyFormula.cs" />

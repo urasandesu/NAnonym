@@ -1,5 +1,5 @@
-/* 
- * File: PropertyFormula.g.cs
+﻿/* 
+ * File: Node.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,62 +26,64 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Urasandesu.NAnonym.ILTools;
-using System.ComponentModel;
-using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class PropertyFormula : MemberFormula
+    public abstract partial class Node
     {
+        INodeToString nodeToString = new NodeToJson();
+        protected INodeToString NodeToString { get { return nodeToString; } set { nodeToString = value; } }
 
-        protected override void InitializeForCodeGeneration()
+        protected virtual void Initialize()
         {
-            base.InitializeForCodeGeneration();
-			NodeType = NodeType.Property;
-            Member = default(IPropertyDeclaration);
         }
 
-        public const string NameOfMember = "Member";
-        IPropertyDeclaration member;
-        public new IPropertyDeclaration Member 
-        { 
-            get { return member; } 
-            set 
+        public bool IsPinned { get; private set; }
+
+        protected void CheckCanModify(Node node)
+        {
+            if (node != null && node.IsPinned)
             {
-                SetValue(NameOfMember, value, ref member);
-                base.Member = value;
+                throw new NotSupportedException("This object has already pinned, so it can not modify.");
             }
         }
 
-
-        public override void Accept(IFormulaVisitor visitor)
+        protected void SetValue<T>(string propertyName, T value, ref T result)
         {
-            visitor.Visit(this);
+            CheckCanModify(this);
+            result = value;
         }
 
-
-        protected override void PinCore()
+        protected void SetNode<TNode>(string propertyName, TNode node, ref TNode result) where TNode : Node
         {
-            base.PinCore();
+            SetValue(propertyName, node, ref result);
         }
 
-
-        public override void AppendTo(StringBuilder sb)
+        public static void Pin(Node item)
         {
-            base.AppendTo(sb);
-            sb.Append(NodeToString.Delimiter);
-            sb.Append(NodeToString.StartOfName);
-            sb.Append(NameOfMember);
-            sb.Append(NodeToString.EndOfName);
-            NodeToString.AppendValueTo(Member, sb);
+            if (item != null && !item.IsPinned)
+            {
+                item.IsPinned = true;
+                item.PinCore();
+            }
         }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            AppendWithStartEndTo(sb);
+            return sb.ToString();
+        }
+
+        public virtual void AppendWithStartEndTo(StringBuilder sb)
+        {
+            NodeToString.AppendWithStartEndTo(this, sb);
+        }
+
+        public abstract void Accept(IFormulaVisitor visitor);
     }
 }
-
