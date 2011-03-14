@@ -75,7 +75,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
         public override void Visit(VariableFormula formula)
         {
         }
-        public override void Visit(LocalFormula formula)
+        public override void Visit(LocalNode formula)
         {
         }
         public override void Visit(UnaryFormula formula)

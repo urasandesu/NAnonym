@@ -22,7 +22,7 @@ namespace Urasandesu.NAnonym.Formulas
                     var local = GetDefinedLocals(formula.Block).FirstOrDefault(_ => _.LocalName == formula.VariableName);
                     if (local == null)
                     {
-                        local = new LocalFormula(formula.VariableName, formula.TypeDeclaration);
+                        local = new LocalNode(formula.VariableName, formula.TypeDeclaration);
                         formula.Block.Locals.Add(local);
                     }
                     formula.Resolved = local;
@@ -43,7 +43,7 @@ namespace Urasandesu.NAnonym.Formulas
 
 
 
-        IEnumerable<LocalFormula> GetDefinedLocals(BlockFormula block)
+        IEnumerable<LocalNode> GetDefinedLocals(BlockFormula block)
         {
             if (block == null) yield break;
 

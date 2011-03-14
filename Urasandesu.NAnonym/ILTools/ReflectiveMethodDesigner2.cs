@@ -102,9 +102,14 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public string Dump()
+        public string DumpEntryPoint()
         {
             return state.EntryPoint.ToString();
+        }
+
+        public string DumpCurrent()
+        {
+            return state.CurrentBlock.ToString();
         }
     }
 }

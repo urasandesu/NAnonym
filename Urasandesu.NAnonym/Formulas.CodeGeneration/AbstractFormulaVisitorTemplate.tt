@@ -44,7 +44,7 @@ public abstract class AbstractFormulaVisitorTemplate : Template
 		{
 			properties = properties.Concat(GetProperties(Templates[template.BaseTypeName]));
 		}
-		return properties.Concat(template.TemplateProperties.Where(_ => !_.ProhibitsDefaultAccepting && _.TypeName.Contains("Formula")));
+		return properties.Concat(template.TemplateProperties.Where(_ => _.IsAcceptable));
 	}
 }
 #>

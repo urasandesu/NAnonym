@@ -127,16 +127,19 @@ namespace Urasandesu.NAnonym.Formulas
         public void Visit(ConstantFormula formula)
         {
         }
+        public void Visit(Node formula)
+        {
+        }
         public void Visit(Formula formula)
         {
         }
         public void Visit(VariableFormula formula)
         {
         }
-        public void VisitVariableResolved(VariableFormula formula, Formula resolved)
+        public void VisitVariableResolved(VariableFormula formula, Node resolved)
 		{
 		}
-        public void Visit(LocalFormula formula)
+        public void Visit(LocalNode formula)
         {
         }
         public void Visit(ArgumentFormula formula)

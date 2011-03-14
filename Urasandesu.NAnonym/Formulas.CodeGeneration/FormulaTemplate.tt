@@ -48,6 +48,25 @@ public class FormulaTemplate : Template
     public NodeType NodeType { get; set; }
     public string TypeDeclaration { get; set; }
     public List<FormulaTemplateProperty> TemplateProperties { get; set; }
+	
+	public string SimpleName
+	{
+		get
+		{
+			if (TypeName.Contains("Formula"))
+			{
+				return TypeName.Replace("Formula", "");
+			}
+			else if (TypeName.Contains("Node") && TypeName != "NodeType")
+			{
+				return TypeName.Replace("Node", "");
+			}
+			else
+			{
+				throw new NotSupportedException();
+			}
+		}
+	}
     
     public override string TransformText()
     {
@@ -152,16 +171,16 @@ namespace Urasandesu.NAnonym.Formulas
         <#= property.TypeName #> <#= property.Name.ToCamel() #>;
         public <#= property.HideBySig ? "new " : "" #><#= property.TypeName #> <#= property.Name #> 
         { 
-            get { return <#= property.Name.ToCamel() #>; } 
+            get { return <#= property.CamelName #>; } 
             set 
             {
 <#+ 
-            if (-1 < property.TypeName.IndexOf("Formula"))
+            if (property.IsNode)
             {
-				if (property.AsValue)
+				if (property.AsNode)
 				{
 #>
-                SetFormulaAsValue(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
+                SetNode(NameOf<#= property.Name #>, value, ref <#= property.Name.ToCamel() #>);
 <#+ 
 				}
                 else
@@ -216,7 +235,7 @@ namespace Urasandesu.NAnonym.Formulas
         protected <#= BaseTypeName == null ? "virtual" : "override" #> void PinCore()
         {
 <#+ 
-            foreach (var property in TemplateProperties.Where(_ => -1 < _.TypeName.IndexOf("Formula")))
+            foreach (var property in TemplateProperties.Where(_ => _.IsNode))
             {
 #>
             Formula.Pin(<#= property.Name #>);
@@ -273,7 +292,7 @@ namespace Urasandesu.NAnonym.Formulas
             sb.Append(NameOf<#= property.Name #>);
             sb.Append("\": ");
 <#+ 
-        if (-1 < property.TypeName.IndexOf("Formula"))
+        if (property.IsNode)
         {
 #>
             if (<#= property.Name #> == null)

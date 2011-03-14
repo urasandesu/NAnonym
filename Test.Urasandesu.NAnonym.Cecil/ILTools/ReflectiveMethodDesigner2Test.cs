@@ -103,7 +103,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 var ms = new MemoryStream();
                 //tempAssemblyDef.Write(ms);
                 tempAssemblyDef.Write(tempFileName);
-
+                
                 var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
                 //testInfo.RawAssembly = ms.ToArray();
                 testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);

@@ -47,7 +47,7 @@ namespace Urasandesu.NAnonym.Formulas
 			NodeType = NodeType.Variable;
             VariableName = default(string);
             VariableIndex = -1;
-            Resolved = default(Formula);
+            Resolved = default(Node);
             Block = default(BlockFormula);
         }
 
@@ -72,13 +72,13 @@ namespace Urasandesu.NAnonym.Formulas
             }
         }
         public const string NameOfResolved = "Resolved";
-        Formula resolved;
-        public Formula Resolved 
+        Node resolved;
+        public Node Resolved 
         { 
             get { return resolved; } 
             set 
             {
-                SetFormulaAsValue(NameOfResolved, value, ref resolved);
+                SetNode(NameOfResolved, value, ref resolved);
             }
         }
         public const string NameOfBlock = "Block";
@@ -88,7 +88,7 @@ namespace Urasandesu.NAnonym.Formulas
             get { return block; } 
             set 
             {
-                SetFormulaAsValue(NameOfBlock, value, ref block);
+                SetNode(NameOfBlock, value, ref block);
             }
         }
 

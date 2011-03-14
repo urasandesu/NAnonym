@@ -1,5 +1,5 @@
-/* 
- * File: FormulaCollection.cs
+﻿/* 
+ * File: NodeCollection.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
@@ -40,45 +40,43 @@ using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public class FormulaCollection<TFormula> :
-        Formula, IList<TFormula>, ICollection<TFormula>, IEnumerable<TFormula> where TFormula : Formula
+    public class NodeCollection<TNode> :
+        Node, IList<TNode>, ICollection<TNode>, IEnumerable<TNode> where TNode : Node
     {
-        protected IList<TFormula> list;
+        protected IList<TNode> list;
 
-        public FormulaCollection()
+        public NodeCollection()
         {
-            Initialize(new Collection<TFormula>());
+            Initialize(new Collection<TNode>());
         }
 
-        public FormulaCollection(params TFormula[] formulas)
+        public NodeCollection(params TNode[] formulas)
         {
-            Initialize(new Collection<TFormula>(formulas));
+            Initialize(new Collection<TNode>(formulas));
         }
 
-        void Initialize(IList<TFormula> list)
+        void Initialize(IList<TNode> list)
         {
             this.list = list;
         }
 
-        public int IndexOf(TFormula item)
+        public int IndexOf(TNode item)
         {
             return list.IndexOf(item);
         }
 
-        public void Insert(int index, TFormula item)
+        public void Insert(int index, TNode item)
         {
             list.Insert(index, item);
-            SetReferrer(item, this);
         }
 
         public void RemoveAt(int index)
         {
             var removingItem = list[index];
             list.RemoveAt(index);
-            SetReferrer(removingItem, null);
         }
 
-        public TFormula this[int index]
+        public TNode this[int index]
         {
             get
             {
@@ -88,31 +86,25 @@ namespace Urasandesu.NAnonym.Formulas
             {
                 var replacingItem = list[index];
                 list[index] = value;
-                SetReferrer(replacingItem, null);
-                SetReferrer(value, Referrer);
             }
         }
 
-        public void Add(TFormula item)
+        public void Add(TNode item)
         {
             Insert(Count, item);
         }
 
         public void Clear()
         {
-            foreach (var removingItem in list)
-            {
-                SetReferrer(removingItem, null);
-            }
             list.Clear();
         }
 
-        public bool Contains(TFormula item)
+        public bool Contains(TNode item)
         {
             return list.Contains(item);
         }
 
-        public void CopyTo(TFormula[] array, int arrayIndex)
+        public void CopyTo(TNode[] array, int arrayIndex)
         {
             list.CopyTo(array, arrayIndex);
         }
@@ -127,17 +119,12 @@ namespace Urasandesu.NAnonym.Formulas
             get { return list.IsReadOnly; }
         }
 
-        public bool Remove(TFormula item)
+        public bool Remove(TNode item)
         {
-            var success = list.Remove(item);
-            if (success)
-            {
-                SetReferrer(item, null);
-            }
-            return success;
+            return list.Remove(item);
         }
 
-        public IEnumerator<TFormula> GetEnumerator()
+        public IEnumerator<TNode> GetEnumerator()
         {
             return list.GetEnumerator();
         }
@@ -149,7 +136,7 @@ namespace Urasandesu.NAnonym.Formulas
 
         protected override void PinCore()
         {
-            Initialize(new ReadOnlyCollection<TFormula>(list));
+            Initialize(new ReadOnlyCollection<TNode>(list));
             base.PinCore();
         }
 
@@ -179,4 +166,3 @@ namespace Urasandesu.NAnonym.Formulas
         }
     }
 }
-

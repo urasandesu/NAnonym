@@ -42,7 +42,64 @@ using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class Formula
+    //public abstract partial class Node
+    //{
+    //    public Node()
+    //        : base()
+    //    {
+    //        InitializeForCodeGeneration();
+    //        Initialize();
+    //    }
+
+    //    protected virtual void InitializeForCodeGeneration()
+    //    {
+    //        NodeType = NodeType.None;
+    //        TypeDeclaration = default(ITypeDeclaration);
+    //    }
+
+    //    public const string NameOfNodeType = "NodeType";
+    //    NodeType nodeType;
+    //    public NodeType NodeType
+    //    {
+    //        get { return nodeType; }
+    //        set
+    //        {
+    //            SetValue(NameOfNodeType, value, ref nodeType);
+    //        }
+    //    }
+    //    public const string NameOfTypeDeclaration = "TypeDeclaration";
+    //    ITypeDeclaration typeDeclaration;
+    //    public ITypeDeclaration TypeDeclaration
+    //    {
+    //        get { return typeDeclaration; }
+    //        set
+    //        {
+    //            SetValue(NameOfTypeDeclaration, value, ref typeDeclaration);
+    //        }
+    //    }
+
+
+    //    protected virtual void PinCore()
+    //    {
+    //    }
+
+
+    //    public virtual void AppendTo(StringBuilder sb)
+    //    {
+    //        sb.Append("\"");
+    //        sb.Append(NameOfNodeType);
+    //        sb.Append("\": ");
+    //        AppendValueTo(NodeType, sb);
+    //        sb.Append(", ");
+    //        sb.Append("\"");
+    //        sb.Append(NameOfTypeDeclaration);
+    //        sb.Append("\": ");
+    //        AppendValueTo(TypeDeclaration, sb);
+    //    }
+    //}
+
+
+    public abstract partial class Node
     {
         protected virtual void Initialize()
         {
@@ -50,9 +107,9 @@ namespace Urasandesu.NAnonym.Formulas
 
         public bool IsPinned { get; private set; }
 
-        protected void CheckCanModify(Formula formula)
+        protected void CheckCanModify(Node node)
         {
-            if (formula != null && formula.IsPinned)
+            if (node != null && node.IsPinned)
             {
                 throw new NotSupportedException("This object has already pinned, so it can not modify.");
             }
@@ -64,27 +121,12 @@ namespace Urasandesu.NAnonym.Formulas
             result = value;
         }
 
-        protected void SetFormula<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
+        protected void SetNode<TNode>(string propertyName, TNode node, ref TNode result) where TNode : Node
         {
-            SetReferrer(result, null);
-            SetValue(propertyName, formula, ref result);
-            SetReferrer(result, this);
-        }
-        protected void SetFormulaAsValue<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
-        {
-            SetValue(propertyName, formula, ref result);
+            SetValue(propertyName, node, ref result);
         }
 
-        protected void SetReferrer(Formula target, Formula referrer)
-        {
-            if (target != null)
-            {
-                CheckCanModify(target.Referrer);
-                target.referrer = referrer;
-            }
-        }
-
-        public static void Pin(Formula item)
+        public static void Pin(Node item)
         {
             if (item != null && !item.IsPinned)
             {
@@ -136,6 +178,25 @@ namespace Urasandesu.NAnonym.Formulas
         }
 
         public abstract void Accept(IFormulaVisitor visitor);
+    }
+
+    public abstract partial class Formula : Node
+    {
+        protected void SetFormula<TFormula>(string propertyName, TFormula formula, ref TFormula result) where TFormula : Formula
+        {
+            SetReferrer(result, null);
+            SetValue(propertyName, formula, ref result);
+            SetReferrer(result, this);
+        }
+
+        protected void SetReferrer(Formula target, Formula referrer)
+        {
+            if (target != null)
+            {
+                CheckCanModify(target.Referrer);
+                target.referrer = referrer;
+            }
+        }
     }
 }
 

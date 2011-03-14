@@ -1,5 +1,5 @@
-﻿/* 
- * File: LocalFormula.cs
+/* 
+ * File: Node.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,7 +26,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
+ 
 
 using System;
 using System.Collections.Generic;
@@ -38,17 +38,60 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class LocalFormula : Formula
+    public abstract partial class Node
     {
-        public LocalFormula(string localName, Type type)
-            : this(localName, type.ToTypeDecl())
+        public Node()
+            : base()
+        {
+            InitializeForCodeGeneration();
+            Initialize();
+        }
+
+        protected virtual void InitializeForCodeGeneration()
+        {
+            NodeType = NodeType.None;
+            TypeDeclaration = default(ITypeDeclaration);
+        }
+
+        public const string NameOfNodeType = "NodeType";
+        NodeType nodeType;
+        public NodeType NodeType 
+        { 
+            get { return nodeType; } 
+            set 
+            {
+                SetValue(NameOfNodeType, value, ref nodeType);
+            }
+        }
+        public const string NameOfTypeDeclaration = "TypeDeclaration";
+        ITypeDeclaration typeDeclaration;
+        public ITypeDeclaration TypeDeclaration 
+        { 
+            get { return typeDeclaration; } 
+            set 
+            {
+                SetValue(NameOfTypeDeclaration, value, ref typeDeclaration);
+            }
+        }
+
+
+        protected virtual void PinCore()
         {
         }
 
-        public LocalFormula(string localName, ITypeDeclaration type)
+
+        public virtual void AppendTo(StringBuilder sb)
         {
-            LocalName = localName;
-            TypeDeclaration = type;
+            sb.Append("\"");
+            sb.Append(NameOfNodeType);
+            sb.Append("\": ");
+            AppendValueTo(NodeType, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfTypeDeclaration);
+            sb.Append("\": ");
+            AppendValueTo(TypeDeclaration, sb);
         }
     }
 }
+

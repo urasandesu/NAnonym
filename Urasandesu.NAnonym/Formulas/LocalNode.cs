@@ -1,6 +1,5 @@
-﻿<#+
-/* 
- * File: FormulaTemplateProperty.tt
+﻿/* 
+ * File: LocalNode.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -27,39 +26,29 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-public class FormulaTemplateProperty
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Urasandesu.NAnonym.ILTools;
+using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
+
+namespace Urasandesu.NAnonym.Formulas
 {
-    public string Name { get; set; }
-    public string TypeName { get; set; }
-    public string Default { get; set; }
-    public bool ProhibitsToString { get; set; }
-    public bool HasToStringValueIfDefault { get; set; }
-    public bool HideBySig { get; set; }
-    public bool AsNode { get; set; }
-    public bool ProhibitsDefaultAccepting { get; set; }
-	
-	public bool IsAcceptable
-	{
-		get
-		{
-			return !ProhibitsDefaultAccepting && IsNode;
-		}
-	}
-	
-	public bool IsNode
-	{
-		get
-		{
-			return TypeName.Contains("Formula") || TypeName.Contains("Node") && !TypeName.Contains("NodeType");
-		}
-	}
-	
-	public string CamelName
-	{
-		get
-		{
-			return Name.ToCamel();
-		}
-	}
+    public partial class LocalNode : Node
+    {
+        public LocalNode(string localName, Type type)
+            : this(localName, type.ToTypeDecl())
+        {
+        }
+
+        public LocalNode(string localName, ITypeDeclaration type)
+        {
+            LocalName = localName;
+            TypeDeclaration = type;
+        }
+    }
 }
-#>

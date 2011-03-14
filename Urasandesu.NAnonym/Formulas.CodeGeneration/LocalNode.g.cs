@@ -1,5 +1,5 @@
-﻿/* 
- * File: FormulaAsValueCollection.cs
+/* 
+ * File: LocalNode.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,56 +26,77 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-
+ 
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Collections.ObjectModel;
-using System.Collections;
-using Urasandesu.NAnonym;
-using System.Collections.Specialized;
-using Urasandesu.NAnonym.Linq;
+using Urasandesu.NAnonym.ILTools;
+using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public class FormulaAsValueCollection<TFormula> : FormulaCollection<TFormula> where TFormula : Formula
+    public partial class LocalNode : Node
     {
-        public override void Insert(int index, TFormula item)
+
+        protected override void InitializeForCodeGeneration()
         {
-            list.Insert(index, item);
+            base.InitializeForCodeGeneration();
+			NodeType = NodeType.Local;
+            LocalName = default(string);
+            Local = default(ILocalDeclaration);
         }
 
-        public override void RemoveAt(int index)
-        {
-            list.RemoveAt(index);
-        }
-
-        public override TFormula this[int index]
-        {
-            get
+        public const string NameOfLocalName = "LocalName";
+        string localName;
+        public string LocalName 
+        { 
+            get { return localName; } 
+            set 
             {
-                return list[index];
-            }
-            set
-            {
-                list[index] = value;
+                SetValue(NameOfLocalName, value, ref localName);
             }
         }
-
-        public override void Clear()
-        {
-            list.Clear();
+        public const string NameOfLocal = "Local";
+        ILocalDeclaration local;
+        public ILocalDeclaration Local 
+        { 
+            get { return local; } 
+            set 
+            {
+                SetValue(NameOfLocal, value, ref local);
+            }
         }
 
-        public override bool Remove(TFormula item)
-        {
-            return list.Remove(item);
-        }
 
         public override void Accept(IFormulaVisitor visitor)
         {
+            visitor.Visit(this);
+        }
+
+
+        protected override void PinCore()
+        {
+            base.PinCore();
+        }
+
+
+        public override void AppendTo(StringBuilder sb)
+        {
+            base.AppendTo(sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLocalName);
+            sb.Append("\": ");
+            AppendValueTo(LocalName, sb);
+            sb.Append(", ");
+            sb.Append("\"");
+            sb.Append(NameOfLocal);
+            sb.Append("\": ");
+            AppendValueTo(Local, sb);
         }
     }
 }
+

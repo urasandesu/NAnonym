@@ -38,20 +38,13 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class Formula
+    public abstract partial class Formula : Node
     {
-        public Formula()
-            : base()
-        {
-            InitializeForCodeGeneration();
-            Initialize();
-        }
 
-        protected virtual void InitializeForCodeGeneration()
+        protected override void InitializeForCodeGeneration()
         {
+            base.InitializeForCodeGeneration();
             Referrer = default(Formula);
-            NodeType = NodeType.None;
-            TypeDeclaration = default(ITypeDeclaration);
         }
 
         public const string NameOfReferrer = "Referrer";
@@ -64,45 +57,18 @@ namespace Urasandesu.NAnonym.Formulas
                 SetFormula(NameOfReferrer, value, ref referrer);
             }
         }
-        public const string NameOfNodeType = "NodeType";
-        NodeType nodeType;
-        public NodeType NodeType 
-        { 
-            get { return nodeType; } 
-            set 
-            {
-                SetValue(NameOfNodeType, value, ref nodeType);
-            }
-        }
-        public const string NameOfTypeDeclaration = "TypeDeclaration";
-        ITypeDeclaration typeDeclaration;
-        public ITypeDeclaration TypeDeclaration 
-        { 
-            get { return typeDeclaration; } 
-            set 
-            {
-                SetValue(NameOfTypeDeclaration, value, ref typeDeclaration);
-            }
-        }
 
 
-        protected virtual void PinCore()
+        protected override void PinCore()
         {
             Formula.Pin(Referrer);
+            base.PinCore();
         }
 
 
-        public virtual void AppendTo(StringBuilder sb)
+        public override void AppendTo(StringBuilder sb)
         {
-            sb.Append("\"");
-            sb.Append(NameOfNodeType);
-            sb.Append("\": ");
-            AppendValueTo(NodeType, sb);
-            sb.Append(", ");
-            sb.Append("\"");
-            sb.Append(NameOfTypeDeclaration);
-            sb.Append("\": ");
-            AppendValueTo(TypeDeclaration, sb);
+            base.AppendTo(sb);
         }
     }
 }

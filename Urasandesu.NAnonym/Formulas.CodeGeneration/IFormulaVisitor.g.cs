@@ -67,10 +67,11 @@ namespace Urasandesu.NAnonym.Formulas
         void Visit(BlockFormula formula);
         void VisitBlockFormulas(BlockFormula formula, FormulaCollection<Formula> formulas);
         void Visit(ConstantFormula formula);
+        void Visit(Node formula);
         void Visit(Formula formula);
         void Visit(VariableFormula formula);
-        void VisitVariableResolved(VariableFormula formula, Formula resolved);
-        void Visit(LocalFormula formula);
+        void VisitVariableResolved(VariableFormula formula, Node resolved);
+        void Visit(LocalNode formula);
         void Visit(ArgumentFormula formula);
         void Visit(UnaryFormula formula);
         void Visit(ConvertFormula formula);

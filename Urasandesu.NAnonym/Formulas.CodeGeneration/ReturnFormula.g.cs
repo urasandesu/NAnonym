@@ -67,7 +67,7 @@ namespace Urasandesu.NAnonym.Formulas
             get { return end; } 
             set 
             {
-                SetFormulaAsValue(NameOfEnd, value, ref end);
+                SetNode(NameOfEnd, value, ref end);
             }
         }
         public const string NameOfLabel = "Label";

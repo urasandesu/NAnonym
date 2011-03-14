@@ -46,7 +46,7 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
 			NodeType = NodeType.End;
             EntryBlock = default(BlockFormula);
-            Returns = new FormulaAsValueCollection<ReturnFormula>();
+            Returns = new NodeCollection<ReturnFormula>();
         }
 
         public const string NameOfEntryBlock = "EntryBlock";
@@ -60,13 +60,13 @@ namespace Urasandesu.NAnonym.Formulas
             }
         }
         public const string NameOfReturns = "Returns";
-        FormulaAsValueCollection<ReturnFormula> returns;
-        public FormulaAsValueCollection<ReturnFormula> Returns 
+        NodeCollection<ReturnFormula> returns;
+        public NodeCollection<ReturnFormula> Returns 
         { 
             get { return returns; } 
             set 
             {
-                SetFormulaAsValue(NameOfReturns, value, ref returns);
+                SetNode(NameOfReturns, value, ref returns);
             }
         }
 

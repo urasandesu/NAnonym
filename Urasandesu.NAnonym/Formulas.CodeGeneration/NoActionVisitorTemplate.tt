@@ -90,7 +90,7 @@ namespace Urasandesu.NAnonym.Formulas
 				foreach (var property in GetProperties(template.Value))
 				{
 #>
-        public void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
+        public void Visit<#= template.Value.SimpleName #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.CamelName #>)
 		{
 		}
 <#+

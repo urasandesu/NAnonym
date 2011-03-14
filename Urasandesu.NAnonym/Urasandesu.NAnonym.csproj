@@ -106,7 +106,7 @@
     <Compile Include="Formulas.CodeGeneration\LessThanFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
-    <Compile Include="Formulas.CodeGeneration\LocalFormula.g.cs">
+    <Compile Include="Formulas.CodeGeneration\LocalNode.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\LogicalBinaryFormula.g.cs">
@@ -125,6 +125,9 @@
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\NoActionVisitor.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\Node.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\NotEqualFormula.g.cs">
@@ -176,10 +179,10 @@
     <Compile Include="Formulas\ExpressionToInlineValueState.cs" />
     <Compile Include="Formulas\FieldFormula.cs" />
     <Compile Include="Formulas\Formula.cs" />
-    <Compile Include="Formulas\FormulaAsValueCollection.cs" />
+    <Compile Include="Formulas\NodeCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
     <Compile Include="Formulas\LessThanFormula.cs" />
-    <Compile Include="Formulas\LocalFormula.cs" />
+    <Compile Include="Formulas\LocalNode.cs" />
     <Compile Include="Formulas\MultiplyFormula.cs" />
     <Compile Include="Formulas\NewArrayInitFormula.cs" />
     <Compile Include="Formulas\NewFormula.cs" />

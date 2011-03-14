@@ -85,7 +85,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             }
             gen.Eval(() => Dsl.EndIf());
             gen.Eval(() => Dsl.End());
-            Console.WriteLine(gen.Dump());
+            Console.WriteLine(gen.DumpEntryPoint());
         }
 
         [Test]
@@ -270,7 +270,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 "32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc." +
 "FieldTestClass2\", \"VariableName\": \"f2\", \"VariableIndex\": 0, \"Resolved\": {\"NodeType\": \"Lo" +
 "cal\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", " +
-"\"Local\": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}]}}]}}", gen.Dump());
+"\"Local\": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}]}}]}}", gen.DumpEntryPoint());
             #endregion
         }
 
@@ -917,7 +917,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 "s.OpCode\", \"LocalName\": \"opcode1\", \"Local\": null}}, \"Method\": \"=\", \"Right\": {\"NodeType" +
 "\": \"Field\", \"TypeDeclaration\": \"Urasandesu.NAnonym.ILTools.OpCode\", \"Instance\": null, \"Mem" +
 "ber\": \"Urasandesu.NAnonym.ILTools.OpCode Add_Ovf\", \"Member\": \"Urasandesu.NAnonym.ILTools.OpCod" +
-"e Add_Ovf\"}}]}}", gen.Dump());
+"e Add_Ovf\"}}]}}", gen.DumpEntryPoint());
             #endregion
         }
 
@@ -935,7 +935,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             Assert.AreEqual("{\"NodeType\": \"End\", \"TypeDeclaration\": \"System.Int32\", \"EntryBlock\": {\"NodeType\": \"Bloc" +
 "k\", \"TypeDeclaration\": \"System.Int32\", \"Locals\": [], \"Formulas\": [{\"NodeType\": \"Return\"" +
 ", \"TypeDeclaration\": \"System.Int32\", \"Body\": {\"NodeType\": \"Constant\", \"TypeDeclaration\":" +
-" \"System.Int32\", \"ConstantValue\": 10}, \"Label\": null}]}}", gen.Dump());
+" \"System.Int32\", \"ConstantValue\": 10}, \"Label\": null}]}}", gen.DumpEntryPoint());
             #endregion
         }
 
@@ -990,7 +990,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 "32\", \"ConstantValue\": 0}, \"Label\": null}]}, \"IfFalse\": {\"NodeType\": \"Block\", \"TypeDeclar" +
 "ation\": \"System.Int32\", \"Locals\": [], \"Formulas\": [{\"NodeType\": \"Return\", \"TypeDeclarati" +
 "on\": \"System.Int32\", \"Body\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.Int32\"" +
-", \"ConstantValue\": 1}, \"Label\": null}]}}}]}}", gen.Dump());
+", \"ConstantValue\": 1}, \"Label\": null}]}}}]}}", gen.DumpEntryPoint());
             #endregion
         }
 
@@ -1064,7 +1064,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
 "Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.String\", \"VariableName\": \"" +
 "result\", \"VariableIndex\": 0, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Syst" +
 "em.String\", \"LocalName\": \"result\", \"Local\": null}}, \"Member\": \"Int32 Length\", \"Member\":" +
-" \"Int32 Length\"}, \"Label\": null}]}}", gen.Dump());
+" \"Int32 Length\"}, \"Label\": null}]}}", gen.DumpEntryPoint());
             #endregion
         }
 
@@ -1153,7 +1153,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             gen.Eval(() => Dsl.Allocate(value).As(Dsl.LoadArgument<int>(0)));
             gen.Eval(() => Dsl.Return(value + value * value * value));
             gen.Eval(() => Dsl.End());
-            Console.WriteLine(gen.Dump());
+            Console.WriteLine(gen.DumpEntryPoint());
         }
     }
 }

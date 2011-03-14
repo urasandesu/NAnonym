@@ -296,8 +296,13 @@ namespace Urasandesu.NAnonym.Formulas
             Visit((Formula)formula);
             visitor.Visit(formula);
         }
+        public virtual void Visit(Node formula)
+        {
+            visitor.Visit(formula);
+        }
         public virtual void Visit(Formula formula)
         {
+            Visit((Node)formula);
             visitor.Visit(formula);
         }
         public virtual void Visit(VariableFormula formula)
@@ -306,19 +311,19 @@ namespace Urasandesu.NAnonym.Formulas
             Visit((Formula)formula);
             visitor.Visit(formula);
         }
-        public virtual void VisitVariableResolved(VariableFormula formula, Formula resolved)
+        public virtual void VisitVariableResolved(VariableFormula formula, Node resolved)
 		{
 		    if (formula.GetType() != typeof(VariableFormula)) return;
 			VisitVariableResolvedCore(formula, resolved);
 			visitor.VisitVariableResolved(formula, resolved);
 		}
-        protected virtual void VisitVariableResolvedCore(VariableFormula formula, Formula resolved)
+        protected virtual void VisitVariableResolvedCore(VariableFormula formula, Node resolved)
 		{
 			resolved.Accept(this);
 		}
-        public virtual void Visit(LocalFormula formula)
+        public virtual void Visit(LocalNode formula)
         {
-            Visit((Formula)formula);
+            Visit((Node)formula);
             visitor.Visit(formula);
         }
         public virtual void Visit(ArgumentFormula formula)

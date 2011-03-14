@@ -46,8 +46,8 @@ namespace Urasandesu.NAnonym.Formulas
             base.InitializeForCodeGeneration();
 			NodeType = NodeType.Block;
             ParentBlock = default(BlockFormula);
-            ChildBlocks = new FormulaAsValueCollection<BlockFormula>();
-            Locals = new FormulaAsValueCollection<LocalFormula>();
+            ChildBlocks = new NodeCollection<BlockFormula>();
+            Locals = new NodeCollection<LocalNode>();
             Formulas = new FormulaCollection<Formula>();
         }
 
@@ -58,27 +58,27 @@ namespace Urasandesu.NAnonym.Formulas
             get { return parentBlock; } 
             set 
             {
-                SetFormulaAsValue(NameOfParentBlock, value, ref parentBlock);
+                SetNode(NameOfParentBlock, value, ref parentBlock);
             }
         }
         public const string NameOfChildBlocks = "ChildBlocks";
-        FormulaAsValueCollection<BlockFormula> childBlocks;
-        public FormulaAsValueCollection<BlockFormula> ChildBlocks 
+        NodeCollection<BlockFormula> childBlocks;
+        public NodeCollection<BlockFormula> ChildBlocks 
         { 
             get { return childBlocks; } 
             set 
             {
-                SetFormulaAsValue(NameOfChildBlocks, value, ref childBlocks);
+                SetNode(NameOfChildBlocks, value, ref childBlocks);
             }
         }
         public const string NameOfLocals = "Locals";
-        FormulaAsValueCollection<LocalFormula> locals;
-        public FormulaAsValueCollection<LocalFormula> Locals 
+        NodeCollection<LocalNode> locals;
+        public NodeCollection<LocalNode> Locals 
         { 
             get { return locals; } 
             set 
             {
-                SetFormulaAsValue(NameOfLocals, value, ref locals);
+                SetNode(NameOfLocals, value, ref locals);
             }
         }
         public const string NameOfFormulas = "Formulas";

@@ -198,7 +198,7 @@ namespace Urasandesu.NAnonym.ILTools
                 var variable = (VariableFormula)left;
                 if (variable.Resolved.NodeType == NodeType.Local)
                 {
-                    var local = (LocalFormula)variable.Resolved;
+                    var local = (LocalNode)variable.Resolved;
                     il.Emit(OpCodes.Stloc, local.Local);
                     if (!formula.TypeDeclaration.Equals(typeof(void).ToTypeDecl()))
                     {
@@ -216,7 +216,7 @@ namespace Urasandesu.NAnonym.ILTools
             }
         }
 
-        public override void Visit(LocalFormula formula)
+        public override void Visit(LocalNode formula)
         {
             base.Visit(formula);
             il.Emit(OpCodes.Ldloc, formula.Local);

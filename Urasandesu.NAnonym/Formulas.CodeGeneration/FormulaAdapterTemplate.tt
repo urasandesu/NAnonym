@@ -98,7 +98,7 @@ namespace Urasandesu.NAnonym.Formulas
 				foreach (var property in GetProperties(template.Value))
 				{
 #>
-            if (formula.<#= property.Name #> != null) Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula, formula.<#= property.Name #>);
+            if (formula.<#= property.Name #> != null) Visit<#= template.Value.SimpleName #><#= property.Name #>(formula, formula.<#= property.Name #>);
 <#+ 
 				}
 			}
@@ -119,15 +119,15 @@ namespace Urasandesu.NAnonym.Formulas
 				foreach (var property in GetProperties(template.Value))
 				{
 #>
-        public virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
+        public virtual void Visit<#= template.Value.SimpleName #><#= property.Name #>(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.CamelName #>)
 		{
 		    if (formula.GetType() != typeof(<#= template.Value.TypeName #>)) return;
-			Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>Core(formula, <#= property.Name.ToCamel() #>);
-			visitor.Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>(formula, <#= property.Name.ToCamel() #>);
+			Visit<#= template.Value.SimpleName #><#= property.Name #>Core(formula, <#= property.CamelName #>);
+			visitor.Visit<#= template.Value.SimpleName #><#= property.Name #>(formula, <#= property.CamelName #>);
 		}
-        protected virtual void Visit<#= template.Value.TypeName.Replace("Formula", "") #><#= property.Name #>Core(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.Name.ToCamel() #>)
+        protected virtual void Visit<#= template.Value.SimpleName #><#= property.Name #>Core(<#= template.Value.TypeName #> formula, <#= property.TypeName #> <#= property.CamelName #>)
 		{
-			<#= property.Name.ToCamel() #>.Accept(this);
+			<#= property.CamelName #>.Accept(this);
 		}
 <#+
 				}
