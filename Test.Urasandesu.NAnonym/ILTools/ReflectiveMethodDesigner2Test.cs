@@ -282,147 +282,145 @@ namespace Test.Urasandesu.NAnonym.ILTools
 "onym.Etc.PropertyTestClass2\", \"LocalName\": \"p2\", \"Local\": null}, {\"NodeType\": \"Local\", \"" +
 "TypeDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}], \"Formulas\": [{\"" +
 "NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"System.Void\", \"Instance\": null, \"Method\"" +
-": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\": \"NewArrayInit\"" +
-", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"NodeType\": \"Constant\", \"TypeDeclar" +
-"ation\": \"System.String\", \"ConstantValue\": \"testtest\"}]}]}, {\"NodeType\": \"Assign\", \"TypeD" +
-"eclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveNew\", \"TypeDeclaration\": \"T" +
-"est.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"Constructor\": \"Void .ctor()\", \"Arguments\": [" +
-"]}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.Proper" +
-"tyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Loca" +
-"l\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\"," +
-" \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"Sy" +
-"stem.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Ar" +
-"guments\": [{\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\":" +
-" [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"{0}\"}, " +
-"{\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\"" +
-", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDec" +
-"laration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": nu" +
-"ll}}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\":" +
-" \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": null, \"Operand\": {\"NodeType\": " +
-"\"Constant\", \"TypeDeclaration\": \"System.Int32\", \"ConstantValue\": 10}}, \"Left\": {\"NodeType\"" +
-": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Var" +
-"iable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"VariableName\": " +
-"\"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.U" +
-"rasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Member\": \"" +
-"Int32 ValueProperty\", \"Member\": \"Int32 ValueProperty\"}, \"Method\": \"=\"}, {\"NodeType\": \"Re" +
-"flectiveCall\", \"TypeDeclaration\": \"System.Void\", \"Instance\": null, \"Method\": \"Void WriteLo" +
-"g(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\": \"NewArrayInit\", \"TypeDeclarat" +
-"ion\": \"System.Object[]\", \"Formulas\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"Syste" +
-"m.String\", \"ConstantValue\": \"ValueProperty: {0}\"}, {\"NodeType\": \"Convert\", \"TypeDeclaratio" +
-"n\": \"System.Object\", \"Method\": null, \"Operand\": {\"NodeType\": \"ReflectiveProperty\", \"Type" +
-"Declaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"T" +
-"est.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"" +
-"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTes" +
-"tClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Member\": \"Int32 ValueProperty\", \"Member\"" +
-": \"Int32 ValueProperty\"}}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"" +
-"Right\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"a" +
-"\"}, \"Left\": {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Inst" +
-"ance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTest" +
-"Class1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"" +
-"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Loc" +
-"al\": null}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProper" +
-"ty\"}, \"Method\": \"=\"}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\"" +
-": {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": {\"N" +
-"odeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"" +
-"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclara" +
-"tion\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null}}" +
-", \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}, \"Lef" +
+": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\": \"Constant\", \"" +
+"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"testtest\"}, {\"NodeType\": \"NewArrayIni" +
+"t\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": []}]}, {\"NodeType\": \"Assign\", \"Typ" +
+"eDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveNew\", \"TypeDeclaration\": \"" +
+"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"Constructor\": \"Void .ctor()\", \"Arguments\":" +
+" []}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.Prop" +
+"ertyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Lo" +
+"cal\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\"" +
+", \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"" +
+"System.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"" +
+"Arguments\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\"" +
+": \"{0}\"}, {\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\":" +
+" [{\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1" +
+"\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeD" +
+"eclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": " +
+"null}}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\"" +
+": \"Constant\", \"TypeDeclaration\": \"System.Int32\", \"ConstantValue\": 10}, \"Left\": {\"NodeTyp" +
+"e\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"V" +
+"ariable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"VariableName\"" +
+": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test" +
+".Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Member\": " +
+"\"Int32 ValueProperty\", \"Member\": \"Int32 ValueProperty\"}, \"Method\": \"=\"}, {\"NodeType\": \"" +
+"ReflectiveCall\", \"TypeDeclaration\": \"System.Void\", \"Instance\": null, \"Method\": \"Void Write" +
+"Log(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\": \"Constant\", \"TypeDeclaratio" +
+"n\": \"System.String\", \"ConstantValue\": \"ValueProperty: {0}\"}, {\"NodeType\": \"NewArrayInit\"," +
+" \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"NodeType\": \"Convert\", \"TypeDeclarat" +
+"ion\": \"System.Object\", \"Method\": null, \"Operand\": {\"NodeType\": \"ReflectiveProperty\", \"Ty" +
+"peDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"" +
+"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, " +
+"\"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyT" +
+"estClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Member\": \"Int32 ValueProperty\", \"Member" +
+"\": \"Int32 ValueProperty\"}}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", " +
+"\"Right\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"" +
+"a\"}, \"Left\": {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"In" +
+"stance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTe" +
+"stClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\"," +
+" \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"L" +
+"ocal\": null}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProp" +
+"erty\"}, \"Method\": \"=\"}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Righ" +
 "t\": {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": {\"" +
 "NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", " +
 "\"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDecla" +
 "ration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null" +
-"}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}, \"M" +
-"ethod\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"System.Void\", \"Instance" +
-"\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeType" +
-"\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"NodeType\": \"Cons" +
-"tant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"ObjectProperty: {0}\"}, {\"Node" +
-"Type\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": {\"NodeType\":" +
-" \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"VariableNa" +
-"me\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"" +
-"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Member" +
-"\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}]}]}, {\"NodeType" +
-"\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"New\", \"TypeDecla" +
-"ration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"Constructor\": \"Void .ctor()\", \"Argu" +
-"ments\": []}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym." +
-"Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\":" +
-" \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f" +
-"2\", \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System" +
-".Void\", \"Right\": {\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": " +
-"null, \"Operand\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.Int32\", \"ConstantVal" +
-"ue\": 30}}, \"Left\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"I" +
-"nstance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTest" +
-"Class2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"" +
-"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\"" +
-": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}, \"Method\": \"=\"}, " +
-"{\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"Reflect" +
-"iveField\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"Type" +
-"Declaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"Variable" +
-"Index\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym." +
-"Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueField\", \"" +
-"Member\": \"Int32 ValueField\"}, \"Left\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\":" +
-" \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu" +
-".NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"No" +
-"deType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalNa" +
-"me\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}" +
-", \"Method\": \"=\"}, {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\": n" +
-"ull, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\": \"" +
-"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"NodeType\": \"Constant\"" +
-", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"ValueField: {0}\"}, {\"NodeType\": \"" +
-"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": null, \"Operand\": {\"NodeType\": \"" +
-"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\"," +
-" \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"V" +
-"ariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.N" +
-"Anonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueFie" +
-"ld\", \"Member\": \"Int32 ValueField\"}}]}]}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\"" +
-": \"System.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\"" +
-", \"Arguments\": [{\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formu" +
-"las\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"Va" +
-"lueField: {0}\"}, {\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": nu" +
-"ll, \"Operand\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"Instan" +
-"ce\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass" +
-"2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"Type" +
-"Declaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": nu" +
-"ll}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}}]}]}, {\"NodeType\": \"Ass" +
-"ign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveNew\", \"TypeDecl" +
-"aration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"Constructor\": \"Void .ctor(Int32, " +
-"System.String)\", \"Arguments\": [{\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"Syst" +
-"em.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnony" +
-"m.Etc.PropertyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeTy" +
-"pe\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalNam" +
-"e\": \"p1\", \"Local\": null}}, \"Member\": \"Int32 ValueProperty\", \"Member\": \"Int32 ValueProper" +
-"ty\"}, {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": " +
+"}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}, \"L" +
+"eft\": {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": " +
 "{\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\"" +
 ", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDec" +
 "laration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": nu" +
-"ll}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}]}," +
-" \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyT" +
-"estClass2\", \"VariableName\": \"p2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\"" +
-", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"LocalName\": \"p2\", \"" +
-"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"Syste" +
-"m.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Argum" +
-"ents\": [{\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{" +
-"\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"({0}, {1})\"" +
-"}, {\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": null, \"Operand\"" +
-": {\"NodeType\": \"Property\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": " +
-"\"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"VariableNam" +
-"e\": \"p2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"T" +
-"est.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"LocalName\": \"p2\", \"Local\": null}}, \"Member\"" +
-": \"Int32 ValueProperty\", \"Member\": \"Int32 ValueProperty\"}}, {\"NodeType\": \"Property\", \"Ty" +
-"peDeclaration\": \"System.String\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": " +
-"\"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"VariableName\": \"p2\", \"VariableIndex\": -1," +
-" \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.Property" +
-"TestClass2\", \"LocalName\": \"p2\", \"Local\": null}}, \"Member\": \"System.String ObjectProperty\"" +
-", \"Member\": \"System.String ObjectProperty\"}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\":" +
-" \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"System.Int32\"" +
-", \"Instance\": null, \"Method\": \"Int32 GetValue(Int32)\", \"Arguments\": [{\"NodeType\": \"Refle" +
+"ll}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}, \"" +
+"Method\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"System.Void\", \"Instan" +
+"ce\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeTy" +
+"pe\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"ObjectProperty: {0}" +
+"\"}, {\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"No" +
+"deType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\": {\"NodeType\"" +
+": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"Variable" +
+"Name\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": " +
+"\"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": null}}, \"Memb" +
+"er\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}]}]}, {\"NodeTy" +
+"pe\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"New\", \"TypeDec" +
+"laration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"Constructor\": \"Void .ctor()\", \"Ar" +
+"guments\": []}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnony" +
+"m.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\"" +
+": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"" +
+"f2\", \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"Syst" +
+"em.Void\", \"Right\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.Int32\", \"Constant" +
+"Value\": 30}, \"Left\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"" +
+"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTe" +
+"stClass2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\"," +
+" \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Loca" +
+"l\": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}, \"Method\": \"=\"}" +
+", {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"Refle" +
 "ctiveField\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"Ty" +
 "peDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"Variab" +
 "leIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnony" +
 "m.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueField\"," +
-" \"Member\": \"Int32 ValueField\"}]}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"" +
-"System.Int32\", \"VariableName\": \"value\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"L" +
-"ocal\", \"TypeDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}}, \"Method" +
-"\": \"=\"}]}}", gen.DumpEntryPoint());
+" \"Member\": \"Int32 ValueField\"}, \"Left\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\"" +
+": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasande" +
+"su.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"" +
+"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"Local" +
+"Name\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"" +
+"}, \"Method\": \"=\"}, {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\":" +
+" null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Arguments\": [{\"NodeType\":" +
+" \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"ValueField: {0}\"}, {\"N" +
+"odeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formulas\": [{\"NodeType\":" +
+" \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": null, \"Operand\": {\"NodeType\": " +
+"\"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\"" +
+", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"" +
+"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu" +
+".NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueF" +
+"ield\", \"Member\": \"Int32 ValueField\"}}]}]}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration" +
+"\": \"System.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])" +
+"\", \"Arguments\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantV" +
+"alue\": \"ValueField: {0}\"}, {\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[" +
+"]\", \"Formulas\": [{\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": " +
+"null, \"Operand\": {\"NodeType\": \"ReflectiveField\", \"TypeDeclaration\": \"System.Int32\", \"Inst" +
+"ance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestCla" +
+"ss2\", \"VariableName\": \"f2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"Ty" +
+"peDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": " +
+"null}}, \"Member\": \"Int32 ValueField\", \"Member\": \"Int32 ValueField\"}}]}]}, {\"NodeType\": \"A" +
+"ssign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveNew\", \"TypeDe" +
+"claration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"Constructor\": \"Void .ctor(Int32" +
+", System.String)\", \"Arguments\": [{\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"Sy" +
+"stem.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAno" +
+"nym.Etc.PropertyTestClass1\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"Node" +
+"Type\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalN" +
+"ame\": \"p1\", \"Local\": null}}, \"Member\": \"Int32 ValueProperty\", \"Member\": \"Int32 ValueProp" +
+"erty\"}, {\"NodeType\": \"ReflectiveProperty\", \"TypeDeclaration\": \"System.String\", \"Instance\"" +
+": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1" +
+"\", \"VariableName\": \"p1\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeD" +
+"eclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass1\", \"LocalName\": \"p1\", \"Local\": " +
+"null}}, \"Member\": \"System.String ObjectProperty\", \"Member\": \"System.String ObjectProperty\"}]" +
+"}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.Propert" +
+"yTestClass2\", \"VariableName\": \"p2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local" +
+"\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"LocalName\": \"p2\", " +
+"\"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"Sys" +
+"tem.Void\", \"Instance\": null, \"Method\": \"Void WriteLog(System.String, System.Object[])\", \"Arg" +
+"uments\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"" +
+"({0}, {1})\"}, {\"NodeType\": \"NewArrayInit\", \"TypeDeclaration\": \"System.Object[]\", \"Formula" +
+"s\": [{\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Object\", \"Method\": null, \"Operan" +
+"d\": {\"NodeType\": \"Property\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\"" +
+": \"Variable\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"VariableN" +
+"ame\": \"p2\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"" +
+"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"LocalName\": \"p2\", \"Local\": null}}, \"Membe" +
+"r\": \"Int32 ValueProperty\", \"Member\": \"Int32 ValueProperty\"}}, {\"NodeType\": \"Property\", \"" +
+"TypeDeclaration\": \"System.String\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\"" +
+": \"Test.Urasandesu.NAnonym.Etc.PropertyTestClass2\", \"VariableName\": \"p2\", \"VariableIndex\": -" +
+"1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.Proper" +
+"tyTestClass2\", \"LocalName\": \"p2\", \"Local\": null}}, \"Member\": \"System.String ObjectProperty" +
+"\", \"Member\": \"System.String ObjectProperty\"}]}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\"" +
+": \"System.Void\", \"Right\": {\"NodeType\": \"ReflectiveCall\", \"TypeDeclaration\": \"System.Int3" +
+"2\", \"Instance\": null, \"Method\": \"Int32 GetValue(Int32)\", \"Arguments\": [{\"NodeType\": \"Ref" +
+"lectiveField\", \"TypeDeclaration\": \"System.Int32\", \"Instance\": {\"NodeType\": \"Variable\", \"" +
+"TypeDeclaration\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass2\", \"VariableName\": \"f2\", \"Vari" +
+"ableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Test.Urasandesu.NAno" +
+"nym.Etc.FieldTestClass2\", \"LocalName\": \"f2\", \"Local\": null}}, \"Member\": \"Int32 ValueField\"" +
+", \"Member\": \"Int32 ValueField\"}]}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": " +
+"\"System.Int32\", \"VariableName\": \"value\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"" +
+"Local\", \"TypeDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}}, \"Meth" +
+"od\": \"=\"}]}}", gen.DumpEntryPoint());
             #endregion
         }
 

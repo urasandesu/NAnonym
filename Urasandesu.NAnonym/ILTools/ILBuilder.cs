@@ -217,6 +217,42 @@ namespace Urasandesu.NAnonym.ILTools
             il.Emit(OpCodes.Ret);
         }
 
+        public override void Visit(AssignFormula formula)
+        {
+            if (formula.Left != null && (formula.Left.NodeType == NodeType.Property || formula.Left.NodeType == NodeType.ReflectiveProperty))
+            {
+                var property = (PropertyFormula)formula.Left;
+                if (property.Instance != null) VisitPropertyInstanceCore(property, property.Instance);
+                if (formula.Right != null) VisitAssignRightCore(formula, formula.Right);
+                if (property.Member.SetMethod.IsStatic || property.Member.DeclaringType.IsValueType)
+                {
+                    il.Emit(OpCodes.Call, property.Member.SetMethod);
+                }
+                else
+                {
+                    il.Emit(OpCodes.Callvirt, property.Member.SetMethod);
+                }
+            }
+            else if (formula.Left != null && (formula.Left.NodeType == NodeType.Field || formula.Left.NodeType == NodeType.ReflectiveField))
+            {
+                var field = (FieldFormula)formula.Left;
+                if (field.Instance != null) VisitFieldInstanceCore(field, field.Instance);
+                if (formula.Right != null) VisitAssignRightCore(formula, formula.Right);
+                if (field.Member.IsStatic)
+                {
+                    il.Emit(OpCodes.Stsfld, field.Member);
+                }
+                else
+                {
+                    il.Emit(OpCodes.Stfld, field.Member);
+                }
+            }
+            else
+            {
+                base.Visit(formula);
+            }
+        }
+
         protected override void VisitAssignLeftCore(AssignFormula formula, Formula left)
         {
             if (left.NodeType == NodeType.Variable)
@@ -450,5 +486,75 @@ namespace Urasandesu.NAnonym.ILTools
             il.SetLabel(formula.Label);
         }
 
+        public override void Visit(CallFormula formula)
+        {
+            base.Visit(formula);
+            if (formula.Method.IsStatic || formula.Method.DeclaringType.IsValueType)
+            {
+                il.Emit(OpCodes.Call, formula.Method);
+            }
+            else
+            {
+                il.Emit(OpCodes.Callvirt, formula.Method);
+            }
+        }
+
+        public override void Visit(NewFormula formula)
+        {
+            base.Visit(formula);
+            if (formula.NodeType != NodeType.BaseNew)
+            {
+                il.Emit(OpCodes.Newobj, formula.Constructor);
+            }
+        }
+
+        protected override void VisitNewArrayInitFormulasCore(NewArrayInitFormula formula, FormulaCollection<Formula> formulas)
+        {
+            il.Emit(OpCodes.Ldc_I4_S, (sbyte)formulas.Count);
+            il.Emit(OpCodes.Newarr, formula.TypeDeclaration.GetElementType());
+            var arr = il.AddLocal(formula.TypeDeclaration);
+            il.Emit(OpCodes.Stloc, arr);
+            formulas.ForEach((_formula, index) =>
+            {
+                il.Emit(OpCodes.Ldloc, arr);
+                il.Emit(OpCodes.Ldc_I4, index);
+                _formula.Accept(this);
+                if (!_formula.TypeDeclaration.IsValueType)
+                {
+                    il.Emit(OpCodes.Stelem_Ref);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            });
+            il.Emit(OpCodes.Ldloc, arr);
+        }
+
+        public override void Visit(PropertyFormula formula)
+        {
+            base.Visit(formula);
+            if (formula.Member.GetMethod.IsStatic || formula.Member.DeclaringType.IsValueType)
+            {
+                il.Emit(OpCodes.Call, formula.Member.GetMethod);
+            }
+            else
+            {
+                il.Emit(OpCodes.Callvirt, formula.Member.GetMethod);
+            }
+        }
+
+        public override void Visit(FieldFormula formula)
+        {
+            base.Visit(formula);
+            if (formula.Member.IsStatic)
+            {
+                il.Emit(OpCodes.Ldsfld, formula.Member);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldfld, formula.Member);
+            }
+        }
     }
 }

@@ -249,7 +249,20 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UNI::OpCode opcode, UNI::IConstructorDeclaration constructorDecl)
         {
-            il.Emit(opcode.ToCecil(), moduleDef.Import(((MCConstructorDeclarationImpl)constructorDecl).ConstructorRef));
+            var srimpl = default(SRConstructorDeclarationImpl);
+            var mcimpl = default(MCConstructorDeclarationImpl);
+            if ((srimpl = constructorDecl as SRConstructorDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), moduleDef.Import(srimpl.ConstructorInfo));
+            }
+            else if ((mcimpl = constructorDecl as MCConstructorDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), mcimpl.ConstructorRef);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public void Emit(UNI::OpCode opcode, UNI::IMethodDeclaration methodDecl)
@@ -277,7 +290,20 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UNI::OpCode opcode, UNI::IFieldDeclaration fieldDecl)
         {
-            il.Emit(opcode.ToCecil(), ((MCFieldDeclarationImpl)fieldDecl).FieldRef);
+            var srimpl = default(SRFieldDeclarationImpl);
+            var mcimpl = default(MCFieldDeclarationImpl);
+            if ((srimpl = fieldDecl as SRFieldDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), moduleDef.Import(srimpl.FieldInfo));
+            }
+            else if ((mcimpl = fieldDecl as MCFieldDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), mcimpl.FieldRef);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public void Emit(UNI::OpCode opcode, UNI::IPortableScopeItem scopeItem)

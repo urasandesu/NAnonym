@@ -35,5 +35,6 @@ namespace Urasandesu.NAnonym.ILTools
     {
         ITypeDeclaration PropertyType { get; }
         IMethodDeclaration GetMethod { get; }
+        IMethodDeclaration SetMethod { get; }
     }
 }

@@ -38,6 +38,7 @@ using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 using SR = System.Reflection;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 {
@@ -286,6 +287,24 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             else
             {
                 return that.Interfaces.Any(_ => FullName == _.FullName);
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            var srimpl = default(SRTypeDeclarationImpl);
+            var mcimpl = default(MCTypeDeclarationImpl);
+            if ((srimpl = obj as SRTypeDeclarationImpl) != null)
+            {
+                return TypeDef.Equivalent(srimpl.type);
+            }
+            else if ((mcimpl = obj as MCTypeDeclarationImpl) != null)
+            {
+                return TypeDef.Equivalent(mcimpl.TypeDef);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
     }

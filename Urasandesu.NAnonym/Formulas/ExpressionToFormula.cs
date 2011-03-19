@@ -184,12 +184,14 @@ namespace Urasandesu.NAnonym.Formulas
 
         public static void EvalArguments(ReadOnlyCollection<Expression> exps, ExpressionToFormulaState state)
         {
+            var arguments = new List<Formula>();
             foreach (var exp in exps)
             {
                 EvalExpression(exp, state);
                 var formula = state.CurrentBlock.Formulas.Pop();
-                state.Arguments.Add(formula);
+                arguments.Add(formula);
             }
+            arguments.AddRangeTo(state.Arguments);
         }
 
         public static void EvalConditional(ConditionalExpression exp, ExpressionToFormulaState state)

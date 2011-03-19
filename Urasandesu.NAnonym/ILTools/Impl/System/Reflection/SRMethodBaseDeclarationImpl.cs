@@ -82,7 +82,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public bool IsStatic
         {
-            get { throw new NotImplementedException(); }
+            get { return methodBase.IsStatic; }
         }
     }
 }

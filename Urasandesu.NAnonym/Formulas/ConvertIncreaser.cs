@@ -46,13 +46,13 @@ namespace Urasandesu.NAnonym.Formulas
         public override void Visit(LeftJoinBinaryFormula formula)
         {
             base.Visit(formula);
-            IncreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, increased => formula.Right = increased);
+            IncreaseIfNecessary(formula.Right, _ => formula.Left.TypeDeclaration, increased => formula.Right = increased);
         }
 
         public override void Visit(RightJoinBinaryFormula formula)
         {
             base.Visit(formula);
-            IncreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, increased => formula.Right = increased);
+            IncreaseIfNecessary(formula.Right, _ => formula.Left.TypeDeclaration, increased => formula.Right = increased);
         }
 
         public override void Visit(UnaryFormula formula)

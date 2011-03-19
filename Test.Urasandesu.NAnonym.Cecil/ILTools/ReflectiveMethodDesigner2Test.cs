@@ -129,5 +129,78 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
                 return testInfo;
             }));
         }
+
+        [NewDomainTest]
+        public void EmitTest02()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            TestHelper.UsingNewDomain(() =>
+            {
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var emitTest02Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest02");
+
+                emitTest02Gen.AddDefaultConstructor();
+
+                var action1Parameter0 = emitTest02Gen.AddMethod("Action1Parameter0", PublicHideBySig, typeof(void), Type.EmptyTypes);
+                action1Parameter0.ExpressBody2(
+                gen =>
+                {
+                    var writeLog = typeof(TestHelper).GetMethod("WriteLog", new Type[] { typeof(string), typeof(object[]) });
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "testtest", new object[] { } }));
+                    var p1 = default(PropertyTestClass1);
+                    var p1Ci = typeof(PropertyTestClass1).GetConstructor(Type.EmptyTypes);
+                    gen.Eval(() => Dsl.Allocate(p1).As((PropertyTestClass1)p1Ci.Invoke(null)));
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "{0}", new object[] { p1 } }));
+                    var p1ValueProperty = typeof(PropertyTestClass1).GetProperty("ValueProperty");
+                    gen.Eval(() => p1ValueProperty.SetValue(p1, 10, null));
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "ValueProperty: {0}", new object[] { (int)p1ValueProperty.GetValue(p1, null) } }));
+                    var p1ObjectProperty = typeof(PropertyTestClass1).GetProperty("ObjectProperty");
+                    gen.Eval(() => p1ObjectProperty.SetValue(p1, "a", null));
+                    gen.Eval(() => p1ObjectProperty.SetValue(p1, p1ObjectProperty.GetValue(p1, null), null));
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "ObjectProperty: {0}", new object[] { p1ObjectProperty.GetValue(p1, null) } }));
+                    var f2 = default(FieldTestClass2);
+                    gen.Eval(() => Dsl.Allocate(f2).As(new FieldTestClass2()));
+                    var f2ValueField = typeof(FieldTestClass2).GetField("ValueField");
+                    gen.Eval(() => f2ValueField.SetValue(f2, 30));
+                    gen.Eval(() => f2ValueField.SetValue(f2, f2ValueField.GetValue(f2)));
+                    gen.Eval(() => TestHelper.WriteLog("ValueField: {0}", f2ValueField.GetValue(f2)));
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "ValueField: {0}", new object[] { f2ValueField.GetValue(f2) } }));
+                    var p2 = default(PropertyTestClass2);
+                    var p2Ci = typeof(PropertyTestClass2).GetConstructor(new Type[] { typeof(int), typeof(string) });
+                    gen.Eval(() => Dsl.Allocate(p2).As((PropertyTestClass2)p2Ci.Invoke(new object[] { p1ValueProperty.GetValue(p1, null), p1ObjectProperty.GetValue(p1, null) })));
+                    gen.Eval(() => writeLog.Invoke(null, new object[] { "({0}, {1})", new object[] { p2.ValueProperty, p2.ObjectProperty } }));
+                    var getValue = typeof(TestHelper).GetMethod("GetValue", new Type[] { typeof(int) });
+                    var value = default(int);
+                    gen.Eval(() => Dsl.Allocate(value).As((int)getValue.Invoke(null, new object[] { f2ValueField.GetValue(f2) })));
+                });
+
+                var ms = new MemoryStream();
+                tempAssemblyDef.Write(ms);
+                //tempAssemblyDef.Write(tempFileName);
+
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
+                testInfo.RawAssembly = ms.ToArray();
+                //testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = emitTest02Gen.FullName;
+                testInfo.MethodName = action1Parameter0.Name;
+                testInfo.TestVerifier =
+                    target =>
+                    {
+                        target.Method.Invoke(target.Instance, new object[] { });
+                        Assert.AreEqual(
+@"testtest
+Test.Urasandesu.NAnonym.Etc.PropertyTestClass1
+ValueProperty: 10
+ObjectProperty: a
+ValueField: 30
+ValueField: 30
+(10, a)
+", TestHelper.ReadLogToEnd());
+                    };
+
+                return testInfo;
+            }));
+        }
     }
 }
