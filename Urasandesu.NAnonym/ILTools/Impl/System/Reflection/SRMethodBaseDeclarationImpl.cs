@@ -34,12 +34,14 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
     class SRMethodBaseDeclarationImpl : SRMemberDeclarationImpl, IMethodBaseDeclaration
     {
         readonly MethodBase methodBase;
+        ReadOnlyCollection<IParameterDeclaration> parameters;
         public SRMethodBaseDeclarationImpl(MethodBase methodBase)
             : base(methodBase)
         {
@@ -57,7 +59,17 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public ReadOnlyCollection<IParameterDeclaration> Parameters
         {
-            get { return new ReadOnlyCollection<IParameterDeclaration>(new IParameterDeclaration[] { }); }
+            get 
+            {
+                if (parameters == null)
+                {
+                    var _parameters = methodBase.GetParameters().
+                                        TransformEnumerateOnly(_ => (IParameterDeclaration)new SRParameterDeclarationImpl(_)).
+                                        ToList();
+                    parameters = new ReadOnlyCollection<IParameterDeclaration>(_parameters);
+                }
+                return parameters;
+            }
         }
 
         public IPortableScopeItem NewPortableScopeItem(PortableScopeItemRawData itemRawData, object value)

@@ -208,5 +208,22 @@ namespace Test.Urasandesu.NAnonym.ILTools
         {
             return type.ToString();
         }
+
+
+        public bool EqualsWithoutGenericArguments(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReadOnlyCollection<IPropertyDeclaration> Properties
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsAssignableExplicitlyFrom(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

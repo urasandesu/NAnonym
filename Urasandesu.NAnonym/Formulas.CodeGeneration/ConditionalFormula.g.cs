@@ -48,6 +48,8 @@ namespace Urasandesu.NAnonym.Formulas
             Test = default(Formula);
             IfTrue = default(Formula);
             IfFalse = default(Formula);
+            Label1 = default(ILabelDeclaration);
+            Label2 = default(ILabelDeclaration);
         }
 
         public const string NameOfTest = "Test";
@@ -78,6 +80,26 @@ namespace Urasandesu.NAnonym.Formulas
             set 
             {
                 SetFormula(NameOfIfFalse, value, ref ifFalse);
+            }
+        }
+        public const string NameOfLabel1 = "Label1";
+        ILabelDeclaration label1;
+        public ILabelDeclaration Label1 
+        { 
+            get { return label1; } 
+            set 
+            {
+                SetValue(NameOfLabel1, value, ref label1);
+            }
+        }
+        public const string NameOfLabel2 = "Label2";
+        ILabelDeclaration label2;
+        public ILabelDeclaration Label2 
+        { 
+            get { return label2; } 
+            set 
+            {
+                SetValue(NameOfLabel2, value, ref label2);
             }
         }
 
@@ -136,6 +158,16 @@ namespace Urasandesu.NAnonym.Formulas
             {
                 IfFalse.AppendWithStartEndTo(sb);
             }
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
+            sb.Append(NameOfLabel1);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Label1, sb);
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
+            sb.Append(NameOfLabel2);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Label2, sb);
         }
     }
 }

@@ -44,7 +44,13 @@ namespace Urasandesu.NAnonym.Formulas
         {
         }
 
-        public override void Visit(BinaryFormula formula)
+        public override void Visit(LeftJoinBinaryFormula formula)
+        {
+            base.Visit(formula);
+            DecreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, decreased => formula.Right = decreased);
+        }
+
+        public override void Visit(RightJoinBinaryFormula formula)
         {
             base.Visit(formula);
             DecreaseIfNecessary(formula.Right, _ => _.TypeDeclaration, decreased => formula.Right = decreased);
@@ -98,7 +104,7 @@ namespace Urasandesu.NAnonym.Formulas
                 {
                     var expectedType = getExpectedType(formula);
                     var operand = ((ConvertFormula)formula).Operand;
-                    if ((expectedType.IsValueType || !operand.TypeDeclaration.IsValueType) && expectedType.IsAssignableFrom(operand.TypeDeclaration))
+                    if (expectedType.IsAssignableExplicitlyFrom(operand.TypeDeclaration))
                     {
                         decrease(operand);
                     }

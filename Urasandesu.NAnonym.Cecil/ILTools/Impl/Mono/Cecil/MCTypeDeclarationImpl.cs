@@ -256,6 +256,38 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             throw new NotImplementedException();
         }
+
+
+        public bool EqualsWithoutGenericArguments(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReadOnlyCollection<IPropertyDeclaration> Properties
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsAssignableExplicitlyFrom(ITypeDeclaration that)
+        {
+            if (!IsValueType && that.IsValueType || IsValueType && !that.IsValueType)
+            {
+                return false;
+            }
+            else if (FullName == that.FullName)
+            {
+                return true;
+            }
+            else if (IsAssignableFrom(that.BaseType))
+            {
+                return true;
+            }
+            else
+            {
+                return that.Interfaces.Any(_ => FullName == _.FullName);
+            }
+        }
     }
 }
 

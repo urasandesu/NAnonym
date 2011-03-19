@@ -39,6 +39,7 @@ namespace Urasandesu.NAnonym.ILTools
         ILocalGenerator AddLocal(string name, Type localType);
         ILocalGenerator AddLocal(string name, ITypeDeclaration localType);
         ILocalGenerator AddLocal(Type localType);
+        ILocalGenerator AddLocal(ITypeDeclaration localType);
         ILocalGenerator AddLocal(Type localType, bool pinned);
         ILabelGenerator AddLabel();
         void Emit(OpCode opcode);
@@ -57,6 +58,7 @@ namespace Urasandesu.NAnonym.ILTools
         void Emit(OpCode opcode, short arg);
         void Emit(OpCode opcode, string str);
         void Emit(OpCode opcode, Type cls);
+        void Emit(OpCode opcode, ITypeDeclaration type);
         void Emit(OpCode opcode, IConstructorDeclaration constructorDecl);
         void Emit(OpCode opcode, IMethodDeclaration methodDecl);
         void Emit(OpCode opcode, IParameterDeclaration parameterDecl);

@@ -41,6 +41,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
     {
         PropertyInfo propertyInfo;
         ITypeDeclaration propertyType;
+        IMethodDeclaration getMethod;
         public SRPropertyDeclarationImpl(PropertyInfo propertyInfo)
             : this(propertyInfo, null)
         {
@@ -67,6 +68,19 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         public override string ToString()
         {
             return propertyInfo.ToString();
+        }
+
+
+        public IMethodDeclaration GetMethod
+        {
+            get 
+            {
+                if (getMethod == null)
+                {
+                    getMethod = new SRMethodDeclarationImpl(propertyInfo.GetGetMethod());
+                }
+                return getMethod;
+            }
         }
     }
 }

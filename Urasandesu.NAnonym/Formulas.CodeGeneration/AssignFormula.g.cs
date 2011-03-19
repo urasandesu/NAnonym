@@ -38,7 +38,7 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AssignFormula : BinaryFormula
+    public partial class AssignFormula : RightJoinBinaryFormula
     {
 
         protected override void InitializeForCodeGeneration()

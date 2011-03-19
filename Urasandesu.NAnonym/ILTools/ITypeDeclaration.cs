@@ -47,8 +47,11 @@ namespace Urasandesu.NAnonym.ILTools
         new Type Source { get; }
         bool IsValueType { get; }
         bool IsAssignableFrom(ITypeDeclaration that);
+        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
+        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
         ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
         ITypeDeclaration MakeArrayType();
         ITypeDeclaration GetElementType();
+        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
     }
 }

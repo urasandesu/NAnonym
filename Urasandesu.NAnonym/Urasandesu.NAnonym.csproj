@@ -64,9 +64,6 @@
     <Compile Include="Formulas.CodeGeneration\BaseNewFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
-    <Compile Include="Formulas.CodeGeneration\BinaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
     <Compile Include="Formulas.CodeGeneration\BlockFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -103,7 +100,13 @@
     <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\LeftJoinBinaryFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\LessThanFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\LessThanOrEqualFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
     <Compile Include="Formulas.CodeGeneration\LocalNode.g.cs">
@@ -151,6 +154,12 @@
     <Compile Include="Formulas.CodeGeneration\ReturnFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\RightJoinBinaryFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formulas.CodeGeneration\SubtractFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\TypeAsFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -180,6 +189,7 @@
     <Compile Include="Formulas\FieldFormula.cs" />
     <Compile Include="Formulas\Formula.cs" />
     <Compile Include="Formulas\INodeToString.cs" />
+    <Compile Include="Formulas\LessThanOrEqualFormula.cs" />
     <Compile Include="Formulas\Node.cs" />
     <Compile Include="Formulas\NodeCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
@@ -198,6 +208,7 @@
     <Compile Include="Formulas\ReflectiveNewFormula.cs" />
     <Compile Include="Formulas\ReflectivePropertyFormula.cs" />
     <Compile Include="Formulas\ReturnFormula.cs" />
+    <Compile Include="Formulas\SubtractFormula.cs" />
     <Compile Include="Formulas\TypeAsFormula.cs" />
     <Compile Include="Formulas\VariableFormula.cs" />
     <Compile Include="Formulas\VariableResolver.cs" />

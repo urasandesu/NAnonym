@@ -1,5 +1,5 @@
 ﻿/* 
- * File: IPropertyDeclaration.cs
+ * File: SubtractFormula.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,12 +28,28 @@
  */
 
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Urasandesu.NAnonym.ILTools;
+using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Formulas
 {
-    public interface IPropertyDeclaration : IMemberDeclaration
+    public partial class SubtractFormula : ArithmeticBinaryFormula
     {
-        ITypeDeclaration PropertyType { get; }
-        IMethodDeclaration GetMethod { get; }
+        public override string MethodToStringValueIfDefault
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.Append(NodeToString.StartOfString);
+                sb.Append("-");
+                sb.Append(NodeToString.EndOfString);
+                return sb.ToString();
+            }
+        }
     }
 }

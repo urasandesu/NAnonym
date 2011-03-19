@@ -44,26 +44,16 @@ namespace Urasandesu.NAnonym.Formulas
             Required.NotDefault(visitor, () => visitor);
             this.visitor = visitor;
         }
-        public virtual void Visit(BinaryFormula formula)
+        public virtual void Visit(RightJoinBinaryFormula formula)
         {
             Visit((Formula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void Visit(ArithmeticBinaryFormula formula)
-        {
-            Visit((BinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void Visit(LogicalBinaryFormula formula)
-        {
-            Visit((BinaryFormula)formula);
             visitor.Visit(formula);
         }
         public virtual void Visit(AssignFormula formula)
         {
             if (formula.Right != null) VisitAssignRight(formula, formula.Right);
             if (formula.Left != null) VisitAssignLeft(formula, formula.Left);
-            Visit((BinaryFormula)formula);
+            Visit((RightJoinBinaryFormula)formula);
             visitor.Visit(formula);
         }
         public virtual void VisitAssignRight(AssignFormula formula, Formula right)
@@ -86,23 +76,28 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
+        public virtual void Visit(LeftJoinBinaryFormula formula)
+        {
+            Visit((Formula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void Visit(ArithmeticBinaryFormula formula)
+        {
+            Visit((LeftJoinBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void Visit(LogicalBinaryFormula formula)
+        {
+            Visit((LeftJoinBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void Visit(NotEqualFormula formula)
         {
-            if (formula.Right != null) VisitNotEqualRight(formula, formula.Right);
             if (formula.Left != null) VisitNotEqualLeft(formula, formula.Left);
+            if (formula.Right != null) VisitNotEqualRight(formula, formula.Right);
             Visit((LogicalBinaryFormula)formula);
             visitor.Visit(formula);
         }
-        public virtual void VisitNotEqualRight(NotEqualFormula formula, Formula right)
-		{
-		    if (formula.GetType() != typeof(NotEqualFormula)) return;
-			VisitNotEqualRightCore(formula, right);
-			visitor.VisitNotEqualRight(formula, right);
-		}
-        protected virtual void VisitNotEqualRightCore(NotEqualFormula formula, Formula right)
-		{
-			right.Accept(this);
-		}
         public virtual void VisitNotEqualLeft(NotEqualFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(NotEqualFormula)) return;
@@ -113,23 +108,23 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
-        public virtual void Visit(AddFormula formula)
-        {
-            if (formula.Right != null) VisitAddRight(formula, formula.Right);
-            if (formula.Left != null) VisitAddLeft(formula, formula.Left);
-            Visit((ArithmeticBinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void VisitAddRight(AddFormula formula, Formula right)
+        public virtual void VisitNotEqualRight(NotEqualFormula formula, Formula right)
 		{
-		    if (formula.GetType() != typeof(AddFormula)) return;
-			VisitAddRightCore(formula, right);
-			visitor.VisitAddRight(formula, right);
+		    if (formula.GetType() != typeof(NotEqualFormula)) return;
+			VisitNotEqualRightCore(formula, right);
+			visitor.VisitNotEqualRight(formula, right);
 		}
-        protected virtual void VisitAddRightCore(AddFormula formula, Formula right)
+        protected virtual void VisitNotEqualRightCore(NotEqualFormula formula, Formula right)
 		{
 			right.Accept(this);
 		}
+        public virtual void Visit(AddFormula formula)
+        {
+            if (formula.Left != null) VisitAddLeft(formula, formula.Left);
+            if (formula.Right != null) VisitAddRight(formula, formula.Right);
+            Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void VisitAddLeft(AddFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(AddFormula)) return;
@@ -140,23 +135,23 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
-        public virtual void Visit(MultiplyFormula formula)
-        {
-            if (formula.Right != null) VisitMultiplyRight(formula, formula.Right);
-            if (formula.Left != null) VisitMultiplyLeft(formula, formula.Left);
-            Visit((ArithmeticBinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void VisitMultiplyRight(MultiplyFormula formula, Formula right)
+        public virtual void VisitAddRight(AddFormula formula, Formula right)
 		{
-		    if (formula.GetType() != typeof(MultiplyFormula)) return;
-			VisitMultiplyRightCore(formula, right);
-			visitor.VisitMultiplyRight(formula, right);
+		    if (formula.GetType() != typeof(AddFormula)) return;
+			VisitAddRightCore(formula, right);
+			visitor.VisitAddRight(formula, right);
 		}
-        protected virtual void VisitMultiplyRightCore(MultiplyFormula formula, Formula right)
+        protected virtual void VisitAddRightCore(AddFormula formula, Formula right)
 		{
 			right.Accept(this);
 		}
+        public virtual void Visit(MultiplyFormula formula)
+        {
+            if (formula.Left != null) VisitMultiplyLeft(formula, formula.Left);
+            if (formula.Right != null) VisitMultiplyRight(formula, formula.Right);
+            Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void VisitMultiplyLeft(MultiplyFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(MultiplyFormula)) return;
@@ -167,23 +162,23 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
-        public virtual void Visit(AndAlsoFormula formula)
-        {
-            if (formula.Right != null) VisitAndAlsoRight(formula, formula.Right);
-            if (formula.Left != null) VisitAndAlsoLeft(formula, formula.Left);
-            Visit((LogicalBinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
+        public virtual void VisitMultiplyRight(MultiplyFormula formula, Formula right)
 		{
-		    if (formula.GetType() != typeof(AndAlsoFormula)) return;
-			VisitAndAlsoRightCore(formula, right);
-			visitor.VisitAndAlsoRight(formula, right);
+		    if (formula.GetType() != typeof(MultiplyFormula)) return;
+			VisitMultiplyRightCore(formula, right);
+			visitor.VisitMultiplyRight(formula, right);
 		}
-        protected virtual void VisitAndAlsoRightCore(AndAlsoFormula formula, Formula right)
+        protected virtual void VisitMultiplyRightCore(MultiplyFormula formula, Formula right)
 		{
 			right.Accept(this);
 		}
+        public virtual void Visit(AndAlsoFormula formula)
+        {
+            if (formula.Left != null) VisitAndAlsoLeft(formula, formula.Left);
+            if (formula.Right != null) VisitAndAlsoRight(formula, formula.Right);
+            Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void VisitAndAlsoLeft(AndAlsoFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(AndAlsoFormula)) return;
@@ -194,23 +189,23 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
-        public virtual void Visit(EqualFormula formula)
-        {
-            if (formula.Right != null) VisitEqualRight(formula, formula.Right);
-            if (formula.Left != null) VisitEqualLeft(formula, formula.Left);
-            Visit((LogicalBinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void VisitEqualRight(EqualFormula formula, Formula right)
+        public virtual void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
 		{
-		    if (formula.GetType() != typeof(EqualFormula)) return;
-			VisitEqualRightCore(formula, right);
-			visitor.VisitEqualRight(formula, right);
+		    if (formula.GetType() != typeof(AndAlsoFormula)) return;
+			VisitAndAlsoRightCore(formula, right);
+			visitor.VisitAndAlsoRight(formula, right);
 		}
-        protected virtual void VisitEqualRightCore(EqualFormula formula, Formula right)
+        protected virtual void VisitAndAlsoRightCore(AndAlsoFormula formula, Formula right)
 		{
 			right.Accept(this);
 		}
+        public virtual void Visit(EqualFormula formula)
+        {
+            if (formula.Left != null) VisitEqualLeft(formula, formula.Left);
+            if (formula.Right != null) VisitEqualRight(formula, formula.Right);
+            Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void VisitEqualLeft(EqualFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(EqualFormula)) return;
@@ -221,23 +216,23 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
-        public virtual void Visit(ExclusiveOrFormula formula)
-        {
-            if (formula.Right != null) VisitExclusiveOrRight(formula, formula.Right);
-            if (formula.Left != null) VisitExclusiveOrLeft(formula, formula.Left);
-            Visit((ArithmeticBinaryFormula)formula);
-            visitor.Visit(formula);
-        }
-        public virtual void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
+        public virtual void VisitEqualRight(EqualFormula formula, Formula right)
 		{
-		    if (formula.GetType() != typeof(ExclusiveOrFormula)) return;
-			VisitExclusiveOrRightCore(formula, right);
-			visitor.VisitExclusiveOrRight(formula, right);
+		    if (formula.GetType() != typeof(EqualFormula)) return;
+			VisitEqualRightCore(formula, right);
+			visitor.VisitEqualRight(formula, right);
 		}
-        protected virtual void VisitExclusiveOrRightCore(ExclusiveOrFormula formula, Formula right)
+        protected virtual void VisitEqualRightCore(EqualFormula formula, Formula right)
 		{
 			right.Accept(this);
 		}
+        public virtual void Visit(ExclusiveOrFormula formula)
+        {
+            if (formula.Left != null) VisitExclusiveOrLeft(formula, formula.Left);
+            if (formula.Right != null) VisitExclusiveOrRight(formula, formula.Right);
+            Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
         public virtual void VisitExclusiveOrLeft(ExclusiveOrFormula formula, Formula left)
 		{
 		    if (formula.GetType() != typeof(ExclusiveOrFormula)) return;
@@ -248,13 +243,33 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			left.Accept(this);
 		}
+        public virtual void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(ExclusiveOrFormula)) return;
+			VisitExclusiveOrRightCore(formula, right);
+			visitor.VisitExclusiveOrRight(formula, right);
+		}
+        protected virtual void VisitExclusiveOrRightCore(ExclusiveOrFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
         public virtual void Visit(LessThanFormula formula)
         {
-            if (formula.Right != null) VisitLessThanRight(formula, formula.Right);
             if (formula.Left != null) VisitLessThanLeft(formula, formula.Left);
+            if (formula.Right != null) VisitLessThanRight(formula, formula.Right);
             Visit((LogicalBinaryFormula)formula);
             visitor.Visit(formula);
         }
+        public virtual void VisitLessThanLeft(LessThanFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(LessThanFormula)) return;
+			VisitLessThanLeftCore(formula, left);
+			visitor.VisitLessThanLeft(formula, left);
+		}
+        protected virtual void VisitLessThanLeftCore(LessThanFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
         public virtual void VisitLessThanRight(LessThanFormula formula, Formula right)
 		{
 		    if (formula.GetType() != typeof(LessThanFormula)) return;
@@ -265,15 +280,59 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			right.Accept(this);
 		}
-        public virtual void VisitLessThanLeft(LessThanFormula formula, Formula left)
+        public virtual void Visit(LessThanOrEqualFormula formula)
+        {
+            if (formula.Left != null) VisitLessThanOrEqualLeft(formula, formula.Left);
+            if (formula.Right != null) VisitLessThanOrEqualRight(formula, formula.Right);
+            Visit((LogicalBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void VisitLessThanOrEqualLeft(LessThanOrEqualFormula formula, Formula left)
 		{
-		    if (formula.GetType() != typeof(LessThanFormula)) return;
-			VisitLessThanLeftCore(formula, left);
-			visitor.VisitLessThanLeft(formula, left);
+		    if (formula.GetType() != typeof(LessThanOrEqualFormula)) return;
+			VisitLessThanOrEqualLeftCore(formula, left);
+			visitor.VisitLessThanOrEqualLeft(formula, left);
 		}
-        protected virtual void VisitLessThanLeftCore(LessThanFormula formula, Formula left)
+        protected virtual void VisitLessThanOrEqualLeftCore(LessThanOrEqualFormula formula, Formula left)
 		{
 			left.Accept(this);
+		}
+        public virtual void VisitLessThanOrEqualRight(LessThanOrEqualFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(LessThanOrEqualFormula)) return;
+			VisitLessThanOrEqualRightCore(formula, right);
+			visitor.VisitLessThanOrEqualRight(formula, right);
+		}
+        protected virtual void VisitLessThanOrEqualRightCore(LessThanOrEqualFormula formula, Formula right)
+		{
+			right.Accept(this);
+		}
+        public virtual void Visit(SubtractFormula formula)
+        {
+            if (formula.Left != null) VisitSubtractLeft(formula, formula.Left);
+            if (formula.Right != null) VisitSubtractRight(formula, formula.Right);
+            Visit((ArithmeticBinaryFormula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void VisitSubtractLeft(SubtractFormula formula, Formula left)
+		{
+		    if (formula.GetType() != typeof(SubtractFormula)) return;
+			VisitSubtractLeftCore(formula, left);
+			visitor.VisitSubtractLeft(formula, left);
+		}
+        protected virtual void VisitSubtractLeftCore(SubtractFormula formula, Formula left)
+		{
+			left.Accept(this);
+		}
+        public virtual void VisitSubtractRight(SubtractFormula formula, Formula right)
+		{
+		    if (formula.GetType() != typeof(SubtractFormula)) return;
+			VisitSubtractRightCore(formula, right);
+			visitor.VisitSubtractRight(formula, right);
+		}
+        protected virtual void VisitSubtractRightCore(SubtractFormula formula, Formula right)
+		{
+			right.Accept(this);
 		}
         public virtual void Visit(BlockFormula formula)
         {

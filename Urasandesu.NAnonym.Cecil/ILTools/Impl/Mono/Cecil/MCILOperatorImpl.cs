@@ -114,6 +114,23 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCLocalGeneratorImpl(variableDef);
         }
 
+        public UNI::ILocalGenerator AddLocal(UNI::ITypeDeclaration localType)
+        {
+            var srimpl = default(SRTypeDeclarationImpl);
+            var mcimpl = default(MCTypeDeclarationImpl);
+            var variableDef = default(VariableDefinition);
+            if ((srimpl = localType as SRTypeDeclarationImpl) != null)
+            {
+                variableDef = new VariableDefinition(moduleDef.Import(srimpl.type));
+            }
+            else if ((mcimpl = localType as MCTypeDeclarationImpl) != null)
+            {
+                variableDef = new VariableDefinition(mcimpl.typeRef);
+            }
+            bodyDef.Variables.Add(variableDef);
+            return new MCLocalGeneratorImpl(variableDef);
+        }
+
         public UNI::ILocalGenerator AddLocal(Type localType)
         {
             var variableDef = new VariableDefinition(moduleDef.Import(localType));
@@ -212,6 +229,24 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             il.Emit(opcode.ToCecil(), moduleDef.Import(cls));
         }
 
+        public void Emit(UNI::OpCode opcode, UNI::ITypeDeclaration type)
+        {
+            var srimpl = default(SRTypeDeclarationImpl);
+            var mcimpl = default(MCTypeDeclarationImpl);
+            if ((srimpl = type as SRTypeDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), moduleDef.Import(srimpl.type));
+            }
+            else if ((mcimpl = type as MCTypeDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), mcimpl.typeRef);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public void Emit(UNI::OpCode opcode, UNI::IConstructorDeclaration constructorDecl)
         {
             il.Emit(opcode.ToCecil(), moduleDef.Import(((MCConstructorDeclarationImpl)constructorDecl).ConstructorRef));
@@ -219,7 +254,20 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
 
         public void Emit(UNI::OpCode opcode, UNI::IMethodDeclaration methodDecl)
         {
-            il.Emit(opcode.ToCecil(), ((MCMethodDeclarationImpl)methodDecl).MethodDef);
+            var srimpl = default(SRMethodDeclarationImpl);
+            var mcimpl = default(MCMethodDeclarationImpl);
+            if ((srimpl = methodDecl as SRMethodDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), moduleDef.Import(srimpl.MethodInfo));
+            }
+            else if ((mcimpl = methodDecl as MCMethodDeclarationImpl) != null)
+            {
+                il.Emit(opcode.ToCecil(), mcimpl.MethodDef);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public void Emit(UNI::OpCode opcode, UNI::IParameterDeclaration parameterDecl)

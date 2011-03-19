@@ -1,5 +1,5 @@
 /* 
- * File: BinaryFormula.g.cs
+ * File: LeftJoinBinaryFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,17 +38,37 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class BinaryFormula : Formula
+    public abstract partial class LeftJoinBinaryFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-            Method = default(IMethodDeclaration);
-            Right = default(Formula);
             Left = default(Formula);
+            Right = default(Formula);
+            Method = default(IMethodDeclaration);
         }
 
+        public const string NameOfLeft = "Left";
+        Formula left;
+        public Formula Left 
+        { 
+            get { return left; } 
+            set 
+            {
+                SetFormula(NameOfLeft, value, ref left);
+            }
+        }
+        public const string NameOfRight = "Right";
+        Formula right;
+        public Formula Right 
+        { 
+            get { return right; } 
+            set 
+            {
+                SetFormula(NameOfRight, value, ref right);
+            }
+        }
         public const string NameOfMethod = "Method";
         IMethodDeclaration method;
         public IMethodDeclaration Method 
@@ -60,32 +80,12 @@ namespace Urasandesu.NAnonym.Formulas
             }
         }
         public abstract string MethodToStringValueIfDefault { get; }
-        public const string NameOfRight = "Right";
-        Formula right;
-        public Formula Right 
-        { 
-            get { return right; } 
-            set 
-            {
-                SetFormula(NameOfRight, value, ref right);
-            }
-        }
-        public const string NameOfLeft = "Left";
-        Formula left;
-        public Formula Left 
-        { 
-            get { return left; } 
-            set 
-            {
-                SetFormula(NameOfLeft, value, ref left);
-            }
-        }
 
 
         protected override void PinCore()
         {
-            Formula.Pin(Right);
             Formula.Pin(Left);
+            Formula.Pin(Right);
             base.PinCore();
         }
 
@@ -95,9 +95,16 @@ namespace Urasandesu.NAnonym.Formulas
             base.AppendTo(sb);
             sb.Append(NodeToString.Delimiter);
             sb.Append(NodeToString.StartOfName);
-            sb.Append(NameOfMethod);
+            sb.Append(NameOfLeft);
             sb.Append(NodeToString.EndOfName);
-            NodeToString.AppendValueTo(Method, sb, MethodToStringValueIfDefault);
+            if (Left == null)
+            {
+                sb.Append(NodeToString.NullString);
+            }
+            else
+            {
+                Left.AppendWithStartEndTo(sb);
+            }
             sb.Append(NodeToString.Delimiter);
             sb.Append(NodeToString.StartOfName);
             sb.Append(NameOfRight);
@@ -112,16 +119,9 @@ namespace Urasandesu.NAnonym.Formulas
             }
             sb.Append(NodeToString.Delimiter);
             sb.Append(NodeToString.StartOfName);
-            sb.Append(NameOfLeft);
+            sb.Append(NameOfMethod);
             sb.Append(NodeToString.EndOfName);
-            if (Left == null)
-            {
-                sb.Append(NodeToString.NullString);
-            }
-            else
-            {
-                Left.AppendWithStartEndTo(sb);
-            }
+            NodeToString.AppendValueTo(Method, sb, MethodToStringValueIfDefault);
         }
     }
 }

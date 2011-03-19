@@ -37,13 +37,7 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public class NoActionVisitor : IFormulaVisitor
     {
-        public void Visit(BinaryFormula formula)
-        {
-        }
-        public void Visit(ArithmeticBinaryFormula formula)
-        {
-        }
-        public void Visit(LogicalBinaryFormula formula)
+        public void Visit(RightJoinBinaryFormula formula)
         {
         }
         public void Visit(AssignFormula formula)
@@ -55,67 +49,94 @@ namespace Urasandesu.NAnonym.Formulas
         public void VisitAssignLeft(AssignFormula formula, Formula left)
 		{
 		}
+        public void Visit(LeftJoinBinaryFormula formula)
+        {
+        }
+        public void Visit(ArithmeticBinaryFormula formula)
+        {
+        }
+        public void Visit(LogicalBinaryFormula formula)
+        {
+        }
         public void Visit(NotEqualFormula formula)
         {
         }
-        public void VisitNotEqualRight(NotEqualFormula formula, Formula right)
+        public void VisitNotEqualLeft(NotEqualFormula formula, Formula left)
 		{
 		}
-        public void VisitNotEqualLeft(NotEqualFormula formula, Formula left)
+        public void VisitNotEqualRight(NotEqualFormula formula, Formula right)
 		{
 		}
         public void Visit(AddFormula formula)
         {
         }
-        public void VisitAddRight(AddFormula formula, Formula right)
+        public void VisitAddLeft(AddFormula formula, Formula left)
 		{
 		}
-        public void VisitAddLeft(AddFormula formula, Formula left)
+        public void VisitAddRight(AddFormula formula, Formula right)
 		{
 		}
         public void Visit(MultiplyFormula formula)
         {
         }
-        public void VisitMultiplyRight(MultiplyFormula formula, Formula right)
+        public void VisitMultiplyLeft(MultiplyFormula formula, Formula left)
 		{
 		}
-        public void VisitMultiplyLeft(MultiplyFormula formula, Formula left)
+        public void VisitMultiplyRight(MultiplyFormula formula, Formula right)
 		{
 		}
         public void Visit(AndAlsoFormula formula)
         {
         }
-        public void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
+        public void VisitAndAlsoLeft(AndAlsoFormula formula, Formula left)
 		{
 		}
-        public void VisitAndAlsoLeft(AndAlsoFormula formula, Formula left)
+        public void VisitAndAlsoRight(AndAlsoFormula formula, Formula right)
 		{
 		}
         public void Visit(EqualFormula formula)
         {
         }
-        public void VisitEqualRight(EqualFormula formula, Formula right)
+        public void VisitEqualLeft(EqualFormula formula, Formula left)
 		{
 		}
-        public void VisitEqualLeft(EqualFormula formula, Formula left)
+        public void VisitEqualRight(EqualFormula formula, Formula right)
 		{
 		}
         public void Visit(ExclusiveOrFormula formula)
         {
         }
-        public void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
+        public void VisitExclusiveOrLeft(ExclusiveOrFormula formula, Formula left)
 		{
 		}
-        public void VisitExclusiveOrLeft(ExclusiveOrFormula formula, Formula left)
+        public void VisitExclusiveOrRight(ExclusiveOrFormula formula, Formula right)
 		{
 		}
         public void Visit(LessThanFormula formula)
         {
         }
+        public void VisitLessThanLeft(LessThanFormula formula, Formula left)
+		{
+		}
         public void VisitLessThanRight(LessThanFormula formula, Formula right)
 		{
 		}
-        public void VisitLessThanLeft(LessThanFormula formula, Formula left)
+        public void Visit(LessThanOrEqualFormula formula)
+        {
+        }
+        public void VisitLessThanOrEqualLeft(LessThanOrEqualFormula formula, Formula left)
+		{
+		}
+        public void VisitLessThanOrEqualRight(LessThanOrEqualFormula formula, Formula right)
+		{
+		}
+        public void Visit(SubtractFormula formula)
+        {
+        }
+        public void VisitSubtractLeft(SubtractFormula formula, Formula left)
+		{
+		}
+        public void VisitSubtractRight(SubtractFormula formula, Formula right)
 		{
 		}
         public void Visit(BlockFormula formula)

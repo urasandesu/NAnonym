@@ -36,7 +36,7 @@ using System.ComponentModel;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class AssignFormula : BinaryFormula
+    public partial class AssignFormula : RightJoinBinaryFormula
     {
         public override string MethodToStringValueIfDefault
         {

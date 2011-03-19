@@ -1,5 +1,5 @@
 /* 
- * File: LogicalBinaryFormula.g.cs
+ * File: RightJoinBinaryFormula.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -38,30 +38,54 @@ using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public abstract partial class LogicalBinaryFormula : LeftJoinBinaryFormula
+    public abstract partial class RightJoinBinaryFormula : Formula
     {
 
         protected override void InitializeForCodeGeneration()
         {
             base.InitializeForCodeGeneration();
-			TypeDeclaration = typeof(bool).ToTypeDecl();
-            Label = default(ILabelDeclaration);
+            Right = default(Formula);
+            Left = default(Formula);
+            Method = default(IMethodDeclaration);
         }
 
-        public const string NameOfLabel = "Label";
-        ILabelDeclaration label;
-        public ILabelDeclaration Label 
+        public const string NameOfRight = "Right";
+        Formula right;
+        public Formula Right 
         { 
-            get { return label; } 
+            get { return right; } 
             set 
             {
-                SetValue(NameOfLabel, value, ref label);
+                SetFormula(NameOfRight, value, ref right);
             }
         }
+        public const string NameOfLeft = "Left";
+        Formula left;
+        public Formula Left 
+        { 
+            get { return left; } 
+            set 
+            {
+                SetFormula(NameOfLeft, value, ref left);
+            }
+        }
+        public const string NameOfMethod = "Method";
+        IMethodDeclaration method;
+        public IMethodDeclaration Method 
+        { 
+            get { return method; } 
+            set 
+            {
+                SetValue(NameOfMethod, value, ref method);
+            }
+        }
+        public abstract string MethodToStringValueIfDefault { get; }
 
 
         protected override void PinCore()
         {
+            Formula.Pin(Right);
+            Formula.Pin(Left);
             base.PinCore();
         }
 
@@ -71,9 +95,33 @@ namespace Urasandesu.NAnonym.Formulas
             base.AppendTo(sb);
             sb.Append(NodeToString.Delimiter);
             sb.Append(NodeToString.StartOfName);
-            sb.Append(NameOfLabel);
+            sb.Append(NameOfRight);
             sb.Append(NodeToString.EndOfName);
-            NodeToString.AppendValueTo(Label, sb);
+            if (Right == null)
+            {
+                sb.Append(NodeToString.NullString);
+            }
+            else
+            {
+                Right.AppendWithStartEndTo(sb);
+            }
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
+            sb.Append(NameOfLeft);
+            sb.Append(NodeToString.EndOfName);
+            if (Left == null)
+            {
+                sb.Append(NodeToString.NullString);
+            }
+            else
+            {
+                Left.AppendWithStartEndTo(sb);
+            }
+            sb.Append(NodeToString.Delimiter);
+            sb.Append(NodeToString.StartOfName);
+            sb.Append(NameOfMethod);
+            sb.Append(NodeToString.EndOfName);
+            NodeToString.AppendValueTo(Method, sb, MethodToStringValueIfDefault);
         }
     }
 }

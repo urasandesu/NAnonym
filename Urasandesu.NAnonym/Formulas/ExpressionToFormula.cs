@@ -86,6 +86,8 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                 case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.Subtract:
                     EvalBinary((BinaryExpression)exp, state);
                     return;
                 case ExpressionType.GreaterThan:
@@ -97,8 +99,6 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.Lambda:
                     throw new NotImplementedException();
                 case ExpressionType.LeftShift:
-                    throw new NotImplementedException();
-                case ExpressionType.LessThanOrEqual:
                     throw new NotImplementedException();
                 case ExpressionType.ListInit:
                     throw new NotImplementedException();
@@ -136,8 +136,6 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.Quote:
                     throw new NotImplementedException();
                 case ExpressionType.RightShift:
-                    throw new NotImplementedException();
-                case ExpressionType.Subtract:
                     throw new NotImplementedException();
                 case ExpressionType.SubtractChecked:
                     throw new NotImplementedException();
@@ -230,9 +228,35 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.LessThan:
                     EvalLessThan(exp, state);
                     return;
+                case ExpressionType.LessThanOrEqual:
+                    EvalLessThanOrEqual(exp, state);
+                    return;
+                case ExpressionType.Subtract:
+                    EvalSubtract(exp, state);
+                    return;
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static void EvalSubtract(BinaryExpression exp, ExpressionToFormulaState state)
+        {
+            EvalExpression(exp.Left, state);
+            var left = state.CurrentBlock.Formulas.Pop();
+            EvalExpression(exp.Right, state);
+            var right = state.CurrentBlock.Formulas.Pop();
+            var subtract = new SubtractFormula() { Left = left, Right = right };
+            state.CurrentBlock.Formulas.Push(subtract);
+        }
+
+        public static void EvalLessThanOrEqual(BinaryExpression exp, ExpressionToFormulaState state)
+        {
+            EvalExpression(exp.Left, state);
+            var left = state.CurrentBlock.Formulas.Pop();
+            EvalExpression(exp.Right, state);
+            var right = state.CurrentBlock.Formulas.Pop();
+            var lessThanOrEqual = new LessThanOrEqualFormula() { Left = left, Right = right };
+            state.CurrentBlock.Formulas.Push(lessThanOrEqual);
         }
 
         public static void EvalLessThan(BinaryExpression exp, ExpressionToFormulaState state)

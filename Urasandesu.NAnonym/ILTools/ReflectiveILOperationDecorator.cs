@@ -76,5 +76,17 @@ namespace Urasandesu.NAnonym.ILTools
         {
             throw new NotImplementedException();
         }
+
+
+        public void Emit(OpCode opcode, ITypeDeclaration type)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public ILocalGenerator AddLocal(ITypeDeclaration localType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

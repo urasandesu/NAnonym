@@ -35,6 +35,8 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
@@ -46,6 +48,8 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
         IModuleDeclaration moduleDecl;
         ReadOnlyCollection<IFieldDeclaration> fields;
         ReadOnlyCollection<ITypeDeclaration> interfaces;
+        ReadOnlyCollection<IPropertyDeclaration> properties;
+        ReadOnlyCollection<IMethodDeclaration> methods;
 
         public SRTypeDeclarationImpl(Type type)
             : base(type)
@@ -141,7 +145,17 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public ReadOnlyCollection<IMethodDeclaration> Methods
         {
-            get { throw new NotImplementedException(); }
+            get 
+            {
+                if (methods == null)
+                {
+                    var _methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).
+                                        TransformEnumerateOnly(_ => (IMethodDeclaration)new SRMethodDeclarationImpl(_)).
+                                        ToList();
+                    methods = new ReadOnlyCollection<IMethodDeclaration>(_methods);
+                }
+                return methods;
+            }
         }
 
 
@@ -177,18 +191,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             }
             else
             {
-                if (FullName == that.FullName)
-                {
-                    return true;
-                }
-                else if (IsAssignableFrom(that.BaseType))
-                {
-                    return true;
-                }
-                else
-                {
-                    return that.Interfaces.Any(_ => FullName == _.FullName);
-                }
+                throw new NotImplementedException();
             }
         }
 
@@ -235,6 +238,55 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
                 {
                     return false;
                 }
+            }
+        }
+
+
+        public bool EqualsWithoutGenericArguments(ITypeDeclaration that)
+        {
+            var srimpl = default(SRTypeDeclarationImpl);
+            if ((srimpl = that as SRTypeDeclarationImpl) != null)
+            {
+                return type.EquivalentWithoutGenericArguments(srimpl.type);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+        public ReadOnlyCollection<IPropertyDeclaration> Properties
+        {
+            get 
+            {
+                if (properties == null)
+                {
+                    var _properties = type.GetProperties().TransformEnumerateOnly(_ => (IPropertyDeclaration)new SRPropertyDeclarationImpl(_));
+                    properties = new ReadOnlyCollection<IPropertyDeclaration>(_properties);
+                }
+                return properties;
+            }
+        }
+
+
+        public bool IsAssignableExplicitlyFrom(ITypeDeclaration that)
+        {
+            if (!IsValueType && that.IsValueType || IsValueType && !that.IsValueType)
+            {
+                return false;
+            }
+            else if (FullName == that.FullName)
+            {
+                return true;
+            }
+            else if (IsAssignableFrom(that.BaseType))
+            {
+                return true;
+            }
+            else
+            {
+                return that.Interfaces.Any(_ => FullName == _.FullName);
             }
         }
     }

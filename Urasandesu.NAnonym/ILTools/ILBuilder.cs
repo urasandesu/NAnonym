@@ -176,6 +176,32 @@ namespace Urasandesu.NAnonym.ILTools
             il.Emit(OpCodes.Mul);
         }
 
+        public override void Visit(ExclusiveOrFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Xor);
+        }
+
+        public override void Visit(SubtractFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Sub);
+        }
+
+        public override void Visit(LessThanFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Clt);
+        }
+
+        public override void Visit(LessThanOrEqualFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Clt);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Ceq);
+        }
+
         public override void Visit(ReturnFormula formula)
         {
             base.Visit(formula);
@@ -251,5 +277,178 @@ namespace Urasandesu.NAnonym.ILTools
 
             il.Emit(OpCodes.Ldarg, parameter);
         }
+
+        public override void Visit(TypeAsFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Isinst, formula.TypeDeclaration);
+            if (formula.TypeDeclaration.IsValueType)
+            {
+                il.Emit(OpCodes.Unbox_Any, formula.TypeDeclaration);
+            }
+        }
+
+        protected override void VisitConvertOperandCore(ConvertFormula formula, Formula operand)
+        {
+            var success = false;
+            var expectedType = formula.TypeDeclaration;
+
+            if (expectedType.IsValueType)
+            {
+                if (expectedType.EqualsWithoutGenericArguments(typeof(Nullable<>).ToTypeDecl()))
+                {
+                    var getValueOrDefault = expectedType.Methods.First(_ => _.Name == "GetValueOrDefault");
+                    var local = il.AddLocal(expectedType);
+                    il.Emit(OpCodes.Stloc, local);
+                    il.Emit(OpCodes.Ldloca, local);
+                    il.Emit(OpCodes.Call, getValueOrDefault);
+                    success = true;
+                }
+            }
+
+            base.VisitConvertOperandCore(formula, operand);
+
+            if (expectedType.IsValueType)
+            {
+                if (operand.TypeDeclaration.EqualsWithoutGenericArguments(typeof(Nullable<>).ToTypeDecl()))
+                {
+                    var getValue = operand.TypeDeclaration.Properties.First(_ => _.Name == "Value").GetMethod;
+                    var local = il.AddLocal(operand.TypeDeclaration);
+                    il.Emit(OpCodes.Stloc, local);
+                    il.Emit(OpCodes.Ldloca, local);
+                    il.Emit(OpCodes.Call, getValue);
+                    success = true;
+                }
+            }
+            else if (operand.TypeDeclaration.IsValueType && !expectedType.IsValueType)
+            {
+                il.Emit(OpCodes.Box, operand.TypeDeclaration);
+                success = true;
+            }
+
+            if (!success)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        //public override void Visit(ConvertFormula formula)
+        //{
+        //    base.Visit(formula);
+        //    var operand = formula.Operand;
+        //    var expectedType = formula.TypeDeclaration;
+        //    if (expectedType.IsValueType)
+        //    {
+        //        if (operand.TypeDeclaration.EqualsWithoutGenericArguments(typeof(Nullable<>).ToTypeDecl()))
+        //        {
+        //            var getValue = operand.TypeDeclaration.Properties.First(_ => _.Name == "Value").GetMethod;
+        //            var local = il.AddLocal(operand.TypeDeclaration);
+        //            il.Emit(OpCodes.Stloc, local);
+        //            il.Emit(OpCodes.Ldloca, local);
+        //            il.Emit(OpCodes.Call, getValue);
+        //        }
+        //        else if (expectedType.EqualsWithoutGenericArguments(typeof(Nullable<>).ToTypeDecl()))
+        //        {
+        //            var getValueOrDefault = expectedType.Methods.First(_ => _.Name == "GetValueOrDefault");
+        //            var local = il.AddLocal(operand.TypeDeclaration);
+        //            il.Emit(OpCodes.Stloc, local);
+        //            il.Emit(OpCodes.Ldloca, local);
+        //            il.Emit(OpCodes.Call, getValueOrDefault);
+        //        }
+        //        else
+        //        {
+        //            throw new NotImplementedException();
+        //            //var conv = operand.TypeDeclaration.Methods.
+        //            //                    Where(_ => _.Name == "op_Explicit" || _.Name == "op_Implicit").
+        //            //                    Where(_ => expectedType.IsAssignableExplicitlyFrom(_.ReturnType)).
+        //            //                    Where(_ => _.Parameters.Any(__ => __.ParameterType.IsAssignableExplicitlyFrom(operand.TypeDeclaration))).
+        //            //                    FirstOrDefault();
+        //            //if (conv == null)
+        //            //{
+        //            //    conv = expectedType.Methods.
+        //            //                        Where(_ => _.Name == "op_Explicit" || _.Name == "op_Implicit").
+        //            //                        Where(_ => expectedType.IsAssignableExplicitlyFrom(_.ReturnType)).
+        //            //                        Where(_ => _.Parameters.Any(__ => __.ParameterType.IsAssignableExplicitlyFrom(operand.TypeDeclaration))).
+        //            //                        FirstOrDefault();
+        //            //}
+        //            //var local = il.AddLocal(operand.TypeDeclaration);
+        //            //il.Emit(OpCodes.Call, conv);
+        //        }
+        //    }
+        //    else if (operand.TypeDeclaration.IsValueType && !expectedType.IsValueType)
+        //    {
+        //        il.Emit(OpCodes.Box, operand.TypeDeclaration);
+        //    }
+        //    else
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+
+        protected override void VisitConditionalTestCore(ConditionalFormula formula, Formula test)
+        {
+            base.VisitConditionalTestCore(formula, test);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Ceq);
+            var label = il.AddLabel();
+            il.Emit(OpCodes.Brfalse, label);
+            formula.Label1 = label;
+        }
+
+        protected override void VisitConditionalIfTrueCore(ConditionalFormula formula, Formula ifTrue)
+        {
+            base.VisitConditionalIfTrueCore(formula, ifTrue);
+            var label = il.AddLabel();
+            il.Emit(OpCodes.Br, label);
+            formula.Label2 = label;
+        }
+
+        protected override void VisitConditionalIfFalseCore(ConditionalFormula formula, Formula ifFalse)
+        {
+            il.SetLabel(formula.Label1);
+            base.VisitConditionalIfFalseCore(formula, ifFalse);
+            il.Emit(OpCodes.Br, formula.Label2);
+        }
+
+        public override void Visit(ConditionalFormula formula)
+        {
+            base.Visit(formula);
+            if (formula.IfFalse == null)
+            {
+                il.SetLabel(formula.Label1);
+            }
+            il.SetLabel(formula.Label2);
+        }
+
+        public override void Visit(EqualFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Ceq);
+        }
+
+        public override void Visit(NotEqualFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Ceq);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ceq);
+        }
+
+        protected override void VisitAndAlsoLeftCore(AndAlsoFormula formula, Formula left)
+        {
+            base.VisitAndAlsoLeftCore(formula, left);
+            il.Emit(OpCodes.Dup);
+            var label = il.AddLabel();
+            il.Emit(OpCodes.Brfalse, label);
+            formula.Label = label;
+        }
+
+        protected override void VisitAndAlsoRightCore(AndAlsoFormula formula, Formula right)
+        {
+            base.VisitAndAlsoRightCore(formula, right);
+            il.Emit(OpCodes.Ceq);
+            il.SetLabel(formula.Label);
+        }
+
     }
 }

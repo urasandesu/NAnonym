@@ -42,36 +42,47 @@
     var fg = new FormulaGenerator();
     var ft = default(FormulaTemplate);
 
-    // BinaryFormula
+    // RightJoinBinaryFormula
     ft = new FormulaTemplate();
     ft.BaseTypeName = "Formula";
-    ft.TypeName = "BinaryFormula";
+    ft.TypeName = "RightJoinBinaryFormula";
     ft.IsAbstract = true;
-    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Method", TypeName = "IMethodDeclaration", Default = "default(IMethodDeclaration)", HasToStringValueIfDefault = true });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Right", TypeName = "Formula", Default = "default(Formula)" });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Left", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Method", TypeName = "IMethodDeclaration", Default = "default(IMethodDeclaration)", HasToStringValueIfDefault = true });
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // AssignFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "RightJoinBinaryFormula";
+    ft.TypeName = "AssignFormula";
+    ft.NodeType = NodeType.Assign;
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // LeftJoinBinaryFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "Formula";
+    ft.TypeName = "LeftJoinBinaryFormula";
+    ft.IsAbstract = true;
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Left", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Right", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Method", TypeName = "IMethodDeclaration", Default = "default(IMethodDeclaration)", HasToStringValueIfDefault = true });
     fg.Templates.Add(ft.TypeName, ft);
 
     // ArithmeticBinaryFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "LeftJoinBinaryFormula";
     ft.TypeName = "ArithmeticBinaryFormula";
     ft.IsAbstract = true;
     fg.Templates.Add(ft.TypeName, ft);
 
     // LogicalBinaryFormula
     ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
+    ft.BaseTypeName = "LeftJoinBinaryFormula";
     ft.TypeName = "LogicalBinaryFormula";
     ft.IsAbstract = true;
 	ft.TypeDeclaration = "typeof(bool).ToTypeDecl()";
-    fg.Templates.Add(ft.TypeName, ft);
-
-    // AssignFormula
-    ft = new FormulaTemplate();
-    ft.BaseTypeName = "BinaryFormula";
-    ft.TypeName = "AssignFormula";
-    ft.NodeType = NodeType.Assign;
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Label", TypeName = "ILabelDeclaration", Default = "default(ILabelDeclaration)" });
     fg.Templates.Add(ft.TypeName, ft);
 
     // NotEqualFormula
@@ -121,6 +132,20 @@
     ft.BaseTypeName = "LogicalBinaryFormula";
     ft.TypeName = "LessThanFormula";
     ft.NodeType = NodeType.LessThan;
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // LessThanOrEqualFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "LogicalBinaryFormula";
+    ft.TypeName = "LessThanOrEqualFormula";
+    ft.NodeType = NodeType.LessThanOrEqual;
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // SubtractFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "ArithmeticBinaryFormula";
+    ft.TypeName = "SubtractFormula";
+    ft.NodeType = NodeType.Subtract;
     fg.Templates.Add(ft.TypeName, ft);
 
     // BlockFormula
@@ -219,6 +244,8 @@
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Test", TypeName = "Formula", Default = "default(Formula)" });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "IfTrue", TypeName = "Formula", Default = "default(Formula)" });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "IfFalse", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Label1", TypeName = "ILabelDeclaration", Default = "default(ILabelDeclaration)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Label2", TypeName = "ILabelDeclaration", Default = "default(ILabelDeclaration)" });
     fg.Templates.Add(ft.TypeName, ft);
 
     // ReturnFormula
