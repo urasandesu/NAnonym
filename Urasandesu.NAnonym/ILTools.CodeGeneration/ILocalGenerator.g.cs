@@ -1,5 +1,5 @@
 /* 
- * File: ITypeDeclaration.cs
+ * File: ILocalGeneratorDecorator.g.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -30,29 +30,32 @@
 
 using System;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public interface ITypeDeclaration : IMemberDeclaration
+    public abstract class ILocalGeneratorDecorator : ILocalGenerator
     {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
-    }
+        protected readonly ILocalGenerator source;
+        public ILocalGeneratorDecorator(ILocalGenerator source)
+        {
+            this.source = source;
+        }
+
+        public virtual String Name 
+		{
+			get { return source.Name; }
+		}
+        public virtual ITypeDeclaration Type 
+		{
+			get { return source.Type; }
+		}
+        public virtual Int32 Index 
+		{
+			get { return source.Index; }
+		}
+	}
 }

@@ -225,5 +225,11 @@ namespace Test.Urasandesu.NAnonym.ILTools
         {
             throw new NotImplementedException();
         }
+
+
+        public bool IsSubclassOf(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

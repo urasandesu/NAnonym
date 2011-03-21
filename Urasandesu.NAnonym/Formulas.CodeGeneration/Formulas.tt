@@ -1,5 +1,12 @@
 ﻿<#@ template language="C#v3.5" hostspecific="True" debug="True" #>
 <#@ output extension="txt" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Urasandesu.NAnonym" #>
+<#@ import namespace="Urasandesu.NAnonym.Linq" #>
+<#@ import namespace="Urasandesu.NAnonym.Formulas" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="Urasandesu.NAnonym.dll" #>
 <#@ include file="T4Toolbox.tt" #>
 <#@ include file="FormulaTemplate.tt" #>
 <#@ include file="AbstractFormulaVisitorTemplate.tt" #>
@@ -352,6 +359,16 @@
     ft.NodeType = NodeType.End;
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "EntryBlock", TypeName = "BlockFormula", Default = "default(BlockFormula)" });
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Returns", TypeName = "NodeCollection<ReturnFormula>", Default = "new NodeCollection<ReturnFormula>()", ProhibitsToString = true, ProhibitsDefaultAccepting = true, AsNode = true });
+    fg.Templates.Add(ft.TypeName, ft);
+
+    // InvokeFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "Formula";
+    ft.TypeName = "InvokeFormula";
+    ft.NodeType = NodeType.Invoke;
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "DelegateOrLambda", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Method", TypeName = "IMethodDeclaration", Default = "default(IMethodDeclaration)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Arguments", TypeName = "FormulaCollection<Formula>", Default = "new FormulaCollection<Formula>()" });
     fg.Templates.Add(ft.TypeName, ft);
 
 	fg.Run();

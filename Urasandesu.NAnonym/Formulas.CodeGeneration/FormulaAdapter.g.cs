@@ -684,5 +684,32 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			entryBlock.Accept(this);
 		}
+        public virtual void Visit(InvokeFormula formula)
+        {
+            if (formula.DelegateOrLambda != null) VisitInvokeDelegateOrLambda(formula, formula.DelegateOrLambda);
+            if (formula.Arguments != null) VisitInvokeArguments(formula, formula.Arguments);
+            Visit((Formula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void VisitInvokeDelegateOrLambda(InvokeFormula formula, Formula delegateOrLambda)
+		{
+		    if (formula.GetType() != typeof(InvokeFormula)) return;
+			VisitInvokeDelegateOrLambdaCore(formula, delegateOrLambda);
+			visitor.VisitInvokeDelegateOrLambda(formula, delegateOrLambda);
+		}
+        protected virtual void VisitInvokeDelegateOrLambdaCore(InvokeFormula formula, Formula delegateOrLambda)
+		{
+			delegateOrLambda.Accept(this);
+		}
+        public virtual void VisitInvokeArguments(InvokeFormula formula, FormulaCollection<Formula> arguments)
+		{
+		    if (formula.GetType() != typeof(InvokeFormula)) return;
+			VisitInvokeArgumentsCore(formula, arguments);
+			visitor.VisitInvokeArguments(formula, arguments);
+		}
+        protected virtual void VisitInvokeArgumentsCore(InvokeFormula formula, FormulaCollection<Formula> arguments)
+		{
+			arguments.Accept(this);
+		}
     }
 }

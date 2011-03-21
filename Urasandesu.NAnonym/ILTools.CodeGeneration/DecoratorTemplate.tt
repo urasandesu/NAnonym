@@ -1,0 +1,437 @@
+﻿<#+
+/* 
+ * File: DecoratorTemplate.tt
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2010 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+public class DecoratorTemplate : Template
+{
+	public string DecorationTypeQualifiedName { get; set; }
+
+	Type decorationType;
+	public Type DecorationType 
+	{ 
+		get
+		{
+			if (decorationType == null)
+			{
+				decorationType = Type.GetType(DecorationTypeQualifiedName);
+			}
+			return decorationType;
+		}
+	}
+	
+	public override string TransformText()
+	{
+#>
+/* 
+ * File: <#= DecorationType.Name #>Decorator.g.cs
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2010 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+ 
+
+using System;
+using System.Reflection;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
+using Urasandesu.NAnonym.Linq;
+
+namespace Urasandesu.NAnonym.ILTools
+{
+    public abstract class <#= DecorationType.Name #>Decorator : <#= DecorationType.Name #>
+    {
+        protected readonly <#= DecorationType.Name #> source;
+        public <#= DecorationType.Name #>Decorator(<#= DecorationType.Name #> source)
+        {
+            this.source = source;
+        }
+
+<#+ 
+		var implemented = new Dictionary<MemberKey, MemberKey>();
+		var explicitlyImplemented = new Dictionary<MemberKey, MemberKey>();
+		GenerateDefaultDecorator(DecorationType, implemented, explicitlyImplemented);
+#>
+	}
+}
+<#+
+        return this.GenerationEnvironment.ToString();
+	}
+	
+	void GenerateDefaultDecorator(Type type, Dictionary<MemberKey, MemberKey> implemented, Dictionary<MemberKey, MemberKey> explicitlyImplemented)
+	{
+		var propertyMethodInfos = new Dictionary<string, PropertyMethodInfo>();
+		var methods = type.GetMethods();
+		foreach (var method in methods)
+		{
+			var pmi = default(PropertyMethodInfo);
+			if (PropertyMethodInfo.TryCreate(method, out pmi))
+			{
+				if (!propertyMethodInfos.ContainsKey(pmi.PropertyName))
+				{
+					propertyMethodInfos.Add(pmi.PropertyName, pmi);
+				}
+				
+				if (pmi.HasGetter)
+				{
+					propertyMethodInfos[pmi.PropertyName].HasGetter = pmi.HasGetter;
+					propertyMethodInfos[pmi.PropertyName].GetMethod = pmi.GetMethod;
+				}
+				
+				if (pmi.HasSetter)
+				{
+					propertyMethodInfos[pmi.PropertyName].HasSetter = pmi.HasSetter;
+					propertyMethodInfos[pmi.PropertyName].SetMethod = pmi.SetMethod;
+				}
+			}
+            else
+            {
+				var memberKey = new MemberKey(method);
+				if (implemented.ContainsKey(memberKey) && !explicitlyImplemented.ContainsKey(memberKey))
+				{
+#>
+        <#= ToTypeString(method.ReturnType) #> <#= ToTypeString(method.DeclaringType) #>.<#= method.Name #>(<#= GetParameters(method) #>) { <#= ReturnIfNecessary(method.ReturnType) #><#= method.Name #>(<#= GetParametersWithoutTypeDefinition(method) #>); }
+<#+
+					explicitlyImplemented.Add(memberKey, memberKey);
+				}
+				else if (!implemented.ContainsKey(memberKey))
+				{
+#>
+        public virtual <#= ToTypeString(method.ReturnType) #> <#= method.Name #>(<#= GetParameters(method) #>) { <#= ReturnIfNecessary(method.ReturnType) #>source.<#= method.Name #>(<#= GetParametersWithoutTypeDefinition(method) #>); }
+<#+
+					implemented.Add(memberKey, memberKey);
+				}
+            }
+		}
+		
+		foreach (var propertyMethodInfo in propertyMethodInfos)
+		{
+			var propertyName = propertyMethodInfo.Key;
+			var pmi = propertyMethodInfo.Value;
+			var memberKey = new MemberKey(pmi);
+			if (implemented.ContainsKey(memberKey) && !explicitlyImplemented.ContainsKey(memberKey))
+			{
+#>
+<#+ 
+				var implementedType = implemented[memberKey].PropertyMethod.PropertyType;
+				if (implementedType.IsGenericType &&
+					typeof(ReadOnlyCollection<>).IsAssignableFrom(implementedType.GetGenericTypeDefinition()) &&
+					!implementedType.GetGenericArguments().Equivalent(pmi.PropertyType.GetGenericArguments()))
+				{
+#>
+        <#= ToTypeString(pmi.PropertyType) #> <#= propertyName.ToCamel() #>;
+        <#= ToTypeString(pmi.PropertyType) #> <#= ToTypeString(pmi.DeclaringType) #>.<#= propertyName #> 
+		{
+<#+ 
+			if (pmi.HasGetter)
+			{
+#>
+			get 
+			{ 
+				if (<#= propertyName.ToCamel() #> == null)
+				{
+					<#= propertyName.ToCamel() #> = new <#= ToTypeString(pmi.PropertyType) #>(<#= propertyName #>.TransformEnumerateOnly(_ => (<#= ToTypeString(pmi.PropertyType.GetGenericArguments()[0]) #>)_));
+				}
+				return <#= propertyName.ToCamel() #>; 
+			}
+<#+ 
+			}
+#>
+<#+ 
+			if (pmi.HasSetter)
+			{
+#>
+			set { <#= propertyName #> = value; }
+<#+ 
+			}
+#>
+		}
+<#+ 
+				}
+				else
+				{
+#>
+        <#= ToTypeString(pmi.PropertyType) #> <#= ToTypeString(pmi.DeclaringType) #>.<#= propertyName #> 
+		{
+<#+ 
+			if (pmi.HasGetter)
+			{
+#>
+			get { return <#= propertyName #>; }
+<#+ 
+			}
+#>
+<#+ 
+			if (pmi.HasSetter)
+			{
+#>
+			set { <#= propertyName #> = value; }
+<#+ 
+			}
+#>
+		}
+<#+
+				}
+				explicitlyImplemented.Add(memberKey, memberKey);
+			}
+			else if (!implemented.ContainsKey(memberKey))
+			{
+#>
+        public virtual <#= ToTypeString(pmi.PropertyType) #> <#= propertyName #> 
+		{
+<#+ 
+			if (pmi.HasGetter)
+			{
+#>
+			get { return source.<#= propertyName #>; }
+<#+ 
+			}
+#>
+<#+ 
+			if (pmi.HasSetter)
+			{
+#>
+			set { source.<#= propertyName #> = value; }
+<#+ 
+			}
+#>
+		}
+<#+
+				implemented.Add(memberKey, memberKey);
+			}
+		}
+		
+		var interfaces = type.GetInterfaces();
+		foreach (var @interface in interfaces)
+		{
+			GenerateDefaultDecorator(@interface, implemented, explicitlyImplemented);
+		}
+	}
+	
+    class MemberKey
+    {
+        public PropertyMethodInfo PropertyMethod { get; private set; }
+        public MethodInfo Method { get; private set; }
+        public MemberKey(PropertyMethodInfo propertyMethod)
+        {
+            PropertyMethod = propertyMethod;
+        }
+
+        public MemberKey(MethodInfo method)
+        {
+            Method = method;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var that = default(MemberKey);
+            if ((that = obj as MemberKey) == null) return false;
+
+            if (PropertyMethod != null)
+            {
+                var equals = true;
+                equals = equals && that.PropertyMethod != null;
+                equals = equals && PropertyMethod.PropertyName == that.PropertyMethod.PropertyName;
+                return equals;
+            }
+            else if (Method != null)
+            {
+                var equals = true;
+                equals = equals && that.Method != null;
+                equals = equals && Method.Name == that.Method.Name;
+                equals = equals && Method.ReturnType == that.Method.ReturnType;
+                equals = equals && Method.GetParameters().Select(_ => _.ParameterType).Equivalent(that.Method.GetParameters().Select(_ => _.ParameterType));
+                return equals;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            if (PropertyMethod != null)
+            {
+                var hashCode = 0;
+                hashCode = hashCode ^ PropertyMethod.PropertyName.NullableGetHashCode();
+                return hashCode;
+            }
+            else if (Method != null)
+            {
+                var hashCode = 0;
+                hashCode = hashCode ^ Method.Name.NullableGetHashCode();
+                hashCode = hashCode ^ Method.ReturnType.NullableGetHashCode();
+                hashCode = hashCode ^ Method.GetParameters().Select(_ => _.ParameterType).GetAggregatedHashCodeOrDefault();
+                return hashCode;
+            }
+            else
+            {
+                return base.GetHashCode();
+            }
+        }
+    }
+	
+	class PropertyMethodInfo
+	{
+		public static bool TryCreate(MethodInfo method, out PropertyMethodInfo pmi)
+		{
+			var hasGetter = false;
+			var hasSetter = false;
+            if ((hasGetter = method.Name.StartsWith("get_")) || (hasSetter = method.Name.StartsWith("set_")))
+			{
+				pmi = new PropertyMethodInfo();
+				pmi.PropertyName = method.Name.Substring(4);
+				
+				if (hasGetter)
+				{
+					pmi.HasGetter = hasGetter;
+					pmi.GetMethod = method;
+				}
+				
+				if (hasSetter)
+				{
+					pmi.HasSetter = hasSetter;
+					pmi.SetMethod = method;
+				}
+				return true;
+			}
+			else
+			{
+				pmi = default(PropertyMethodInfo);
+				return false;
+			}
+		}
+
+		public string PropertyName { get; set; }
+		public Type DeclaringType
+		{
+			get
+			{
+				if (HasGetter)
+				{
+					return GetMethod.DeclaringType;
+				}
+				else if (HasSetter)
+				{
+					return SetMethod.DeclaringType;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+		public Type PropertyType 
+		{
+			get
+			{
+				if (HasGetter)
+				{
+					return GetMethod.ReturnType;
+				}
+				else if (HasSetter)
+				{
+					return SetMethod.GetParameters()[0].ParameterType;
+				}
+				else
+				{
+					return null;
+				}
+			}
+		}
+		public bool HasGetter { get; set; }
+		public MethodInfo GetMethod { get; set; }
+		public bool HasSetter { get; set; }
+		public MethodInfo SetMethod { get; set; }
+	}
+	
+	string ToTypeString(Type type)
+	{
+		if (type == typeof(void))
+		{
+			return "void";
+		}
+		else if (type.IsGenericType)
+		{
+            var genericArguments = type.GetGenericArguments();
+			return string.Format("{0}<{1}>", type.Name.Substring(0, type.Name.IndexOf("`")), string.Join(", ", genericArguments.Select(_ => ToTypeString(_)).ToArray()));
+		}
+		else
+		{
+			return type.Name;
+		}
+	}
+	
+	string ReturnIfNecessary(Type returnType)
+	{
+		if (returnType == typeof(void))
+		{
+			return string.Empty;
+		}
+		else
+		{
+			return "return ";
+		}
+	}
+	
+	string GetParameters(MethodInfo method)
+	{
+		var parameters = method.GetParameters();
+		return string.Join(", ", parameters.Select(_ => string.Format("{0} {1}", ToTypeString(_.ParameterType), _.Name)).ToArray());
+	}
+	
+	string GetParametersWithoutTypeDefinition(MethodInfo method)
+	{
+		var parameters = method.GetParameters();
+		return string.Join(", ", parameters.Select(_ => string.Format("{0}", _.Name)).ToArray());
+	}
+}
+#>

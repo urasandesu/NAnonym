@@ -82,41 +82,5 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
             }
         }
     }
-
-    public static class ITypeDeclarationMixin
-    {
-        public static bool Equivalent(this ITypeDeclaration x, Type y)
-        {
-            return x.AssemblyQualifiedName == y.AssemblyQualifiedName;
-        }
-    }
-
-    public static class IFieldDeclarationMixin
-    {
-        public static BindingFlags ExportBinding(this IFieldDeclaration fieldDecl)
-        {
-            BindingFlags bindingAttr = BindingFlags.Default;
-
-            if (fieldDecl.IsPublic)
-            {
-                bindingAttr |= BindingFlags.Public;
-            }
-            else
-            {
-                bindingAttr |= BindingFlags.NonPublic;
-            }
-
-            if (fieldDecl.IsStatic)
-            {
-                bindingAttr |= BindingFlags.Static;
-            }
-            else
-            {
-                bindingAttr |= BindingFlags.Instance;
-            }
-
-            return bindingAttr;
-        }
-    }
 }
 

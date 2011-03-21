@@ -58,6 +58,11 @@ namespace Urasandesu.NAnonym.Mixins.System
             return type.GetMethod(name, StaticNonPublic, null, types, null);
         }
 
+        public static MethodInfo GetMethodInstancePublic(this Type type, string name)
+        {
+            return type.GetMethod(name, InstancePublic, null, Type.EmptyTypes, null);
+        }
+
         public static MethodInfo GetMethodInstancePublic(this Type type, string name, Type[] types)
         {
             return type.GetMethod(name, InstancePublic, null, types, null);

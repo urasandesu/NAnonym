@@ -1,7 +1,4 @@
-﻿<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ assembly name="System.Core" #>
-<#+
+﻿<#+
 /* 
  * File: FormulaAdapterTemplate.tt
  * 

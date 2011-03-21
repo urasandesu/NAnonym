@@ -1,5 +1,5 @@
-/* 
- * File: ITypeDeclaration.cs
+﻿/* 
+ * File: InvokeFormula.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,33 +26,28 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Urasandesu.NAnonym.ILTools;
+using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Linq;
 using System.Reflection;
-using System.Collections.ObjectModel;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Formulas
 {
-    public interface ITypeDeclaration : IMemberDeclaration
+    public partial class InvokeFormula : Formula
     {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
+        public InvokeFormula(Formula delegateOrLambda, MethodInfo mi, Formula[] arguments)
+        {
+            DelegateOrLambda = delegateOrLambda;
+            Method = mi.ToMethodDecl();
+            arguments.AddRangeTo(Arguments);
+        }
     }
 }

@@ -37,6 +37,7 @@ using System.Linq.Expressions;
 using Urasandesu.NAnonym.ILTools;
 using Urasandesu.NAnonym.Linq;
 using System.Reflection;
+using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Formulas
@@ -95,7 +96,8 @@ namespace Urasandesu.NAnonym.Formulas
                 case ExpressionType.GreaterThanOrEqual:
                     throw new NotImplementedException();
                 case ExpressionType.Invoke:
-                    throw new NotImplementedException();
+                    EvalInvoke((InvocationExpression)exp, state);
+                    return;
                 case ExpressionType.Lambda:
                     throw new NotImplementedException();
                 case ExpressionType.LeftShift:
@@ -143,6 +145,24 @@ namespace Urasandesu.NAnonym.Formulas
                     throw new NotImplementedException();
                 case ExpressionType.UnaryPlus:
                     throw new NotImplementedException();
+            }
+        }
+
+        public static void EvalInvoke(InvocationExpression exp, ExpressionToFormulaState state)
+        {
+            EvalExpression(exp.Expression, state);
+            var delegateOrLambda = state.CurrentBlock.Formulas.Pop();
+            EvalArguments(exp.Arguments, state);
+            var arguments = new Formula[state.Arguments.Count];
+            state.Arguments.MoveTo(arguments);
+            if (exp.Expression.Type.IsSubclassOf(typeof(Delegate)))
+            {
+                var mi = exp.Expression.Type.GetMethodInstancePublic("Invoke");
+                state.CurrentBlock.Formulas.Push(new InvokeFormula(delegateOrLambda, mi, arguments));
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -416,7 +436,10 @@ namespace Urasandesu.NAnonym.Formulas
                 exp.Type == typeof(object) ||
                 exp.Type == typeof(short) ||
                 exp.Type == typeof(ushort) ||
-                exp.Type == typeof(string))
+                exp.Type == typeof(string) ||
+                exp.Type == typeof(Type) ||
+                exp.Type == typeof(FieldInfo) ||
+                exp.Type == typeof(MethodInfo))
             {
                 state.CurrentBlock.Formulas.Push(new ConstantFormula(exp.Value, exp.Type));
             }
@@ -443,6 +466,9 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordEndAttribute), false)) EvalEnd(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordBaseAttribute), false)) EvalBase(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordLoadArgumentAttribute), false)) EvalLoadArgument(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordLoadAttribute), false)) EvalLoad(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordExtractAttribute), false)) EvalExtract(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordStoreAttribute), false)) EvalStore(exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -476,6 +502,61 @@ namespace Urasandesu.NAnonym.Formulas
                         EvalInstanceMethodCall(exp, state);
                     }
                 }
+            }
+        }
+
+        public static void EvalStore(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            var type = default(Type);
+            if (exp.Method.IsGenericMethod)
+            {
+                type = exp.Method.GetGenericArguments()[0];
+            }
+            else
+            {
+                type = typeof(object);
+            }
+
+            exp.Arguments[0].ConvertTo(state.InlineValueState);
+            var name = (string)state.InlineValueState.Result;
+
+            var variable = new VariableFormula(name, type);
+            variable.Block = state.CurrentBlock;
+            state.CurrentBlock.Formulas.Push(variable);
+        }
+
+        public static void EvalExtract(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            exp.Arguments[0].ConvertTo(state.InlineValueState);
+            state.CurrentBlock.Formulas.Push(new ConstantFormula(state.InlineValueState.Result, exp.Method.ReturnType));
+        }
+
+        public static void EvalLoad(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            exp.Arguments[0].ConvertTo(state.InlineValueState);
+            var names = default(string[]);
+            var name = default(string);
+            if ((names = state.InlineValueState.Result as string[]) != null)
+            {
+                var formulas = new List<Formula>();
+                foreach (var _name in names)
+                {
+                    var variable = new VariableFormula(_name, exp.Method.ReturnType.GetElementType());
+                    variable.Block = state.CurrentBlock;
+                    formulas.Add(variable);
+                }
+                var arr = new NewArrayInitFormula(formulas.ToArray(), exp.Method.ReturnType);
+                state.CurrentBlock.Formulas.Push(arr);
+            }
+            else if ((name = state.InlineValueState.Result as string) != null)
+            {
+                var variable = new VariableFormula(name, exp.Method.ReturnType);
+                variable.Block = state.CurrentBlock;
+                state.CurrentBlock.Formulas.Push(variable);
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 

@@ -281,15 +281,33 @@ namespace Urasandesu.NAnonym.Linq
         public static bool Equivalent<TSource>(
             this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> equalityComparer)
         {
-            if (first.Count() != second.Count()) return false;
-            return first.Zip(second).All(tuple => equalityComparer.Equals(tuple.Item1, tuple.Item2));
+            var e1 = first.GetEnumerator();
+            var e2 = second.GetEnumerator();
+
+            while (e1.MoveNext() && e2.MoveNext())
+                if (!equalityComparer.Equals(e1.Current, e2.Current))
+                    return false;
+
+            if (e1.MoveNext() || e2.MoveNext())
+                return false;
+
+            return true;
         }
 
         public static bool Equivalent<TSource1, TSource2>(
             this IEnumerable<TSource1> first, IEnumerable<TSource2> second, IEqualityComparer<TSource1, TSource2> equalityComparer)
         {
-            if (first.Count() != second.Count()) return false;
-            return first.Zip(second).All(tuple => equalityComparer.Equals(tuple.Item1, tuple.Item2));
+            var e1 = first.GetEnumerator();
+            var e2 = second.GetEnumerator();
+
+            while (e1.MoveNext() && e2.MoveNext())
+                if (!equalityComparer.Equals(e1.Current, e2.Current))
+                    return false;
+
+            if (e1.MoveNext() || e2.MoveNext())
+                return false;
+
+            return true;
         }
 
 
@@ -590,6 +608,11 @@ namespace Urasandesu.NAnonym.Linq
         public static List<T> CreateList<T>(T obj)
         {
             return new List<T>();
+        }
+
+        public static Dictionary<TKey, TValue> CreateDictionary<TKey, TValue>(TKey key, TValue value)
+        {
+            return new Dictionary<TKey, TValue>();
         }
 
         public static void NullableClear<T>(this ICollection<T> source)

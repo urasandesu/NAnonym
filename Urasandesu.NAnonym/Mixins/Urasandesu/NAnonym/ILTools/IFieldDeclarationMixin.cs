@@ -1,5 +1,5 @@
-/* 
- * File: ITypeDeclaration.cs
+﻿/* 
+ * File: IFieldDeclarationMixin.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,33 +26,44 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Urasandesu.NAnonym.ILTools;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Collections.ObjectModel;
+using SRE = System.Reflection.Emit;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 {
-    public interface ITypeDeclaration : IMemberDeclaration
+    public static class IFieldDeclarationMixin
     {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
+        public static BindingFlags ExportBinding(this IFieldDeclaration fieldDecl)
+        {
+            BindingFlags bindingAttr = BindingFlags.Default;
+
+            if (fieldDecl.IsPublic)
+            {
+                bindingAttr |= BindingFlags.Public;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.NonPublic;
+            }
+
+            if (fieldDecl.IsStatic)
+            {
+                bindingAttr |= BindingFlags.Static;
+            }
+            else
+            {
+                bindingAttr |= BindingFlags.Instance;
+            }
+
+            return bindingAttr;
+        }
     }
 }

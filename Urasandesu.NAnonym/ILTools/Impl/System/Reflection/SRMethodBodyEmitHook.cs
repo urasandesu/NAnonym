@@ -1,5 +1,5 @@
-/* 
- * File: ITypeDeclaration.cs
+﻿/* 
+ * File: SRMethodBodyEmitHook.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,33 +26,31 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
-using System;
-using System.Reflection;
-using System.Collections.ObjectModel;
-
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
-    public interface ITypeDeclaration : IMemberDeclaration
+    class SRMethodBodyEmitHook : IMethodBodyGeneratorDecorator
     {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
+        readonly string ilName;
+        readonly ReflectiveMethodDesigner2 gen;
+        public SRMethodBodyEmitHook(IMethodBodyGenerator source, string ilName, ReflectiveMethodDesigner2 gen)
+            : base(source)
+        {
+            this.ilName = ilName;
+            this.gen = gen;
+        }
+
+        IILOperator ilOperator;
+        public override IILOperator ILOperator
+        {
+            get
+            {
+                if (ilOperator == null)
+                {
+                    ilOperator = new SRILOperatorEmitHook(base.ILOperator, ilName, gen);
+                }
+                return ilOperator;
+            }
+        }
     }
 }

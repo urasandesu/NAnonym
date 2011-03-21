@@ -1,47 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Urasandesu.NAnonym.Test;
-using Mono.Cecil;
 using System.IO;
-using SR = System.Reflection;
-using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
-using Urasandesu.NAnonym.Cecil.Mixins.System;
 using System.Reflection;
-using Urasandesu.NAnonym.ILTools;
+using System.Reflection.Emit;
+using Mono.Cecil;
 using Test.Urasandesu.NAnonym.Etc;
-using System.Diagnostics;
-using NUnit.Framework;
+using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
+using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Mixins.System;
+using Urasandesu.NAnonym.Test;
 using Assert = Urasandesu.NAnonym.Test.Assert;
+using SR = System.Reflection;
+using NUnit.Framework;
 
 namespace Test.Urasandesu.NAnonym.Cecil.ILTools
 {
-    [NewDomainTestFixture]
-    public class ReflectiveMethodDesigner2Test : NewDomainTestBase
+    [TestFixture]
+    public class ReflectiveMethodDesigner2Test
     {
-        [NewDomainTestFixtureSetUp]
+        [TestFixtureSetUp]
         public void FixtureSetUp()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
             TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
-        [NewDomainTestFixtureTearDown]
+        [TestFixtureTearDown]
         public void FixtureTearDown()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
             TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
-        [NewDomainSetUp]
+        [SetUp]
         public void SetUp()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
             TestHelper.TryDeleteFiles(".", "tmp*.log");
         }
 
-        [NewDomainTearDown]
+        [TearDown]
         public void TearDown()
         {
             TestHelper.TryDeleteFiles(".", "tmp*.dll");
@@ -51,7 +48,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
         const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
         const SR::MethodAttributes PublicHideBySig = SR::MethodAttributes.Public | SR::MethodAttributes.HideBySig;
 
-        [NewDomainTest]
+        [Test]
         public void EmitTest01()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -130,7 +127,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.ILTools
             }));
         }
 
-        [NewDomainTest]
+        [Test]
         public void EmitTest02()
         {
             TestHelper.UsingTempFile(tempFileName =>
@@ -197,6 +194,61 @@ ValueField: 30
 ValueField: 30
 (10, a)
 ", TestHelper.ReadLogToEnd());
+                    };
+
+                return testInfo;
+            }));
+        }
+
+        [Test]
+        public void EmitTest03()
+        {
+            TestHelper.UsingTempFile(tempFileName =>
+            TestHelper.UsingNewDomain(() =>
+            {
+                var tempAssemblyNameDef = new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+                var tempAssemblyDef = AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+                var emitTest03Gen = tempAssemblyDef.MainModule.AddType(tempAssemblyNameDef.Name + "." + "EmitTest03");
+
+                emitTest03Gen.AddDefaultConstructor();
+
+                var func1Parameter0 = emitTest03Gen.AddMethod("Func1Parameter0", PublicHideBySig, typeof(string), Type.EmptyTypes);
+                func1Parameter0.ExpressBody2(
+                gen =>
+                {
+                    var dm = default(DynamicMethod);
+                    gen.Eval(() => Dsl.Allocate(dm).As(new DynamicMethod("DynamicMethod", typeof(string), null, true)));
+
+                    var il = default(ILGenerator);
+                    gen.Eval(() => Dsl.Allocate(il).As(dm.GetILGenerator()));
+
+                    gen.ExpressInternally(() => il, typeof(string).ToTypeDecl(), null,
+                    _gen =>
+                    {
+                        var f1StaticObjectField = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
+                        _gen.Eval(() => f1StaticObjectField.SetValue(null, "testtest"));
+                        _gen.Eval(() => Dsl.Return(f1StaticObjectField.GetValue(null)));
+                    });
+
+                    var func = default(Func<string>);
+                    gen.Eval(() => Dsl.Allocate(func).As((Func<string>)dm.CreateDelegate(typeof(Func<string>))));
+                    gen.Eval(() => Dsl.Return(func()));
+                });
+
+                var ms = new MemoryStream();
+                tempAssemblyDef.Write(ms);
+                //tempAssemblyDef.Write(tempFileName);
+
+                var testInfo = new NewDomainTestInfoWithScope(MethodBase.GetCurrentMethod().Name);
+                testInfo.RawAssembly = ms.ToArray();
+                //testInfo.AssemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, tempFileName);
+                testInfo.TypeFullName = emitTest03Gen.FullName;
+                testInfo.MethodName = func1Parameter0.Name;
+                testInfo.TestVerifier =
+                    target =>
+                    {
+                        var result = (string)target.Method.Invoke(target.Instance, new object[] { });
+                        Assert.AreEqual("testtest", result);
                     };
 
                 return testInfo;

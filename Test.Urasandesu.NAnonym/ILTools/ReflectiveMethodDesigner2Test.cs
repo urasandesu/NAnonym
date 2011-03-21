@@ -41,6 +41,7 @@ using Urasandesu.NAnonym;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
+using SRE = System.Reflection.Emit;
 
 namespace Test.Urasandesu.NAnonym.ILTools
 {
@@ -50,10 +51,11 @@ namespace Test.Urasandesu.NAnonym.ILTools
         /*
          * MEMO: 
          *   The way of making each assertion string: 
-         *     1. Replace /"/ -> /\\"/
-         *     2. Replace /(.{1,100})/ -> /"\1" + \r\n/
-         *     3. Replace /\\" \+ $/ -> /\\"" + /
-         *     4. Replace /^""/ -> /"/
+         *     1. Output the string of intermediate formula with DumpEntryPoint().
+         *     2. Replace /"/ -> /\\"/
+         *     3. Replace /(.{1,100})/ -> /"\1" + \r\n/
+         *     4. Replace /\\" \+ $/ -> /\\"" + /
+         *     5. Replace /^""/ -> /"/
          */
 
         [Test]
@@ -1306,7 +1308,183 @@ namespace Test.Urasandesu.NAnonym.ILTools
             gen.Eval(() => Dsl.Allocate(value).As(Dsl.LoadArgument<int>(0)));
             gen.Eval(() => Dsl.Return(value + value * value * value));
             gen.Eval(() => Dsl.End());
-            Console.WriteLine(gen.DumpEntryPoint());
+            //Console.WriteLine(gen.DumpEntryPoint());
+            #region Assertion
+            Assert.AreEqual("{\"NodeType\": \"End\", \"TypeDeclaration\": \"System.Int32\", \"EntryBlock\": {\"NodeType\": \"Bloc" +
+"k\", \"TypeDeclaration\": \"System.Int32\", \"Locals\": [{\"NodeType\": \"Local\", \"TypeDeclaration" +
+"\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}], \"Formulas\": [{\"NodeType\": \"A" +
+"ssign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"Variable\", \"TypeDeclara" +
+"tion\": \"System.Int32\", \"VariableName\": null, \"VariableIndex\": 0, \"Resolved\": {\"NodeType\":" +
+" \"Argument\", \"TypeDeclaration\": \"System.Int32\", \"ArgumentName\": null, \"ArgumentPosition\": " +
+"0, \"Argument\": null}}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Int32\"" +
+", \"VariableName\": \"value\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"Typ" +
+"eDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}}, \"Method\": \"=\"}, {" +
+"\"NodeType\": \"Return\", \"TypeDeclaration\": \"System.Int32\", \"Body\": {\"NodeType\": \"Add\", \"" +
+"TypeDeclaration\": \"System.Int32\", \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"" +
+"System.Int32\", \"VariableName\": \"value\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"L" +
+"ocal\", \"TypeDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}}, \"Right\"" +
+": {\"NodeType\": \"Multiply\", \"TypeDeclaration\": \"System.Int32\", \"Left\": {\"NodeType\": \"Mu" +
+"ltiply\", \"TypeDeclaration\": \"System.Int32\", \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclar" +
+"ation\": \"System.Int32\", \"VariableName\": \"value\", \"VariableIndex\": -1, \"Resolved\": {\"Node" +
+"Type\": \"Local\", \"TypeDeclaration\": \"System.Int32\", \"LocalName\": \"value\", \"Local\": null}" +
+"}, \"Right\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Int32\", \"VariableName\": " +
+"\"value\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Sys" +
+"tem.Int32\", \"LocalName\": \"value\", \"Local\": null}}, \"Method\": \"*\"}, \"Right\": {\"NodeType" +
+"\": \"Variable\", \"TypeDeclaration\": \"System.Int32\", \"VariableName\": \"value\", \"VariableInde" +
+"x\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Int32\", \"LocalName\"" +
+": \"value\", \"Local\": null}}, \"Method\": \"*\"}, \"Method\": \"+\"}, \"Label\": null}]}}", gen.DumpEntryPoint());
+            #endregion
+        }
+
+        [Test]
+        public void EvalTest07_InternalStatememts()
+        {
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new MockMethodBaseGenerator();
+            var returnType = new MockTypeGenerator(typeof(string).ToTypeDecl());
+            gen.ILBuilder = new EmptyILBuilder(methodGen, returnType);
+            var dm = default(SRE::DynamicMethod);
+            gen.Eval(() => Dsl.Allocate(dm).As(new SRE::DynamicMethod("DynamicMethod", typeof(string), null, true)));
+
+            var il = default(SRE::ILGenerator);
+            gen.Eval(() => Dsl.Allocate(il).As(dm.GetILGenerator()));
+
+            gen.ExpressInternally(() => il, typeof(string).ToTypeDecl(), null,
+            _gen =>
+            {
+                var f1StaticObjectField = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
+                _gen.Eval(() => f1StaticObjectField.SetValue(null, "testtest"));
+                _gen.Eval(() => Dsl.Return(f1StaticObjectField.GetValue(null)));
+            });
+
+            var func = default(Func<string>);
+            gen.Eval(() => Dsl.Allocate(func).As((Func<string>)dm.CreateDelegate(typeof(Func<string>))));
+            gen.Eval(() => Dsl.Return(func()));
+            gen.Eval(() => Dsl.End());
+            //Console.WriteLine(gen.DumpEntryPoint());
+            #region Assertion
+            Assert.AreEqual("{\"NodeType\": \"End\", \"TypeDeclaration\": \"System.String\", \"EntryBlock\": {\"NodeType\": \"Blo" +
+"ck\", \"TypeDeclaration\": \"System.String\", \"Locals\": [{\"NodeType\": \"Local\", \"TypeDeclarati" +
+"on\": \"System.Reflection.Emit.DynamicMethod\", \"LocalName\": \"dm\", \"Local\": null}, {\"NodeType" +
+"\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"LocalName\": \"il\", \"" +
+"Local\": null}, {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"L" +
+"ocalName\": \"local$0\", \"Local\": null}, {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.R" +
+"eflection.Emit.Label\", \"LocalName\": \"label$0\", \"Local\": null}, {\"NodeType\": \"Local\", \"Ty" +
+"peDeclaration\": \"System.Func`1[System.String]\", \"LocalName\": \"func\", \"Local\": null}], \"For" +
+"mulas\": [{\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\":" +
+" \"New\", \"TypeDeclaration\": \"System.Reflection.Emit.DynamicMethod\", \"Constructor\": \"Void .ct" +
+"or(System.String, System.Type, System.Type[], Boolean)\", \"Arguments\": [{\"NodeType\": \"Constant\"" +
+", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"DynamicMethod\"}, {\"NodeType\": \"C" +
+"onstant\", \"TypeDeclaration\": \"System.Type\", \"ConstantValue\": \"System.String\"}, {\"NodeType\"" +
+": \"Constant\", \"TypeDeclaration\": \"System.Type[]\", \"ConstantValue\": null}, {\"NodeType\": \"" +
+"Constant\", \"TypeDeclaration\": \"System.Boolean\", \"ConstantValue\": \"True\"}]}, \"Left\": {\"No" +
+"deType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.DynamicMethod\", \"VariableNam" +
+"e\": \"dm\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"S" +
+"ystem.Reflection.Emit.DynamicMethod\", \"LocalName\": \"dm\", \"Local\": null}}, \"Method\": \"=\"}," +
+" {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"Call\"" +
+", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"Instance\": {\"NodeType\": \"Variab" +
+"le\", \"TypeDeclaration\": \"System.Reflection.Emit.DynamicMethod\", \"VariableName\": \"dm\", \"Var" +
+"iableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.E" +
+"mit.DynamicMethod\", \"LocalName\": \"dm\", \"Local\": null}}, \"Method\": \"System.Reflection.Emit." +
+"ILGenerator GetILGenerator()\", \"Arguments\": []}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDec" +
+"laration\": \"System.Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"VariableIndex\": -1," +
+" \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\"" +
+", \"LocalName\": \"il\", \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType\": \"Call\", \"TypeDecla" +
+"ration\": \"System.Void\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System." +
+"Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"VariableIndex\": -1, \"Resolved\": {\"Nod" +
+"eType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"LocalName\": \"il" +
+"\", \"Local\": null}}, \"Method\": \"Void Emit(System.Reflection.Emit.OpCode, System.String)\", \"Ar" +
+"guments\": [{\"NodeType\": \"Field\", \"TypeDeclaration\": \"System.Reflection.Emit.OpCode\", \"Inst" +
+"ance\": null, \"Member\": \"System.Reflection.Emit.OpCode Ldstr\", \"Member\": \"System.Reflection.E" +
+"mit.OpCode Ldstr\"}, {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.String\", \"Constant" +
+"Value\": \"testtest\"}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\"" +
+": {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"Instance\": {\"No" +
+"deType\": \"Constant\", \"TypeDeclaration\": \"System.Type\", \"ConstantValue\": \"Test.Urasandesu.N" +
+"Anonym.Etc.FieldTestClass1\"}, \"Method\": \"System.Reflection.FieldInfo GetField(System.String, Sys" +
+"tem.Reflection.BindingFlags)\", \"Arguments\": [{\"NodeType\": \"Constant\", \"TypeDeclaration\": \"" +
+"System.String\", \"ConstantValue\": \"staticObjectField\"}, {\"NodeType\": \"Constant\", \"TypeDecla" +
+"ration\": \"System.Reflection.BindingFlags\", \"ConstantValue\": \"Static, NonPublic\"}]}, \"Left\":" +
+" {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"VariableName\"" +
+": \"local$0\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"" +
+"System.Reflection.FieldInfo\", \"LocalName\": \"local$0\", \"Local\": null}}, \"Method\": \"=\"}, {" +
+"\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\": {\"NodeType\": \"Variabl" +
+"e\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"Variab" +
+"leIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit" +
+".ILGenerator\", \"LocalName\": \"il\", \"Local\": null}}, \"Method\": \"Void Emit(System.Reflection." +
+"Emit.OpCode, System.Reflection.FieldInfo)\", \"Arguments\": [{\"NodeType\": \"Field\", \"TypeDeclara" +
+"tion\": \"System.Reflection.Emit.OpCode\", \"Instance\": null, \"Member\": \"System.Reflection.Emit." +
+"OpCode Stsfld\", \"Member\": \"System.Reflection.Emit.OpCode Stsfld\"}, {\"NodeType\": \"Variable\"," +
+" \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"VariableName\": \"local$0\", \"VariableInde" +
+"x\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\"" +
+", \"LocalName\": \"local$0\", \"Local\": null}}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": " +
+"\"System.Void\", \"Right\": {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Reflection.FieldI" +
+"nfo\", \"Instance\": {\"NodeType\": \"Constant\", \"TypeDeclaration\": \"System.Type\", \"ConstantVa" +
+"lue\": \"Test.Urasandesu.NAnonym.Etc.FieldTestClass1\"}, \"Method\": \"System.Reflection.FieldInfo G" +
+"etField(System.String, System.Reflection.BindingFlags)\", \"Arguments\": [{\"NodeType\": \"Constant\"" +
+", \"TypeDeclaration\": \"System.String\", \"ConstantValue\": \"staticObjectField\"}, {\"NodeType\":" +
+" \"Constant\", \"TypeDeclaration\": \"System.Reflection.BindingFlags\", \"ConstantValue\": \"Static," +
+" NonPublic\"}]}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Fie" +
+"ldInfo\", \"VariableName\": \"local$0\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local" +
+"\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"LocalName\": \"local$0\", \"Local\": nul" +
+"l}}, \"Method\": \"=\"}, {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\"" +
+": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"Variab" +
+"leName\": \"il\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\"" +
+": \"System.Reflection.Emit.ILGenerator\", \"LocalName\": \"il\", \"Local\": null}}, \"Method\": \"Vo" +
+"id Emit(System.Reflection.Emit.OpCode, System.Reflection.FieldInfo)\", \"Arguments\": [{\"NodeType\"" +
+": \"Field\", \"TypeDeclaration\": \"System.Reflection.Emit.OpCode\", \"Instance\": null, \"Member\":" +
+" \"System.Reflection.Emit.OpCode Ldsfld\", \"Member\": \"System.Reflection.Emit.OpCode Ldsfld\"}, {\"" +
+"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.FieldInfo\", \"VariableName\": \"" +
+"local$0\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"Sy" +
+"stem.Reflection.FieldInfo\", \"LocalName\": \"local$0\", \"Local\": null}}]}, {\"NodeType\": \"Assig" +
+"n\", \"TypeDeclaration\": \"System.Void\", \"Right\": {\"NodeType\": \"Call\", \"TypeDeclaration\": " +
+"\"System.Reflection.Emit.Label\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"" +
+"System.Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"VariableIndex\": -1, \"Resolved\":" +
+" {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"LocalName\"" +
+": \"il\", \"Local\": null}}, \"Method\": \"System.Reflection.Emit.Label DefineLabel()\", \"Argument" +
+"s\": []}, \"Left\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.Label" +
+"\", \"VariableName\": \"label$0\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"" +
+"TypeDeclaration\": \"System.Reflection.Emit.Label\", \"LocalName\": \"label$0\", \"Local\": null}}, " +
+"\"Method\": \"=\"}, {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\": {\"" +
+"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"VariableNam" +
+"e\": \"il\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"S" +
+"ystem.Reflection.Emit.ILGenerator\", \"LocalName\": \"il\", \"Local\": null}}, \"Method\": \"Void Em" +
+"it(System.Reflection.Emit.OpCode, System.Reflection.Emit.Label)\", \"Arguments\": [{\"NodeType\": \"" +
+"Field\", \"TypeDeclaration\": \"System.Reflection.Emit.OpCode\", \"Instance\": null, \"Member\": \"S" +
+"ystem.Reflection.Emit.OpCode Br\", \"Member\": \"System.Reflection.Emit.OpCode Br\"}, {\"NodeType\":" +
+" \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.Label\", \"VariableName\": \"label$0\"," +
+" \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflec" +
+"tion.Emit.Label\", \"LocalName\": \"label$0\", \"Local\": null}}]}, {\"NodeType\": \"Call\", \"TypeD" +
+"eclaration\": \"System.Void\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeDeclaration\": \"Sys" +
+"tem.Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"VariableIndex\": -1, \"Resolved\": {\"" +
+"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator\", \"LocalName\": " +
+"\"il\", \"Local\": null}}, \"Method\": \"Void MarkLabel(System.Reflection.Emit.Label)\", \"Arguments" +
+"\": [{\"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.Label\", \"VariableN" +
+"ame\": \"label$0\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration" +
+"\": \"System.Reflection.Emit.Label\", \"LocalName\": \"label$0\", \"Local\": null}}]}, {\"NodeType\"" +
+": \"Call\", \"TypeDeclaration\": \"System.Void\", \"Instance\": {\"NodeType\": \"Variable\", \"TypeD" +
+"eclaration\": \"System.Reflection.Emit.ILGenerator\", \"VariableName\": \"il\", \"VariableIndex\": -" +
+"1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Reflection.Emit.ILGenerator" +
+"\", \"LocalName\": \"il\", \"Local\": null}}, \"Method\": \"Void Emit(System.Reflection.Emit.OpCode)" +
+"\", \"Arguments\": [{\"NodeType\": \"Field\", \"TypeDeclaration\": \"System.Reflection.Emit.OpCode\"" +
+", \"Instance\": null, \"Member\": \"System.Reflection.Emit.OpCode Ret\", \"Member\": \"System.Reflec" +
+"tion.Emit.OpCode Ret\"}]}, {\"NodeType\": \"Assign\", \"TypeDeclaration\": \"System.Void\", \"Right\"" +
+": {\"NodeType\": \"Convert\", \"TypeDeclaration\": \"System.Func`1[System.String]\", \"Method\": nu" +
+"ll, \"Operand\": {\"NodeType\": \"Call\", \"TypeDeclaration\": \"System.Delegate\", \"Instance\": {\"" +
+"NodeType\": \"Variable\", \"TypeDeclaration\": \"System.Reflection.Emit.DynamicMethod\", \"Variable" +
+"Name\": \"dm\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": " +
+"\"System.Reflection.Emit.DynamicMethod\", \"LocalName\": \"dm\", \"Local\": null}}, \"Method\": \"Sy" +
+"stem.Delegate CreateDelegate(System.Type)\", \"Arguments\": [{\"NodeType\": \"Constant\", \"TypeDecl" +
+"aration\": \"System.Type\", \"ConstantValue\": \"System.Func`1[System.String]\"}]}}, \"Left\": {\"No" +
+"deType\": \"Variable\", \"TypeDeclaration\": \"System.Func`1[System.String]\", \"VariableName\": \"f" +
+"unc\", \"VariableIndex\": -1, \"Resolved\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System." +
+"Func`1[System.String]\", \"LocalName\": \"func\", \"Local\": null}}, \"Method\": \"=\"}, {\"NodeType" +
+"\": \"Return\", \"TypeDeclaration\": \"System.String\", \"Body\": {\"NodeType\": \"Invoke\", \"TypeD" +
+"eclaration\": \"System.String\", \"DelegateOrLambda\": {\"NodeType\": \"Variable\", \"TypeDeclaratio" +
+"n\": \"System.Func`1[System.String]\", \"VariableName\": \"func\", \"VariableIndex\": -1, \"Resolved" +
+"\": {\"NodeType\": \"Local\", \"TypeDeclaration\": \"System.Func`1[System.String]\", \"LocalName\": " +
+"\"func\", \"Local\": null}}, \"Method\": \"System.String Invoke()\", \"Arguments\": []}, \"Label\": " +
+"null}]}}", gen.DumpEntryPoint());
+            #endregion
         }
     }
 }

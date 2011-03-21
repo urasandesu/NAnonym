@@ -123,6 +123,12 @@ namespace Urasandesu.NAnonym.Formulas
             formula.TypeDeclaration = formula.Method == null ? null : formula.Method.ReturnType;
         }
 
+        public override void Visit(InvokeFormula formula)
+        {
+            base.Visit(formula);
+            formula.TypeDeclaration = formula.Method == null ? null : formula.Method.ReturnType;
+        }
+
         public override void Visit(FieldFormula formula)
         {
             base.Visit(formula);

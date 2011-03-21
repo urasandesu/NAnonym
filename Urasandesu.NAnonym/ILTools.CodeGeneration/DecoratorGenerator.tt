@@ -1,5 +1,6 @@
+﻿<#+
 /* 
- * File: ITypeDeclaration.cs
+ * File: DecoratorGenerator.tt
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,33 +27,21 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
-
-using System;
-using System.Reflection;
-using System.Collections.ObjectModel;
-
-namespace Urasandesu.NAnonym.ILTools
+public class DecoratorGenerator : Generator
 {
-    public interface ITypeDeclaration : IMemberDeclaration
-    {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
-    }
+	public DecoratorGenerator()
+	{
+        Templates = new Dictionary<string, DecoratorTemplate>();
+	}
+	
+    public Dictionary<string, DecoratorTemplate> Templates { get; private set; }
+	
+	protected override void RunCore()
+	{
+        foreach (var template in Templates)
+        {
+            template.Value.RenderToFile(template.Key + ".g.cs");
+        }
+	}
 }
+#>

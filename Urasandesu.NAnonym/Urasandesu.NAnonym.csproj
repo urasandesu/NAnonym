@@ -100,6 +100,9 @@
     <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\InvokeFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\LeftJoinBinaryFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -189,6 +192,7 @@
     <Compile Include="Formulas\FieldFormula.cs" />
     <Compile Include="Formulas\Formula.cs" />
     <Compile Include="Formulas\INodeToString.cs" />
+    <Compile Include="Formulas\InvokeFormula.cs" />
     <Compile Include="Formulas\LessThanOrEqualFormula.cs" />
     <Compile Include="Formulas\Node.cs" />
     <Compile Include="Formulas\NodeCollection.cs" />
@@ -212,7 +216,27 @@
     <Compile Include="Formulas\TypeAsFormula.cs" />
     <Compile Include="Formulas\VariableFormula.cs" />
     <Compile Include="Formulas\VariableResolver.cs" />
+    <Compile Include="ILTools.CodeGeneration\IILOperator.g.cs">
+      <DependentUpon>Decorators.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ILTools.CodeGeneration\ILabelGenerator.g.cs">
+      <DependentUpon>Decorators.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ILTools.CodeGeneration\ILocalGenerator.g.cs">
+      <DependentUpon>Decorators.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ILTools.CodeGeneration\IMethodBaseGenerator.g.cs">
+      <DependentUpon>Decorators.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ILTools.CodeGeneration\IMethodBodyGenerator.g.cs">
+      <DependentUpon>Decorators.tt</DependentUpon>
+    </Compile>
     <Compile Include="ILTools\ILBuilder.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorEmitHook.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLabelEmitHook.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRLocalEmitHook.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseEmitHook.cs" />
+    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyEmitHook.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
     <Compile Include="ILTools\IPropertyDeclaration.cs" />
     <Compile Include="ILTools\IPropertyGenerator.cs" />
@@ -380,6 +404,8 @@
     <Compile Include="Linq\TransformerEnumerateOnly.cs" />
     <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ExpressiveGeneratorMixin.cs" />
+    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\IFieldDeclarationMixin.cs" />
+    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ITypeDeclarationMixin.cs" />
     <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
     <Compile Include="NAnonymException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -420,6 +446,14 @@
     </None>
     <None Include="Formulas.CodeGeneration\FormulaVisitorTemplate.tt">
     </None>
+    <None Include="ILTools.CodeGeneration\DecoratorGenerator.tt">
+    </None>
+    <None Include="ILTools.CodeGeneration\Decorators.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Decorators.txt</LastGenOutput>
+    </None>
+    <None Include="ILTools.CodeGeneration\DecoratorTemplate.tt">
+    </None>
     <None Include="Resources\MemberInitExpressionHelper.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -430,6 +464,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Formulas.tt</DependentUpon>
+    </Content>
+    <Content Include="ILTools.CodeGeneration\Decorators.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Decorators.tt</DependentUpon>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -307,6 +307,12 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
                 throw new NotImplementedException();
             }
         }
+
+
+        public bool IsSubclassOf(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -1,11 +1,4 @@
-﻿<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="Urasandesu.NAnonym" #>
-<#@ import namespace="Urasandesu.NAnonym.Linq" #>
-<#@ import namespace="Urasandesu.NAnonym.Formulas" #>
-<#@ assembly name="System.Core" #>
-<#@ assembly name="Urasandesu.NAnonym.dll" #>
-<#+
+﻿<#+
 /* 
  * File: FormulaTemplate.tt
  * 

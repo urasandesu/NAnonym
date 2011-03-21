@@ -47,6 +47,13 @@ namespace Urasandesu.NAnonym.Formulas
             ConvertExpression(exp, state);
         }
 
+        public static T Convert<T>(this Expression exp)
+        {
+            var state = new ExpressionToInlineValueState();
+            exp.ConvertTo(state);
+            return (T)state.Result;
+        }
+
         public static void ConvertExpression(Expression exp, ExpressionToInlineValueState state)
         {
             switch (exp.NodeType)
@@ -175,11 +182,13 @@ namespace Urasandesu.NAnonym.Formulas
 
         public static void ConvertArguments(ReadOnlyCollection<Expression> exps, ExpressionToInlineValueState state)
         {
+            var arguments = new List<object>();
             foreach (var exp in exps)
             {
                 ConvertExpression(exp, state);
-                state.Arguments.Add(state.Result);
+                arguments.Add(state.Result);
             }
+            arguments.AddRangeTo(state.Arguments);
         }
 
         public static void ConvertConstant(ConstantExpression exp, ExpressionToInlineValueState state)

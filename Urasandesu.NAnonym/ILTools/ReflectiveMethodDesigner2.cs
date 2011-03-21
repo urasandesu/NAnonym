@@ -31,12 +31,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Urasandesu.NAnonym.Formulas;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Text;
+using Urasandesu.NAnonym.Formulas;
+using Urasandesu.NAnonym.ILTools.Impl.System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
+using SRE = System.Reflection.Emit;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -44,8 +48,13 @@ namespace Urasandesu.NAnonym.ILTools
     {
         ExpressionToFormulaState state;
         public ReflectiveMethodDesigner2()
+            : this(new ExpressionToFormulaState())
         {
-            state = new ExpressionToFormulaState();
+        }
+
+        public ReflectiveMethodDesigner2(ExpressionToFormulaState state)
+        {
+            this.state = state;
         }
 
         public void Eval(Expression<Action> exp)
@@ -57,32 +66,58 @@ namespace Urasandesu.NAnonym.ILTools
             exp.Body.EvalTo(state);
             if (state.IsEnded)
             {
-                OnEvalEnded(state.EntryPoint);
+                PostEval(state.EntryPoint);
                 Formula.Pin(state.EntryPoint);
             }
         }
 
-        protected virtual void OnEvalEnded(EndFormula entryPoint)
+        public void ExpressInternally(
+            Expression<Func<ILGenerator>> ilId, 
+            ITypeDeclaration returnType, 
+            ITypeDeclaration[] parameterTypes, 
+            Action<ReflectiveMethodDesigner2> statementsBlock)
         {
-            // Resolve the reference of types, variables and members.
-            {
-                var visitor = default(IFormulaVisitor);
-                visitor = new NoActionVisitor();
-                visitor = new VariableResolver(visitor);
-                visitor = new TypeResolver(visitor, GetReturnType());
-                entryPoint.Accept(visitor);
-            }
+            var ilName = TypeSavable.GetName(ilId);
+            var methodGen = new SRMethodBaseEmitHook(ILBuilder.MethodGenerator, ilName, this);
+            var ilBuilder = new ILBuilder(methodGen, returnType);
+            ExpressInternally(ilBuilder, statementsBlock);
+        }
 
-            // Optimize the intermediate formula.
-            {
-                var visitor = default(IFormulaVisitor);
-                visitor = new NoActionVisitor();
-                visitor = new ConvertDecreaser(visitor);
-                visitor = new ConvertIncreaser(visitor);
-                entryPoint.Accept(visitor);
-            }
+        public void ExpressInternally(ILBuilder ilBuilder, Action<ReflectiveMethodDesigner2> statementsBlock)
+        {
+            var gen = new ReflectiveMethodDesigner2();
+            gen.ILBuilder = ilBuilder;
+            statementsBlock(gen);
+            gen.Eval(() => Dsl.End());
+        }
 
-            // Build IL.
+        protected virtual void PostEval(EndFormula entryPoint)
+        {
+            ResolveReference(entryPoint);
+            OptimizeIntermediateFormula(entryPoint);
+            BuildIL(entryPoint);
+        }
+
+        protected virtual void ResolveReference(EndFormula entryPoint)
+        {
+            var visitor = default(IFormulaVisitor);
+            visitor = new NoActionVisitor();
+            visitor = new VariableResolver(visitor);
+            visitor = new TypeResolver(visitor, GetReturnType());
+            entryPoint.Accept(visitor);
+        }
+
+        protected virtual void OptimizeIntermediateFormula(EndFormula entryPoint)
+        {
+            var visitor = default(IFormulaVisitor);
+            visitor = new NoActionVisitor();
+            visitor = new ConvertDecreaser(visitor);
+            visitor = new ConvertIncreaser(visitor);
+            entryPoint.Accept(visitor);
+        }
+
+        protected virtual void BuildIL(EndFormula entryPoint)
+        {
             if (ILBuilder != null)
             {
                 entryPoint.Accept(ILBuilder);
@@ -90,6 +125,7 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         public ILBuilder ILBuilder { get; set; }
+        
         public ITypeDeclaration GetReturnType()
         {
             if (ILBuilder == null)

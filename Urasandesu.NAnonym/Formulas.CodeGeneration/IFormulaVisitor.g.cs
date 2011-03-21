@@ -116,5 +116,8 @@ namespace Urasandesu.NAnonym.Formulas
         void VisitReflectiveFieldInstance(ReflectiveFieldFormula formula, Formula instance);
         void Visit(EndFormula formula);
         void VisitEndEntryBlock(EndFormula formula, BlockFormula entryBlock);
+        void Visit(InvokeFormula formula);
+        void VisitInvokeDelegateOrLambda(InvokeFormula formula, Formula delegateOrLambda);
+        void VisitInvokeArguments(InvokeFormula formula, FormulaCollection<Formula> arguments);
     }
 }

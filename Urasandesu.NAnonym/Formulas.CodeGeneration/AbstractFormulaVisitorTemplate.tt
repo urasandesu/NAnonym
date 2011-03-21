@@ -1,5 +1,4 @@
-﻿<#@ import namespace="System.Collections.Generic" #>
-<#+
+﻿<#+
 /* 
  * File: AbstractFormulaVisitorTemplate.tt
  * 

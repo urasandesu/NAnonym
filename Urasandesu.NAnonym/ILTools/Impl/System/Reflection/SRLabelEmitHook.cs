@@ -1,5 +1,5 @@
-/* 
- * File: ITypeDeclaration.cs
+﻿/* 
+ * File: SRLabelEmitHook.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,33 +26,36 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
 
 using System;
-using System.Reflection;
-using System.Collections.ObjectModel;
 
-namespace Urasandesu.NAnonym.ILTools
+namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 {
-    public interface ITypeDeclaration : IMemberDeclaration
+    class SRLabelEmitHook : ILabelGenerator
     {
-        string FullName { get; }
-        string AssemblyQualifiedName { get; }
-        ITypeDeclaration BaseType { get; }
-        IModuleDeclaration Module { get; }
-        ReadOnlyCollection<IFieldDeclaration> Fields { get; }
-        ReadOnlyCollection<IConstructorDeclaration> Constructors { get; }
-        ReadOnlyCollection<IMethodDeclaration> Methods { get; }
-        IConstructorDeclaration GetConstructor(Type[] types);
-        new Type Source { get; }
-        bool IsValueType { get; }
-        bool IsAssignableFrom(ITypeDeclaration that);
-        bool IsAssignableExplicitlyFrom(ITypeDeclaration that);
-        bool IsSubclassOf(ITypeDeclaration that);
-        bool EqualsWithoutGenericArguments(ITypeDeclaration that);
-        ReadOnlyCollection<ITypeDeclaration> Interfaces { get; }
-        ITypeDeclaration MakeArrayType();
-        ITypeDeclaration GetElementType();
-        ReadOnlyCollection<IPropertyDeclaration> Properties { get; }
+        string name;
+        int index;
+
+        public SRLabelEmitHook(int index)
+        {
+            this.name = "label$" + index;
+            this.index = index;
+        }
+
+        public SRLabelEmitHook(string name, int index)
+        {
+            this.name = name.Replace("$", "$$");
+            this.index = index;
+        }
+
+        public String Name
+        {
+            get { return name; }
+        }
+
+        public Int32 Index
+        {
+            get { return index; }
+        }
     }
 }

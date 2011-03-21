@@ -289,6 +289,12 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
                 return that.Interfaces.Any(_ => FullName == _.FullName);
             }
         }
+
+
+        public bool IsSubclassOf(ITypeDeclaration that)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

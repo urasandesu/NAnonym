@@ -117,6 +117,7 @@ namespace Urasandesu.NAnonym.ILTools
         [MethodReservedWordLoad]
         public static object[] Load(string[] variableNames){ throw new NotSupportedException(); }
 
+        [Obsolete]
         [MethodReservedWordLoad]
         public static object[] Load(string[] variableNames, int shift){ throw new NotSupportedException(); }
 

@@ -43,19 +43,19 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public class ILBuilder : FormulaAdapter
     {
-        IMethodBaseGenerator methodGen;
         IMethodBodyGenerator bodyGen;
         IILOperator il;
         public ILBuilder(IMethodBaseGenerator methodGen, ITypeDeclaration returnType)
             : base(new NoActionVisitor())
         {
-            this.methodGen = methodGen;
+            MethodGenerator = methodGen;
             bodyGen = methodGen.Body;
             il = bodyGen.ILOperator;
 
             ReturnType = returnType;
         }
 
+        public IMethodBaseGenerator MethodGenerator { get; private set; }
         public ITypeDeclaration ReturnType { get; private set; }
 
         public override void Visit(BaseNewFormula formula)
@@ -63,9 +63,9 @@ namespace Urasandesu.NAnonym.ILTools
             base.Visit(formula);
             il.Emit(OpCodes.Ldarg_0);
             var ci = default(IConstructorDeclaration);
-            if (methodGen.DeclaringType.BaseType != null)
+            if (MethodGenerator.DeclaringType.BaseType != null)
             {
-                ci = methodGen.DeclaringType.BaseType.GetConstructor(new Type[] { });
+                ci = MethodGenerator.DeclaringType.BaseType.GetConstructor(new Type[] { });
             }
             else
             {
@@ -288,11 +288,11 @@ namespace Urasandesu.NAnonym.ILTools
         {
             base.Visit(formula);
             var parameter = default(IParameterDeclaration);
-            if (methodGen.IsStatic)
+            if (MethodGenerator.IsStatic)
             {
                 if (-1 < formula.ArgumentPosition)
                 {
-                    parameter = methodGen.Parameters.ElementAtOrDefault(formula.ArgumentPosition);
+                    parameter = MethodGenerator.Parameters.ElementAtOrDefault(formula.ArgumentPosition);
                 }
                 else
                 {
@@ -303,7 +303,7 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 if (-1 < formula.ArgumentPosition)
                 {
-                    parameter = methodGen.Parameters.ElementAtOrDefault(formula.ArgumentPosition - 1);
+                    parameter = MethodGenerator.Parameters.ElementAtOrDefault(formula.ArgumentPosition - 1);
                 }
                 else
                 {
@@ -359,6 +359,11 @@ namespace Urasandesu.NAnonym.ILTools
             else if (operand.TypeDeclaration.IsValueType && !expectedType.IsValueType)
             {
                 il.Emit(OpCodes.Box, operand.TypeDeclaration);
+                success = true;
+            }
+            else if (operand.TypeDeclaration.IsAssignableExplicitlyFrom(expectedType))
+            {
+                il.Emit(OpCodes.Castclass, expectedType);
                 success = true;
             }
 
@@ -497,6 +502,12 @@ namespace Urasandesu.NAnonym.ILTools
             {
                 il.Emit(OpCodes.Callvirt, formula.Method);
             }
+        }
+
+        public override void Visit(InvokeFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Call, formula.Method);
         }
 
         public override void Visit(NewFormula formula)

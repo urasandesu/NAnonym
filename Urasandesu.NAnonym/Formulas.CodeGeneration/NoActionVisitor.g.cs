@@ -274,5 +274,14 @@ namespace Urasandesu.NAnonym.Formulas
         public void VisitEndEntryBlock(EndFormula formula, BlockFormula entryBlock)
 		{
 		}
+        public void Visit(InvokeFormula formula)
+        {
+        }
+        public void VisitInvokeDelegateOrLambda(InvokeFormula formula, Formula delegateOrLambda)
+		{
+		}
+        public void VisitInvokeArguments(InvokeFormula formula, FormulaCollection<Formula> arguments)
+		{
+		}
     }
 }
