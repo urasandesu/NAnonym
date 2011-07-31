@@ -283,5 +283,11 @@ namespace Urasandesu.NAnonym.Formulas
         public void VisitInvokeArguments(InvokeFormula formula, FormulaCollection<Formula> arguments)
 		{
 		}
+        public void Visit(MethodPtrFormula formula)
+        {
+        }
+        public void VisitMethodPtrInstance(MethodPtrFormula formula, Formula instance)
+		{
+		}
     }
 }

@@ -74,7 +74,39 @@ namespace Urasandesu.NAnonym.Formulas
             DecreaseIfNecessary(formula.Body, _ => _.TypeDeclaration, decreased => formula.Body = decreased);
         }
 
+        public override void Visit(NewFormula formula)
+        {
+            base.Visit(formula);
+            for (int i = 0; i < formula.Constructor.Parameters.Count; i++)
+            {
+                var expectedType = formula.Constructor.Parameters[i].ParameterType;
+                DecreaseIfNecessary(formula.Arguments[i], _ => expectedType, decreased => formula.Arguments[i] = decreased);
+            }
+        }
+
         public override void Visit(CallFormula formula)
+        {
+            base.Visit(formula);
+            DecreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, decreased => formula.Instance = decreased);
+            for (int i = 0; i < formula.Method.Parameters.Count; i++)
+            {
+                var expectedType = formula.Method.Parameters[i].ParameterType;
+                DecreaseIfNecessary(formula.Arguments[i], _ => expectedType, decreased => formula.Arguments[i] = decreased);
+            }
+        }
+
+        public override void Visit(InvokeFormula formula)
+        {
+            base.Visit(formula);
+            DecreaseIfNecessary(formula.DelegateOrLambda, _ => _.TypeDeclaration, decreased => formula.DelegateOrLambda = decreased);
+            for (int i = 0; i < formula.Method.Parameters.Count; i++)
+            {
+                var expectedType = formula.Method.Parameters[i].ParameterType;
+                DecreaseIfNecessary(formula.Arguments[i], _ => expectedType, decreased => formula.Arguments[i] = decreased);
+            }
+        }
+
+        public override void Visit(MethodPtrFormula formula)
         {
             base.Visit(formula);
             DecreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, decreased => formula.Instance = decreased);

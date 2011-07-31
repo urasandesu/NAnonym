@@ -99,16 +99,22 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil
             return scope;
         }
 
-        public static void ExpressBody(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner> expression)    // TODO: ハンドラ化したほうが良いかも？
+        public static void ExpressBody(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner2> expression)    // TODO: ハンドラ化したほうが良いかも？
         {
-            var gen = new ReflectiveMethodDesigner(new MCMethodGeneratorImpl(methodDef));
-            gen.ExpressBodyEnd(expression);
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new MCMethodGeneratorImpl(methodDef);
+            gen.ILBuilder = new ILBuilder(methodGen, methodGen.ReturnType);
+            expression(gen);
+            gen.Eval(() => Dsl.End());
         }
 
-        public static void ExpressBodyBefore(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner> expression, Instruction target)
+        public static void ExpressBodyBefore(this MethodDefinition methodDef, Action<ReflectiveMethodDesigner2> expression, Instruction target)
         {
-            var gen = new ReflectiveMethodDesigner(new MCMethodGeneratorImpl(methodDef, ILEmitMode.InsertBefore, target));
-            gen.ExpressBodyEnd(expression);
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new MCMethodGeneratorImpl(methodDef, ILEmitMode.InsertBefore, target);
+            gen.ILBuilder = new ILBuilder(methodGen, methodGen.ReturnType);
+            expression(gen);
+            gen.Eval(() => Dsl.End());
         }
 
         public static MethodInfo ToMethodInfo(this MethodDefinition methodDef)

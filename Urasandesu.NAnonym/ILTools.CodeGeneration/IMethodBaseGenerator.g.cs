@@ -46,7 +46,6 @@ namespace Urasandesu.NAnonym.ILTools
         }
 
         public virtual IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo) { return source.AddPortableScopeItem(fieldInfo); }
-        public virtual IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression) { return source.ExpressBody(bodyExpression); }
         public virtual IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType) { return source.ExpressBody2(bodyExpression, returnType); }
         public virtual IParameterGenerator AddParameter(Int32 position, ParameterAttributes attributes, String parameterName) { return source.AddParameter(position, attributes, parameterName); }
         public virtual PortableScope CarryPortableScope() { return source.CarryPortableScope(); }

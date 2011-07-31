@@ -71,13 +71,13 @@ namespace Urasandesu.NAnonym.DW
 
                 var il = default(ILGenerator);
                 gen.Eval(() => Dsl.Allocate(il).As(dm.GetILGenerator()));
-                gen.ExpressEmit(() => il,
+                gen.ExpressInternally(() => il, retType.ToTypeDecl(), dmParamTypes.Select(_ => _.ToTypeDecl()).ToArray(),
                 _gen =>
                 {
                     // Not use the index 0 because it is reference of 'this'.
                     var varIndexes = src.GetParameters().Select((_, index) => index + 1).ToArray();
                     //_gen.Emit(() => Dsl.Return(dst.Invoke(Dsl.Load<Delegate>(Dsl.This(), setting), new object[] { Dsl.LoadArguments(varIndexes) })));
-                    _gen.Emit(() => Dsl.Return(dst.Invoke(setting.GetValue(Dsl.This()), new object[] { Dsl.LoadArguments(varIndexes) })));
+                    _gen.Eval(() => Dsl.Return(dst.Invoke(setting.GetValue(Dsl.This()), new object[] { Dsl.LoadArguments(varIndexes) })));
                 });
 
                 gen.Eval(() => Dsl.Store(cache.Name).As(dm.CreateDelegate(Dsl.Extract(wm.DelegateType), Dsl.This())));

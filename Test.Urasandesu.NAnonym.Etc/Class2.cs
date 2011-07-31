@@ -38,5 +38,69 @@ namespace Test.Urasandesu.NAnonym.Etc
             return "こんにちは、" + value + " 世界！";
         }
     }
+
+    public class Class2_1
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_2
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_3
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_4
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_5
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_6
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_7
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
+
+    public class Class2_8
+    {
+        public string Print(string value)
+        {
+            return "こんにちは、" + value + " 世界！";
+        }
+    }
 }
 

@@ -71,23 +71,22 @@ namespace Urasandesu.NAnonym.DW
 
                 var il = default(ILGenerator);
                 gen.Eval(() => Dsl.Allocate(il).As(dm.GetILGenerator()));
-                gen.ExpressEmit(() => il,
+                gen.ExpressInternally(() => il, retType.ToTypeDecl(), paramTypes.Select(_ => _.ToTypeDecl()).ToArray(),
                 _gen =>
                 {
-                    _gen.Emit(() => Dsl.If(anonymCache.GetValue(null) == null));
+                    _gen.Eval(() => Dsl.If(anonymCache.GetValue(null) == null));
                     {
-                        _gen.Emit(() => anonymCache.SetValue(null, dlgCtor.Invoke(new object[] { null, Dsl.LoadPtr(dst) })));
+                        _gen.Eval(() => anonymCache.SetValue(null, dlgCtor.Invoke(new object[] { null, Dsl.LoadPtr(dst) })));
                     }
-                    _gen.Emit(() => Dsl.EndIf());
-                    var varIndexes = src.GetParameters().Select((_, index) => index).ToArray();
-                    _gen.Emit(() => Dsl.Return(dlgInvoke.Invoke(anonymCache.GetValue(null), new object[] { Dsl.LoadArguments(varIndexes) })));
+                    _gen.Eval(() => Dsl.EndIf());
+                    var svarIndexes = src.GetParameters().Select((_, index) => index).ToArray();
+                    _gen.Eval(() => Dsl.Return(dlgInvoke.Invoke(anonymCache.GetValue(null), Dsl.LoadArguments(svarIndexes))));
                 });
-                //gen.Eval(() => Dsl.Store(cache.Name).As(dm.CreateDelegate(Dsl.Extract(dlgType))));
                 gen.Eval(() => cache.SetValue(Dsl.This(), dm.CreateDelegate(Dsl.Extract(dlgType))));
             }
             gen.Eval(() => Dsl.EndIf());
-            //gen.Eval(() => Dsl.Return(dlgInvoke.Invoke(Dsl.Load(cache.Name), new object[] { Dsl.Load(src.ParameterNames()) })));
-            gen.Eval(() => Dsl.Return(dlgInvoke.Invoke(cache.GetValue(Dsl.This()), new object[] { Dsl.Load(src.ParameterNames()) })));
+            var ivarIndexes = src.GetParameters().Select((_, index) => index + 1).ToArray();
+            gen.Eval(() => Dsl.Return(dlgInvoke.Invoke(cache.GetValue(Dsl.This()), Dsl.LoadArguments(ivarIndexes))));
         }
     }
 }

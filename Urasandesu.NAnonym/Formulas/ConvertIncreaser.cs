@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Urasandesu.NAnonym.ILTools;
+using Urasandesu.NAnonym.Linq;
 
 namespace Urasandesu.NAnonym.Formulas
 {
@@ -73,7 +74,39 @@ namespace Urasandesu.NAnonym.Formulas
             IncreaseIfNecessary(formula.Body, _ => _.TypeDeclaration, increased => formula.Body = increased);
         }
 
+        public override void Visit(NewFormula formula)
+        {
+            base.Visit(formula);
+            for (int i = 0; i < formula.Constructor.Parameters.Count; i++)
+            {
+                var expectedType = formula.Constructor.Parameters[i].ParameterType;
+                IncreaseIfNecessary(formula.Arguments[i], _ => expectedType, increased => formula.Arguments[i] = increased);
+            }
+        }
+
         public override void Visit(CallFormula formula)
+        {
+            base.Visit(formula);
+            IncreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, increased => formula.Instance = increased);
+            for (int i = 0; i < formula.Method.Parameters.Count; i++)
+            {
+                var expectedType = formula.Method.Parameters[i].ParameterType;
+                IncreaseIfNecessary(formula.Arguments[i], _ => expectedType, increased => formula.Arguments[i] = increased);
+            }
+        }
+
+        public override void Visit(InvokeFormula formula)
+        {
+            base.Visit(formula);
+            IncreaseIfNecessary(formula.DelegateOrLambda, _ => _.TypeDeclaration, increased => formula.DelegateOrLambda = increased);
+            for (int i = 0; i < formula.Method.Parameters.Count; i++)
+            {
+                var expectedType = formula.Method.Parameters[i].ParameterType;
+                IncreaseIfNecessary(formula.Arguments[i], _ => expectedType, increased => formula.Arguments[i] = increased);
+            }
+        }
+
+        public override void Visit(MethodPtrFormula formula)
         {
             base.Visit(formula);
             IncreaseIfNecessary(formula.Instance, _ => _.TypeDeclaration, increased => formula.Instance = increased);

@@ -371,5 +371,14 @@
     ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Arguments", TypeName = "FormulaCollection<Formula>", Default = "new FormulaCollection<Formula>()" });
     fg.Templates.Add(ft.TypeName, ft);
 
+    // MethodPtrFormula
+    ft = new FormulaTemplate();
+    ft.BaseTypeName = "Formula";
+    ft.TypeName = "MethodPtrFormula";
+    ft.NodeType = NodeType.MethodPtr;
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Instance", TypeName = "Formula", Default = "default(Formula)" });
+    ft.TemplateProperties.Add(new FormulaTemplateProperty() { Name = "Method", TypeName = "IMethodDeclaration", Default = "default(IMethodDeclaration)" });
+    fg.Templates.Add(ft.TypeName, ft);
+
 	fg.Run();
 #>

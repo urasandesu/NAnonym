@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ReflectiveMethodDesigner.cs
+ * File: ReflectiveMethodDesigner2.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -41,6 +41,7 @@ using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 using SRE = System.Reflection.Emit;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.ILTools
 {
@@ -89,6 +90,11 @@ namespace Urasandesu.NAnonym.ILTools
             gen.ILBuilder = ilBuilder;
             statementsBlock(gen);
             gen.Eval(() => Dsl.End());
+        }
+
+        public ReadOnlyCollection<IDirectiveGenerator> ToDirectives(LambdaExpression exp)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void PostEval(EndFormula entryPoint)

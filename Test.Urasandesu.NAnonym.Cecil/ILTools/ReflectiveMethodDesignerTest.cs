@@ -894,83 +894,83 @@ Parameter[1] = IntPtr method
 
 
 
-        [NewDomainTest]
-        [Ignore("Occurred for statement rule conflict.")]
-        public void EmitTest14()
-        {
-            // TODO: 同一 AppDomain の場合は SharedScope の明示的な作成は必要ないはず。
-            //       AssemblyBuilder からは難しいが、DynamicMethod からならがっつり短くできそう。
-            TestHelper.UsingTempFile(tempFileName =>
-            {
-                var tempAssemblyNameDef =
-                    new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
-                var tempAssemblyDef =
-                    AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
+        //[NewDomainTest]
+        //[Ignore("Occurred for statement rule conflict.")]
+        //public void EmitTest14()
+        //{
+        //    // TODO: 同一 AppDomain の場合は SharedScope の明示的な作成は必要ないはず。
+        //    //       AssemblyBuilder からは難しいが、DynamicMethod からならがっつり短くできそう。
+        //    TestHelper.UsingTempFile(tempFileName =>
+        //    {
+        //        var tempAssemblyNameDef =
+        //            new AssemblyNameDefinition(Path.GetFileNameWithoutExtension(tempFileName), new Version("1.0.0.0"));
+        //        var tempAssemblyDef =
+        //            AssemblyDefinition.CreateAssembly(tempAssemblyNameDef, tempAssemblyNameDef.Name, ModuleKind.Dll);
 
-                var emitTest14Def =
-                    new TypeDefinition(
-                        tempAssemblyNameDef.Name,
-                        "EmitTest14",
-                        MC::TypeAttributes.AutoClass |
-                        MC::TypeAttributes.AnsiClass |
-                        MC::TypeAttributes.BeforeFieldInit |
-                        MC::TypeAttributes.Public,
-                        tempAssemblyDef.MainModule.Import(typeof(object)));
-                tempAssemblyDef.MainModule.Types.Add(emitTest14Def);
+        //        var emitTest14Def =
+        //            new TypeDefinition(
+        //                tempAssemblyNameDef.Name,
+        //                "EmitTest14",
+        //                MC::TypeAttributes.AutoClass |
+        //                MC::TypeAttributes.AnsiClass |
+        //                MC::TypeAttributes.BeforeFieldInit |
+        //                MC::TypeAttributes.Public,
+        //                tempAssemblyDef.MainModule.Import(typeof(object)));
+        //        tempAssemblyDef.MainModule.Types.Add(emitTest14Def);
 
-                var ctorDef =
-                    new MethodDefinition(
-                        ".ctor",
-                        MC::MethodAttributes.Public |
-                        MC::MethodAttributes.HideBySig |
-                        MC::MethodAttributes.SpecialName |
-                        MC::MethodAttributes.RTSpecialName,
-                        tempAssemblyDef.MainModule.Import(typeof(void)));
-                emitTest14Def.Methods.Add(ctorDef);
-                ctorDef.ExpressBody(
-                gen =>
-                {
-                    var il = gen.ILOperator;
-                    il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[] { }));
-                });
+        //        var ctorDef =
+        //            new MethodDefinition(
+        //                ".ctor",
+        //                MC::MethodAttributes.Public |
+        //                MC::MethodAttributes.HideBySig |
+        //                MC::MethodAttributes.SpecialName |
+        //                MC::MethodAttributes.RTSpecialName,
+        //                tempAssemblyDef.MainModule.Import(typeof(void)));
+        //        emitTest14Def.Methods.Add(ctorDef);
+        //        ctorDef.ExpressBody(
+        //        gen =>
+        //        {
+        //            var il = gen.ILOperator;
+        //            il.Emit(OpCodes.Ldarg_0);
+        //            il.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[] { }));
+        //        });
 
-                var action2SameDomain1Def =
-                    new MethodDefinition(
-                        "Action2SameDomain1",
-                        MC::MethodAttributes.Public |
-                        MC::MethodAttributes.HideBySig,
-                        tempAssemblyDef.MainModule.Import(typeof(void)));
-                emitTest14Def.Methods.Add(action2SameDomain1Def);
-                int i = 10;
-                double d = 10.0d;
-                action2SameDomain1Def.ExpressBody(
-                gen =>
-                {
-                    gen.Eval(() => TestHelper.ThrowException(i * (int)d));
-                });
+        //        var action2SameDomain1Def =
+        //            new MethodDefinition(
+        //                "Action2SameDomain1",
+        //                MC::MethodAttributes.Public |
+        //                MC::MethodAttributes.HideBySig,
+        //                tempAssemblyDef.MainModule.Import(typeof(void)));
+        //        emitTest14Def.Methods.Add(action2SameDomain1Def);
+        //        int i = 10;
+        //        double d = 10.0d;
+        //        action2SameDomain1Def.ExpressBody(
+        //        gen =>
+        //        {
+        //            gen.Eval(() => TestHelper.ThrowException(i * (int)d));
+        //        });
 
-                tempAssemblyDef.Write(tempFileName);
+        //        tempAssemblyDef.Write(tempFileName);
 
-                var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
-                var emitTest14 = assembly.GetType(emitTest14Def.FullName);
-                var instance = Activator.CreateInstance(emitTest14);
-                var action2SameDomain1 = emitTest14.GetMethod(action2SameDomain1Def.Name);
-                var scope = action2SameDomain1Def.CarryPortableScope();
-                scope.SetValue(() => i, i);
-                scope.SetValue(() => d, d);
-                scope.DockWith(instance);
-                try
-                {
-                    action2SameDomain1.Invoke(instance, null);
-                    Assert.Fail();
-                }
-                catch (Exception e)
-                {
-                    Assert.AreEqual("100", e.InnerException.Message);
-                }
-            });
-        }
+        //        var assembly = Assembly.LoadFile(Path.GetFullPath(tempFileName));
+        //        var emitTest14 = assembly.GetType(emitTest14Def.FullName);
+        //        var instance = Activator.CreateInstance(emitTest14);
+        //        var action2SameDomain1 = emitTest14.GetMethod(action2SameDomain1Def.Name);
+        //        var scope = action2SameDomain1Def.CarryPortableScope();
+        //        scope.SetValue(() => i, i);
+        //        scope.SetValue(() => d, d);
+        //        scope.DockWith(instance);
+        //        try
+        //        {
+        //            action2SameDomain1.Invoke(instance, null);
+        //            Assert.Fail();
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Assert.AreEqual("100", e.InnerException.Message);
+        //        }
+        //    });
+        //}
 
 
 
@@ -1404,12 +1404,12 @@ Parameter[1] = IntPtr method
                     var il = default(ILGenerator);
                     gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
 
-                    gen.ExpressEmit(() => il,
+                    gen.ExpressInternally(() => il, typeof(string).ToTypeDecl(), null,
                     _gen =>
                     {
                         var staticObjectFieldInfo = typeof(FieldTestClass1).GetFieldStaticNonPublic("staticObjectField");
-                        _gen.Emit(() => Dsl.Store<string>(staticObjectFieldInfo).As("testtest"));
-                        _gen.Emit(() => Dsl.Return(Dsl.Load<string>(staticObjectFieldInfo)));
+                        _gen.Eval(() => Dsl.Store<string>(staticObjectFieldInfo).As("testtest"));
+                        _gen.Eval(() => Dsl.Return(Dsl.Load<string>(staticObjectFieldInfo)));
 
                         // MEMO: インスタンスメソッドを同じ構文で扱いたい…。
                         // MEMO: 現状だと↓。null かどうかの判別は難しいか…。

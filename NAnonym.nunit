@@ -1,0 +1,10 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" appbase="Bin\Debug" configfile="Test.Urasandesu.NAnonym.Cecil.dll.config" binpathtype="Auto">
+    <assembly path="Test.Urasandesu.NAnonym.Cecil.dll" />
+    <assembly path="Test.Urasandesu.NAnonym.dll" />
+  </Config>
+  <Config name="Release" appbase="Bin\Release" configfile="Test.Urasandesu.NAnonym.Cecil.dll.config" binpathtype="Auto">
+    <assembly path="Test.Urasandesu.NAnonym.Cecil.dll" />
+  </Config>
+</NUnitProject>

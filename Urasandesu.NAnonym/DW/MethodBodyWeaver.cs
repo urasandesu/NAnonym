@@ -40,7 +40,7 @@ namespace Urasandesu.NAnonym.DW
     abstract class MethodBodyWeaver : BodyWeaver
     {
         public new MethodWeaveBuilder ParentBuilder { get { return (MethodWeaveBuilder)base.ParentBuilder; } }
-        public MethodBodyWeaver(ReflectiveMethodDesigner gen, MethodWeaveBuilder parentBuilder)
+        public MethodBodyWeaver(ReflectiveMethodDesigner2 gen, MethodWeaveBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
         }

@@ -35,6 +35,7 @@ using System.Text;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 using System.ComponentModel;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Formulas
 {
@@ -44,6 +45,12 @@ namespace Urasandesu.NAnonym.Formulas
         {
             Instance = instance;
             Member = fi.ToFieldDecl();
+        }
+
+        public FieldFormula(Formula instance, IFieldDeclaration field)
+        {
+            Instance = instance;
+            Member = field;
         }
     }
 }

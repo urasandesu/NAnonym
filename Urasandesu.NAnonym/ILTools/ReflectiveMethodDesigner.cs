@@ -1,5 +1,5 @@
 /* 
- * File: ReflectiveMethodDesigner.cs
+ * File: ReflectiveMethodDesigner2.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -41,7 +41,7 @@ using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public class ReflectiveMethodDesigner : IMethodBodyGenerator
+    public class ReflectiveMethodDesigner2 : IMethodBodyGenerator
     {
         public static readonly MethodInfo IFieldDeclarationSetValue_object_object = TypeSavable.GetInstanceMethod<IFieldDeclaration, object, object>(_ => _.SetValue);
         public static readonly MethodInfo IFieldDeclarationGetValue_object = TypeSavable.GetInstanceMethod<IFieldDeclaration, object, object>(_ => _.GetValue);
@@ -58,7 +58,7 @@ namespace Urasandesu.NAnonym.ILTools
         readonly IMethodBaseGenerator method;
         protected readonly EvalState state;
 
-        protected internal ReflectiveMethodDesigner(IMethodBaseGenerator method)
+        protected internal ReflectiveMethodDesigner2(IMethodBaseGenerator method)
         {
             this.method = method;
             state = new EvalState();
@@ -1723,7 +1723,7 @@ namespace Urasandesu.NAnonym.ILTools
 
         protected virtual void EvalParameter(IMethodBaseGenerator method, ParameterExpression exp, EvalState state)
         {
-            if (exp.Type == typeof(ReflectiveMethodDesigner))
+            if (exp.Type == typeof(ReflectiveMethodDesigner2))
             {
             }
             else

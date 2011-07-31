@@ -40,31 +40,66 @@ using Assert = Urasandesu.NAnonym.Test.Assert;
 
 namespace Test.Urasandesu.NAnonym.Cecil.DW
 {
-    [NewDomainTestFixture]
-    public class GlobalClassTest : NewDomainTestBase
+    [TestFixture]
+    public class GlobalClassTest
     {
-        [NewDomainTestFixtureSetUp]
+        [TestFixtureSetUp]
         public void TestFixtureSetUp()
         {
+            Console.WriteLine("Start TestFixtureSetUp: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Revert: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
             GlobalDomain.Revert();
+            Console.WriteLine("End Revert: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
 
+            Console.WriteLine("Start Register<GlobalClass1>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
             GlobalDomain.Register<GlobalClass1>();
+            Console.WriteLine("End Register<GlobalClass1>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
             GlobalDomain.Register<GlobalClass2>();
-            GlobalDomain.Register<GlobalClass3_1>();
-            GlobalDomain.Register<GlobalClass3_2>();
-            GlobalDomain.Register<GlobalClass3_3>();
-            GlobalDomain.Register<GlobalClass3_4>();
-            GlobalDomain.Register<GlobalClass3_5>();
-            GlobalDomain.Register<GlobalClass3_6>();
-            GlobalDomain.Register<GlobalClass3_7>();
-            GlobalDomain.Register<GlobalClass4_1>();
+            Console.WriteLine("End Register<GlobalClass2>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_1>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_1>();
+            Console.WriteLine("End Register<GlobalClass2_1>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_2>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_2>();
+            Console.WriteLine("End Register<GlobalClass2_2>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_3>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_3>();
+            Console.WriteLine("End Register<GlobalClass2_3>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_4>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_4>();
+            Console.WriteLine("End Register<GlobalClass2_4>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_5>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_5>();
+            Console.WriteLine("End Register<GlobalClass2_5>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_6>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_6>();
+            Console.WriteLine("End Register<GlobalClass2_6>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_7>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_7>();
+            Console.WriteLine("End Register<GlobalClass2_7>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("Start Register<GlobalClass2_8>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            GlobalDomain.Register<GlobalClass2_8>();
+            Console.WriteLine("End Register<GlobalClass2_8>: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            //GlobalDomain.Register<GlobalClass3_1>();
+            //GlobalDomain.Register<GlobalClass3_2>();
+            //GlobalDomain.Register<GlobalClass3_3>();
+            //GlobalDomain.Register<GlobalClass3_4>();
+            //GlobalDomain.Register<GlobalClass3_5>();
+            //GlobalDomain.Register<GlobalClass3_6>();
+            //GlobalDomain.Register<GlobalClass3_7>();
+            //GlobalDomain.Register<GlobalClass4_1>();
+            Console.WriteLine("Start Load: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
             GlobalDomain.Load();
+            Console.WriteLine("End Load: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
+            Console.WriteLine("End TestFixtureSetUp: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class1Class2Test()
         {
+            Console.WriteLine("Start Class1Class2Test: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
             var class1 = new Class1();
             var class2 = new Class2();
             string value = "aiueo";
@@ -82,10 +117,11 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
                 value +
                 "Modified suffix at Class2.Print",
                 class2.Print(value));
+            Console.WriteLine("End Class1Class2Test: {0}", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"));
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_1Test()
         {
             var class3 = new Class3_1();
@@ -94,7 +130,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_2Test()
         {
             var class3 = new Class3_2();
@@ -105,7 +141,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_3Test()
         {
             var class3 = new Class3_3();
@@ -116,7 +152,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_4Test()
         {
             var class3 = new Class3_4();
@@ -127,7 +163,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_5Test()
         {
             var class3 = new Class3_5();
@@ -138,7 +174,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_6Test()
         {
             var class3 = new Class3_6();
@@ -147,7 +183,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class3_7Test()
         {
             var class3 = new Class3_7();
@@ -158,7 +194,7 @@ namespace Test.Urasandesu.NAnonym.Cecil.DW
         }
 
 
-        [NewDomainTest]
+        [Test]
         public void Class4_1Test()
         {
             var class4 = new Class4_1();

@@ -35,7 +35,7 @@ namespace Urasandesu.NAnonym.Cecil.DW
 {
     class GlobalConstructorBodyWeaver : ConstructorBodyWeaver
     {
-        public GlobalConstructorBodyWeaver(ReflectiveMethodDesigner gen, ConstructorWeaveBuilder parentBuilder)
+        public GlobalConstructorBodyWeaver(ReflectiveMethodDesigner2 gen, ConstructorWeaveBuilder parentBuilder)
             : base(gen, parentBuilder)
         {
         }

@@ -96,6 +96,7 @@ namespace Urasandesu.NAnonym.Formulas
         Local,
         BaseNew,
         Argument,
+        MethodPtr,
     }
 }
 

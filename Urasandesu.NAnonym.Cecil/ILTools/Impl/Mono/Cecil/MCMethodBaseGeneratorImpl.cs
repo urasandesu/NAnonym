@@ -90,16 +90,9 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
             return new MCPortableScopeItemImpl(itemRawData, fieldDef, variableDef);
         }
 
-        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ReflectiveMethodDesigner> bodyExpression)
+        public UNI::IMethodBaseGenerator ExpressBody(Action<UNI::ReflectiveMethodDesigner2> bodyExpression)
         {
-            MethodDef.Body.InitLocals = true;
-            var gen = new UNI::ReflectiveMethodDesigner(this);
-            bodyExpression(gen);
-            if (gen.Directives.Last().OpCode != UNI::OpCodes.Ret)
-            {
-                gen.Eval(() => Dsl.End());
-            }
-            return this;
+            throw new NotImplementedException();
         }
 
         public UNI::IParameterGenerator AddParameter(int position, SR::ParameterAttributes attributes, string parameterName)

@@ -45,7 +45,7 @@ namespace Urasandesu.NAnonym.DW
 
         public override void Construct()
         {
-            ParentDefiner.NewConstructor.ExpressBody(
+            ParentDefiner.NewConstructor.ExpressBody2(
             gen =>
             {
                 var bodyWeaver = new LocalConstructorBodyWeaver(gen, this);

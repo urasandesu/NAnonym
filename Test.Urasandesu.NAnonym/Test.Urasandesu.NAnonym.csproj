@@ -55,7 +55,6 @@
     <Compile Include="ILTools\MockTypeGenerator.cs" />
     <Compile Include="ILTools\ReflectiveMethodDesigner2Test.cs" />
     <Compile Include="NewDomainTester.cs" />
-    <Compile Include="ILTools\ExpressiveGeneratorTest.cs" />
     <Compile Include="DW\DependencyUtilTest.cs" />
     <Compile Include="MixinTest.cs" />
     <Compile Include="Linq\DelegateComparerTest.cs" />

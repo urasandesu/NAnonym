@@ -38,7 +38,7 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public partial class ReflectiveCallFormula : CallFormula
     {
-        public ReflectiveCallFormula(Formula instance, MethodInfo mi, Formula[] arguments)
+        public ReflectiveCallFormula(Formula instance, MethodInfo mi, IList<Formula> arguments)
             : base(instance, mi, arguments)
         {
         }

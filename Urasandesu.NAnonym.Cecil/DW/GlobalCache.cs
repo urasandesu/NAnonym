@@ -34,6 +34,8 @@ using Mono.Cecil;
 using Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil;
 using Urasandesu.NAnonym.ILTools;
 using UND = Urasandesu.NAnonym.DW;
+using System.IO;
+using System.Collections.ObjectModel;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
@@ -77,6 +79,29 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
                 ((MCAssemblyGeneratorImpl)parameter.Assembly).AssemblyDef.Write(assemblySetup.CodeBaseLocalPath, new WriterParameters() { WriteSymbols = true });
             }
+        }
+
+        public ReadOnlyCollection<byte[]> LoadBytes()
+        {
+            foreach (var setupClassTuple in setupClassList)
+            {
+                var assemblySetup = setupClassTuple.Item1;
+                var globalClass = setupClassTuple.Item2;
+                var assemblyGen = setupAssemblyGenDictionary[assemblySetup];
+                globalClass.Load(assemblyGen);
+            }
+
+            var rawAssemblies = new List<byte[]>();
+            foreach (var setupAssemblyGenPair in setupAssemblyGenDictionary)
+            {
+                var assemblySetup = setupAssemblyGenPair.Key;
+                var parameter = setupAssemblyGenPair.Value;
+
+                var ms = new MemoryStream();
+                ((MCAssemblyGeneratorImpl)parameter.Assembly).AssemblyDef.Write(ms, new WriterParameters() { WriteSymbols = true });
+                rawAssemblies.Add(ms.ToArray());
+            }
+            return new ReadOnlyCollection<byte[]>(rawAssemblies);
         }
     }
 }

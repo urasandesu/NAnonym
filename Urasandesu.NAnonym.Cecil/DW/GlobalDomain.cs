@@ -36,6 +36,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using Urasandesu.NAnonym.Mixins.System;
 using UND = Urasandesu.NAnonym.DW;
+using System.Reflection;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
@@ -106,6 +107,11 @@ namespace Urasandesu.NAnonym.Cecil.DW
                 }
             }
 
+            //var rawAssemblies = cache.LoadBytes();
+            //foreach (var rawAssembly in rawAssemblies)
+            //{
+            //    Assembly.Load(rawAssembly);
+            //}
             cache.Load();
             cache = null;
             dwDomain.NullableUnload();
@@ -131,13 +137,13 @@ namespace Urasandesu.NAnonym.Cecil.DW
                 foreach (var assemblySetup in setupSet)
                 {
                     File.Copy(
-                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)), 
-                        assemblySetup.CodeBaseLocalPath, 
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.CodeBaseLocalPath)),
+                        assemblySetup.CodeBaseLocalPath,
                         true);
 
                     File.Copy(
-                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)), 
-                        assemblySetup.SymbolCodeBaseLocalPath, 
+                        Path.Combine(config.BackupDirectoryName, Path.GetFileName(assemblySetup.SymbolCodeBaseLocalPath)),
+                        assemblySetup.SymbolCodeBaseLocalPath,
                         true);
                 }
 

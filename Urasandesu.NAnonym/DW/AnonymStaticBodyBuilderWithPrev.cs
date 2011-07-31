@@ -69,20 +69,20 @@ namespace Urasandesu.NAnonym.DW
 
                 var il = default(ILGenerator);
                 gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
-                gen.ExpressEmit(() => il,
+                gen.ExpressInternally(() => il, returnType.ToTypeDecl(), parameterTypes.Select(_ => _.ToTypeDecl()).ToArray(),
                 _gen =>
                 {
-                    _gen.Emit(() => Dsl.If(Dsl.Load<Delegate>(anonymousStaticMethodCache) == null));
+                    _gen.Eval(() => Dsl.If(Dsl.Load<Delegate>(anonymousStaticMethodCache) == null));
                     {
-                        //_gen.Emit(() => Dsl.Store<Delegate>(anonymousStaticMethodCache).As(Dsl.New<Delegate>(Dsl.Extract(delegateConstructor), new object[] { null, Dsl.LoadPtr(weaveMethod.Destination) })));
-                        _gen.Emit(() => Dsl.Store<object>(anonymousStaticMethodCache).As(delegateConstructor.Invoke(new object[] { null, Dsl.LoadPtr(weaveMethod.Destination) })));
+                        //_gen.Eval(() => Dsl.Store<Delegate>(anonymousStaticMethodCache).As(Dsl.New<Delegate>(Dsl.Extract(delegateConstructor), new object[] { null, Dsl.LoadPtr(weaveMethod.Destination) })));
+                        _gen.Eval(() => Dsl.Store<object>(anonymousStaticMethodCache).As(delegateConstructor.Invoke(new object[] { null, Dsl.LoadPtr(weaveMethod.Destination) })));
                     }
-                    _gen.Emit(() => Dsl.EndIf());
+                    _gen.Eval(() => Dsl.EndIf());
                     // The index 0 is specified previous method.
                     var variableIndexes = new int[] { 0 };
                     variableIndexes = variableIndexes.Concat(weaveMethod.Source.GetParameters().Select((parameter, index) => index + variableIndexes.Length)).ToArray();
-                    //_gen.Emit(() => Dsl.Return(Dsl.Invoke(Dsl.Load<Delegate>(anonymousStaticMethodCache), Dsl.Extract(delegateInvoke), Dsl.LoadArguments(variableIndexes))));
-                    _gen.Emit(() => Dsl.Return(delegateInvoke.Invoke(Dsl.Load<object>(anonymousStaticMethodCache), new object[] { Dsl.LoadArguments(variableIndexes) })));
+                    //_gen.Eval(() => Dsl.Return(Dsl.Invoke(Dsl.Load<Delegate>(anonymousStaticMethodCache), Dsl.Extract(delegateInvoke), Dsl.LoadArguments(variableIndexes))));
+                    _gen.Eval(() => Dsl.Return(delegateInvoke.Invoke(Dsl.Load<object>(anonymousStaticMethodCache), new object[] { Dsl.LoadArguments(variableIndexes) })));
                 });
                 gen.Eval(() => Dsl.Store(cachedMethod.Name).As(dynamicMethod.CreateDelegate(Dsl.Extract(weaveMethod.DelegateType))));
             }

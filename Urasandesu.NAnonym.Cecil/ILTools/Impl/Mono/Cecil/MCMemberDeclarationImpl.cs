@@ -93,6 +93,11 @@ namespace Urasandesu.NAnonym.Cecil.ILTools.Impl.Mono.Cecil
         {
             get { return Source; }
         }
+
+        public override string ToString()
+        {
+            return memberRef.NullableToString();
+        }
     }
 }
 

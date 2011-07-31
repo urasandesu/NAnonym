@@ -41,6 +41,9 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
 {
     public static class IFieldDeclarationMixin
     {
+        public static readonly MethodInfo SetValue_object_object = TypeSavable.GetInstanceMethod<IFieldDeclaration, object, object>(_ => _.SetValue);
+        public static readonly MethodInfo GetValue_object = TypeSavable.GetInstanceMethod<IFieldDeclaration, object, object>(_ => _.GetValue);
+
         public static BindingFlags ExportBinding(this IFieldDeclaration fieldDecl)
         {
             BindingFlags bindingAttr = BindingFlags.Default;

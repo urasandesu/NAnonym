@@ -70,14 +70,14 @@ namespace Urasandesu.NAnonym.DW
 
                 var il = default(ILGenerator);
                 gen.Eval(() => Dsl.Allocate(il).As(dynamicMethod.GetILGenerator()));
-                gen.ExpressEmit(() => il,
+                gen.ExpressInternally(() => il, returnType.ToTypeDecl(), dynamicMethodParameterTypes.Select(_ => _.ToTypeDecl()).ToArray(),
                 _gen =>
                 {
                     // Not use the index 0 because it is reference of 'this'. The index 1 is specified previous method.
                     var variableIndexes = new int[] { 1 };
                     variableIndexes = variableIndexes.Concat(weaveMethod.Source.GetParameters().Select((parameter, index) => index + 1 + variableIndexes.Length)).ToArray();
                     //_gen.Emit(() => Dsl.Return(Dsl.Invoke(Dsl.Load<Delegate>(Dsl.This(), cachedSetting), Dsl.Extract(weaveMethod.Destination), Dsl.LoadArguments(variableIndexes))));
-                    _gen.Emit(() => Dsl.Return(weaveMethod.Destination.Invoke(Dsl.Load<object>(Dsl.This(), cachedSetting), new object[] { Dsl.LoadArguments(variableIndexes) })));
+                    _gen.Eval(() => Dsl.Return(weaveMethod.Destination.Invoke(Dsl.Load<object>(Dsl.This(), cachedSetting), new object[] { Dsl.LoadArguments(variableIndexes) })));
                 });
                 gen.Eval(() => Dsl.Store(cachedMethod.Name).As(dynamicMethod.CreateDelegate(Dsl.Extract(weaveMethod.DelegateType), Dsl.This())));
             }

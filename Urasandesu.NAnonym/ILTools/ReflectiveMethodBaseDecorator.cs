@@ -38,14 +38,14 @@ namespace Urasandesu.NAnonym.ILTools
     public abstract class ReflectiveMethodBaseDecorator : IMethodBaseGenerator
     {
         protected readonly ReadOnlyCollection<IParameterDeclaration> parameterDecls;
-        protected readonly ReflectiveMethodDesigner gen;
-        public ReflectiveMethodBaseDecorator(ReflectiveMethodDesigner gen)
+        protected readonly ReflectiveMethodDesigner2 gen;
+        public ReflectiveMethodBaseDecorator(ReflectiveMethodDesigner2 gen)
         {
             this.gen = gen;
             parameterDecls = new ReadOnlyCollection<IParameterDeclaration>(gen.Method.Parameters.TransformEnumerateOnly(parameter => (IParameterDeclaration)parameter));
         }
 
-        public ReflectiveMethodDesigner ExpressiveGenerator { get { return gen; } }
+        public ReflectiveMethodDesigner2 ExpressiveGenerator { get { return gen; } }
         public abstract ReflectiveMethodBodyDecorator BodyDecorator { get; }
         public virtual IMethodBodyGenerator Body { get { return BodyDecorator; } }
         public virtual ITypeGenerator DeclaringType { get { return gen.Method.DeclaringType; } }
@@ -54,7 +54,7 @@ namespace Urasandesu.NAnonym.ILTools
         {
             return gen.Method.AddPortableScopeItem(fieldInfo);
         }
-        public virtual IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
+        public virtual IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner2> bodyExpression)
         {
             return gen.Method.ExpressBody(bodyExpression);
         }

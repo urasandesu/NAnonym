@@ -38,7 +38,7 @@ namespace Urasandesu.NAnonym.Formulas
 {
     public partial class ReflectiveNewFormula : NewFormula
     {
-        public ReflectiveNewFormula(ConstructorInfo ci, Formula[] arguments)
+        public ReflectiveNewFormula(ConstructorInfo ci, IList<Formula> arguments)
             : base(ci, arguments)
         {
         }

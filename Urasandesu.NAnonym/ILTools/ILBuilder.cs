@@ -293,6 +293,7 @@ namespace Urasandesu.NAnonym.ILTools
                 if (-1 < formula.ArgumentPosition)
                 {
                     parameter = MethodGenerator.Parameters.ElementAtOrDefault(formula.ArgumentPosition);
+                    il.Emit(OpCodes.Ldarg, parameter);
                 }
                 else
                 {
@@ -301,17 +302,21 @@ namespace Urasandesu.NAnonym.ILTools
             }
             else
             {
-                if (-1 < formula.ArgumentPosition)
+                if (formula.ArgumentPosition == 0)
+                {
+                    // NOTE: The pointer of 'this'.
+                    il.Emit(OpCodes.Ldarg_0);
+                }
+                else if (-1 < formula.ArgumentPosition)
                 {
                     parameter = MethodGenerator.Parameters.ElementAtOrDefault(formula.ArgumentPosition - 1);
+                    il.Emit(OpCodes.Ldarg, parameter);
                 }
                 else
                 {
                     throw new NotImplementedException();
                 }
             }
-
-            il.Emit(OpCodes.Ldarg, parameter);
         }
 
         public override void Visit(TypeAsFormula formula)
@@ -508,6 +513,12 @@ namespace Urasandesu.NAnonym.ILTools
         {
             base.Visit(formula);
             il.Emit(OpCodes.Call, formula.Method);
+        }
+
+        public override void Visit(MethodPtrFormula formula)
+        {
+            base.Visit(formula);
+            il.Emit(OpCodes.Ldftn, formula.Method);
         }
 
         public override void Visit(NewFormula formula)

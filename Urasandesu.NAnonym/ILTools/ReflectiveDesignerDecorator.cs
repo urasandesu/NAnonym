@@ -29,7 +29,7 @@
 
 namespace Urasandesu.NAnonym.ILTools
 {
-    public abstract class ReflectiveDesignerDecorator : ReflectiveMethodDesigner
+    public abstract class ReflectiveDesignerDecorator : ReflectiveMethodDesigner2
     {
         public ReflectiveDesignerDecorator(ReflectiveMethodBaseDecorator methodDecorator)
             : base(methodDecorator)

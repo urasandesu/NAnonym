@@ -40,7 +40,7 @@ namespace Urasandesu.NAnonym.ILTools
         new ITypeGenerator DeclaringType { get; }
         new ReadOnlyCollection<IParameterGenerator> Parameters { get; }
         IPortableScopeItem AddPortableScopeItem(FieldInfo fieldInfo);
-        IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression);
+        //IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner2> bodyExpression);
         IMethodBaseGenerator ExpressBody2(Action<ReflectiveMethodDesigner2> bodyExpression, ITypeDeclaration returnType);
         IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName);
         PortableScope CarryPortableScope();

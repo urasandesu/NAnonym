@@ -44,43 +44,43 @@ namespace Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools
         static readonly FieldInfo OpcodesRetInfo = typeof(SRE::OpCodes).GetField("Ret");
         static readonly MethodInfo ILGeneratorEmit = typeof(SRE::ILGenerator).GetMethod("Emit", BindingFlags.Public | BindingFlags.Instance, null, new Type[] { typeof(SRE::OpCode) }, null);
 
-        internal static void ExpressBodyEnd(this ReflectiveMethodDesigner gen, Action<ReflectiveMethodDesigner> expression)
-        {
-            expression(gen);
-            if (gen.Directives.Last().OpCode != OpCodes.Ret)
-            {
-                gen.Eval(() => Dsl.End());
-            }
-        }
+        //internal static void ExpressBodyEnd(this ReflectiveMethodDesigner2 gen, Action<ReflectiveMethodDesigner2> expression)
+        //{
+        //    expression(gen);
+        //    if (gen.Directives.Last().OpCode != OpCodes.Ret)
+        //    {
+        //        gen.Eval(() => Dsl.End());
+        //    }
+        //}
 
-        public static void ExpressEmit(this ReflectiveMethodDesigner gen, Expression<Func<SRE::ILGenerator>> ilIdentifier, Action<ReflectiveILEmitter> expression)
-        {
-            var ilName = TypeSavable.GetName(ilIdentifier);
-            var _gen = new ReflectiveILEmitter(gen, ilName);
-            expression(_gen);
+        //public static void ExpressEmit(this ReflectiveMethodDesigner2 gen, Expression<Func<SRE::ILGenerator>> ilIdentifier, Action<ReflectiveILEmitter> expression)
+        //{
+        //    var ilName = TypeSavable.GetName(ilIdentifier);
+        //    var _gen = new ReflectiveILEmitter(gen, ilName);
+        //    expression(_gen);
 
-            var lastDirectives = gen.Directives.Skip(gen.Directives.Count - 3).ToArray();
+        //    var lastDirectives = gen.Directives.Skip(gen.Directives.Count - 3).ToArray();
 
-            var localDecl = default(ILocalDeclaration);
-            var isLastDirectives0Ldloc =
-                lastDirectives[0].OpCode == OpCodes.Ldloc &&
-                (localDecl = lastDirectives[0].NAnonymOperand as ILocalDeclaration) != null && localDecl.Name == ilName;
+        //    var localDecl = default(ILocalDeclaration);
+        //    var isLastDirectives0Ldloc =
+        //        lastDirectives[0].OpCode == OpCodes.Ldloc &&
+        //        (localDecl = lastDirectives[0].NAnonymOperand as ILocalDeclaration) != null && localDecl.Name == ilName;
 
-            var fieldInfo = default(FieldInfo);
-            var isLastDirectives1Ldsfld =
-                lastDirectives[1].OpCode == OpCodes.Ldsfld &&
-                (fieldInfo = lastDirectives[1].ClrOperand as FieldInfo) != null && fieldInfo == OpcodesRetInfo;
+        //    var fieldInfo = default(FieldInfo);
+        //    var isLastDirectives1Ldsfld =
+        //        lastDirectives[1].OpCode == OpCodes.Ldsfld &&
+        //        (fieldInfo = lastDirectives[1].ClrOperand as FieldInfo) != null && fieldInfo == OpcodesRetInfo;
 
-            var methodInfo = default(MethodInfo);
-            var isLastDirectives2Callvirt =
-                lastDirectives[2].OpCode == OpCodes.Callvirt &&
-                (methodInfo = lastDirectives[2].ClrOperand as MethodInfo) != null && methodInfo == ILGeneratorEmit;
+        //    var methodInfo = default(MethodInfo);
+        //    var isLastDirectives2Callvirt =
+        //        lastDirectives[2].OpCode == OpCodes.Callvirt &&
+        //        (methodInfo = lastDirectives[2].ClrOperand as MethodInfo) != null && methodInfo == ILGeneratorEmit;
 
-            if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
-            {
-                _gen.Emit(() => Dsl.End());
-            }
-        }
+        //    if (!isLastDirectives0Ldloc || !isLastDirectives1Ldsfld || !isLastDirectives2Callvirt)
+        //    {
+        //        _gen.Emit(() => Dsl.End());
+        //    }
+        //}
     }
 }
 

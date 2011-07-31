@@ -39,6 +39,7 @@ using Urasandesu.NAnonym.Linq;
 using System.Reflection;
 using Urasandesu.NAnonym.Mixins.System;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.Mixins.Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Formulas
 {
@@ -469,6 +470,8 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordLoadAttribute), false)) EvalLoad(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordExtractAttribute), false)) EvalExtract(exp, state);
                     else if (exp.Method.IsDefined(typeof(MethodReservedWordStoreAttribute), false)) EvalStore(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordThisAttribute), false)) EvalThis(exp, state);
+                    else if (exp.Method.IsDefined(typeof(MethodReservedWordLoadPtrAttribute), false)) EvalLoadPtr(exp, state);
                     else
                     {
                         throw new NotImplementedException();
@@ -497,12 +500,80 @@ namespace Urasandesu.NAnonym.Formulas
                     else if (exp.Method == PropertyInfoMixin.GetValue_object_objects) EvalPropertyInfoGetValue_object_objects(exp, state);
                     else if (exp.Method == FieldInfoMixin.SetValue_object_object) EvalFieldInfoSetValue_object_object(exp, state);
                     else if (exp.Method == FieldInfoMixin.GetValue_object) EvalFieldInfoGetValue_object(exp, state);
+                    else if (exp.Method == IFieldDeclarationMixin.SetValue_object_object) EvalIFieldDeclarationSetValue_object_object(exp, state);
+                    else if (exp.Method == IFieldDeclarationMixin.GetValue_object) EvalIFieldDeclarationGetValue_object(exp, state);
                     else
                     {
                         EvalInstanceMethodCall(exp, state);
                     }
                 }
             }
+        }
+
+        public static void EvalIFieldDeclarationGetValue_object(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            exp.Object.ConvertTo(state.InlineValueState);
+            var field = (IFieldDeclaration)state.InlineValueState.Result;
+            var instance = default(Formula);
+            if (!field.IsStatic)
+            {
+                EvalExpression(exp.Arguments[0], state);
+                instance = state.CurrentBlock.Formulas.Pop();
+            }
+            state.CurrentBlock.Formulas.Push(new ReflectiveFieldFormula(instance, field));
+        }
+
+        public static void EvalIFieldDeclarationSetValue_object_object(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            exp.Object.ConvertTo(state.InlineValueState);
+            var field = (IFieldDeclaration)state.InlineValueState.Result;
+            var instance = default(Formula);
+            if (!field.IsStatic)
+            {
+                EvalExpression(exp.Arguments[0], state);
+                instance = state.CurrentBlock.Formulas.Pop();
+            }
+            var left = new ReflectiveFieldFormula(instance, field);
+            EvalExpression(exp.Arguments[1], state);
+            var right = state.CurrentBlock.Formulas.Pop();
+            state.CurrentBlock.Formulas.Push(new AssignFormula() { Left = left, Right = right });
+        }
+
+        public static void EvalLoadPtr(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            var instance = default(Formula);
+            if (1 < exp.Arguments.Count)
+            {
+                EvalExpression(exp.Arguments[0], state);
+                instance = state.CurrentBlock.Formulas.Pop();
+            }
+
+            if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(IMethodDeclaration))
+            {
+                exp.Arguments[exp.Arguments.Count - 1].ConvertTo(state.InlineValueState);
+                var method = (IMethodDeclaration)state.InlineValueState.Result;
+                state.CurrentBlock.Formulas.Push(new MethodPtrFormula(instance, method));
+            }
+            else if (exp.Arguments[exp.Arguments.Count - 1].Type == typeof(MethodInfo))
+            {
+                exp.Arguments[exp.Arguments.Count - 1].ConvertTo(state.InlineValueState);
+                var mi = (MethodInfo)state.InlineValueState.Result;
+                state.CurrentBlock.Formulas.Push(new MethodPtrFormula(instance, mi));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public static void EvalThis(MethodCallExpression exp, ExpressionToFormulaState state)
+        {
+            var variable = new VariableFormula(0, exp.Method.ReturnType);
+            variable.Block = state.CurrentBlock;
+            var argument = new ArgumentFormula(0);
+            argument.TypeDeclaration = variable.TypeDeclaration;
+            variable.Resolved = argument;
+            state.CurrentBlock.Formulas.Push(variable);
         }
 
         public static void EvalStore(MethodCallExpression exp, ExpressionToFormulaState state)
@@ -528,7 +599,22 @@ namespace Urasandesu.NAnonym.Formulas
         public static void EvalExtract(MethodCallExpression exp, ExpressionToFormulaState state)
         {
             exp.Arguments[0].ConvertTo(state.InlineValueState);
-            state.CurrentBlock.Formulas.Push(new ConstantFormula(state.InlineValueState.Result, exp.Method.ReturnType));
+            var array = default(Array);
+            if ((array = state.InlineValueState.Result as Array) != null)
+            {
+                var formulas = new List<Formula>();
+                foreach (var item in array)
+                {
+                    var constant = new ConstantFormula(item, item == null ? typeof(object) : item.GetType());
+                    formulas.Add(constant);
+                }
+                var arr = new NewArrayInitFormula(formulas.ToArray(), exp.Method.ReturnType);
+                state.CurrentBlock.Formulas.Push(arr);
+            }
+            else
+            {
+                state.CurrentBlock.Formulas.Push(new ConstantFormula(state.InlineValueState.Result, exp.Method.ReturnType));
+            }
         }
 
         public static void EvalLoad(MethodCallExpression exp, ExpressionToFormulaState state)
@@ -563,13 +649,37 @@ namespace Urasandesu.NAnonym.Formulas
         public static void EvalLoadArgument(MethodCallExpression exp, ExpressionToFormulaState state)
         {
             exp.Arguments[0].ConvertTo(state.InlineValueState);
-            int position = (int)state.InlineValueState.Result;
-            var variable = new VariableFormula(position, exp.Method.ReturnType);
-            variable.Block = state.CurrentBlock;
-            var argument = new ArgumentFormula(position);
-            argument.TypeDeclaration = variable.TypeDeclaration;
-            variable.Resolved = argument;
-            state.CurrentBlock.Formulas.Push(variable);
+            var positions = default(int[]);
+            var position = default(int);
+            if ((positions = state.InlineValueState.Result as int[]) != null)
+            {
+                var formulas = new List<Formula>();
+                foreach (var _position in positions)
+                {
+                    var variable = new VariableFormula(_position, exp.Method.ReturnType.GetElementType());
+                    variable.Block = state.CurrentBlock;
+                    var argument = new ArgumentFormula(_position);
+                    argument.TypeDeclaration = variable.TypeDeclaration;
+                    variable.Resolved = argument;
+                    formulas.Add(variable);
+                }
+                var arr = new NewArrayInitFormula(formulas.ToArray(), exp.Method.ReturnType);
+                state.CurrentBlock.Formulas.Push(arr);
+            }
+            else if (state.InlineValueState.Result is int)
+            {
+                position = (int)state.InlineValueState.Result;
+                var variable = new VariableFormula(position, exp.Method.ReturnType);
+                variable.Block = state.CurrentBlock;
+                var argument = new ArgumentFormula(position);
+                argument.TypeDeclaration = variable.TypeDeclaration;
+                variable.Resolved = argument;
+                state.CurrentBlock.Formulas.Push(variable);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public static void EvalInstanceMethodCall(MethodCallExpression exp, ExpressionToFormulaState state)
@@ -640,17 +750,27 @@ namespace Urasandesu.NAnonym.Formulas
                 EvalExpression(exp.Arguments[0], state);
                 instance = state.CurrentBlock.Formulas.Pop();
             }
-            var arguments = new Formula[] { };
-            if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
+            var arguments = default(IList<Formula>);
+            if (exp.Arguments[1].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[1]).Value == null)
             {
-                EvalArguments(((NewArrayExpression)exp.Arguments[1]).Expressions, state);
-                arguments = new Formula[state.Arguments.Count];
-                state.Arguments.MoveTo(arguments);
+                arguments = new List<Formula>();
             }
             else
             {
-                throw new NotImplementedException();
+                EvalExpression(exp.Arguments[1], state);
+                var arr = (NewArrayInitFormula)state.CurrentBlock.Formulas.Pop();
+                arguments = arr.Formulas;
             }
+            //if (exp.Arguments[1].NodeType == ExpressionType.NewArrayInit)
+            //{
+            //    EvalArguments(((NewArrayExpression)exp.Arguments[1]).Expressions, state);
+            //    arguments = new Formula[state.Arguments.Count];
+            //    state.Arguments.MoveTo(arguments);
+            //}
+            //else
+            //{
+            //    throw new NotImplementedException();
+            //}
             state.CurrentBlock.Formulas.Push(new ReflectiveCallFormula(instance, mi, arguments));
         }
 
@@ -658,21 +778,31 @@ namespace Urasandesu.NAnonym.Formulas
         {
             exp.Object.ConvertTo(state.InlineValueState);
             var ci = (ConstructorInfo)state.InlineValueState.Result;
-            var arguments = new Formula[] { };
-            if (exp.Arguments[0].NodeType == ExpressionType.NewArrayInit)
+            var arguments = default(IList<Formula>);
+            if (exp.Arguments[0].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[0]).Value == null)
             {
-                EvalArguments(((NewArrayExpression)exp.Arguments[0]).Expressions, state);
-                arguments = new Formula[state.Arguments.Count];
-                state.Arguments.MoveTo(arguments);
-            }
-            else if (exp.Arguments[0].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[0]).Value == null)
-            {
-                // discard...
+                arguments = new List<Formula>();
             }
             else
             {
-                throw new NotImplementedException();
+                EvalExpression(exp.Arguments[0], state);
+                var arr = (NewArrayInitFormula)state.CurrentBlock.Formulas.Pop();
+                arguments = arr.Formulas;
             }
+            //if (exp.Arguments[0].NodeType == ExpressionType.NewArrayInit)
+            //{
+            //    EvalArguments(((NewArrayExpression)exp.Arguments[0]).Expressions, state);
+            //    arguments = new Formula[state.Arguments.Count];
+            //    state.Arguments.MoveTo(arguments);
+            //}
+            //else if (exp.Arguments[0].NodeType == ExpressionType.Constant && ((ConstantExpression)exp.Arguments[0]).Value == null)
+            //{
+            //    // discard...
+            //}
+            //else
+            //{
+            //    throw new NotImplementedException();
+            //}
             state.CurrentBlock.Formulas.Push(new ReflectiveNewFormula(ci, arguments));
         }
 

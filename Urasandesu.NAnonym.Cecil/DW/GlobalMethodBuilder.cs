@@ -30,6 +30,7 @@
 
 using Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil;
 using Urasandesu.NAnonym.DW;
+using Urasandesu.NAnonym.Mixins.System;
 
 namespace Urasandesu.NAnonym.Cecil.DW
 {
@@ -42,12 +43,12 @@ namespace Urasandesu.NAnonym.Cecil.DW
 
         public override void Construct()
         {
-            ParentDefiner.MethodInterface.ExpressBody(
+            ParentDefiner.MethodInterface.ExpressBody2(
             gen =>
             {
                 var bodyWeaver = new GlobalMethodBodyWeaver(gen, this);
                 bodyWeaver.Apply();
-            });
+            }, ParentDefiner.WeaveMethod.Source.ReturnType.ToTypeDecl());
         }
     }
 }

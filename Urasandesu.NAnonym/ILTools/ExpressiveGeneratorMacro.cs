@@ -39,8 +39,8 @@ namespace Urasandesu.NAnonym.ILTools
 {
     public class ExpressiveGeneratorMacro
     {
-        ReflectiveMethodDesigner gen;
-        public ExpressiveGeneratorMacro(ReflectiveMethodDesigner gen)
+        ReflectiveMethodDesigner2 gen;
+        public ExpressiveGeneratorMacro(ReflectiveMethodDesigner2 gen)
         {
             this.gen = gen;
         }

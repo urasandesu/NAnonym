@@ -41,22 +41,31 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
 {
     public static class ConstructorBuilderMixin
     {
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner> expression)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner2> expression)
         {
-            var gen = new ReflectiveMethodDesigner(new SRConstructorGeneratorImpl(constructorBuilder));
-            gen.ExpressBodyEnd(expression);
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new SRConstructorGeneratorImpl(constructorBuilder);
+            gen.ILBuilder = new ILBuilder(methodGen, typeof(void).ToTypeDecl());
+            expression(gen);
+            gen.Eval(() => Dsl.End());
         }
 
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner> expression, FieldBuilder[] fieldBuilders)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner2> expression, FieldBuilder[] fieldBuilders)
         {
-            var gen = new ReflectiveMethodDesigner(new SRConstructorGeneratorImpl(constructorBuilder, fieldBuilders));
-            gen.ExpressBodyEnd(expression);
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new SRConstructorGeneratorImpl(constructorBuilder, fieldBuilders);
+            gen.ILBuilder = new ILBuilder(methodGen, typeof(void).ToTypeDecl());
+            expression(gen);
+            gen.Eval(() => Dsl.End());
         }
 
-        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner> expression, ParameterBuilder[] parameterBuilders)
+        public static void ExpressBody(this ConstructorBuilder constructorBuilder, Action<ReflectiveMethodDesigner2> expression, ParameterBuilder[] parameterBuilders)
         {
-            var gen = new ReflectiveMethodDesigner(new SRConstructorGeneratorImpl(constructorBuilder, parameterBuilders));
-            gen.ExpressBodyEnd(expression);
+            var gen = new ReflectiveMethodDesigner2();
+            var methodGen = new SRConstructorGeneratorImpl(constructorBuilder, parameterBuilders);
+            gen.ILBuilder = new ILBuilder(methodGen, typeof(void).ToTypeDecl());
+            expression(gen);
+            gen.Eval(() => Dsl.End());
         }
 
     }

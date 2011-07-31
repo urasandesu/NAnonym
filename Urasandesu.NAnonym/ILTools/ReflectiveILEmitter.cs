@@ -45,7 +45,7 @@ namespace Urasandesu.NAnonym.ILTools
         //IMethodReservedWords reservedWords = new ILReservedWords();
         //IILAllocReservedWords allocReservedWords = new ILAllocReservedWords();
 
-        public ReflectiveILEmitter(ReflectiveMethodDesigner gen, string ilName)
+        public ReflectiveILEmitter(ReflectiveMethodDesigner2 gen, string ilName)
             : base(new MethodBaseEmitterDecorator(gen, ilName))
         {
         }
@@ -212,7 +212,7 @@ namespace Urasandesu.NAnonym.ILTools
         class MethodBaseEmitterDecorator : ReflectiveMethodBaseDecorator
         {
             readonly MethodBodyEmitterDecorator bodyDecorator;
-            public MethodBaseEmitterDecorator(ReflectiveMethodDesigner gen, string ilName)
+            public MethodBaseEmitterDecorator(ReflectiveMethodDesigner2 gen, string ilName)
                 : base(gen)
             {
                 ILName = ilName;

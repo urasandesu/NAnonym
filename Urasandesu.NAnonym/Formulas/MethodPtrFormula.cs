@@ -1,5 +1,5 @@
-/* 
- * File: CallFormula.cs
+﻿/* 
+ * File: MethodPtrFormula.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -26,28 +26,34 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
- 
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Reflection;
-using Urasandesu.NAnonym.Linq;
-using Urasandesu.NAnonym.Mixins.System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 using System.ComponentModel;
+using Urasandesu.NAnonym.Mixins.System;
+using System.Reflection;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Formulas
 {
-    public partial class CallFormula : Formula
+    public partial class MethodPtrFormula : Formula
     {
-        public CallFormula(Formula instance, MethodInfo mi, IList<Formula> arguments)
+        public MethodPtrFormula(Formula instance, IMethodDeclaration method)
+            : base()
+        {
+            Instance = instance;
+            Method = method;
+        }
+
+        public MethodPtrFormula(Formula instance, MethodInfo mi)
             : base()
         {
             Instance = instance;
             Method = mi.ToMethodDecl();
-            arguments.AddRangeTo(Arguments);
         }
     }
 }
-

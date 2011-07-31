@@ -41,7 +41,7 @@ namespace Urasandesu.NAnonym.ILTools
             this.bodyDecorator = bodyDecorator;
         }
 
-        public ReflectiveMethodDesigner Gen { get { return bodyDecorator.MethodDecorator.ExpressiveGenerator; } }
+        public ReflectiveMethodDesigner2 Gen { get { return bodyDecorator.MethodDecorator.ExpressiveGenerator; } }
 
         public virtual object Source { get { return Gen.ILOperator.Source; } }
         public virtual ILocalGenerator AddLocal(string name, Type localType) { return Gen.ILOperator.AddLocal(name, localType); }

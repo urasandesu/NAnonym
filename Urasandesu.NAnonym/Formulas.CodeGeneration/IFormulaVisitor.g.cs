@@ -119,5 +119,7 @@ namespace Urasandesu.NAnonym.Formulas
         void Visit(InvokeFormula formula);
         void VisitInvokeDelegateOrLambda(InvokeFormula formula, Formula delegateOrLambda);
         void VisitInvokeArguments(InvokeFormula formula, FormulaCollection<Formula> arguments);
+        void Visit(MethodPtrFormula formula);
+        void VisitMethodPtrInstance(MethodPtrFormula formula, Formula instance);
     }
 }

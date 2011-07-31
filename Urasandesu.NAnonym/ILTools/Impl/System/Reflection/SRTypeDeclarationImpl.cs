@@ -272,7 +272,11 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
 
         public bool IsAssignableExplicitlyFrom(ITypeDeclaration that)
         {
-            if (!IsValueType && that.IsValueType || IsValueType && !that.IsValueType)
+            if (that == null)
+            {
+                return false;
+            }
+            else if (!IsValueType && that.IsValueType || IsValueType && !that.IsValueType)
             {
                 return false;
             }
@@ -280,7 +284,7 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             {
                 return true;
             }
-            else if (IsAssignableFrom(that.BaseType))
+            else if (IsAssignableExplicitlyFrom(that.BaseType))
             {
                 return true;
             }

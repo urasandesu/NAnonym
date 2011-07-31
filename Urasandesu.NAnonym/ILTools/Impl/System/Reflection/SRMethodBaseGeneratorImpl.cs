@@ -115,15 +115,9 @@ namespace Urasandesu.NAnonym.ILTools.Impl.System.Reflection
             throw new NotImplementedException();
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner2> bodyExpression)
         {
-            var gen = new ReflectiveMethodDesigner(this);
-            bodyExpression(gen);
-            if (gen.Directives.Last().OpCode != OpCodes.Ret)
-            {
-                gen.Eval(() => Dsl.End());
-            }
-            return this;
+            throw new NotImplementedException();
         }
 
         public IParameterGenerator AddParameter(int position, ParameterAttributes attributes, string parameterName)

@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Urasandesu.NAnonym.ILTools;
 
 namespace Urasandesu.NAnonym.Formulas
 {
@@ -40,6 +41,11 @@ namespace Urasandesu.NAnonym.Formulas
     {
         public ReflectiveFieldFormula(Formula instance, FieldInfo fi)
             : base(instance, fi)
+        {
+        }
+
+        public ReflectiveFieldFormula(Formula instance, IFieldDeclaration field)
+            : base(instance, field)
         {
         }
     }

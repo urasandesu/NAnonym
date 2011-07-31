@@ -72,7 +72,7 @@ namespace Test.Urasandesu.NAnonym.ILTools
             throw new NotImplementedException();
         }
 
-        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner> bodyExpression)
+        public IMethodBaseGenerator ExpressBody(Action<ReflectiveMethodDesigner2> bodyExpression)
         {
             throw new NotImplementedException();
         }

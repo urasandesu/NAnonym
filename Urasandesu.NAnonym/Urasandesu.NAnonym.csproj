@@ -121,6 +121,9 @@
     <Compile Include="Formulas.CodeGeneration\MemberFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
+    <Compile Include="Formulas.CodeGeneration\MethodPtrFormula.g.cs">
+      <DependentUpon>Formulas.tt</DependentUpon>
+    </Compile>
     <Compile Include="Formulas.CodeGeneration\MultiplyFormula.g.cs">
       <DependentUpon>Formulas.tt</DependentUpon>
     </Compile>
@@ -194,6 +197,7 @@
     <Compile Include="Formulas\INodeToString.cs" />
     <Compile Include="Formulas\InvokeFormula.cs" />
     <Compile Include="Formulas\LessThanOrEqualFormula.cs" />
+    <Compile Include="Formulas\MethodPtrFormula.cs" />
     <Compile Include="Formulas\Node.cs" />
     <Compile Include="Formulas\NodeCollection.cs" />
     <Compile Include="Formulas\FormulaCollection.cs" />
@@ -240,8 +244,6 @@
     <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
     <Compile Include="ILTools\IPropertyDeclaration.cs" />
     <Compile Include="ILTools\IPropertyGenerator.cs" />
-    <Compile Include="ILTools\ReflectiveLabelDecorator.cs" />
-    <Compile Include="ILTools\ReflectiveLocalDecorator.cs" />
     <Compile Include="ILTools\MethodReservedWords.cs" />
     <Compile Include="ILTools\ReflectiveMethodDesigner2.cs" />
     <Compile Include="Formulas\TypeResolver.cs" />
@@ -304,15 +306,9 @@
     <Compile Include="DW\LocalSetupModes.cs" />
     <Compile Include="DW\WeaveFieldInfo.cs" />
     <Compile Include="DW\WeaveMethodInfo.cs" />
-    <Compile Include="ILTools\ReflectiveDesignerDecorator.cs" />
-    <Compile Include="ILTools\ReflectiveILOperationDecorator.cs" />
-    <Compile Include="ILTools\ReflectiveMethodBaseDecorator.cs" />
-    <Compile Include="ILTools\ReflectiveMethodBodyDecorator.cs" />
-    <Compile Include="ILTools\ReflectiveILEmitter.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
     <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
     <Compile Include="ManuallyDeserializable.cs" />
-    <Compile Include="ILTools\ReflectiveMethodDesigner.cs" />
     <Compile Include="ILTools\ExpressiveGeneratorMacro.cs" />
     <Compile Include="ILTools\IAssemblyDeclaration.cs" />
     <Compile Include="ILTools\IAssemblyGenerator.cs" />

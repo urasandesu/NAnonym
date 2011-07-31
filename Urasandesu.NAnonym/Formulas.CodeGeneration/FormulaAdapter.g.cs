@@ -711,5 +711,21 @@ namespace Urasandesu.NAnonym.Formulas
 		{
 			arguments.Accept(this);
 		}
+        public virtual void Visit(MethodPtrFormula formula)
+        {
+            if (formula.Instance != null) VisitMethodPtrInstance(formula, formula.Instance);
+            Visit((Formula)formula);
+            visitor.Visit(formula);
+        }
+        public virtual void VisitMethodPtrInstance(MethodPtrFormula formula, Formula instance)
+		{
+		    if (formula.GetType() != typeof(MethodPtrFormula)) return;
+			VisitMethodPtrInstanceCore(formula, instance);
+			visitor.VisitMethodPtrInstance(formula, instance);
+		}
+        protected virtual void VisitMethodPtrInstanceCore(MethodPtrFormula formula, Formula instance)
+		{
+			instance.Accept(this);
+		}
     }
 }

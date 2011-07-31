@@ -31,6 +31,7 @@
 using System.Linq;
 using System.Reflection.Emit;
 using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
+using System;
 
 namespace Urasandesu.NAnonym.DW
 {
@@ -43,12 +44,13 @@ namespace Urasandesu.NAnonym.DW
 
         public override void Construct()
         {
-            ParentDefiner.MethodInterface.ExpressBody(
-            gen =>
-            {
-                var bodyWeaver = new LocalMethodBodyWeaver(gen, this);
-                bodyWeaver.Apply();
-            });
+            throw new NotImplementedException();
+            //ParentDefiner.MethodInterface.ExpressBody2(
+            //gen =>
+            //{
+            //    var bodyWeaver = new LocalMethodBodyWeaver(gen, this);
+            //    bodyWeaver.Apply();
+            //}, ParentDefiner.MethodInterface.);
         }
     }
 }
