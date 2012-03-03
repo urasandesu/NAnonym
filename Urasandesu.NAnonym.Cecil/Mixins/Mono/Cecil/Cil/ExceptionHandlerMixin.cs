@@ -42,7 +42,6 @@ namespace Urasandesu.NAnonym.Cecil.Mixins.Mono.Cecil.Cil
         {
             var destination = new ExceptionHandler(source.HandlerType);
             destination.CatchType = source.CatchType;
-            destination.FilterEnd = source.FilterEnd;
             destination.FilterStart = source.FilterStart;
             destination.HandlerEnd = source.HandlerEnd;
             destination.HandlerStart = source.HandlerStart;

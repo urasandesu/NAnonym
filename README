@@ -7,7 +7,26 @@ READ ME
 
 - Status
     This library doesn't yet run.
-    The first release is planed in the first half of the 2011.
+
+
+- Package Dependencies
+    * Mono Cecil(http://www.mono-project.com/Cecil)
+      Cecil is a library to generate and inspect programs and libraries in the ECMA CIL form, written by Jb Evain.
+      NAnonym emits IL by using classes that are in Cecil and official System.Reflection.Emit namespace.
+      
+      NOTE: 
+        To build NAnonym uses the most recent source code of Cecil as needed because I uses examples from it.
+        Currently using this revision: 874a39cb635cd83a47c2cef3f3790c3223f15462, https://github.com/jbevain/cecil.git
+
+    * NUnit 2.5.10(http://www.nunit.org/)
+      NUnit is a unit-testing framework for all .Net languages.
+
+    * tangible T4 Editor plus modeling tools for VS2010(http://t4-editor.tangible-engineering.com)
+      The T4 Editor for Syntax Highlighting and Intelli-Sense allow you to author your own code generators 
+      in Visual Studio that read from diagrams, xml or any other data source.
+
+    * T4 Toolbox(http://t4toolbox.codeplex.com/)
+      T4 Toolbox is a set of ready-to-use code generators and T4 extensions for Visual Studio.
 
 
 - License Agreement
