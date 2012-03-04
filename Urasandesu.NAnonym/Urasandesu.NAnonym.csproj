@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Urasandesu.NAnonym.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,376 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Anonymable.cs" />
-    <Compile Include="Formulas.CodeGeneration\AddFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\AndAlsoFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ArgumentFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ArithmeticBinaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\AssignFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\BaseNewFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\BlockFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\CallFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ConditionalFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ConstantFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ConvertFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\EndFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\EqualFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ExclusiveOrFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\FieldFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\Formula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\FormulaAdapter.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\IFormulaVisitor.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\InvokeFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\LeftJoinBinaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\LessThanFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\LessThanOrEqualFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\LocalNode.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\LogicalBinaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\MemberFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\MethodPtrFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\MultiplyFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\NewArrayInitFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\NewFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\NoActionVisitor.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\Node.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\NotEqualFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\PropertyFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ReflectiveCallFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ReflectiveFieldFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ReflectiveNewFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ReflectivePropertyFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\ReturnFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\RightJoinBinaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\SubtractFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\TypeAsFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\UnaryFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas.CodeGeneration\VariableFormula.g.cs">
-      <DependentUpon>Formulas.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Formulas\AddFormula.cs" />
-    <Compile Include="Formulas\AndAlsoFormula.cs" />
-    <Compile Include="Formulas\ArgumentFormula.cs" />
-    <Compile Include="Formulas\AssignFormula.cs" />
-    <Compile Include="Formulas\BaseNewFormula.cs" />
-    <Compile Include="Formulas\BlockFormula.cs" />
-    <Compile Include="Formulas\CallFormula.cs" />
-    <Compile Include="Formulas\ConstantFormula.cs" />
-    <Compile Include="Formulas\ConvertDecreaser.cs" />
-    <Compile Include="Formulas\ConvertFormula.cs" />
-    <Compile Include="Formulas\ConvertIncreaser.cs" />
-    <Compile Include="Formulas\EqualFormula.cs" />
-    <Compile Include="Formulas\ExclusiveOrFormula.cs" />
-    <Compile Include="Formulas\ExpressionToFormula.cs" />
-    <Compile Include="Formulas\ExpressionToFormulaState.cs" />
-    <Compile Include="Formulas\ExpressionToInlineValue.cs" />
-    <Compile Include="Formulas\ExpressionToInlineValueState.cs" />
-    <Compile Include="Formulas\FieldFormula.cs" />
-    <Compile Include="Formulas\Formula.cs" />
-    <Compile Include="Formulas\INodeToString.cs" />
-    <Compile Include="Formulas\InvokeFormula.cs" />
-    <Compile Include="Formulas\LessThanOrEqualFormula.cs" />
-    <Compile Include="Formulas\MethodPtrFormula.cs" />
-    <Compile Include="Formulas\Node.cs" />
-    <Compile Include="Formulas\NodeCollection.cs" />
-    <Compile Include="Formulas\FormulaCollection.cs" />
-    <Compile Include="Formulas\LessThanFormula.cs" />
-    <Compile Include="Formulas\LocalNode.cs" />
-    <Compile Include="Formulas\MultiplyFormula.cs" />
-    <Compile Include="Formulas\NewArrayInitFormula.cs" />
-    <Compile Include="Formulas\NewFormula.cs" />
-    <Compile Include="Formulas\NodeToJson.cs" />
-    <Compile Include="Formulas\NodeToString.cs" />
-    <Compile Include="Formulas\NodeType.cs" />
-    <Compile Include="Formulas\NotEqualFormula.cs" />
-    <Compile Include="Formulas\PropertyFormula.cs" />
-    <Compile Include="Formulas\ReflectiveCallFormula.cs" />
-    <Compile Include="Formulas\ReflectiveFieldFormula.cs" />
-    <Compile Include="Formulas\ReflectiveNewFormula.cs" />
-    <Compile Include="Formulas\ReflectivePropertyFormula.cs" />
-    <Compile Include="Formulas\ReturnFormula.cs" />
-    <Compile Include="Formulas\SubtractFormula.cs" />
-    <Compile Include="Formulas\TypeAsFormula.cs" />
-    <Compile Include="Formulas\VariableFormula.cs" />
-    <Compile Include="Formulas\VariableResolver.cs" />
-    <Compile Include="ILTools.CodeGeneration\IILOperator.g.cs">
-      <DependentUpon>Decorators.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ILTools.CodeGeneration\ILabelGenerator.g.cs">
-      <DependentUpon>Decorators.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ILTools.CodeGeneration\ILocalGenerator.g.cs">
-      <DependentUpon>Decorators.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ILTools.CodeGeneration\IMethodBaseGenerator.g.cs">
-      <DependentUpon>Decorators.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ILTools.CodeGeneration\IMethodBodyGenerator.g.cs">
-      <DependentUpon>Decorators.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ILTools\ILBuilder.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorEmitHook.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLabelEmitHook.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLocalEmitHook.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseEmitHook.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyEmitHook.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRPropertyDeclarationImpl.cs" />
-    <Compile Include="ILTools\IPropertyDeclaration.cs" />
-    <Compile Include="ILTools\IPropertyGenerator.cs" />
-    <Compile Include="ILTools\MethodReservedWords.cs" />
-    <Compile Include="ILTools\ReflectiveMethodDesigner2.cs" />
-    <Compile Include="Formulas\TypeResolver.cs" />
-    <Compile Include="Formulas\TypeCheckException.cs" />
-    <Compile Include="InstanceAction.cs" />
-    <Compile Include="ActionWithPrev.cs" />
-    <Compile Include="DW\AnonymInstanceBodyBuilder.cs" />
-    <Compile Include="DW\AnonymInstanceBodyBuilderWithPrev.cs" />
-    <Compile Include="DW\AnonymStaticBeforeBodyBuilder.cs" />
-    <Compile Include="DW\AnonymStaticBodyBuilder.cs" />
-    <Compile Include="DW\AnonymStaticBodyBuilderWithPrev.cs" />
-    <Compile Include="DW\BodyWeaver.cs" />
-    <Compile Include="DW\BodyWeaveBuilder.cs" />
-    <Compile Include="DW\BodyWeaveDefiner.cs" />
-    <Compile Include="DW\ConstructorBodyWeaver.cs" />
-    <Compile Include="DW\ConstructorBodyWeaveBuilder.cs" />
-    <Compile Include="DW\ConstructorBodyWeaveDefiner.cs" />
-    <Compile Include="DW\ConstructorWeaver.cs" />
-    <Compile Include="DW\ConstructorWeaveBuilder.cs" />
-    <Compile Include="DW\ConstructorWeaveDefiner.cs" />
-    <Compile Include="DW\DependencyCache.cs" />
-    <Compile Include="DW\DependencyClass.cs" />
-    <Compile Include="DW\DependencyDomain.cs" />
-    <Compile Include="DW\DependencySetupModes.cs" />
-    <Compile Include="DW\LocalCache.cs" />
-    <Compile Include="DW\DependencyField.cs" />
-    <Compile Include="DW\DependencyMethod.cs" />
-    <Compile Include="DW\LocalImplementAction.cs" />
-    <Compile Include="DW\LocalImplementFunc.cs" />
-    <Compile Include="DW\LocalOverrideAction.cs" />
-    <Compile Include="DW\LocalOverrideFunc.cs" />
-    <Compile Include="InstanceFunc.cs" />
-    <Compile Include="FuncWithPrev.cs" />
-    <Compile Include="DW\LocalClassLoadParameter.cs" />
-    <Compile Include="DW\Weaver.cs" />
-    <Compile Include="DW\WeaveBuilder.cs" />
-    <Compile Include="DW\WeaveDefiner.cs" />
-    <Compile Include="DW\LocalConstructorBodyWeaver.cs" />
-    <Compile Include="DW\LocalConstructorBodyBuilder.cs" />
-    <Compile Include="DW\LocalConstructorBodyDefiner.cs" />
-    <Compile Include="DW\LocalConstructorWeaver.cs" />
-    <Compile Include="DW\LocalConstructorBuilder.cs" />
-    <Compile Include="DW\LocalConstructorDefiner.cs" />
-    <Compile Include="DW\LocalField.cs" />
-    <Compile Include="DW\LocalImplementMethodDefiner.cs" />
-    <Compile Include="DW\LocalMethodBodyWeaver.cs" />
-    <Compile Include="DW\LocalMethodBodyDefiner.cs" />
-    <Compile Include="DW\LocalMethodWeaver.cs" />
-    <Compile Include="DW\LocalMethodBuilder.cs" />
-    <Compile Include="DW\LocalMethodDefiner.cs" />
-    <Compile Include="DW\LocalOverrideMethodDefiner.cs" />
-    <Compile Include="DW\MethodBodyWeaver.cs" />
-    <Compile Include="DW\MethodBodyWeaveBuilder.cs" />
-    <Compile Include="DW\MethodBodyWeaveDefiner.cs" />
-    <Compile Include="DW\MethodWeaver.cs" />
-    <Compile Include="DW\MethodWeaveBuilder.cs" />
-    <Compile Include="DW\MethodWeaveDefiner.cs" />
-    <Compile Include="DW\MethodBodyWeaveBuilderType.cs" />
-    <Compile Include="DW\SetupMode.cs" />
-    <Compile Include="DW\LocalSetupModes.cs" />
-    <Compile Include="DW\WeaveFieldInfo.cs" />
-    <Compile Include="DW\WeaveMethodInfo.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\ISRMethodBaseGenerator.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRDynamicMethodGeneratorImpl.cs" />
-    <Compile Include="ManuallyDeserializable.cs" />
-    <Compile Include="ILTools\ExpressiveGeneratorMacro.cs" />
-    <Compile Include="ILTools\IAssemblyDeclaration.cs" />
-    <Compile Include="ILTools\IAssemblyGenerator.cs" />
-    <Compile Include="ILTools\IConstructorDeclaration.cs" />
-    <Compile Include="ILTools\IConstructorGenerator.cs" />
-    <Compile Include="IManuallyDeserializable.cs" />
-    <Compile Include="ILTools\IDirectiveDeclaration.cs" />
-    <Compile Include="ILTools\IDirectiveGenerator.cs" />
-    <Compile Include="ILTools\IEventDeclaration.cs" />
-    <Compile Include="ILTools\IEventGenerator.cs" />
-    <Compile Include="ILTools\IFieldDeclaration.cs" />
-    <Compile Include="ILTools\IFieldGenerator.cs" />
-    <Compile Include="ILTools\IILOperator.cs" />
-    <Compile Include="ILTools\ILabelDeclaration.cs" />
-    <Compile Include="ILTools\ILabelGenerator.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRAssemblyDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRAssemblyGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRDirectiveGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRFieldDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRFieldGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRILOperatorImpl.cs" />
-    <Compile Include="ILTools\ILReservedWords.cs" />
-    <Compile Include="ILTools\ILocalDeclaration.cs" />
-    <Compile Include="ILTools\ILocalGenerator.cs" />
-    <Compile Include="ILTools\IMemberDeclaration.cs" />
-    <Compile Include="ILTools\IMemberGenerator.cs" />
-    <Compile Include="ILTools\IMethodBaseDeclaration.cs" />
-    <Compile Include="ILTools\IMethodBaseGenerator.cs" />
-    <Compile Include="ILTools\IMethodBodyDeclaration.cs" />
-    <Compile Include="ILTools\IMethodBodyGenerator.cs" />
-    <Compile Include="ILTools\IMethodDeclaration.cs" />
-    <Compile Include="ILTools\IMethodGenerator.cs" />
-    <Compile Include="ILTools\IModuleDeclaration.cs" />
-    <Compile Include="ILTools\IModuleGenerator.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRConstructorGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRConstructorDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLabelDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLabelGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLocalDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRLocalGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMemberDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBaseGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodBodyGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRMethodGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRModuleDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRModuleGeneratorImple.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRParameterDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRParameterGeneratorImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRPortableScopeItemImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRTypeDeclarationImpl.cs" />
-    <Compile Include="ILTools\Impl\System\Reflection\SRTypeGeneratorImpl.cs" />
-    <Compile Include="ILTools\IParameterDeclaration.cs" />
-    <Compile Include="ILTools\IParameterGenerator.cs" />
-    <Compile Include="ILTools\ITypeDeclaration.cs" />
-    <Compile Include="ILTools\ITypeGenerator.cs" />
     <Compile Include="Mixins\System\AppDomainMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\ConstructorInfoMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\Emit\ConstructorBuilderMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\Emit\MethodBuilderMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\Emit\ModuleBuilderMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\Emit\OpCodeMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\MethodBaseMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\ParameterInfoMixin.cs" />
-    <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />
-    <Compile Include="ILTools\OpCode.cs" />
-    <Compile Include="ILTools\OpCodes.cs" />
-    <Compile Include="ILTools\PortableScope.cs" />
-    <Compile Include="ILTools\IPortableScopeItem.cs" />
-    <Compile Include="ILTools\PortableScopeItemRawData.cs" />
-    <Compile Include="ILTools\PortableScopeAttribute.cs" />
-    <Compile Include="ILTools\PortableScopeRawData.cs" />
-    <Compile Include="ILTools\TypeAnalyzer.cs" />
-    <Compile Include="DW\LocalDomain.cs" />
-    <Compile Include="Linq\DelegateComparer.cs" />
-    <Compile Include="Linq\DelegateEqualityComparer.cs" />
-    <Compile Include="Linq\IEqualityComparer.cs" />
-    <Compile Include="Linq\Iterable.cs" />
-    <Compile Include="DW\LocalClass.cs" />
-    <Compile Include="DW\LocalMethod.cs" />
-    <Compile Include="DW\LocalProperty.cs" />
-    <Compile Include="Linq\Transformer.cs" />
-    <Compile Include="Linq\TransformerEnumerateOnly.cs" />
-    <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
-    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ExpressiveGeneratorMixin.cs" />
-    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\IFieldDeclarationMixin.cs" />
-    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\ITypeDeclarationMixin.cs" />
-    <Compile Include="Mixins\Urasandesu\NAnonym\ILTools\OpCodeMixin.cs" />
-    <Compile Include="NAnonymException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Required.cs" />
-    <Compile Include="StaticAction.cs" />
-    <Compile Include="StaticFunc.cs" />
-    <Compile Include="StringUtility.cs" />
-    <Compile Include="TypeSavable.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -428,47 +73,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Formulas.CodeGeneration\AbstractFormulaVisitorTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\FormulaAdapterTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\FormulaGenerator.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\NoActionVisitorTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\Formulas.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\FormulaTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\FormulaTemplateProperty.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="Formulas.CodeGeneration\FormulaVisitorTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="ILTools.CodeGeneration\DecoratorGenerator.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="ILTools.CodeGeneration\Decorators.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
-    <None Include="ILTools.CodeGeneration\DecoratorTemplate.tt">
-      <TransformOnBuild>True</TransformOnBuild>
-    </None>
+    <None Include="Urasandesu.NAnonym.snk" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
