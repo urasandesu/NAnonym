@@ -21,16 +21,16 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Bin\Debug\</OutputPath>
+    <OutputPath>$(SolutionDir)Bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Bin\Release\</OutputPath>
+    <OutputPath>$(SolutionDir)Bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -89,8 +89,9 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>if exist "$(SolutionDir)$(TargetFileName).locked" del "$(SolutionDir)$(TargetFileName).locked"
-if exist "$(SolutionDir)$(TargetFileName)" if not exist "$(SolutionDir)$(TargetFileName).locked" move "$(SolutionDir)$(TargetFileName)" "$(SolutionDir)$(TargetFileName).locked"</PreBuildEvent>
-    <PostBuildEvent>copy /y "$(TargetPath)" "$(SolutionDir)$(TargetFileName)"</PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

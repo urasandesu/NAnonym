@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Bin\Debug\</OutputPath>
+    <OutputPath>$(SolutionDir)Bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Bin\Release\</OutputPath>
+    <OutputPath>$(SolutionDir)Bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -51,16 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnonymouslyableTest.cs" />
-    <Compile Include="ILTools\EmptyILBuilder.cs" />
-    <Compile Include="ILTools\MockILOperator.cs" />
-    <Compile Include="ILTools\MockTypeGenerator.cs" />
-    <Compile Include="Linq\DelegateComparerTest.cs" />
-    <Compile Include="Linq\DelegateEqualityComparerTest.cs" />
-    <Compile Include="Linq\IterableTest.cs" />
+    <Compile Include="Mixins\System\AppDomainMixinTest.cs" />
+    <Compile Include="Mixins\System\TypeMixinTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequiredTest.cs" />
-    <Compile Include="StringUtilityTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.csproj">
@@ -68,9 +61,7 @@
       <Name>Urasandesu.NAnonym</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DW\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
