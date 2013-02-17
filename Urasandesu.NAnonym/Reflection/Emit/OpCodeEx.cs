@@ -1,5 +1,5 @@
 ﻿/* 
- * File: AppDomainMixinTest.cs
+ * File: OpCodeEx.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,55 +28,57 @@
  */
 
 
-using System;
-using System.Collections;
-using NUnit.Framework;
-using Urasandesu.NAnonym.Mixins.System;
 
-namespace Test.Urasandesu.NAnonym.Mixins.System
+namespace Urasandesu.NAnonym.Reflection.Emit
 {
-    [TestFixture]
-    public class AppDomainMixinTest
+    public struct OpCodeEx
     {
-        [Test]
-        public void RunAtIsolatedDomainTest_ShouldInitStaticMember()
+        public OpCodeEx(string name, byte length, byte byte1, byte byte2)
         {
-            // Arrange
-            var bag = new CrossDomainBag();
-            bag["Actual"] = 0;
-
-            
-            // Act
-            AppDomain.CurrentDomain.RunAtIsolatedDomain(bag_ => 
-            {
-                bag_["Actual"] = AppDomain.CurrentDomain.GetHashCode();
-            }, bag);
-
-            
-            // Assert
-            Assert.AreNotEqual(AppDomain.CurrentDomain.GetHashCode(), bag["Actual"]);
+            this.m_name = name;
+            this.m_length = length;
+            this.m_byte1 = byte1;
+            this.m_byte2 = byte2;
         }
 
-
-        
-        class CrossDomainBag : MarshalByRefObject
+        public static bool operator !=(OpCodeEx a, OpCodeEx b)
         {
-            Hashtable m_hashtable = new Hashtable();
+            return !(a == b);
+        }
 
-            public object this[object key]
+        public static bool operator ==(OpCodeEx a, OpCodeEx b)
+        {
+            return a.Value == b.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            var value = obj as OpCodeEx?;
+            return value == null ? false : this == value;
+        }
+
+        string m_name;
+        byte m_length;
+        byte m_byte1;
+        byte m_byte2;
+
+        public string Name { get { return m_name; } }
+        public byte Length { get { return m_length; } }
+        public byte Byte1 { get { return m_byte1; } }
+        public byte Byte2 { get { return m_byte2; } }
+        public short Value
+        {
+            get
             {
-                get 
-                {
-                    if (!m_hashtable.ContainsKey(key))
-                        m_hashtable.Add(key, null);
-                    return m_hashtable[key]; 
-                }
-                set 
-                {
-                    if (!m_hashtable.ContainsKey(key))
-                        m_hashtable.Add(key, null);
-                    m_hashtable[key] = value; 
-                }
+                return m_byte1 == 0xff ? m_byte2 : (short)((int)m_byte2 << 8 | m_byte1);
             }
         }
     }

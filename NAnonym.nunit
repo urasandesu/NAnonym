@@ -3,4 +3,7 @@
   <Config name="Debug" appbase="Bin\Debug" configfile="Test.Urasandesu.NAnonym.dll.config" binpathtype="Auto">
     <assembly path="Test.Urasandesu.NAnonym.dll" />
   </Config>
+  <Config name="Release" appbase="Bin\Release" configfile="Test.Urasandesu.NAnonym.dll.config" binpathtype="Auto">
+    <assembly path="Test.Urasandesu.NAnonym.dll" />
+  </Config>
 </NUnitProject>
