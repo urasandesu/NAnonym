@@ -42,8 +42,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("3e0a83bb-de1c-4e14-8d5b-691b4a4bc419")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.0")]
 
 [assembly: InternalsVisibleTo("Test.Urasandesu.NAnonym, PublicKey=" + 
     "00240000048000009400000006020000002400005253413100040000010001006f4a1b2b8ca3fc" + 

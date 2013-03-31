@@ -41,7 +41,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System.Linq
     public class EnumerableMixinTest
     {
         [Test]
-        public void MutableForEachTest_ShouldEnumerateEntryAsMutable()
+        public void MutableForEachTest_ShouldEnumerateEntryAsMutable1()
         {
             // Arrange
             var entries = new Hashtable();
@@ -59,15 +59,37 @@ namespace Test.Urasandesu.NAnonym.Mixins.System.Linq
 
             // Assert
             CollectionAssert.AreEqual(
-                new int[] { 1, 4, 9, 16, 25 }, 
-                entries.OfType<DictionaryEntry>().
-                        Select(_ => (int)_.Value).
-                        OrderBy(_ => _).
-                        ToArray()
+                new int[] { 1, 4, 9, 16, 25 }.AsEnumerable(),
+                entries.OfType<DictionaryEntry>().Select(_ => (int)_.Value).OrderBy(_ => _)
             );
         }
 
 
+        [Test]
+        public void MutableForEachTest_ShouldEnumerateEntryAsMutable2()
+        {
+            // Arrange
+            var entries = new Dictionary<string, int>();
+            entries.Add("a", 1);
+            entries.Add("d", 4);
+            entries.Add("b", 2);
+            entries.Add("c", 3);
+            entries.Add("e", 5);
+
+            // Act
+            entries.MutableForEach((@this, entry) =>
+            {
+                @this[entry.Key] = @this[entry.Key] * @this[entry.Key];
+            });
+
+            // Assert
+            CollectionAssert.AreEqual(
+                new int[] { 1, 4, 9, 16, 25 }.AsEnumerable(),
+                entries.Select(_ => _.Value).OrderBy(_ => _)
+            );
+        }
+
+        
         [Test]
         public void AddRangeTest_ShouldAddAllElement_IfDistinctDictionaryIsPassed()
         {
@@ -85,11 +107,10 @@ namespace Test.Urasandesu.NAnonym.Mixins.System.Linq
 
             // Assert
             CollectionAssert.AreEqual(
-                new int[] { 1, 2, 3, 4, 5 },
+                new int[] { 1, 2, 3, 4, 5 }.AsEnumerable(),
                 target.Union(dictionary, (_1, _2) => _1.Is(_2)).
                        OrderBy(_ => _.Key).
-                       Select(_=>_.Value).
-                       ToArray()
+                       Select(_=>_.Value)
             );
         }
     }

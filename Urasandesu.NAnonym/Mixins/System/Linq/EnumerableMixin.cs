@@ -53,6 +53,21 @@ namespace Urasandesu.NAnonym.Mixins.System.Linq
             return source;
         }
 
+        public static IDictionary<TKey, TValue> MutableForEach<TKey, TValue>(this IDictionary<TKey, TValue> source, Action<IDictionary<TKey, TValue>, KeyValuePair<TKey, TValue>> action)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            var entries = new KeyValuePair<TKey, TValue>[source.Count];
+            source.CopyTo(entries, 0);
+            for (int i = 0; i < entries.Length; i++)
+                action(source, entries[i]);
+
+            return source;
+        }
+
         public static IDictionary<TKey, TValue> AddRange<TKey, TValue>(this IDictionary<TKey, TValue> source, IDictionary<TKey, TValue> dictionary)
         {
             if (source == null)
@@ -62,6 +77,22 @@ namespace Urasandesu.NAnonym.Mixins.System.Linq
 
             foreach (var entry in dictionary)
                 source.Add(entry.Key, entry.Value);
+
+            return source;
+        }
+
+        public static IDictionary<TKey, TValue> AddOrUpdateRange<TKey, TValue>(this IDictionary<TKey, TValue> source, IDictionary<TKey, TValue> dictionary)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (dictionary == null)
+                throw new ArgumentNullException("dictionary");
+
+            foreach (var entry in dictionary)
+                if (source.ContainsKey(entry.Key))
+                    source[entry.Key] = entry.Value;
+                else
+                    source.Add(entry.Key, entry.Value);
 
             return source;
         }
