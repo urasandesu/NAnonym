@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behave.cs" />
+    <Compile Include="Collections\Generic\LambdaComparer.cs" />
     <Compile Include="Collections\Generic\LambdaEqualityComparer.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="Exec.cs" />

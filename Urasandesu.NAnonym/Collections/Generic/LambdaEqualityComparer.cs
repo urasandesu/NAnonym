@@ -29,11 +29,12 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Urasandesu.NAnonym.Collections.Generic
 {
-    public class LambdaEqualityComparer<T> : IEqualityComparer<T>
+    public class LambdaEqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer
     {
         class Holder
         {
@@ -81,6 +82,19 @@ namespace Urasandesu.NAnonym.Collections.Generic
         public int GetHashCode(T obj)
         {
             return m_getHashCode(obj);
+        }
+
+        bool IEqualityComparer.Equals(object x, object y)
+        {
+            var _x = x == null || !(x is T) ? default(T) : (T)x;
+            var _y = y == null || !(y is T) ? default(T) : (T)y;
+            return Equals(_x, _y);
+        }
+
+        int IEqualityComparer.GetHashCode(object obj)
+        {
+            var _obj = obj == null || !(obj is T) ? default(T) : (T)obj;
+            return GetHashCode(_obj);
         }
     }
 }
