@@ -31,6 +31,7 @@
 using System;
 using NUnit.Framework;
 using Urasandesu.NAnonym.Mixins.System;
+using System.Runtime.Serialization;
 
 namespace Test.Urasandesu.NAnonym.Mixins.System
 {
@@ -38,7 +39,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
     public class TypeMixinTest
     {
         [Test]
-        public void ForciblyNewTest_ShouldReturnInstance_EvenIfNonPublic()
+        public void ForciblyNew_should_return_instance_even_if_NonPublic()
         {
             // Arrange
             // nop
@@ -52,7 +53,117 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetConstructorDelegateTest_ShouldReturnDelegate_IfValueOverloadExists()
+        public void GetMemberDelegate_should_return_creation_delegate_if_condition_for_its_constructor_is_passed()
+        {
+            // Arrange
+            // nop
+
+            // Act
+            var actual = typeof(ClassWithNonPublicConstructor).GetMemberDelegate(".ctor", new Type[] { typeof(double) });
+
+            // Assert
+            Assert.IsNotNull(actual);
+            var obj = actual(null, new object[] { 1.1 });
+            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(obj);
+            Assert.AreEqual(1.1, ((ClassWithNonPublicConstructor)obj).Value);
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_placement_delegate_if_condition_for_its_constructor_is_passed()
+        {
+            // Arrange
+            var target = (ClassWithNonPublicConstructor)FormatterServices.GetUninitializedObject(typeof(ClassWithNonPublicConstructor));
+
+            // Act
+            var actual = typeof(ClassWithNonPublicConstructor).GetMemberDelegate(".ctor", new Type[] { typeof(double) });
+
+            // Assert
+            Assert.IsNotNull(actual);
+            var obj = actual(target, new object[] { 1.1 });
+            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(obj);
+            Assert.AreSame(target, obj);
+            Assert.AreEqual(1.1, target.Value);
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_field_getter_if_condition_for_its_field_is_passed()
+        {
+            // Arrange
+            var target = new ClassWithNonPublicField();
+
+            // Act
+            var actual = typeof(ClassWithNonPublicField).GetMemberDelegate("m_value", Type.EmptyTypes);
+            target.Value = 42;
+
+            // Assert
+            Assert.AreEqual(42, actual(target, null));
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_field_setter_if_condition_for_its_field_is_passed()
+        {
+            // Arrange
+            var target = new ClassWithNonPublicField();
+
+            // Act
+            var actual = typeof(ClassWithNonPublicField).GetMemberDelegate("m_value", Type.EmptyTypes);
+            actual(target, new object[] { 42 });
+
+            // Assert
+            Assert.AreEqual(42, target.Value);
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_method_delegate_if_condition_for_its_method_is_passed()
+        {
+            // Arrange
+            var target = new ClassWithNonPublicMethod();
+
+            // Act
+            var actual = typeof(ClassWithNonPublicMethod).GetMemberDelegate("Add", new Type[] { typeof(double), typeof(double) });
+
+            // Assert
+            Assert.IsNotNull(actual);
+            Assert.LessOrEqual(Math.Abs(2.2 - (double)actual(target, new object[] { 1.1, 1.1 })), 0.001);
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_property_getter_if_condition_for_its_property_is_passed()
+        {
+            // Arrange
+            var target = new ClassWithNonPublicProperty();
+
+            // Act
+            var actual = typeof(ClassWithNonPublicProperty).GetMemberDelegate("Value", Type.EmptyTypes);
+            target.m_value = 42;
+
+            // Assert
+            Assert.AreEqual(42, actual(target, null));
+        }
+
+
+        [Test]
+        public void GetMemberDelegate_should_return_property_setter_if_condition_for_its_property_is_passed()
+        {
+            // Arrange
+            var target = new ClassWithNonPublicProperty();
+
+            // Act
+            var actual = typeof(ClassWithNonPublicProperty).GetMemberDelegate("Value", Type.EmptyTypes);
+            actual(target, new object[] { 42 });
+
+            // Assert
+            Assert.AreEqual(42, target.m_value);
+        }
+
+
+        [Test]
+        public void GetConstructorDelegate_should_return_delegate_if_value_overload_exists()
         {
             // Arrange
             // nop
@@ -62,12 +173,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
             // Assert
             Assert.IsNotNull(actual);
-            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(1.1));
+            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(null, new object[] { 1.1 }));
         }
 
 
         [Test]
-        public void GetConstructorDelegateTest_ShouldReturnDelegate_IfValueByRefOverloadExists()
+        public void GetConstructorDelegate_should_return_delegate_if_Value_ByRef_overload_exists()
         {
             // Arrange
             // nop
@@ -78,13 +189,13 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             // Assert
             Assert.IsNotNull(actual);
             var args = new object[] { 32 };
-            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(args));
+            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(null, args));
             Assert.AreEqual(42, args[0]);
         }
 
 
         [Test]
-        public void GetConstructorDelegateTest_ShouldReturnDelegate_IfOverloadExists()
+        public void GetConstructorDelegate_should_return_delegate_if_overload_exists()
         {
             // Arrange
             // nop
@@ -95,12 +206,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             // Assert
             Assert.IsNotNull(actual);
             var args = new object[] { new Type[] { typeof(int) } };
-            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(args));
+            Assert.IsInstanceOf<ClassWithNonPublicConstructor>(actual(null, args));
         }
 
 
         [Test]
-        public void GetFieldGetterDelegateTest_ShouldReturnGetter_IfExists()
+        public void GetFieldGetterDelegate_should_return_getter_if_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicField();
@@ -110,12 +221,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             target.Value = 42;
 
             // Assert
-            Assert.AreEqual(42, get_m_value(target));
+            Assert.AreEqual(42, get_m_value(target, null));
         }
 
 
         [Test]
-        public void GetFieldGetterDelegateTest_ShouldReturnGetter_IfStatic()
+        public void GetFieldGetterDelegate_should_return_getter_if_static()
         {
             // Arrange
             // nop
@@ -125,19 +236,19 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             ClassWithNonPublicField.StaticValue = 42;
 
             // Assert
-            Assert.AreEqual(42, get_ms_staticValue(null));
+            Assert.AreEqual(42, get_ms_staticValue(null, null));
         }
 
 
         [Test]
-        public void GetFieldSetterDelegateTest_ShouldReturnSetter_IfExists()
+        public void GetFieldSetterDelegate_should_return_setter_if_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicField();
 
             // Act
             var set_m_value = typeof(ClassWithNonPublicField).GetFieldSetterDelegate("m_value");
-            set_m_value(target, 42);
+            set_m_value(target, new object[] { 42 });
 
             // Assert
             Assert.AreEqual(42, target.Value);
@@ -145,14 +256,14 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetFieldSetterDelegateTest_ShouldReturnSetter_IfStatic()
+        public void GetFieldSetterDelegate_should_return_setter_if_static()
         {
             // Arrange
             // nop
 
             // Act
             var set_ms_staticValue = typeof(ClassWithNonPublicField).GetFieldSetterDelegate("ms_staticValue");
-            set_ms_staticValue(null, 10);
+            set_ms_staticValue(null, new object[] { 10 });
 
             // Assert
             Assert.AreEqual(10, ClassWithNonPublicField.StaticValue);
@@ -160,7 +271,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetMethodDelegateTest_ShouldReturnDelegate_IfValueOverloadExists()
+        public void GetMethodDelegate_should_return_delegate_if_value_overload_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicMethod();
@@ -170,12 +281,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
             // Assert
             Assert.IsNotNull(actual);
-            Assert.LessOrEqual(Math.Abs(2.2 - (double)actual(target, 1.1, 1.1)), 0.001);
+            Assert.LessOrEqual(Math.Abs(2.2 - (double)actual(target, new object[] { 1.1, 1.1 })), 0.001);
         }
 
 
         [Test]
-        public void GetMethodDelegateTest_ShouldReturnDelegate_IfValueByRefOverloadExists()
+        public void GetMethodDelegate_should_return_delegate_if_value_ByRef_overload_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicMethod();
@@ -192,7 +303,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetMethodDelegateTest_ShouldReturnDelegate_IfOverloadExists()
+        public void GetMethodDelegate_should_return_delegate_if_overload_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicMethod();
@@ -204,11 +315,11 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             Assert.IsNotNull(actual);
 
             var args = new object[] { };
-            
+
             args = new object[] { "failed", null };
             Assert.IsFalse((bool)actual(target, args));
             Assert.IsNull(args[1]);
-            
+
             args = new object[] { "ClassWithNonPublicMethod", null };
             Assert.IsTrue((bool)actual(target, args));
             Assert.IsNotNull(args[1]);
@@ -216,7 +327,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetMethodDelegateTest_ShouldReturnDelegate_IfStatic()
+        public void GetMethodDelegate_should_return_delegate_if_static()
         {
             // Arrange
             // nop
@@ -226,15 +337,15 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
             // Assert
             Assert.IsNotNull(actual);
-            
+
             var result = default(ClassWithNonPublicMethod);
             var args = new object[] { };
-            
+
             args = new object[] { "failed", null };
             result = (ClassWithNonPublicMethod)actual(null, args);
             Assert.IsNull(result);
             Assert.IsInstanceOf<InvalidCastException>(args[1]);
-            
+
             args = new object[] { "ClassWithNonPublicMethod", null };
             result = (ClassWithNonPublicMethod)actual(null, args);
             Assert.IsNotNull(result);
@@ -243,7 +354,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetPropertyGetterDelegateTest_ShouldReturnGetter_IfExists()
+        public void GetPropertyGetterDelegate_should_return_getter_if_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicProperty();
@@ -253,12 +364,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             target.m_value = 42;
 
             // Assert
-            Assert.AreEqual(42, get_Value(target));
+            Assert.AreEqual(42, get_Value(target, null));
         }
 
 
         [Test]
-        public void GetPropertyGetterDelegateTest_ShouldReturnGetter_IfStatic()
+        public void GetPropertyGetterDelegate_should_return_getter_if_static()
         {
             // Arrange
             // nop
@@ -268,19 +379,19 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             ClassWithNonPublicProperty.ms_staticValue = 42;
 
             // Assert
-            Assert.AreEqual(42, get_StaticValue(null));
+            Assert.AreEqual(42, get_StaticValue(null, null));
         }
 
 
         [Test]
-        public void GetPropertySetterDelegateTest_ShouldReturnSetter_IfExists()
+        public void GetPropertySetterDelegate_should_return_setter_if_exists()
         {
             // Arrange
             var target = new ClassWithNonPublicProperty();
 
             // Act
             var set_Value = typeof(ClassWithNonPublicProperty).GetPropertySetterDelegate("Value");
-            set_Value(target, 42);
+            set_Value(target, new object[] { 42 });
 
             // Assert
             Assert.AreEqual(42, target.m_value);
@@ -288,27 +399,28 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void GetPropertySetterDelegateTest_ShouldReturnSetter_IfStatic()
+        public void GetPropertySetterDelegate_should_return_setter_if_static()
         {
             // Arrange
             // nop
 
             // Act
             var set_StaticValue = typeof(ClassWithNonPublicProperty).GetPropertySetterDelegate("StaticValue");
-            set_StaticValue(null, 10);
+            set_StaticValue(null, new object[] { 10 });
 
             // Assert
             Assert.AreEqual(10, ClassWithNonPublicProperty.ms_staticValue);
         }
 
-        
-        
+
+
         class ClassWithNonPublicConstructor
         {
+            public object Value { get; private set; }
             ClassWithNonPublicConstructor() { }
-            ClassWithNonPublicConstructor(double value) { }
-            ClassWithNonPublicConstructor(ref int value) { value = value + 10; }
-            ClassWithNonPublicConstructor(Type[] types) { }
+            ClassWithNonPublicConstructor(double value) { Value = value; }
+            ClassWithNonPublicConstructor(ref int value) { value = value + 10; Value = value; }
+            ClassWithNonPublicConstructor(Type[] types) { Value = types; }
         }
 
         class ClassWithNonPublicField
@@ -370,7 +482,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void DefaultTest_ShouldReturnDefaultValue_IfValueTypeIsPassed()
+        public void Default_ShouldReturnDefaultValue_IfValueTypeIsPassed()
         {
             // Arrange
             // nop
@@ -384,7 +496,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void DefaultTest_ShouldReturnDefaultValue_IfClassTypeIsPassed()
+        public void Default_ShouldReturnDefaultValue_IfClassTypeIsPassed()
         {
             // Arrange
             // nop

@@ -71,16 +71,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Behave.cs" />
     <Compile Include="Collections\Generic\LambdaComparer.cs" />
     <Compile Include="Collections\Generic\LambdaEqualityComparer.cs" />
-    <Compile Include="Effect.cs" />
     <Compile Include="Exec.cs" />
     <Compile Include="Mixins\System\AppDomainMixin.cs" />
     <Compile Include="Mixins\System\Collections\Generic\KeyValuePairMixin.cs" />
     <Compile Include="Mixins\System\Linq\EnumerableMixin.cs" />
     <Compile Include="Mixins\System\ObjectMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\ConstructorInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\ILGeneratorMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />
     <Compile Include="Mixins\System\ValueTypeMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,7 +93,6 @@
     </Compile>
     <Compile Include="Reflection\Emit\OpCodeEx.cs" />
     <Compile Include="Reflection\Emit\OpCodes.cs" />
-    <Compile Include="Work.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -32,13 +32,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Runtime.Serialization;
-using Urasandesu.NAnonym.Mixins.System.Reflection.Emit;
-using OpCodes = Urasandesu.NAnonym.Reflection.Emit.OpCodes;
+using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System
-{   
+{
     public static class TypeMixin
     {
         public static T ForciblyNew<T>(params object[] args)
@@ -50,7 +48,7 @@ namespace Urasandesu.NAnonym.Mixins.System
         {
             if (t == null)
                 return null;
-            
+
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
                               BindingFlags.Instance;
@@ -63,9 +61,216 @@ namespace Urasandesu.NAnonym.Mixins.System
             return ctor.Invoke(args);
         }
 
+        public static Exec GetMemberDelegate(this Type t, string name, Type[] types)
+        {
+            var bindingAttr = BindingFlags.Public |
+                              BindingFlags.NonPublic |
+                              BindingFlags.Instance |
+                              BindingFlags.Static;
+            return t.GetGetMemberDelegate(name, bindingAttr, types);
+        }
+
+        public static Exec GetGetMemberDelegate(this Type t, string name, BindingFlags bindingAttr, Type[] types)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+
+            var memberInfos = t.GetMembers(bindingAttr);
+            if (memberInfos == null || memberInfos.Length == 0)
+                return null;
+
+            var factories = memberInfos.Select(_ => CreateMemberDelegateFactory(_, name, types)).
+                                        Where(_ => _.IsTarget()).
+                                        ToArray();
+            if (1 < factories.Length)
+                throw new AmbiguousMatchException("");  // TODO: 
+
+            if (factories.Length == 0)
+                return null;
+
+            return factories[0].CreateDelegate();
+        }
+
+        static MemberDelegateFactory CreateMemberDelegateFactory(MemberInfo memberInfo, string name, Type[] types)
+        {
+            {
+                var ctorInfo = memberInfo as ConstructorInfo;
+                if (ctorInfo != null)
+                    return new ConstructorDelegateFactory(ctorInfo, name, types);
+            }
+
+            {
+                var fieldInfo = memberInfo as FieldInfo;
+                if (fieldInfo != null)
+                    return new FieldDelegateFactory(fieldInfo, name, types);
+            }
+
+            {
+                var methodInfo = memberInfo as MethodInfo;
+                if (methodInfo != null)
+                    return new MethodDelegateFactory(methodInfo, name, types);
+            }
+
+            {
+                var propInfo = memberInfo as PropertyInfo;
+                if (propInfo != null)
+                    return new PropertyDelegateFactory(propInfo, name, types);
+            }
+
+            throw new NotImplementedException(string.Format("MemberInfo.GetType(): {0}", memberInfo.GetType()));
+        }
+
+        abstract class MemberDelegateFactory
+        {
+            protected readonly MemberInfo m_memberInfo;
+            protected readonly string m_name;
+            protected readonly Type[] m_types;
+
+            public MemberDelegateFactory(MemberInfo memberInfo, string name, Type[] types)
+            {
+                m_memberInfo = memberInfo;
+                m_name = name;
+                m_types = types;
+            }
+
+            public abstract bool IsTarget();
+            public abstract Exec CreateDelegate();
+        }
+
+        class FieldDelegateFactory : MemberDelegateFactory
+        {
+            public FieldDelegateFactory(FieldInfo fieldInfo, string name, Type[] types)
+                : base(fieldInfo, name, types)
+            { }
+
+            FieldInfo Member { get { return (FieldInfo)m_memberInfo; } }
+
+            public override bool IsTarget()
+            {
+                return Member.Name == m_name;
+            }
+
+            public override Exec CreateDelegate()
+            {
+                var getter = default(Exec);
+                var setter = default(Exec);
+                return new Exec((target, args) =>
+                {
+                    if (args == null || args.Length == 0)
+                    {
+                        if (getter == null)
+                            getter = Member.GetGetterDelegate();
+                        return getter(target, args);
+                    }
+                    else
+                    {
+                        if (setter == null)
+                            setter = Member.GetSetterDelegate();
+                        return setter(target, args);
+                    }
+                });
+            }
+        }
+
+        abstract class MethodBaseDelegateFactory : MemberDelegateFactory
+        {
+            public MethodBaseDelegateFactory(MethodBase methodBase, string name, Type[] types)
+                : base(methodBase, name, types)
+            { }
+
+            protected MethodBase Member { get { return (MethodBase)m_memberInfo; } }
+
+            public override bool IsTarget()
+            {
+                var result = true;
+                result &= Member.Name == m_name;
+                result &= Member.GetParameters().Select(_ => _.ParameterType).SequenceEqual(m_types);
+                return result;
+            }
+        }
+
+        class ConstructorDelegateFactory : MethodBaseDelegateFactory
+        {
+            public ConstructorDelegateFactory(ConstructorInfo ctorInfo, string name, Type[] types)
+                : base(ctorInfo, name, types)
+            { }
+
+            new ConstructorInfo Member { get { return (ConstructorInfo)base.Member; } }
+
+            public override Exec CreateDelegate()
+            {
+                var create = default(Exec);
+                var place = default(Exec);
+                return new Exec((target, args) =>
+                {
+                    if (target == null)
+                    {
+                        if (create == null)
+                            create = Member.GetCreationDelegate();
+                        return create(target, args);
+                    }
+                    else
+                    {
+                        if (place == null)
+                            place = Member.GetPlacementDelegate();
+                        return place(target, args);
+                    }
+                });
+            }
+        }
+
+        class MethodDelegateFactory : MethodBaseDelegateFactory
+        {
+            public MethodDelegateFactory(MethodInfo methodInfo, string name, Type[] types)
+                : base(methodInfo, name, types)
+            { }
+
+            new MethodInfo Member { get { return (MethodInfo)base.Member; } }
+
+            public override Exec CreateDelegate()
+            {
+                return Member.GetDelegate();
+            }
+        }
+
+        class PropertyDelegateFactory : MemberDelegateFactory
+        {
+            public PropertyDelegateFactory(PropertyInfo propInfo, string name, Type[] types)
+                : base(propInfo, name, types)
+            { }
+
+            PropertyInfo Member { get { return (PropertyInfo)m_memberInfo; } }
+
+            public override bool IsTarget()
+            {
+                return Member.Name == m_name;
+            }
+
+            public override Exec CreateDelegate()
+            {
+                var getter = default(Exec);
+                var setter = default(Exec);
+                return new Exec((target, args) =>
+                {
+                    if (args == null || args.Length == 0)
+                    {
+                        if (getter == null)
+                            getter = Member.GetGetterDelegate();
+                        return getter(target, args);
+                    }
+                    else
+                    {
+                        if (setter == null)
+                            setter = Member.GetSetterDelegate();
+                        return setter(target, args);
+                    }
+                });
+            }
+        }
+
         // TODO: GetConstructorDelegate の Generic 版。
 
-        public static Work GetConstructorDelegate(this Type t, Type[] types)
+        public static Exec GetConstructorDelegate(this Type t, Type[] types)
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
@@ -75,7 +280,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             return t.GetConstructorDelegate(bindingAttr, binder, types, modifiers);
         }
 
-        public static Work GetConstructorDelegate(this Type t, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
+        public static Exec GetConstructorDelegate(this Type t, BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
         {
             if (t == null)
                 throw new ArgumentNullException("t");
@@ -84,59 +289,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (ctorInfo == null)
                 return null;
 
-            var ctor = new DynamicMethod("Ctor", typeof(object), new Type[] { typeof(object[]) }, true);
-            var gen = ctor.GetILGenerator();
-            var paramInfos = ctorInfo.GetParameters();
-            var locals = new LocalBuilder[] { };
-            if (0 < paramInfos.Length)
-            {
-                locals = new LocalBuilder[paramInfos.Length];
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    var localType = paramInfos[i].ParameterType.ElementIfByRef();
-                    locals[i] = gen.DeclareLocal(localType);
-                    gen.Emit(OpCodes.Ldarg_0);
-                    gen.Emit(OpCodes.Ldc_I4_Opt, i);
-                    gen.Emit(OpCodes.Ldelem_Ref);
-                    gen.Emit(OpCodes.Unbox_Opt, localType);
-                    gen.Emit(OpCodes.Stloc_Opt, i);
-                }
-            }
-
-            if (0 < paramInfos.Length)
-            {
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    if (paramInfos[i].ParameterType.IsByRef)
-                        gen.Emit(OpCodes.Ldloca_Opt, i);
-                    else
-                        gen.Emit(OpCodes.Ldloc_Opt, i);
-                }
-            }
-
-            var result = gen.DeclareLocal(ctorInfo.DeclaringType);
-            gen.Emit(OpCodes.Newobj, ctorInfo);
-            gen.Emit(OpCodes.Stloc, result);
-
-            if (0 < paramInfos.Length)
-            {
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    if (paramInfos[i].ParameterType.IsByRef)
-                    {
-                        gen.Emit(OpCodes.Ldarg_0);
-                        gen.Emit(OpCodes.Ldc_I4_Opt, i);
-                        gen.Emit(OpCodes.Ldloc_Opt, i);
-                        gen.Emit(OpCodes.Box_Opt, locals[i].LocalType);
-                        gen.Emit(OpCodes.Stelem_Ref);
-                    }
-                }
-            }
-
-            gen.Emit(OpCodes.Ldloc, result);
-            gen.Emit(OpCodes.Ret);
-
-            return (Work)ctor.CreateDelegate(typeof(Work));
+            return ctorInfo.GetCreationDelegate();
         }
 
         // TODO: GetFieldGetterDelegate の Generic 版。
@@ -145,7 +298,7 @@ namespace Urasandesu.NAnonym.Mixins.System
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
-                              BindingFlags.Instance | 
+                              BindingFlags.Instance |
                               BindingFlags.Static;
             return t.GetFieldGetterDelegate(name, bindingAttr);
         }
@@ -159,35 +312,19 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (fieldInfo == null)
                 return null;
 
-            var getter = new DynamicMethod("Get_" + name, typeof(object), new Type[] { typeof(object), typeof(object[]) }, true);
-            var gen = getter.GetILGenerator();
-
-            if (!fieldInfo.IsStatic)
-            {
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Castclass, t);
-            }
-
-            if (!fieldInfo.IsStatic)
-                gen.Emit(OpCodes.Ldfld, fieldInfo);
-            else
-                gen.Emit(OpCodes.Ldsfld, fieldInfo);
-
-            gen.Emit(OpCodes.Box_Opt, fieldInfo.FieldType);
-            gen.Emit(OpCodes.Ret);
-            return (Exec)getter.CreateDelegate(typeof(Exec));
+            return fieldInfo.GetGetterDelegate();
         }
 
-        public static Effect GetFieldSetterDelegate(this Type t, string name)
+        public static Exec GetFieldSetterDelegate(this Type t, string name)
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
-                              BindingFlags.Instance | 
+                              BindingFlags.Instance |
                               BindingFlags.Static;
             return t.GetFieldSetterDelegate(name, bindingAttr);
         }
 
-        public static Effect GetFieldSetterDelegate(this Type t, string name, BindingFlags bindingAttr)
+        public static Exec GetFieldSetterDelegate(this Type t, string name, BindingFlags bindingAttr)
         {
             if (t == null)
                 return null;
@@ -196,41 +333,21 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (fieldInfo == null)
                 return null;
 
-            var setter = new DynamicMethod("Set_" + name, typeof(void), new Type[] { typeof(object), typeof(object[]) }, true);
-            var gen = setter.GetILGenerator();
-
-            if (!fieldInfo.IsStatic)
-            {
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Castclass, t);
-            }
-            
-            gen.Emit(OpCodes.Ldarg_1);
-            gen.Emit(OpCodes.Ldc_I4_0);
-            gen.Emit(OpCodes.Ldelem_Ref);
-            gen.Emit(OpCodes.Unbox_Opt, fieldInfo.FieldType);
-
-            if (!fieldInfo.IsStatic)
-                gen.Emit(OpCodes.Stfld, fieldInfo);
-            else
-                gen.Emit(OpCodes.Stsfld, fieldInfo);
-            
-            gen.Emit(OpCodes.Ret);
-            return (Effect)setter.CreateDelegate(typeof(Effect));
+            return fieldInfo.GetSetterDelegate();
         }
 
         public static Exec GetMethodDelegate(this Type t, string name, Type[] types)
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
-                              BindingFlags.Instance | 
+                              BindingFlags.Instance |
                               BindingFlags.Static;
             var binder = default(Binder);
             var modifiers = default(ParameterModifier[]);
             return t.GetMethodDelegate(name, bindingAttr, binder, types, modifiers);
         }
 
-        public static Exec GetMethodDelegate(this Type t, string name, 
+        public static Exec GetMethodDelegate(this Type t, string name,
             BindingFlags bindingAttr, Binder binder, Type[] types, ParameterModifier[] modifiers)
         {
             if (t == null)
@@ -240,88 +357,14 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (methodInfo == null)
                 return null;
 
-            var method = new DynamicMethod("Invoke_" + name, typeof(object), new Type[] { typeof(object), typeof(object[]) }, true);
-            var gen = method.GetILGenerator();
-            var paramInfos = methodInfo.GetParameters();
-            var locals = new LocalBuilder[] { };
-            if (0 < paramInfos.Length)
-            {
-                locals = new LocalBuilder[paramInfos.Length];
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    var localType = paramInfos[i].ParameterType.ElementIfByRef();
-                    locals[i] = gen.DeclareLocal(localType);
-                    gen.Emit(OpCodes.Ldarg_1);
-                    gen.Emit(OpCodes.Ldc_I4_Opt, i);
-                    gen.Emit(OpCodes.Ldelem_Ref);
-                    gen.Emit(OpCodes.Unbox_Opt, localType);
-                    gen.Emit(OpCodes.Stloc_Opt, i);
-                }
-            }
-
-            if (!methodInfo.IsStatic)
-            {
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Castclass, t);
-            }
-
-            if (0 < paramInfos.Length)
-            {
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    if (paramInfos[i].ParameterType.IsByRef)
-                        gen.Emit(OpCodes.Ldloca_Opt, i);
-                    else
-                        gen.Emit(OpCodes.Ldloc_Opt, i);
-                }
-            }
-
-            if (!methodInfo.IsStatic)
-                gen.Emit(OpCodes.Callvirt, methodInfo);
-            else
-                gen.Emit(OpCodes.Call, methodInfo);
-
-            var result = default(LocalBuilder);
-            if (methodInfo.ReturnType != typeof(void))
-            {
-                result = gen.DeclareLocal(methodInfo.ReturnType);
-                gen.Emit(OpCodes.Stloc, result);
-            }                
-
-            if (0 < paramInfos.Length)
-            {
-                for (int i = 0; i < paramInfos.Length; i++)
-                {
-                    if (paramInfos[i].ParameterType.IsByRef)
-                    {
-                        gen.Emit(OpCodes.Ldarg_1);
-                        gen.Emit(OpCodes.Ldc_I4_Opt, i);
-                        gen.Emit(OpCodes.Ldloc_Opt, i);
-                        gen.Emit(OpCodes.Box_Opt, locals[i].LocalType);
-                        gen.Emit(OpCodes.Stelem_Ref);
-                    }
-                }
-            }
-
-            if (methodInfo.ReturnType != typeof(void))
-            {
-                gen.Emit(OpCodes.Ldloc, result);
-                gen.Emit(OpCodes.Box_Opt, result.LocalType);
-            }
-            else
-            {
-                gen.Emit(OpCodes.Ldnull);
-            }
-            gen.Emit(OpCodes.Ret);
-
-            return (Exec)method.CreateDelegate(typeof(Exec));
+            return methodInfo.GetDelegate();
         }
 
         public static Exec GetPropertyGetterDelegate(this Type t, string name)
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
-                              BindingFlags.Instance | 
+                              BindingFlags.Instance |
                               BindingFlags.Static;
             return t.GetPropertyGetterDelegate(name, bindingAttr);
         }
@@ -335,36 +378,19 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (propertyInfo == null)
                 return null;
 
-            var getter = new DynamicMethod("Get_" + name, typeof(object), new Type[] { typeof(object), typeof(object[]) }, true);
-            var gen = getter.GetILGenerator();
-
-            var propertyGetterInfo = propertyInfo.GetGetMethod(true);
-            if (!propertyGetterInfo.IsStatic)
-            {
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Castclass, t);
-            }
-
-            if (!propertyGetterInfo.IsStatic)
-                gen.Emit(OpCodes.Callvirt, propertyGetterInfo);
-            else
-                gen.Emit(OpCodes.Call, propertyGetterInfo);
-
-            gen.Emit(OpCodes.Box_Opt, propertyInfo.PropertyType);
-            gen.Emit(OpCodes.Ret);
-            return (Exec)getter.CreateDelegate(typeof(Exec));
+            return propertyInfo.GetGetterDelegate();
         }
 
-        public static Effect GetPropertySetterDelegate(this Type t, string name)
+        public static Exec GetPropertySetterDelegate(this Type t, string name)
         {
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
-                              BindingFlags.Instance | 
+                              BindingFlags.Instance |
                               BindingFlags.Static;
             return t.GetPropertySetterDelegate(name, bindingAttr);
         }
 
-        public static Effect GetPropertySetterDelegate(this Type t, string name, BindingFlags bindingAttr)
+        public static Exec GetPropertySetterDelegate(this Type t, string name, BindingFlags bindingAttr)
         {
             if (t == null)
                 return null;
@@ -373,28 +399,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (propertyInfo == null)
                 return null;
 
-            var setter = new DynamicMethod("Set_" + name, typeof(void), new Type[] { typeof(object), typeof(object[]) }, true);
-            var gen = setter.GetILGenerator();
-
-            var propertySetterInfo = propertyInfo.GetSetMethod(true);
-            if (!propertySetterInfo.IsStatic)
-            {
-                gen.Emit(OpCodes.Ldarg_0);
-                gen.Emit(OpCodes.Castclass, t);
-            }
-
-            gen.Emit(OpCodes.Ldarg_1);
-            gen.Emit(OpCodes.Ldc_I4_0);
-            gen.Emit(OpCodes.Ldelem_Ref);
-            gen.Emit(OpCodes.Unbox_Opt, propertyInfo.PropertyType);
-
-            if (!propertySetterInfo.IsStatic)
-                gen.Emit(OpCodes.Callvirt, propertySetterInfo);
-            else
-                gen.Emit(OpCodes.Call, propertySetterInfo);
-            
-            gen.Emit(OpCodes.Ret);
-            return (Effect)setter.CreateDelegate(typeof(Effect));
+            return propertyInfo.GetSetterDelegate();
         }
 
         public static object Default(this Type t)

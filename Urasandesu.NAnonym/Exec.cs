@@ -31,5 +31,5 @@
 
 namespace Urasandesu.NAnonym
 {
-    public delegate object Exec(object target, params object[] args);
+    public delegate object Exec(object target, object[] args);
 }

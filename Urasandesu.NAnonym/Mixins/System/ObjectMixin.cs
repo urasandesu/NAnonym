@@ -46,7 +46,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (source == null)
                 throw new ArgumentNullException("source");
 
-            return MethodDelegate_MemberwiseClone.Invoke(source);
+            return MethodDelegate_MemberwiseClone.Invoke(source, null);
         }
 
         public static Object SmartlyClone(this Object source)
