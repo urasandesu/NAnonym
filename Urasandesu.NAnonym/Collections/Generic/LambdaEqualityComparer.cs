@@ -63,6 +63,11 @@ namespace Urasandesu.NAnonym.Collections.Generic
         {
         }
 
+        public LambdaEqualityComparer(Func<T, object> keySelector)
+            : this((_1, _2) => keySelector(_1).Equals(_2), _ => keySelector(_).GetHashCode())
+        {
+        }
+
         public LambdaEqualityComparer(Func<T, T, bool> equals, Func<T, int> getHashCode)
         {
             if (equals == null)

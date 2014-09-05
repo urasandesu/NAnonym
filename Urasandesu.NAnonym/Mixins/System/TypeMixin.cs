@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using Urasandesu.NAnonym.Mixins.System.Reflection;
 
 namespace Urasandesu.NAnonym.Mixins.System
@@ -471,6 +472,22 @@ namespace Urasandesu.NAnonym.Mixins.System
             {
                 yield return baseType;
             }
+        }
+
+        public static string NameWithoutGenericParameterCount(this Type t)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+
+            return Regex.Replace(t.Name, @"`\d+", "");
+        }
+
+        public static Type GetGenericTypeDefinitionIfAvailable(this Type t)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+            
+            return t.IsGenericType ? t.GetGenericTypeDefinition() : t;
         }
     }
 }

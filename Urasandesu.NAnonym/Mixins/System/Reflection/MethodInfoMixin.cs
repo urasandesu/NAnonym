@@ -119,5 +119,14 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
 
             return (Exec)method.CreateDelegate(typeof(Exec));
         }
+
+        public static MethodInfo MakeGenericMethodIfAvailable(this MethodInfo mi, params Type[] typeArguments)
+        {
+            if (mi == null)
+                throw new ArgumentNullException("mi");
+
+            return mi.IsGenericMethod ? mi.MakeGenericMethod(typeArguments) : mi;
+        }
+
     }
 }

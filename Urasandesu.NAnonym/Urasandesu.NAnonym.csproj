@@ -83,6 +83,7 @@
     <Compile Include="Mixins\System\Reflection\FieldInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\MethodInfoMixin.cs" />
     <Compile Include="Mixins\System\Reflection\PropertyInfoMixin.cs" />
+    <Compile Include="Mixins\System\IDisposableMixin.cs" />
     <Compile Include="Mixins\System\TypeMixin.cs" />
     <Compile Include="Mixins\System\ValueTypeMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
