@@ -49,6 +49,7 @@
     <Compile Include="Mixins\System\Collections\Generic\KeyValuePairMixinTest.cs" />
     <Compile Include="Mixins\System\Linq\EnumerableMixinTest.cs" />
     <Compile Include="Mixins\System\AppDomainMixinTest.cs" />
+    <Compile Include="Mixins\System\DelegateMixinTest.cs" />
     <Compile Include="Mixins\System\ObjectMixinTest.cs" />
     <Compile Include="Mixins\System\TypeMixinTest.cs" />
     <Compile Include="Mixins\System\ValueTypeMixinTest.cs" />

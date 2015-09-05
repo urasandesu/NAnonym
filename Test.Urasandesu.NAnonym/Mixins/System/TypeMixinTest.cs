@@ -482,7 +482,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void Default_ShouldReturnDefaultValue_IfValueTypeIsPassed()
+        public void Default_should_return_default_value_if_value_type_is_passed()
         {
             // Arrange
             // nop
@@ -496,7 +496,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
         [Test]
-        public void Default_ShouldReturnDefaultValue_IfClassTypeIsPassed()
+        public void Default_should_return_default_value_if_class_type_is_passed()
         {
             // Arrange
             // nop
@@ -506,6 +506,56 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
             // Assert
             Assert.IsNull(actual);
+        }
+
+
+
+        [Test]
+        public void MakeGenericType_should_replace_all_generic_parameter()
+        {
+            // Arrange
+            var declType = typeof(TypeAndMethod<>);
+            var declMethod = declType.GetMethod("Foo");
+            var t = typeof(Func<,,,>).MakeGenericType(typeof(int), typeof(DateTime), declType.GetGenericArguments()[0], declMethod.GetGenericArguments()[0]);
+
+            // Act
+            var result = t.MakeGenericType(declType, new[] { typeof(decimal) }, declMethod, new[] { typeof(string) });
+
+            // Assert
+            Assert.AreEqual(typeof(Func<int, DateTime, decimal, string>), result);
+        }
+
+        [Test]
+        public void MakeGenericType_should_replace_element_type()
+        {
+            // Arrange
+            var declType = typeof(TypeAndMethod<>);
+            var declMethod = declType.GetMethod("Foo");
+
+            var arrType = declType.GetGenericArguments()[0].MakeArrayType();
+            var arrGenericType = typeof(Action<>).MakeGenericType(arrType);
+            var genericArrType = typeof(Action<>).MakeGenericType(declType.GetGenericArguments()[0]).MakeArrayType();
+            var mdArrType = declMethod.GetGenericArguments()[0].MakeArrayType(2);
+            var arrArrType = declMethod.GetGenericArguments()[0].MakeArrayType().MakeArrayType();
+
+            var t = typeof(Func<,,,,>).MakeGenericType(arrType, arrGenericType, genericArrType, mdArrType, arrArrType);
+
+            // Act
+            var result = t.MakeGenericType(declType, new[] { typeof(decimal) }, declMethod, new[] { typeof(string) });
+
+            // Assert
+            Assert.AreEqual(typeof(Func<decimal[], Action<decimal[]>, Action<decimal>[], string[,], string[][]>), result);
+        }
+
+        class TypeAndMethod<T>
+        {
+            public static M Foo<M>(int i, DateTime dt, T t)
+            {
+                // `TypeMixin.MakeGenericType(Type, Type, Type[], MethodBase, Type[])` is intended for getting the generic instance that is parcially 
+                // specified generic parameters at runtime. 
+                // For example, the above `MakeGenericType_should_replace_all_generic_parameter` simulates getting `typeof(Func<int, DateTime, T, M>)` here.
+                throw new NotImplementedException();
+            }
         }
     }
 }

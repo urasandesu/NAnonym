@@ -1,5 +1,5 @@
 ﻿/* 
- * File: ObjectMixin.cs
+ * File: DelegateMixinTest.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,41 +28,51 @@
  */
 
 
+using NUnit.Framework;
 using System;
+using System.Reflection.Emit;
+using Urasandesu.NAnonym.Mixins.System;
 
-namespace Urasandesu.NAnonym.Mixins.System
+namespace Test.Urasandesu.NAnonym.Mixins.System
 {
-    public static class ObjectMixin
+    [TestFixture]
+    public class DelegateMixinTest
     {
-        const string MethodName_MemberwiseClone = "MemberwiseClone";
-
-        class MethodDelegate_MemberwiseClone
+        [Test]
+        public void Cast_can_cast_same_signature_delegate()
         {
-            public static readonly Exec Invoke = typeof(Object).GetMethodDelegate(MethodName_MemberwiseClone, Type.EmptyTypes);
+            // Arrange
+            var src = (Delegate)new Predicate<int>(i => i == 42);
+
+            // Act
+            var dst = src.Cast<Func<int, bool>>(GetType().Module);
+
+            // Assert
+            Assert.IsTrue(dst(42));
         }
 
-        public static Object MemberwiseClone(this Object source)
+        
+        
+        [Test]
+        public void Cast_can_cast_same_signature_dynamic_method()
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            // Arrange
+            var src = default(Delegate);
+            {
+                var dynMethod = new DynamicMethod("Invoke", typeof(bool), new[] { typeof(int) });
+                var gen = dynMethod.GetILGenerator();
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldc_I4_S, (byte)42);
+                gen.Emit(OpCodes.Ceq);
+                gen.Emit(OpCodes.Ret);
+                src = dynMethod.CreateDelegate(typeof(Predicate<int>));
+            }
 
-            return MethodDelegate_MemberwiseClone.Invoke(source, null);
-        }
+            // Act
+            var dst = src.Cast<Func<int, bool>>(GetType().Module);
 
-        public static Object SmartlyClone(this Object source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            var cloneable = source as ICloneable;
-            if (cloneable != null)
-                return cloneable.Clone();
-
-            var valueType = source as ValueType;
-            if (valueType != null)
-                return valueType.Clone();
-
-            return source;
+            // Assert
+            Assert.IsTrue(dst(42));
         }
     }
 }

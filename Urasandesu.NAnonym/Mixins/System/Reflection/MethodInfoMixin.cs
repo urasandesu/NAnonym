@@ -128,5 +128,24 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
             return mi.IsGenericMethod ? mi.MakeGenericMethod(typeArguments) : mi;
         }
 
+        public static bool IsDynamicMethod(this MethodInfo mi)
+        {
+            if (mi == null)
+                throw new ArgumentNullException("mi");
+
+            return mi.GetType().Name == DynamicMethodMixin.RTDynamicMethodProxy.Type.Name;
+        }
+
+        public static IntPtr GetFunctionPointer(this MethodInfo mi)
+        {
+            if (mi.IsDynamicMethod())
+            {
+                var dynMethod = new DynamicMethodMixin.RTDynamicMethodProxy(mi).Get_m_owner();
+                var handle = dynMethod.GetMethodDescriptor();
+                return handle.GetFunctionPointer();
+            }
+
+            return mi.MethodHandle.GetFunctionPointer();
+        }
     }
 }

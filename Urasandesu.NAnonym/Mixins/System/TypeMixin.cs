@@ -482,6 +482,142 @@ namespace Urasandesu.NAnonym.Mixins.System
             return Regex.Replace(t.Name, @"`\d+", "");
         }
 
+        
+        
+        public static Type MakeGenericType(this Type t, Type declType, Type[] typeGenericArgs, MethodBase declMethod, Type[] methodGenericArgs)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+
+            var newGenericArgs = new List<Type>();
+            if (typeGenericArgs != null && 0 < typeGenericArgs.Length)
+            {
+                if (declType == null)
+                    throw new ArgumentNullException("declType", "The parameter must be specified if the parameter \"typeGenericArgs\" is specified.");
+
+                if (!t.IsGenericType)
+                    throw new ArgumentException("The parameter must be a generic type if the parameter \"typeGenericArgs\" is specified.", "t");
+
+                if (!declType.IsGenericType)
+                    throw new ArgumentException("The parameter must be a generic type if the parameter \"typeGenericArgs\" is specified.", "declType");
+
+                var typeGenericDefArgs = declType.GetGenericTypeDefinition().GetGenericArguments();
+                if (typeGenericDefArgs.Length != typeGenericArgs.Length)
+                    throw new ArgumentOutOfRangeException("typeGenericArgs", "The parameter must have same length as the generic arguments length of \"declType\".");
+
+                foreach (var genericArg in t.GetGenericArguments())
+                {
+                    var newGenericArg = genericArg;
+                    if (genericArg.ContainsGenericParameters && !TryReplaceGenericParameter(genericArg, typeGenericDefArgs, typeGenericArgs, out newGenericArg))
+                        continue;
+
+                    newGenericArgs.Add(newGenericArg);
+                }
+            }
+
+            if (methodGenericArgs != null && 0 < methodGenericArgs.Length)
+            {
+                if (declMethod == null)
+                    throw new ArgumentNullException("declMethod", "The parameter must be specified if the parameter \"methodGenericArgs\" is specified.");
+
+                if (!t.IsGenericType)
+                    throw new ArgumentException("The parameter must be a generic method if the parameter \"methodGenericArgs\" is specified.", "t");
+
+                var method = declMethod as MethodInfo;
+                if (method == null || !method.IsGenericMethod)
+                    throw new ArgumentException("The parameter must be a generic method if the parameter \"methodGenericArgs\" is specified.", "declMethod");
+
+                var methodGenericDefArgs = method.GetGenericMethodDefinition().GetGenericArguments();
+                if (methodGenericDefArgs.Length != methodGenericArgs.Length)
+                    throw new ArgumentOutOfRangeException("methodGenericArgs", "The parameter must have same length as the generic arguments length of \"declMethod\".");
+
+                foreach (var genericArg in t.GetGenericArguments())
+                {
+                    var newGenericArg = genericArg;
+                    if (genericArg.ContainsGenericParameters && !TryReplaceGenericParameter(genericArg, methodGenericDefArgs, methodGenericArgs, out newGenericArg))
+                        continue;
+
+                    newGenericArgs.Add(newGenericArg);
+                }
+            }
+
+            return newGenericArgs.Count == 0 ? t : t.GetGenericTypeDefinition().MakeGenericType(newGenericArgs.ToArray());
+        }
+
+        static bool TryReplaceGenericParameter(Type target, Type[] oldGenericArgs, Type[] newGenericArgs, out Type result)
+        {
+            if (target.IsPointer)
+            {
+                if (!TryReplaceGenericParameter(target.GetElementType(), oldGenericArgs, newGenericArgs, out result))
+                    return false;
+
+                result = result.MakePointerType();
+                return true;
+            }
+            else if (target.IsByRef)
+            {
+                if (!TryReplaceGenericParameter(target.GetElementType(), oldGenericArgs, newGenericArgs, out result))
+                    return false;
+
+                result = result.MakeByRefType();
+                return true;
+            }
+            else if (target.IsArray && target.GetArrayRank() == 1)
+            {
+                if (!TryReplaceGenericParameter(target.GetElementType(), oldGenericArgs, newGenericArgs, out result))
+                    return false;
+
+                result = result.MakeArrayType();
+                return true;
+            }
+            else if (target.IsArray)
+            {
+                if (!TryReplaceGenericParameter(target.GetElementType(), oldGenericArgs, newGenericArgs, out result))
+                    return false;
+
+                result = result.MakeArrayType(target.GetArrayRank());
+                return true;
+            }
+            else if (target.IsGenericType && !target.IsGenericTypeDefinition)
+            {
+                var genericArgs = target.GetGenericArguments();
+                var genericArgs_ = new List<Type>(genericArgs.Length);
+                foreach (var genericArg in genericArgs)
+                {
+                    if (!TryReplaceGenericParameter(genericArg, oldGenericArgs, newGenericArgs, out result))
+                        return false;
+
+                    genericArgs_.Add(result);
+                }
+
+                if (!TryReplaceGenericParameter(target.GetGenericTypeDefinition(), oldGenericArgs, newGenericArgs, out result))
+                    return false;
+
+                result = result.MakeGenericType(genericArgs_.ToArray());
+                return true;
+            }
+            else if (!target.IsGenericParameter)
+            {
+                result = target;
+                return true;
+            }
+            else
+            {
+                result = null;
+                var pred = default(Predicate<Type>);
+                pred = _ => target.GenericParameterPosition == _.GenericParameterPosition &&
+                            (target.DeclaringMethod == null ? _.DeclaringMethod == null : _.DeclaringMethod != null);
+                var index = Array.FindIndex(oldGenericArgs, pred);
+                if (index < 0)
+                    return false;
+
+                result = newGenericArgs[index];
+                return true;
+            }
+        }
+
+        
+        
         public static Type GetGenericTypeDefinitionIfAvailable(this Type t)
         {
             if (t == null)

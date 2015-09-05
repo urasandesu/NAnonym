@@ -1,6 +1,6 @@
 ﻿<NUnitProject>
   <Settings activeconfig="Debug" processModel="Default" domainUsage="Default" />
-  <Config name="Debug" appbase="Test.Urasandesu.NAnonym\bin\Debug(.NET 3.5)\AnyCPU" configfile="Test.Urasandesu.NAnonym.dll.config" binpathtype="Auto" runtimeFramework="v2.0.50727">
+  <Config name="Debug" appbase="Test.Urasandesu.NAnonym\bin\Debug\AnyCPU" configfile="Test.Urasandesu.NAnonym.dll.config" binpathtype="Auto" runtimeFramework="v2.0.50727">
     <assembly path="Test.Urasandesu.NAnonym.dll" />
   </Config>
   <Config name="Release" appbase="Bin\Release" configfile="Test.Urasandesu.NAnonym.dll.config" binpathtype="Auto">

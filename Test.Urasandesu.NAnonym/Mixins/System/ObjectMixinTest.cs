@@ -28,8 +28,8 @@
  */
 
 
-using System;
 using NUnit.Framework;
+using System;
 using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.Mixins.System
