@@ -271,5 +271,6 @@ namespace Urasandesu.NAnonym.Reflection.Emit
         public static readonly OpCodeEx Ldc_I4_Opt = new OpCodeEx("ldc.i4.opt", 2, 0xFE, 0x42);
         public static readonly OpCodeEx Unbox_Opt = new OpCodeEx("unbox.opt", 2, 0xFE, 0x9B);
         public static readonly OpCodeEx Box_Opt = new OpCodeEx("box.opt", 2, 0xFE, 0xAE);
+        public static readonly OpCodeEx Ldarg_Opt = new OpCodeEx("ldarg.opt", 2, 0xFE, 0xAF);
     }
 }

@@ -489,14 +489,27 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (t == null)
                 throw new ArgumentNullException("t");
 
+            if (typeGenericArgs != null && 0 < typeGenericArgs.Length && !t.IsGenericType)
+                throw new ArgumentException("The parameter must be a generic type if the parameter \"typeGenericArgs\" is specified.", "t");
+
+            if (methodGenericArgs != null && 0 < methodGenericArgs.Length && !t.IsGenericType)
+                throw new ArgumentException("The parameter must be a generic method if the parameter \"methodGenericArgs\" is specified.", "t");
+
+            var genericArgs = t.GetGenericArguments();
+            var newGenericArgs = genericArgs.ReplaceGenericParameter(declType, typeGenericArgs, declMethod, methodGenericArgs);
+            return newGenericArgs == null ? t : t.GetGenericTypeDefinition().MakeGenericType(newGenericArgs.ToArray());
+        }
+
+        public static Type[] ReplaceGenericParameter(this Type[] genericArgs, Type declType, Type[] typeGenericArgs, MethodBase declMethod, Type[] methodGenericArgs)
+        {
+            if (genericArgs == null)
+                throw new ArgumentNullException("genericArgs");
+
             var newGenericArgs = default(Type[]);
             if (typeGenericArgs != null && 0 < typeGenericArgs.Length)
             {
                 if (declType == null)
                     throw new ArgumentNullException("declType", "The parameter must be specified if the parameter \"typeGenericArgs\" is specified.");
-
-                if (!t.IsGenericType)
-                    throw new ArgumentException("The parameter must be a generic type if the parameter \"typeGenericArgs\" is specified.", "t");
 
                 if (!declType.IsGenericType)
                     throw new ArgumentException("The parameter must be a generic type if the parameter \"typeGenericArgs\" is specified.", "declType");
@@ -505,7 +518,6 @@ namespace Urasandesu.NAnonym.Mixins.System
                 if (typeGenericDefArgs.Length != typeGenericArgs.Length)
                     throw new ArgumentOutOfRangeException("typeGenericArgs", "The parameter must have same length as the generic arguments length of \"declType\".");
 
-                var genericArgs = t.GetGenericArguments();
                 if (newGenericArgs == null)
                     newGenericArgs = new Type[genericArgs.Length];
                 for (int i = 0; i < genericArgs.Length; i++)
@@ -525,9 +537,6 @@ namespace Urasandesu.NAnonym.Mixins.System
                 if (declMethod == null)
                     throw new ArgumentNullException("declMethod", "The parameter must be specified if the parameter \"methodGenericArgs\" is specified.");
 
-                if (!t.IsGenericType)
-                    throw new ArgumentException("The parameter must be a generic method if the parameter \"methodGenericArgs\" is specified.", "t");
-
                 var method = declMethod as MethodInfo;
                 if (method == null || !method.IsGenericMethod)
                     throw new ArgumentException("The parameter must be a generic method if the parameter \"methodGenericArgs\" is specified.", "declMethod");
@@ -536,7 +545,6 @@ namespace Urasandesu.NAnonym.Mixins.System
                 if (methodGenericDefArgs.Length != methodGenericArgs.Length)
                     throw new ArgumentOutOfRangeException("methodGenericArgs", "The parameter must have same length as the generic arguments length of \"declMethod\".");
 
-                var genericArgs = t.GetGenericArguments();
                 if (newGenericArgs == null)
                     newGenericArgs = new Type[genericArgs.Length];
                 for (int i = 0; i < genericArgs.Length; i++)
@@ -551,7 +559,7 @@ namespace Urasandesu.NAnonym.Mixins.System
                 }
             }
 
-            return newGenericArgs == null ? t : t.GetGenericTypeDefinition().MakeGenericType(newGenericArgs.ToArray());
+            return newGenericArgs == null ? genericArgs : newGenericArgs;
         }
 
         static bool TryReplaceGenericParameter(Type target, Type[] oldGenericArgs, Type[] newGenericArgs, out Type result)
@@ -626,7 +634,19 @@ namespace Urasandesu.NAnonym.Mixins.System
             }
         }
 
-        
+
+        public static object GetDefaultValue(this Type t)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+
+            if (t == typeof(void))
+                return null;
+            else if (t.IsValueType)
+                return Activator.CreateInstance(t);
+            else
+                return null;
+        }
         
         public static Type GetGenericTypeDefinitionIfAvailable(this Type t)
         {

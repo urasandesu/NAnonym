@@ -54,6 +54,7 @@
     <Compile Include="Collections\Generic\LambdaEqualityComparer.cs" />
     <Compile Include="Mixins\System\DelegateMixin.cs" />
     <Compile Include="Mixins\System\Reflection\Emit\DynamicMethodMixin.cs" />
+    <Compile Include="Mixins\System\Reflection\MethodBaseMixin.cs" />
     <Compile Include="Work.cs" />
     <Compile Include="Exec.cs" />
     <Compile Include="Mixins\System\AppDomainMixin.cs" />

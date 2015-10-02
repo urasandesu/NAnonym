@@ -73,6 +73,7 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
             else if (opcode == OpCodes.Ldloca_Opt) gen.Emit_Ldloca(arg);
             else if (opcode == OpCodes.Stloc_Opt) gen.Emit_Stloc(arg);
             else if (opcode == OpCodes.Ldc_I4_Opt) gen.Emit_Ldc_I4(arg);
+            else if (opcode == OpCodes.Ldarg_Opt) gen.Emit_Ldarg(arg);
         }
 
         static void Emit_Ldloc(this SRE::ILGenerator gen, int arg)
@@ -144,6 +145,27 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection.Emit
                         gen.Emit(SRE::OpCodes.Ldc_I4_S, (byte)arg);
                     else
                         gen.Emit(SRE::OpCodes.Ldc_I4, arg);
+                    break;
+            }
+        }
+
+        static void Emit_Ldarg(this SRE::ILGenerator gen, int arg)
+        {
+            Debug.Assert(gen != null);
+
+            switch (arg)
+            {
+                case 0: gen.Emit(SRE::OpCodes.Ldarg_0); break;
+                case 1: gen.Emit(SRE::OpCodes.Ldarg_1); break;
+                case 2: gen.Emit(SRE::OpCodes.Ldarg_2); break;
+                case 3: gen.Emit(SRE::OpCodes.Ldarg_3); break;
+                default:
+                    if ((int)byte.MinValue <= arg && arg <= (int)byte.MaxValue)
+                        gen.Emit(SRE::OpCodes.Ldarg_S, (byte)arg);
+                    else if ((int)short.MinValue <= arg && arg <= (int)short.MaxValue)
+                        gen.Emit(SRE::OpCodes.Ldarg, (short)arg);
+                    else
+                        throw new NotSupportedException("The ldargXX instruction can be specified to the value within the range of 'System.Int16.MaxValue'."); 
                     break;
             }
         }
