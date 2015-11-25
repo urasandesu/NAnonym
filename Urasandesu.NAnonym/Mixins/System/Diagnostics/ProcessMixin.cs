@@ -29,6 +29,7 @@
 
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -36,7 +37,14 @@ namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
 {
     public static class ProcessMixin
     {
-        public static void RestartCurrentProcessWith(Action<ProcessStartInfo> additionalSetup)
+        const int ErrorCancelled = 1223;
+
+        public static bool RestartCurrentProcess()
+        {
+            return RestartCurrentProcessWith(null);
+        }
+
+        public static bool RestartCurrentProcessWith(Action<ProcessStartInfo> additionalSetup)
         {
             var curProc = Process.GetCurrentProcess();
             var startInfo = curProc.StartInfo;
@@ -52,12 +60,16 @@ namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
             {
                 Process.Start(startInfo);
             }
-            catch
+            catch(Win32Exception ex)
             {
-                return;
+                if (ex.NativeErrorCode == ErrorCancelled)
+                    return false;
+                throw;
             }
 
             curProc.CloseMainWindow();
+
+            return true;
         }
     }
 }
