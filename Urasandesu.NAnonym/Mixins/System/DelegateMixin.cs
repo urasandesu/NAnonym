@@ -41,8 +41,6 @@ namespace Urasandesu.NAnonym.Mixins.System
     {
         static class Cache<TDelegate> where TDelegate : class
         {
-            public static readonly object ms_lockObj = new object();
-            public static bool ms_ready;
             public static Func<object, IntPtr, TDelegate> ms_converter;
         }
 
@@ -54,31 +52,25 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (!typeof(TDelegate).IsSubclassOf(typeof(Delegate)))
                 throw new ArgumentException("'TDelegate' must be a subclass of 'System.Delegate'.");
 
-            if (!Cache<TDelegate>.ms_ready)
+            var converter = Cache<TDelegate>.ms_converter;
+            if (converter == null)
             {
-                lock (Cache<TDelegate>.ms_lockObj)
-                {
-                    if (!Cache<TDelegate>.ms_ready)
-                    {
-                        var ctor = typeof(TDelegate).GetConstructors().First();
+                var ctor = typeof(TDelegate).GetConstructors().First();
 
-                        var converter = new DynamicMethod("Converter", typeof(TDelegate), new[] { typeof(object), typeof(IntPtr) }, associatedModule, true);
-                        var gen = converter.GetILGenerator();
-                        gen.Emit(OpCodes.Ldarg_0);
-                        gen.Emit(OpCodes.Ldarg_1);
-                        gen.Emit(OpCodes.Newobj, ctor);
-                        gen.Emit(OpCodes.Ret);
+                var dyn = new DynamicMethod("Converter", typeof(TDelegate), new[] { typeof(object), typeof(IntPtr) }, associatedModule, true);
+                var gen = dyn.GetILGenerator();
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldarg_1);
+                gen.Emit(OpCodes.Newobj, ctor);
+                gen.Emit(OpCodes.Ret);
 
-                        Cache<TDelegate>.ms_converter = (Func<object, IntPtr, TDelegate>)converter.CreateDelegate(typeof(Func<object, IntPtr, TDelegate>));
-
-                        Thread.MemoryBarrier();
-                        Cache<TDelegate>.ms_ready = true;
-                    }
-                }
+                converter = (Func<object, IntPtr, TDelegate>)dyn.CreateDelegate(typeof(Func<object, IntPtr, TDelegate>));
+                if (Interlocked.CompareExchange(ref Cache<TDelegate>.ms_converter, converter, null) != null)
+                    converter = Cache<TDelegate>.ms_converter;
             }
             var @object = source.Target;
             var method = source.Method.GetFunctionPointer();
-            return Cache<TDelegate>.ms_converter(@object, method);
+            return converter(@object, method);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Urasandesu.NAnonym.Mixins.System
         public static object ForciblyNew(this Type t, params object[] args)
         {
             if (t == null)
-                return null;
+                throw new ArgumentNullException("t");
 
             var bindingAttr = BindingFlags.Public |
                               BindingFlags.NonPublic |
@@ -59,7 +59,7 @@ namespace Urasandesu.NAnonym.Mixins.System
                             args.Select(_ => _.GetType()).ToArray();
             var modifiers = default(ParameterModifier[]);
             var ctor = t.GetConstructor(bindingAttr, binder, types, modifiers);
-            return ctor.Invoke(args);
+            return ctor == null ? null : ctor.Invoke(args);
         }
 
         public static Exec GetMemberDelegate(this Type t, string name, Type[] types)

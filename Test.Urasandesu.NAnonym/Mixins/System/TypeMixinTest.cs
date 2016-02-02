@@ -51,6 +51,30 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             Assert.IsNotNull(actual);
         }
 
+        [Test]
+        public void ForciblyNew_should_return_null_if_specified_signature_constructor_does_not_exist()
+        {
+            // Arrange
+            // nop
+
+            // Act
+            var actual = typeof(ClassWithNonPublicConstructor).ForciblyNew(42m);
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [Test]
+        public void ForciblyNew_should_throw_ArgumentNullException_if_null_is_passed_as_t()
+        {
+            // Arrange
+            // nop
+
+            // Act, Assert
+            Assert.Throws<ArgumentNullException>(() => TypeMixin.ForciblyNew(null, new object[0]));
+        }
+
+
 
         [Test]
         public void GetMemberDelegate_should_return_creation_delegate_if_condition_for_its_constructor_is_passed()

@@ -106,7 +106,7 @@ namespace Urasandesu.NAnonym.Mixins.System.Reflection
                 }
             }
 
-            if (methodInfo.ReturnType != typeof(void))
+            if (result != null)
             {
                 gen.Emit(OpCodes.Ldloc, result);
                 gen.Emit(OpCodes.Box_Opt, result.LocalType);
