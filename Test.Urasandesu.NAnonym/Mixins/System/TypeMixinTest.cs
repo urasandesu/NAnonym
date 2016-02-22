@@ -39,7 +39,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
     public class TypeMixinTest
     {
         [Test]
-        public void ForciblyNew_should_return_instance_even_if_NonPublic()
+        public void ForciblyNew_should_return_class_instance_even_if_NonPublic()
         {
             // Arrange
             // nop
@@ -52,7 +52,33 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
         }
 
         [Test]
-        public void ForciblyNew_should_return_null_if_specified_signature_constructor_does_not_exist()
+        public void ForciblyNew_should_return_struct_instance_even_if_NonPublic()
+        {
+            // Arrange
+            // nop
+
+            // Act
+            var actual = TypeMixin.ForciblyNew<StructWithNonPublicConstructor>(42d);
+
+            // Assert
+            Assert.AreEqual(42d, actual.Value);
+        }
+
+        [Test]
+        public void ForciblyNew_should_return_null_if_specified_signature_constructor_does_not_exist_against_a_struct()
+        {
+            // Arrange
+            // nop
+
+            // Act
+            var actual = TypeMixin.ForciblyNew<StructWithNonPublicConstructor>(42m);
+
+            // Assert
+            Assert.AreEqual(default(StructWithNonPublicConstructor), actual);
+        }
+
+        [Test]
+        public void ForciblyNew_should_return_null_if_specified_signature_constructor_does_not_exist_against_a_class()
         {
             // Arrange
             // nop
@@ -445,6 +471,15 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             ClassWithNonPublicConstructor(double value) { Value = value; }
             ClassWithNonPublicConstructor(ref int value) { value = value + 10; Value = value; }
             ClassWithNonPublicConstructor(Type[] types) { Value = types; }
+        }
+
+        struct StructWithNonPublicConstructor
+        {
+            object m_value;
+            public object Value { get { return m_value; } }
+            StructWithNonPublicConstructor(double value) { this.m_value = value; }
+            StructWithNonPublicConstructor(ref int value) { value = value + 10; this.m_value = value; }
+            StructWithNonPublicConstructor(Type[] types) { this.m_value = types; }
         }
 
         class ClassWithNonPublicField

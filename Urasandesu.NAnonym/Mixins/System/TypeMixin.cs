@@ -42,7 +42,8 @@ namespace Urasandesu.NAnonym.Mixins.System
     {
         public static T ForciblyNew<T>(params object[] args)
         {
-            return (T)typeof(T).ForciblyNew(args);
+            var obj = typeof(T).ForciblyNew(args);
+            return obj == null ? default(T) : (T)obj;
         }
 
         public static object ForciblyNew(this Type t, params object[] args)
