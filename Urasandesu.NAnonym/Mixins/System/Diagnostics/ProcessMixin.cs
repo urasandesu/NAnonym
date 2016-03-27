@@ -53,14 +53,14 @@ namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
             startInfo.FileName = curProc.MainModule.FileName;
             var commandLineArgs = Environment.GetCommandLineArgs().Skip(1).ToArray();
             if (commandLineArgs.Any())
-                startInfo.Arguments = "\"" + string.Join("\" \"", commandLineArgs) + "\"";
+                startInfo.Arguments = "\"" + string.Join("\" \"", commandLineArgs.Select(_ => _.Replace("\"", "\\\"")).ToArray()) + "\"";
             if (additionalSetup != null)
                 additionalSetup(startInfo);
             try
             {
                 Process.Start(startInfo);
             }
-            catch(Win32Exception ex)
+            catch (Win32Exception ex)
             {
                 if (ex.NativeErrorCode == ErrorCancelled)
                     return false;
