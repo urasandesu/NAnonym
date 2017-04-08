@@ -45,37 +45,37 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
             var bag = new CrossDomainBag();
             bag["Actual"] = 0;
 
-            
+
             // Act
-            AppDomain.CurrentDomain.RunAtIsolatedDomain(bag_ => 
+            AppDomain.CurrentDomain.RunAtIsolatedDomain(bag_ =>
             {
                 bag_["Actual"] = AppDomain.CurrentDomain.GetHashCode();
             }, bag);
 
-            
+
             // Assert
             Assert.AreNotEqual(AppDomain.CurrentDomain.GetHashCode(), bag["Actual"]);
         }
 
 
-        
+
         class CrossDomainBag : MarshalByRefObject
         {
             Hashtable m_hashtable = new Hashtable();
 
             public object this[object key]
             {
-                get 
+                get
                 {
                     if (!m_hashtable.ContainsKey(key))
                         m_hashtable.Add(key, null);
-                    return m_hashtable[key]; 
+                    return m_hashtable[key];
                 }
-                set 
+                set
                 {
                     if (!m_hashtable.ContainsKey(key))
                         m_hashtable.Add(key, null);
-                    m_hashtable[key] = value; 
+                    m_hashtable[key] = value;
                 }
             }
         }

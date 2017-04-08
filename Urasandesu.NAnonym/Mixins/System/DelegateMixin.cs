@@ -80,5 +80,23 @@ namespace Urasandesu.NAnonym.Mixins.System
             var method = source.Method.GetFunctionPointer();
             return Cache<TDelegate>.ms_converter(@object, method);
         }
+
+        public static bool CanCrossDomain<TDelegate>(this TDelegate source) where TDelegate : class
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            var dlgt = default(Delegate);
+            if ((dlgt = source as Delegate) == null)
+                throw new ArgumentException("'TDelegate' must be an instance of 'System.Delegate'.");
+
+            if (dlgt.Target == null)
+                return true;
+
+            if (dlgt.Target is MarshalByRefObject)
+                return true;
+
+            return dlgt.Target.GetType().IsDefined(typeof(SerializableAttribute), false);
+        }
     }
 }

@@ -140,9 +140,11 @@ namespace Urasandesu.NAnonym.Mixins.System
             if (action == null)
                 throw new ArgumentNullException("action");
 
-            if (!action.Method.IsStatic)
-                throw new ArgumentException(
-                          "The parameter must be designated a static method.", "action");
+            if (!action.CanCrossDomain())
+                throw new ArgumentException("The parameter must be domain crossable. Please check the following points: " + 
+                                            "Doesn't lambda expression capture external variable? " +
+                                            "Or is a static method specified? " +
+                                            "Or is an instance method of serializable/marshalizable specified?", "action");
 
 
             var domain = default(AppDomain);
@@ -159,8 +161,8 @@ namespace Urasandesu.NAnonym.Mixins.System
             catch (SerializationException e)
             {
                 throw new ArgumentException("The parameter must be domain crossable. " +
-                          "Please confirm that the type inherits MarshalByRefObject, " +
-                          "or it is applied SerializableAttribute.", e);
+                                            "Please confirm that the type inherits MarshalByRefObject, " +
+                                            "or it is applied SerializableAttribute.", e);
             }
             finally
             {
