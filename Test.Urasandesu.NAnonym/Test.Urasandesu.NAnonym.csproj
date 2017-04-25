@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Collections\Generic\LambdaEqualityComparerTest.cs" />
     <Compile Include="Mixins\System\Collections\Generic\KeyValuePairMixinTest.cs" />
+    <Compile Include="Mixins\System\Diagnostics\ProcessMixinTest.cs" />
     <Compile Include="Mixins\System\Linq\EnumerableMixinTest.cs" />
     <Compile Include="Mixins\System\AppDomainMixinTest.cs" />
     <Compile Include="Mixins\System\DelegateMixinTest.cs" />

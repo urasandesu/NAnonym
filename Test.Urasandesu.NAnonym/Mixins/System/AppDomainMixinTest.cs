@@ -28,9 +28,9 @@
  */
 
 
+using NUnit.Framework;
 using System;
 using System.Collections;
-using NUnit.Framework;
 using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.Mixins.System
@@ -39,7 +39,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
     public class AppDomainMixinTest
     {
         [Test]
-        public void RunAtIsolatedDomainTest_ShouldInitStaticMember()
+        public void RunAtIsolatedDomainTest_should_init_static_member()
         {
             // Arrange
             var bag = new CrossDomainBag();

@@ -29,9 +29,11 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
 {
@@ -51,9 +53,7 @@ namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
             startInfo.UseShellExecute = true;
             startInfo.WorkingDirectory = Environment.CurrentDirectory;
             startInfo.FileName = curProc.MainModule.FileName;
-            var commandLineArgs = Environment.GetCommandLineArgs().Skip(1).ToArray();
-            if (commandLineArgs.Any())
-                startInfo.Arguments = "\"" + string.Join("\" \"", commandLineArgs.Select(_ => _.Replace("\"", "\\\"")).ToArray()) + "\"";
+            startInfo.Arguments = ConvertCommandLineArgsToArguments(Environment.GetCommandLineArgs());
             if (additionalSetup != null)
                 additionalSetup(startInfo);
             try
@@ -70,6 +70,20 @@ namespace Urasandesu.NAnonym.Mixins.System.Diagnostics
             curProc.CloseMainWindow();
 
             return true;
+        }
+
+        public static string ConvertCommandLineArgsToArguments(string[] commandLineArgs)
+        {
+            if (commandLineArgs == null)
+                throw new ArgumentNullException("commandLineArgs");
+
+            var results = new List<string>();
+            foreach (var s in commandLineArgs.Skip(1))
+                if (-1 < s.IndexOfAny(new[] { '\"', ' ', '\t' }))
+                    results.Add(new StringBuilder(s).Replace("\"", "\\\"").Insert(0, "\"").Append("\"").ToString());
+                else
+                    results.Add(s);
+            return string.Join(" ", results.ToArray());
         }
     }
 }
