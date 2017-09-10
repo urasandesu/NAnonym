@@ -44,32 +44,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             RunAtIsolatedDomain(source.Evidence, source.SetupInformation, action);
         }
 
-        public static void RunAtIsolatedDomain(this AppDomain source,
-                                               Evidence securityInfo, Action action)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            RunAtIsolatedDomain(securityInfo, source.SetupInformation, action);
-        }
-
-        public static void RunAtIsolatedDomain(this AppDomain source,
-                                               AppDomainSetup info, Action action)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            RunAtIsolatedDomain(source.Evidence, info, action);
-        }
-
-        public static void RunAtIsolatedDomain(Evidence securityInfo,
-                                               AppDomainSetup info, Action action)
-        {
-            RunAtIsolatedDomain(securityInfo, info, (Delegate)action);
-        }
-
-        public static void RunAtIsolatedDomain<T>(this AppDomain source,
-                                                  Action<T> action, T arg)
+        public static void RunAtIsolatedDomain<T>(this AppDomain source, Action<T> action, T arg)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -77,32 +52,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             RunAtIsolatedDomain<T>(source.Evidence, source.SetupInformation, action, arg);
         }
 
-        public static void RunAtIsolatedDomain<T>(this AppDomain source,
-                                        Evidence securityInfo, Action<T> action, T arg)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            RunAtIsolatedDomain<T>(securityInfo, source.SetupInformation, action, arg);
-        }
-
-        public static void RunAtIsolatedDomain<T>(this AppDomain source,
-                                            AppDomainSetup info, Action<T> action, T arg)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-
-            RunAtIsolatedDomain<T>(source.Evidence, info, action, arg);
-        }
-
-        public static void RunAtIsolatedDomain<T>(Evidence securityInfo,
-                                            AppDomainSetup info, Action<T> action, T arg)
-        {
-            RunAtIsolatedDomain(securityInfo, info, (Delegate)action, arg);
-        }
-
-        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source,
-                                                  Action<T1, T2> action, T1 arg1, T2 arg2)
+        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source, Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -110,8 +60,39 @@ namespace Urasandesu.NAnonym.Mixins.System
             RunAtIsolatedDomain<T1, T2>(source.Evidence, source.SetupInformation, action, arg1, arg2);
         }
 
-        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source,
-                                        Evidence securityInfo, Action<T1, T2> action, T1 arg1, T2 arg2)
+        public static void RunAtIsolatedDomain<T1, T2, T3>(this AppDomain source, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3>(source.Evidence, source.SetupInformation, action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2, T3, T4>(this AppDomain source, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3, T4>(source.Evidence, source.SetupInformation, action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedDomain(this AppDomain source, Evidence securityInfo, Action action)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain(securityInfo, source.SetupInformation, action);
+        }
+
+        public static void RunAtIsolatedDomain<T>(this AppDomain source, Evidence securityInfo, Action<T> action, T arg)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T>(securityInfo, source.SetupInformation, action, arg);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source, Evidence securityInfo, Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -119,8 +100,39 @@ namespace Urasandesu.NAnonym.Mixins.System
             RunAtIsolatedDomain<T1, T2>(securityInfo, source.SetupInformation, action, arg1, arg2);
         }
 
-        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source,
-                                            AppDomainSetup info, Action<T1, T2> action, T1 arg1, T2 arg2)
+        public static void RunAtIsolatedDomain<T1, T2, T3>(this AppDomain source, Evidence securityInfo, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3>(securityInfo, source.SetupInformation, action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2, T3, T4>(this AppDomain source, Evidence securityInfo, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3, T4>(securityInfo, source.SetupInformation, action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedDomain(this AppDomain source, AppDomainSetup info, Action action)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain(source.Evidence, info, action);
+        }
+
+        public static void RunAtIsolatedDomain<T>(this AppDomain source, AppDomainSetup info, Action<T> action, T arg)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T>(source.Evidence, info, action, arg);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2>(this AppDomain source, AppDomainSetup info, Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -128,20 +140,54 @@ namespace Urasandesu.NAnonym.Mixins.System
             RunAtIsolatedDomain<T1, T2>(source.Evidence, info, action, arg1, arg2);
         }
 
-        public static void RunAtIsolatedDomain<T1, T2>(Evidence securityInfo,
-                                            AppDomainSetup info, Action<T1, T2> action, T1 arg1, T2 arg2)
+        public static void RunAtIsolatedDomain<T1, T2, T3>(this AppDomain source, AppDomainSetup info, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3>(source.Evidence, info, action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2, T3, T4>(this AppDomain source, AppDomainSetup info, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedDomain<T1, T2, T3, T4>(source.Evidence, info, action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedDomain(Evidence securityInfo, AppDomainSetup info, Action action)
+        {
+            RunAtIsolatedDomain(securityInfo, info, (Delegate)action);
+        }
+
+        public static void RunAtIsolatedDomain<T>(Evidence securityInfo, AppDomainSetup info, Action<T> action, T arg)
+        {
+            RunAtIsolatedDomain(securityInfo, info, (Delegate)action, arg);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2>(Evidence securityInfo, AppDomainSetup info, Action<T1, T2> action, T1 arg1, T2 arg2)
         {
             RunAtIsolatedDomain(securityInfo, info, (Delegate)action, arg1, arg2);
         }
 
-        static void RunAtIsolatedDomain(Evidence securityInfo,
-                            AppDomainSetup info, Delegate action, params object[] args)
+        public static void RunAtIsolatedDomain<T1, T2, T3>(Evidence securityInfo, AppDomainSetup info, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            RunAtIsolatedDomain(securityInfo, info, (Delegate)action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedDomain<T1, T2, T3, T4>(Evidence securityInfo, AppDomainSetup info, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            RunAtIsolatedDomain(securityInfo, info, (Delegate)action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedDomain(Evidence securityInfo, AppDomainSetup info, Delegate action, params object[] args)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
 
             if (!action.CanCrossDomain())
-                throw new ArgumentException("The parameter must be domain crossable. Please check the following points: " + 
+                throw new ArgumentException("The parameter must be domain crossable. Please check the following points: " +
                                             "Doesn't lambda expression capture external variable? " +
                                             "Or is a static method specified? " +
                                             "Or is an instance method of serializable/marshalizable specified?", "action");
@@ -150,11 +196,9 @@ namespace Urasandesu.NAnonym.Mixins.System
             var domain = default(AppDomain);
             try
             {
-                domain = AppDomain.CreateDomain("Domain " + action.Method.ToString(),
-                                               securityInfo, info);
+                domain = AppDomain.CreateDomain("Domain " + action.Method.ToString(), securityInfo, info);
                 var type = typeof(MarshalByRefRunner);
-                var runner = (MarshalByRefRunner)domain.CreateInstanceAndUnwrap(
-                                                  type.Assembly.FullName, type.FullName);
+                var runner = (MarshalByRefRunner)domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName);
                 runner.Action = action;
                 runner.Run(args);
             }

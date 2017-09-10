@@ -1,0 +1,148 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".g.cs" #>
+<#
+/* 
+ * File: MarshalByRefDelegates.tt
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2017 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+
+var templates = new[]
+{
+    new MarshalByRefDelegateTemplate(typeof(Action)),
+    new MarshalByRefDelegateTemplate(typeof(Action<>)),
+    new MarshalByRefDelegateTemplate(typeof(Action<,>)),
+    new MarshalByRefDelegateTemplate(typeof(Action<,,>)),
+    new MarshalByRefDelegateTemplate(typeof(Action<,,,>)),
+    new MarshalByRefDelegateTemplate(typeof(Func<>)),
+    new MarshalByRefDelegateTemplate(typeof(Func<,>)),
+    new MarshalByRefDelegateTemplate(typeof(Func<,,>)),
+    new MarshalByRefDelegateTemplate(typeof(Func<,,,>)),
+    new MarshalByRefDelegateTemplate(typeof(Func<,,,,>)),
+};
+#>
+/* 
+ * File: MarshalByRefDelegates.g.cs
+ * 
+ * Author: Akira Sugiura (urasandesu@gmail.com)
+ * 
+ * 
+ * Copyright (c) 2017 Akira Sugiura
+ *  
+ *  This software is MIT License.
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+
+
+using System;
+
+namespace Urasandesu.NAnonym.Mixins.System
+{
+<#
+foreach (var template in templates)
+{
+#>
+    public class MarshalByRef<#= template.ClassName #> : MarshalByRefObject
+    {
+        readonly <#= template.ClassName #> m_dlgt;
+
+        public MarshalByRef<#= template.Name #>(<#= template.ClassName #> dlgt)
+        {
+            if (dlgt == null)
+                throw new ArgumentNullException("dlgt");
+
+            m_dlgt = dlgt;
+        }
+
+        public void Invoke(<#= template.GetParameterDefinitions() #>)
+        {
+            m_dlgt(<#= template.GetParameters() #>);
+        }
+    }
+
+<#
+}
+#>
+}
+<#+
+class MarshalByRefDelegateTemplate
+{
+    readonly Type m_delegateType;
+
+    public MarshalByRefDelegateTemplate(Type delegateType)
+    {
+        m_delegateType = delegateType;
+
+        Name = Regex.Replace(m_delegateType.Name, @"`\d+", "");
+        ClassName = m_delegateType.IsGenericType ? $"{ Name }<{ GetGenericParameterDefinitions(m_delegateType) }>" : Name;
+    }
+
+    static string GetGenericParameterDefinitions(Type delegateType)
+    {
+        return string.Join(", ", delegateType.GetGenericArguments().Select(_ => _.Name).ToArray());
+    }
+
+    public string Name { get; }
+    public string ClassName { get; }
+    public string GetParameterDefinitions()
+    {
+        return string.Join(", ", GetParameters(m_delegateType).Select(_ => $"{ _.ParameterType.Name } { _.Name }").ToArray());
+    }
+
+    public string GetParameters()
+    {
+        return string.Join(", ", GetParameters(m_delegateType).Select(_ => _.Name).ToArray());
+    }
+
+    static IEnumerable<ParameterInfo> GetParameters(Type delegateType)
+    {
+        return delegateType.GetMethod("Invoke").GetParameters();
+    }
+}
+#>
