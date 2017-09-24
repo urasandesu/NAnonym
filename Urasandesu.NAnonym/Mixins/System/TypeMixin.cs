@@ -483,8 +483,16 @@ namespace Urasandesu.NAnonym.Mixins.System
             return Regex.Replace(t.Name, @"`\d+", "");
         }
 
-        
-        
+        public static string FullNameWithoutNestedTypeQualification(this Type t)
+        {
+            if (t == null)
+                throw new ArgumentNullException("t");
+
+            return t.FullName.Replace("+", ".");
+        }
+
+
+
         public static Type MakeGenericType(this Type t, Type declType, Type[] typeGenericArgs, MethodBase declMethod, Type[] methodGenericArgs)
         {
             if (t == null)
