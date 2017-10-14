@@ -29,8 +29,17 @@
 
 
 using System;
+using System.Collections;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Serialization;
 using System.Security.Policy;
+using System.Threading;
+using Urasandesu.NAnonym.Remoting;
 
 namespace Urasandesu.NAnonym.Mixins.System
 {
@@ -183,14 +192,17 @@ namespace Urasandesu.NAnonym.Mixins.System
 
         public static void RunAtIsolatedDomain(Evidence securityInfo, AppDomainSetup info, Delegate action, params object[] args)
         {
+            if (securityInfo == null)
+                throw new ArgumentNullException("securityInfo");
+
+            if (info == null)
+                throw new ArgumentNullException("info");
+
             if (action == null)
                 throw new ArgumentNullException("action");
 
             if (!action.CanCrossDomain())
-                throw new ArgumentException("The parameter must be domain crossable. Please check the following points: " +
-                                            "Doesn't lambda expression capture external variable? " +
-                                            "Or is a static method specified? " +
-                                            "Or is an instance method of serializable/marshalizable specified?", "action");
+                throw new ArgumentException(Resources.GetString("AppDomainMixin_RunAtIsolatedXXX_ActionCanNotCrossDomain"), "action");
 
 
             var domain = default(AppDomain);
@@ -204,9 +216,7 @@ namespace Urasandesu.NAnonym.Mixins.System
             }
             catch (SerializationException e)
             {
-                throw new ArgumentException("The parameter must be domain crossable. " +
-                                            "Please confirm that the type inherits MarshalByRefObject, " +
-                                            "or it is applied SerializableAttribute.", e);
+                throw new ArgumentException(Resources.GetString("AppDomainMixin_RunAtIsolatedXXX_ActionParameterCanNotCrossDomain"), e);
             }
             finally
             {
@@ -219,14 +229,229 @@ namespace Urasandesu.NAnonym.Mixins.System
             }
         }
 
-        class MarshalByRefRunner : MarshalByRefObject
+
+
+        public static void RunAtIsolatedProcess(this AppDomain source, Action action)
         {
-            public Delegate Action { get; set; }
-            public void Run(params object[] args)
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedProcess(source.SetupInformation, action);
+        }
+
+        public static void RunAtIsolatedProcess<T>(this AppDomain source, Action<T> action, T arg)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedProcess<T>(source.SetupInformation, action, arg);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2>(this AppDomain source, Action<T1, T2> action, T1 arg1, T2 arg2)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedProcess<T1, T2>(source.SetupInformation, action, arg1, arg2);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2, T3>(this AppDomain source, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedProcess<T1, T2, T3>(source.SetupInformation, action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2, T3, T4>(this AppDomain source, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            RunAtIsolatedProcess<T1, T2, T3, T4>(source.SetupInformation, action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedProcess(AppDomainSetup info, Action action)
+        {
+            RunAtIsolatedProcess(info, (Delegate)action);
+        }
+
+        public static void RunAtIsolatedProcess<T>(AppDomainSetup info, Action<T> action, T arg)
+        {
+            RunAtIsolatedProcess(info, (Delegate)action, arg);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2>(AppDomainSetup info, Action<T1, T2> action, T1 arg1, T2 arg2)
+        {
+            RunAtIsolatedProcess(info, (Delegate)action, arg1, arg2);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2, T3>(AppDomainSetup info, Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
+        {
+            RunAtIsolatedProcess(info, (Delegate)action, arg1, arg2, arg3);
+        }
+
+        public static void RunAtIsolatedProcess<T1, T2, T3, T4>(AppDomainSetup info, Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            RunAtIsolatedProcess(info, (Delegate)action, arg1, arg2, arg3, arg4);
+        }
+
+        public static void RunAtIsolatedProcess(AppDomainSetup info, Delegate action, params object[] args)
+        {
+            if (info == null)
+                throw new ArgumentNullException("info");
+
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            if (!action.CanCrossDomain())
+                throw new ArgumentException(Resources.GetString("AppDomainMixin_RunAtIsolatedXXX_ActionCanNotCrossDomain"), "action");
+
+
+            // The reason of using GUID as follows is that IPC channel cannot close immediately. So we generate new port name each time.
+            var portName = "localhost_nanonym_mixins_system_appdomainmixin_runatisolatedprocess" + Guid.NewGuid().ToString("N");
+            var properties = new Hashtable
             {
-                if (Action != null)
-                    Action.DynamicInvoke(args);
+                ["name"] = "ipc server " + Guid.NewGuid().ToString("N"),
+                ["portName"] = portName
+            };
+            var serverChannel = new IpcServerChannel(properties, null);
+            ChannelServices.RegisterChannel(serverChannel, false);
+            try
+            {
+                RunAtIsolatedProcessCore(info.ApplicationBase, portName, action, args);
             }
+            finally
+            {
+                ChannelServices.UnregisterChannel(serverChannel);
+            }
+        }
+
+        // Some RemotingExceptions are recoverable if retrying. This field indicates the retry count. 
+        // In fact, we wish Marshal.GetLastWin32Error result could be used, but the API returns no meaning code.
+        // (see also https://blogs.msdn.microsoft.com/suwatch/2009/01/11/remotingexception-all-pipe-instances-are-busy-or-the-system-cannot-find-the-file-specified/)
+        static int m_isolatedProcessRecoverableExceptionRetryCount = 5;
+        public static int IsolatedProcessRecoverableExceptionRetryCount
+        {
+            get { return m_isolatedProcessRecoverableExceptionRetryCount; }
+            set { Interlocked.Exchange(ref m_isolatedProcessRecoverableExceptionRetryCount, value); }
+        }
+
+        static void RunAtIsolatedProcessCore(string workingDir, string portName, Delegate action, object[] args)
+        {
+            var retryCount = m_isolatedProcessRecoverableExceptionRetryCount;
+            do
+            {
+                var exKeeper = new ExceptionKeeper();
+                var agent = new RemoteActionAgent(action, exKeeper, args);
+                var runner = new MarshalByRefRunner { Action = agent.RunAction };
+                var objectUri = typeof(MarshalByRefRunner).FullName + Guid.NewGuid().ToString("N");
+                RemotingServices.Marshal(runner, objectUri);
+                try
+                {
+                    var runnerUrl = "ipc://" + portName + "/" + objectUri;
+                    var isolatedProcName = IntPtr.Size == 4 ? GetIsolatedProcessNameX86() : GetIsolatedProcessName();
+                    var startInfo = new ProcessStartInfo(isolatedProcName, runnerUrl)
+                    {
+                        WorkingDirectory = workingDir,
+                        WindowStyle = ProcessWindowStyle.Hidden
+                    };
+                    var isolatedProc = Process.Start(startInfo);
+                    isolatedProc.WaitForExit();
+
+                    if (exKeeper.SerializationException != null)
+                        throw new ArgumentException(Resources.GetString("AppDomainMixin_RunAtIsolatedXXX_ActionParameterCanNotCrossDomain"), exKeeper.SerializationException);
+
+                    if (0 < --retryCount && exKeeper.ActionException is RemotingException)
+                        Thread.Sleep(1000);
+                    else if (exKeeper.ActionException != null)
+                        throw new TargetInvocationException(exKeeper.ActionException);
+                    else
+                        retryCount = 0;
+                }
+                finally
+                {
+                    RemotingServices.Disconnect(runner);
+                }
+            } while (0 < retryCount);
+        }
+
+        class ExceptionKeeper : MarshalByRefObject
+        {
+            public SerializationException SerializationException { get; set; }
+            public Exception ActionException { get; set; }
+        }
+
+        [Serializable]
+        class RemoteActionAgent
+        {
+            readonly Delegate m_action;
+            readonly ExceptionKeeper m_exKeeper;
+            readonly object[] m_args;
+
+            const int ErrorFileNotFound = 2;
+            const int ErrorPipeBusy = 231;
+
+            public RemoteActionAgent(Delegate action, ExceptionKeeper exKeeper, params object[] args)
+            {
+                m_action = action;
+                m_exKeeper = exKeeper;
+                m_args = args;
+                RunAction = RunActionCore;
+            }
+
+            public Action<string> RunAction { get; private set; }
+
+            void RunActionCore(string remoteRunnerUrl)
+            {
+                // We want to specify the client channel to Activator.GetObject/RemotingServices.Connect directly. However, both APIs don't support it. 
+                // So they will choose wrong client channel in multithreading... To avoid this, we assign one client-side processing to one application. 
+                // We expect that they will always choose correct channel because there is only one client channel in the application.
+                // By the way, this process only exists to isolate the environment, so we can call the simplest overloads of RunAtIsolatedDomain.
+                try
+                {
+                    AppDomain.CurrentDomain.RunAtIsolatedDomain(remoteRunnerUrl_ =>
+                    {
+                        var clientChannel = new IpcClientChannel("ipc client " + Guid.NewGuid().ToString("N"), null);
+                        ChannelServices.RegisterChannel(clientChannel, false);
+                        try
+                        {
+                            var remoteRunner = (MarshalByRefRunner)RemotingServices.Connect(typeof(MarshalByRefRunner), remoteRunnerUrl_);
+                            remoteRunner.Run(m_action, m_args);
+                        }
+                        catch (SerializationException ex)
+                        {
+                            m_exKeeper.SerializationException = ex;
+                        }
+                        catch (TargetInvocationException ex)
+                        {
+                            var actualEx = ex.EnumerateInnerException().SkipWhile(_ => _ is TargetInvocationException).First();
+                            m_exKeeper.ActionException = actualEx;
+                        }
+                        finally
+                        {
+                            ChannelServices.UnregisterChannel(clientChannel);
+                        }
+                    }, remoteRunnerUrl);
+                }
+                catch (ArgumentException ex)
+                {
+                    if (!(ex.InnerException is SerializationException))
+                        throw;
+
+                    m_exKeeper.SerializationException = (SerializationException)ex.InnerException;
+                }
+            }
+        }
+
+        static string GetIsolatedProcessNameX86()
+        {
+            return typeof(NAnonymIsolatedProcess.X86.Program).Module.Name;
+        }
+
+        static string GetIsolatedProcessName()
+        {
+            return typeof(NAnonymIsolatedProcess.Program).Module.Name;
         }
     }
 }

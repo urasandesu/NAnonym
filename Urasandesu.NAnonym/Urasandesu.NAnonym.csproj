@@ -44,6 +44,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -54,6 +55,7 @@
     <Compile Include="Collections\Generic\LambdaEqualityComparer.cs" />
     <Compile Include="Mixins\System\DelegateMixin.cs" />
     <Compile Include="Mixins\System\Diagnostics\ProcessMixin.cs" />
+    <Compile Include="Mixins\System\ExceptionMixin.cs" />
     <Compile Include="Mixins\System\IO\TextReaderMixin.cs" />
     <Compile Include="Mixins\System\MarshalByRefDelegates.g.cs">
       <AutoGen>True</AutoGen>
@@ -64,6 +66,7 @@
     <Compile Include="Mixins\System\Reflection\MethodBaseMixin.cs" />
     <Compile Include="Mixins\System\Security\Principal\WindowsIdentityMixin.cs" />
     <Compile Include="Mixins\System\StringMixin.cs" />
+    <Compile Include="Resources.cs" />
     <Compile Include="Work.cs" />
     <Compile Include="Exec.cs" />
     <Compile Include="Mixins\System\AppDomainMixin.cs" />
@@ -93,6 +96,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Urasandesu.NAnonym.snk" />
@@ -106,6 +110,20 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MarshalByRefDelegates.g.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NAnonymIsolatedProcess.X86\NAnonymIsolatedProcess.X86.csproj">
+      <Project>{74822dbb-a200-49ec-9d4c-8320c2f158b4}</Project>
+      <Name>NAnonymIsolatedProcess.X86</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NAnonymIsolatedProcess\NAnonymIsolatedProcess.csproj">
+      <Project>{a84d07f7-0ef1-4bc8-ab89-c9bc348a5faa}</Project>
+      <Name>NAnonymIsolatedProcess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Urasandesu.NAnonym.Remoting\Urasandesu.NAnonym.Remoting.csproj">
+      <Project>{7e5604f1-60ed-44df-8cbb-c8ea2a309543}</Project>
+      <Name>Urasandesu.NAnonym.Remoting</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

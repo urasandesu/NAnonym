@@ -31,6 +31,10 @@
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Threading;
 using Urasandesu.NAnonym.Mixins.System;
 
 namespace Test.Urasandesu.NAnonym.Mixins.System
@@ -39,11 +43,12 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
     public class AppDomainMixinTest
     {
         [Test]
-        public void RunAtIsolatedDomainTest_should_init_static_member()
+        public void RunAtIsolatedDomain_should_run_specified_action_in_different_app()
         {
             // Arrange
-            var bag = new CrossDomainBag();
-            bag["Actual"] = 0;
+            var bag = new MarshalByRefBag();
+            bag["Expected"] = AppDomain.CurrentDomain.GetHashCode();
+            bag["Actual"] = bag["Expected"];
 
 
             // Act
@@ -54,12 +59,125 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
 
 
             // Assert
-            Assert.AreNotEqual(AppDomain.CurrentDomain.GetHashCode(), bag["Actual"]);
+            Assert.AreNotEqual(bag["Expected"], bag["Actual"]);
         }
 
 
 
-        class CrossDomainBag : MarshalByRefObject
+        [Repeat(5)]
+        [Test]
+        public void RunAtIsolatedProcess_should_run_specified_action_in_different_process()
+        {
+            // Arrange
+            var bag = new MarshalByRefBag();
+            bag["Expected"] = Process.GetCurrentProcess().Id;
+            bag["Actual"] = bag["Expected"];
+
+
+            // Act
+            AppDomain.CurrentDomain.RunAtIsolatedProcess(bag_ =>
+            {
+                bag_["Actual"] = Process.GetCurrentProcess().Id;
+            }, bag);
+
+
+            // Assert
+            Assert.AreNotEqual(bag["Expected"], bag["Actual"]);
+        }
+
+
+
+        [Repeat(5)]
+        [Test]
+        public void RunAtIsolatedProcess_can_run_parallel()
+        {
+            // Arrange
+            var n = 0;
+            var n_Increment = new MarshalByRefAction(() => Interlocked.Increment(ref n));
+            var threads = new List<Thread>();
+            for (var i = 0; i < 10; i++)
+            {
+                var thread = new Thread(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(n_Increment_ => n_Increment_.Invoke(), n_Increment));
+                threads.Add(thread);
+            }
+
+
+            // Act
+            threads.ForEach(_ => _.Start());
+            threads.ForEach(_ => _.Join());
+
+
+            // Assert
+            Assert.AreEqual(10, n);
+        }
+
+
+
+        [Test]
+        public void RunAtIsolatedProcess_should_wrap_the_exception_that_occurred_in_the_action_in_TargetInvocationException_and_rethrow_it()
+        {
+            // Arrange
+            var errorAction = new Action(() => throw new ApplicationException("aiueo"));
+
+
+            // Act, Assert
+            var ex = Assert.Throws<TargetInvocationException>(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(errorAction));
+            Assert.IsInstanceOf<ApplicationException>(ex.InnerException);
+            Assert.AreEqual("aiueo", ex.InnerException.Message);
+        }
+
+
+
+        [Test]
+        public void RunAtIsolatedProcess_can_run_repeatedly_even_if_an_exception_has_occurred()
+        {
+            // Arrange
+            var errorAction = new Action(() => throw new ApplicationException());
+            Assert.Throws<TargetInvocationException>(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(errorAction));
+
+            var run = false;
+            var run_Assign = new MarshalByRefAction<bool>(value => run = value);
+
+
+            // Act
+            AppDomain.CurrentDomain.RunAtIsolatedProcess(run_Assign_ =>
+            {
+                run_Assign_.Invoke(true);
+            }, run_Assign);
+
+
+            // Assert
+            Assert.IsTrue(run);
+        }
+
+
+
+        [Test]
+        public void RunAtIsolatedProcess_should_throw_ArgumentException_if_domain_uncrossable_action_is_passed()
+        {
+            // Arrange
+            var x = 1;
+            var domainUncrossableAction = new Action(() => x++);
+
+            // Act, Assert
+            Assert.Throws<ArgumentException>(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(domainUncrossableAction));
+        }
+
+
+
+        [Test]
+        public void RunAtIsolatedProcess_should_throw_ArgumentException_if_domain_uncrossable_parameter_for_the_action_is_passed()
+        {
+            // Arrange
+            var domainUncrossableParameter = new Stopwatch();
+
+            // Act, Assert
+            Assert.Throws<ArgumentException>(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(_ => { }, domainUncrossableParameter));
+        }
+
+
+
+        class MarshalByRefBag : MarshalByRefObject
         {
             Hashtable m_hashtable = new Hashtable();
 
