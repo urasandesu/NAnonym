@@ -1,5 +1,5 @@
 ﻿/* 
- * File: Program.cs
+ * File: AssemblyInfo.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
@@ -28,15 +28,26 @@
  */
 
 
-using Urasandesu.NAnonym.Remoting;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace NAnonymIsolatedProcess
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            new IsolatedProcess().Run(args);
-        }
-    }
-}
+[assembly: AssemblyTitle("NAnonymIsolatedProcess.X86")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("NAnonymIsolatedProcess.X86")]
+[assembly: AssemblyCopyright("Copyright © Akira Sugiura 2017")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: Guid("74822dbb-a200-49ec-9d4c-8320c2f158b4")]
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.0")]
+
+[assembly: InternalsVisibleTo("Urasandesu.NAnonym, PublicKey=" +
+    "00240000048000009400000006020000002400005253413100040000010001006f4a1b2b8ca3fc" +
+    "5567c76045b7320a45c18035f510ca4f2fb479648306a07a29d2d8f05a70ebbbd032bb098799c9" +
+    "22654eabebaf7b84d3927c235e6de54a3bafba5a2f27653af052f057f0065ac771d722127bbba1" +
+    "cd01c8a665fd2ff0dda3610861289ae4d05cccdd6d35b6e6ab46b8a6f8d165ad7f3fcacc5fdf62" +
+    "4bd73698")]

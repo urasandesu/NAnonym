@@ -112,12 +112,20 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NAnonymIsolatedProcess.X86\NAnonymIsolatedProcess.X86.csproj">
+    <ProjectReference Include="..\NAnonymIsolatedProcess.Clr20.X86\NAnonymIsolatedProcess.Clr20.X86.csproj">
       <Project>{74822dbb-a200-49ec-9d4c-8320c2f158b4}</Project>
+      <Name>NAnonymIsolatedProcess.Clr20.X86</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NAnonymIsolatedProcess.Clr20\NAnonymIsolatedProcess.Clr20.csproj">
+      <Project>{a84d07f7-0ef1-4bc8-ab89-c9bc348a5faa}</Project>
+      <Name>NAnonymIsolatedProcess.Clr20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NAnonymIsolatedProcess.X86\NAnonymIsolatedProcess.X86.csproj">
+      <Project>{57af3fb7-ceac-47c1-85af-15969db1baaf}</Project>
       <Name>NAnonymIsolatedProcess.X86</Name>
     </ProjectReference>
     <ProjectReference Include="..\NAnonymIsolatedProcess\NAnonymIsolatedProcess.csproj">
-      <Project>{a84d07f7-0ef1-4bc8-ab89-c9bc348a5faa}</Project>
+      <Project>{f9d6ce6c-e0bd-4684-9963-531e1b8357e9}</Project>
       <Name>NAnonymIsolatedProcess</Name>
     </ProjectReference>
     <ProjectReference Include="..\Urasandesu.NAnonym.Remoting\Urasandesu.NAnonym.Remoting.csproj">

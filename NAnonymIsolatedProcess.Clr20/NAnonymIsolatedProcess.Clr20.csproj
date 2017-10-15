@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9D6CE6C-E0BD-4684-9963-531E1B8357E9}</ProjectGuid>
+    <ProjectGuid>{A84D07F7-0EF1-4BC8-AB89-C9BC348A5FAA}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>NAnonymIsolatedProcess</RootNamespace>
-    <AssemblyName>NAnonymIsolatedProcess</AssemblyName>
+    <RootNamespace>NAnonymIsolatedProcess.Clr20</RootNamespace>
+    <AssemblyName>NAnonymIsolatedProcess.Clr20</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,7 +52,6 @@
     <None Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.snk">
       <Link>Urasandesu.NAnonym.snk</Link>
     </None>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Urasandesu.NAnonym.Remoting\Urasandesu.NAnonym.Remoting.csproj">

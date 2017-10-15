@@ -30,7 +30,7 @@
 
 using Urasandesu.NAnonym.Remoting;
 
-namespace NAnonymIsolatedProcess
+namespace NAnonymIsolatedProcess.Clr20
 {
     class Program
     {
@@ -40,3 +40,4 @@ namespace NAnonymIsolatedProcess
         }
     }
 }
+

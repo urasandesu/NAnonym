@@ -33,6 +33,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
@@ -350,7 +351,7 @@ namespace Urasandesu.NAnonym.Mixins.System
                 try
                 {
                     var runnerUrl = "ipc://" + portName + "/" + objectUri;
-                    var isolatedProcName = IntPtr.Size == 4 ? GetIsolatedProcessNameX86() : GetIsolatedProcessName();
+                    var isolatedProcName = GetIsolatedProcessName();
                     var startInfo = new ProcessStartInfo(isolatedProcName, runnerUrl)
                     {
                         WorkingDirectory = workingDir,
@@ -441,14 +442,68 @@ namespace Urasandesu.NAnonym.Mixins.System
             }
         }
 
-        static string GetIsolatedProcessNameX86()
+        static bool s_runsAsClr20 = GetRunsAsClr20();
+        static bool GetRunsAsClr20()
         {
-            return typeof(NAnonymIsolatedProcess.X86.Program).Module.Name;
+            var runtimeVer = typeof(object).Assembly.ImageRuntimeVersion;
+            if (runtimeVer == "v2.0.50727")
+                return true;
+            else if (runtimeVer == "v4.0.30319")
+                return false;
+            else
+                throw new NotSupportedException(string.Format("The runtime version '{0}' is not supported.", runtimeVer));
         }
+        static bool RunsAsClr20 { get { return s_runsAsClr20; } }
+
+        static bool s_runsAsX86 = GetRunsAsX86();
+        static bool GetRunsAsX86()
+        {
+            var pointerSize = IntPtr.Size;
+            if (pointerSize == 4)
+                return true;
+            else if (pointerSize == 8)
+                return false;
+            else
+                throw new NotSupportedException(string.Format("The pointer size '{0}' is not supported.", pointerSize));
+        }
+        static bool RunsAsX86 { get { return s_runsAsX86; } }
 
         static string GetIsolatedProcessName()
         {
+            if (RunsAsClr20)
+                if (RunsAsX86)
+                    return GetIsolatedProcessNameClr20X86();
+                else
+                    return GetIsolatedProcessNameClr20();
+            else
+                if (RunsAsX86)
+                    return GetIsolatedProcessNameClr40X86();
+                else
+                    return GetIsolatedProcessNameClr40();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static string GetIsolatedProcessNameClr20()
+        {
+            return typeof(NAnonymIsolatedProcess.Clr20.Program).Module.Name;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static string GetIsolatedProcessNameClr20X86()
+        {
+            return typeof(NAnonymIsolatedProcess.Clr20.X86.Program).Module.Name;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static string GetIsolatedProcessNameClr40()
+        {
             return typeof(NAnonymIsolatedProcess.Program).Module.Name;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static string GetIsolatedProcessNameClr40X86()
+        {
+            return typeof(NAnonymIsolatedProcess.X86.Program).Module.Name;
         }
     }
 }

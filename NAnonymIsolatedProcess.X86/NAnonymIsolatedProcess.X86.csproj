@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{74822DBB-A200-49EC-9D4C-8320C2F158B4}</ProjectGuid>
+    <ProjectGuid>{57AF3FB7-CEAC-47C1-85AF-15969DB1BAAF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>NAnonymIsolatedProcess.X86</RootNamespace>
     <AssemblyName>NAnonymIsolatedProcess.X86</AssemblyName>
@@ -52,6 +52,7 @@
     <None Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.snk">
       <Link>Urasandesu.NAnonym.snk</Link>
     </None>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Urasandesu.NAnonym.Remoting\Urasandesu.NAnonym.Remoting.csproj">

@@ -4,15 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9D6CE6C-E0BD-4684-9963-531E1B8357E9}</ProjectGuid>
+    <ProjectGuid>{74822DBB-A200-49EC-9D4C-8320C2F158B4}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>NAnonymIsolatedProcess</RootNamespace>
-    <AssemblyName>NAnonymIsolatedProcess</AssemblyName>
+    <RootNamespace>NAnonymIsolatedProcess.Clr20.X86</RootNamespace>
+    <AssemblyName>NAnonymIsolatedProcess.Clr20.X86</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(SolutionDir)Bin\Release\AnyCPU\</OutputPath>
@@ -52,7 +52,6 @@
     <None Include="..\Urasandesu.NAnonym\Urasandesu.NAnonym.snk">
       <Link>Urasandesu.NAnonym.snk</Link>
     </None>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Urasandesu.NAnonym.Remoting\Urasandesu.NAnonym.Remoting.csproj">
