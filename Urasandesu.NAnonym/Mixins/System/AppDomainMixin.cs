@@ -330,16 +330,16 @@ namespace Urasandesu.NAnonym.Mixins.System
         // Some RemotingExceptions are recoverable if retrying. This field indicates the retry count. 
         // In fact, we wish Marshal.GetLastWin32Error result could be used, but the API returns no meaning code.
         // (see also https://blogs.msdn.microsoft.com/suwatch/2009/01/11/remotingexception-all-pipe-instances-are-busy-or-the-system-cannot-find-the-file-specified/)
-        static int m_isolatedProcessRecoverableExceptionRetryCount = 5;
+        static int s_isolatedProcessRecoverableExceptionRetryCount = 5;
         public static int IsolatedProcessRecoverableExceptionRetryCount
         {
-            get { return m_isolatedProcessRecoverableExceptionRetryCount; }
-            set { Interlocked.Exchange(ref m_isolatedProcessRecoverableExceptionRetryCount, value); }
+            get { return s_isolatedProcessRecoverableExceptionRetryCount; }
+            set { Interlocked.Exchange(ref s_isolatedProcessRecoverableExceptionRetryCount, value); }
         }
 
         static void RunAtIsolatedProcessCore(string workingDir, string portName, Delegate action, object[] args)
         {
-            var retryCount = m_isolatedProcessRecoverableExceptionRetryCount;
+            var retryCount = s_isolatedProcessRecoverableExceptionRetryCount;
             do
             {
                 var exKeeper = new ExceptionKeeper();
@@ -388,9 +388,6 @@ namespace Urasandesu.NAnonym.Mixins.System
             readonly Delegate m_action;
             readonly ExceptionKeeper m_exKeeper;
             readonly object[] m_args;
-
-            const int ErrorFileNotFound = 2;
-            const int ErrorPipeBusy = 231;
 
             public RemoteActionAgent(Delegate action, ExceptionKeeper exKeeper, params object[] args)
             {

@@ -29,11 +29,13 @@
 
 
 using System;
+using System.Security.Permissions;
 
 namespace Urasandesu.NAnonym.Remoting
 {
     public class MarshalByRefRunner : MarshalByRefObject
     {
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)]
         public override object InitializeLifetimeService()
         {
             return null;
