@@ -90,6 +90,11 @@ namespace Urasandesu.NAnonym.Remoting
                 var remoteRunner = (MarshalByRefRunner)RemotingServices.Connect(typeof(MarshalByRefRunner), remoteRunnerUrl);
                 remoteRunner.Run(runnerUrl);
             }
+            catch (RemotingException)
+            {
+                // By some reason, host process may exit early (e.g. uncheck 'Keep Test Execution Engine Running' setting).
+                // In this case, execution result comes here, so we should just ignore.
+            }
             finally
             {
                 ChannelServices.UnregisterChannel(clientChannel);
