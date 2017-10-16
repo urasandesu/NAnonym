@@ -38,6 +38,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Security.Policy;
 using System.Threading;
 using Urasandesu.NAnonym.Remoting;
@@ -316,7 +317,8 @@ namespace Urasandesu.NAnonym.Mixins.System
                 ["name"] = "ipc server " + Guid.NewGuid().ToString("N"),
                 ["portName"] = portName
             };
-            var serverChannel = new IpcServerChannel(properties, null);
+            var serverSinkProvider = new BinaryServerFormatterSinkProvider() { TypeFilterLevel = TypeFilterLevel.Full };
+            var serverChannel = new IpcServerChannel(properties, serverSinkProvider);
             ChannelServices.RegisterChannel(serverChannel, false);
             try
             {
