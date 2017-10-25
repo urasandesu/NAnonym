@@ -46,11 +46,9 @@ namespace Urasandesu.NAnonym.Remoting
 
             // The reason of using GUID as follows is that IPC channel cannot close immediately. So we generate new port name each time.
             var portName = "nanonym_remoting_isolatedprocess_run" + Guid.NewGuid().ToString("N");
-            var properties = new Hashtable
-            {
-                ["name"] = "ipc server " + Guid.NewGuid().ToString("N"),
-                ["portName"] = portName
-            };
+            var properties = new Hashtable();
+            properties["name"] = "ipc server " + Guid.NewGuid().ToString("N");
+            properties["portName"] = portName;
             var serverSinkProvider = new BinaryServerFormatterSinkProvider() { TypeFilterLevel = TypeFilterLevel.Full };
             var serverChannel = new IpcServerChannel(properties, serverSinkProvider);
             ChannelServices.RegisterChannel(serverChannel, false);

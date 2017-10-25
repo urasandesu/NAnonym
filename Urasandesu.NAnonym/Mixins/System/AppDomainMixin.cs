@@ -312,11 +312,9 @@ namespace Urasandesu.NAnonym.Mixins.System
 
             // The reason of using GUID as follows is that IPC channel cannot close immediately. So we generate new port name each time.
             var portName = "localhost_nanonym_mixins_system_appdomainmixin_runatisolatedprocess" + Guid.NewGuid().ToString("N");
-            var properties = new Hashtable
-            {
-                ["name"] = "ipc server " + Guid.NewGuid().ToString("N"),
-                ["portName"] = portName
-            };
+            var properties = new Hashtable();
+            properties["name"] = "ipc server " + Guid.NewGuid().ToString("N");
+            properties["portName"] = portName;
             var serverSinkProvider = new BinaryServerFormatterSinkProvider() { TypeFilterLevel = TypeFilterLevel.Full };
             var serverChannel = new IpcServerChannel(properties, serverSinkProvider);
             ChannelServices.RegisterChannel(serverChannel, false);

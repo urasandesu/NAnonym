@@ -117,7 +117,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
         public void RunAtIsolatedProcess_should_wrap_the_exception_that_occurred_in_the_action_in_TargetInvocationException_and_rethrow_it()
         {
             // Arrange
-            var errorAction = new Action(() => throw new ApplicationException("aiueo"));
+            var errorAction = new Action(() => { throw new ApplicationException("aiueo"); });
 
 
             // Act, Assert
@@ -132,7 +132,7 @@ namespace Test.Urasandesu.NAnonym.Mixins.System
         public void RunAtIsolatedProcess_can_run_repeatedly_even_if_an_exception_has_occurred()
         {
             // Arrange
-            var errorAction = new Action(() => throw new ApplicationException());
+            var errorAction = new Action(() => { throw new ApplicationException(); });
             Assert.Throws<TargetInvocationException>(() => AppDomain.CurrentDomain.RunAtIsolatedProcess(errorAction));
 
             var run = false;
