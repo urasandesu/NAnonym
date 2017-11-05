@@ -51,8 +51,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Generic\BaseEqualityComparer`1.cs" />
+    <Compile Include="Collections\Generic\DelegateEqualityComparer`2.cs" />
+    <Compile Include="Collections\Generic\EquatableComparer`1.cs" />
     <Compile Include="Collections\Generic\LambdaComparer.cs" />
     <Compile Include="Collections\Generic\LambdaEqualityComparer.cs" />
+    <Compile Include="Collections\Generic\NullValueIsMinimumComparer`1.cs" />
+    <Compile Include="Collections\Generic\ObjectEqualityComparer`1.cs" />
+    <Compile Include="Collections\Linq\EnumerableMixin.cs" />
     <Compile Include="Mixins\System\DelegateMixin.cs" />
     <Compile Include="Mixins\System\Diagnostics\ProcessMixin.cs" />
     <Compile Include="Mixins\System\ExceptionMixin.cs" />

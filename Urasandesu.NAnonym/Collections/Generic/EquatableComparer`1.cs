@@ -1,10 +1,10 @@
 ﻿/* 
- * File: AssemblyInfo.cs
+ * File: EquatableComparer`1.cs
  * 
  * Author: Akira Sugiura (urasandesu@gmail.com)
  * 
  * 
- * Copyright (c) 2012 Akira Sugiura
+ * Copyright (c) 2016 Akira Sugiura
  *  
  *  This software is MIT License.
  *  
@@ -28,26 +28,24 @@
  */
 
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Urasandesu.NAnonym")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Urasandesu.NAnonym")]
-[assembly: AssemblyCopyright("Copyright © Akira Sugiura 2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("3e0a83bb-de1c-4e14-8d5b-691b4a4bc419")]
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+using System;
+using System.Collections.Generic;
+using Urasandesu.NAnonym.Mixins.System;
 
-[assembly: InternalsVisibleTo("Test.Urasandesu.NAnonym, PublicKey=" +
-    "00240000048000009400000006020000002400005253413100040000010001006f4a1b2b8ca3fc" +
-    "5567c76045b7320a45c18035f510ca4f2fb479648306a07a29d2d8f05a70ebbbd032bb098799c9" +
-    "22654eabebaf7b84d3927c235e6de54a3bafba5a2f27653af052f057f0065ac771d722127bbba1" +
-    "cd01c8a665fd2ff0dda3610861289ae4d05cccdd6d35b6e6ab46b8a6f8d165ad7f3fcacc5fdf62" +
-    "4bd73698")]
+namespace Urasandesu.NAnonym.Collections.Generic
+{
+    public class EquatableComparer<T> : BaseEqualityComparer<T>  where T : IEquatable<T>
+    {
+        public static new IEqualityComparer<T> Make()
+        {
+            return Make(_ => _, (_1, _2) => EqualityComparer<T>.Default.Equals(_1, _2), _ => _.NullableGetHashCode());
+        }
+
+        public static IEqualityComparer<T> Make<TProp>(Func<T, TProp> selector) where TProp : IEquatable<TProp>
+        {
+            return Make(selector, (_1, _2) => _1.Equals(_2), _ => _.GetHashCode());
+        }
+    }
+}
+
