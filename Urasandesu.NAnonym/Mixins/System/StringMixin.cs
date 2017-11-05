@@ -29,6 +29,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Urasandesu.NAnonym.Mixins.System
@@ -68,6 +70,22 @@ namespace Urasandesu.NAnonym.Mixins.System
                 return "null";
 
             return new StringBuilder(@this).Insert(0, "\"").Append("\"").ToString();
+        }
+
+        public static string JoinIfNotNullOrEmpty(string separator, IEnumerable<string> values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+
+            return string.Join(separator, values.Where(_ => !string.IsNullOrEmpty(_)).ToArray());
+        }
+
+        public static string JoinIfNotNullOrEmpty<T>(string separator, IEnumerable<T> values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+
+            return string.Join(separator, values.Select(_ => _ + "").Where(_ => !string.IsNullOrEmpty(_)).ToArray());
         }
     }
 }
