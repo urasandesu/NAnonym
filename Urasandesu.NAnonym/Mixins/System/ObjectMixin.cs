@@ -64,5 +64,31 @@ namespace Urasandesu.NAnonym.Mixins.System
 
             return source;
         }
+
+        public static TResult Maybe<T, TResult>(this T @this, Func<T, TResult> invoker) where T : class
+        {
+            return Maybe(@this, invoker, default(TResult));
+        }
+
+        public static TResult Maybe<T, TResult>(this T @this, Func<T, TResult> invoker, TResult defaultResult) where T : class
+        {
+            if (invoker == null)
+                throw new ArgumentNullException("invoker");
+
+            if (@this == null)
+                return defaultResult;
+
+            return invoker(@this);
+        }
+
+        public static int GetHashCode<T>(T @this)
+        {
+            return @this != null ? @this.GetHashCode() : 0;
+        }
+
+        public static int NullableGetHashCode<T>(this T @this)
+        {
+            return @this != null ? @this.GetHashCode() : 0;
+        }
     }
 }
