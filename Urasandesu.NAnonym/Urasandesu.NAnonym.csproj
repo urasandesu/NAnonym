@@ -61,7 +61,11 @@
     <Compile Include="Collections\Linq\EnumerableMixin.cs" />
     <Compile Include="Mixins\System\DelegateMixin.cs" />
     <Compile Include="Mixins\System\Diagnostics\ProcessMixin.cs" />
+    <Compile Include="Mixins\System\Disposable`1.cs" />
     <Compile Include="Mixins\System\ExceptionMixin.cs" />
+    <Compile Include="Mixins\System\ICastableMixin.cs" />
+    <Compile Include="Mixins\System\ICastable`1.cs" />
+    <Compile Include="Mixins\System\Index.cs" />
     <Compile Include="Mixins\System\IO\TextReaderMixin.cs" />
     <Compile Include="Mixins\System\MarshalByRefDelegates.g.cs">
       <AutoGen>True</AutoGen>

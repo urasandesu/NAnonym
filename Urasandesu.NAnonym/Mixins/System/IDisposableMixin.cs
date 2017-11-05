@@ -69,5 +69,15 @@ namespace Urasandesu.NAnonym.Mixins.System
             using (@this)
                 action(@this);
         }
+
+        public static Disposable<T> Owned<T>(this T value) where T : IDisposable
+        {
+            return new Disposable<T>(value, true);
+        }
+
+        public static Disposable<T> NotOwned<T>(this T value) where T : IDisposable
+        {
+            return new Disposable<T>(value, false);
+        }
     }
 }
